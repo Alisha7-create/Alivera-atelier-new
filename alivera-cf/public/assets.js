@@ -1,1 +1,0 @@
-window.ALIVERA_ASSETS={};
