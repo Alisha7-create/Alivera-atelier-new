@@ -18,12 +18,7 @@
     }
   ],
   "ai": { "binding": "AI" },
-  "r2_buckets": [
-    {
-      "binding": "MEDIA",
-      "bucket_name": "alivera-atelier-media"
-    }
-  ],
+
   "vars": {
     "ADMIN_EMAILS": "contact@aliveraatelier.in"
   },
