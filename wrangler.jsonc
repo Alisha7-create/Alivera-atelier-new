@@ -1,8 +1,6 @@
 // Cloudflare deployment sync
 {
   "$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
-{
-  "$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
   "name": "alivera-atelier",
   "main": "src/index.js",
   "compatibility_date": "2026-08-11",
