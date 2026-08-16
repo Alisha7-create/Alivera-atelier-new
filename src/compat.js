@@ -100,11 +100,23 @@ export async function readSession(request) {
   const cookieHeader = request?.headers?.get
     ? request.headers.get('Cookie')
     : (request?.headers?.cookie || request?.headers?.Cookie || '');
+
   const raw = cookieValue(cookieHeader, 'alv_session');
   if (!raw) return null;
-  const [data,sig]=raw.split('.'); if(!data||!sig) return null;
-  const expected=b64u(await hmac(e.AUTH_SECRET || 'change-me',data)); if(expected!==sig) return null;
-  try { const p=JSON.parse(new TextDecoder().decode(fromB64u(data))); if(p.exp && p.exp<Date.now()) return null; return p; } catch { return null; }
+
+  const [data, sig] = raw.split('.');
+  if (!data || !sig) return null;
+
+  const expected = b64u(await hmac(e.AUTH_SECRET || 'change-me', data));
+  if (expected !== sig) return null;
+
+  try {
+    const p = JSON.parse(new TextDecoder().decode(fromB64u(data)));
+    if (p.exp && p.exp < Date.now()) return null;
+    return p;
+  } catch {
+    return null;
+  }
 }
 export function sessionCookie(value,maxAge=60*60*24*30) { return `alv_session=${value}; Path=/; Max-Age=${maxAge}; HttpOnly; Secure; SameSite=Lax`; }
 export const clearSessionCookie = () => 'alv_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax';
