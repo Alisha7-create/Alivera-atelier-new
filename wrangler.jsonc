@@ -3,6 +3,9 @@
   "name": "alivera-atelier",
   "main": "src/index.js",
   "compatibility_date": "2026-03-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "observability": {
     "enabled": false,
     "head_sampling_rate": 1,
@@ -22,7 +25,7 @@
     {
       "binding": "DB",
       "database_name": "alivera-atelier-db",
-      "database_id": "YOUR_DATABASE_ID"
+      "database_id": "3fc91c2014ba717c72647df08fb40a25"
     }
   ]
 }
