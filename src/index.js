@@ -104,23 +104,12 @@ async function dispatch(request, env){
   }
   if(env.ASSETS){
     let assetPath = path;
-    if(path === '/account') assetPath = '/account/index.html';
-    if(path === '/login') assetPath = '/account/login.html';
+    if(path === '/account') assetPath = '/account.html';
+    if(path === '/login') assetPath = '/login.html';
     if(path === '/admin' || path === '/admin/') assetPath = '/admin/index.html';
 
-    let assetReq = new Request(new URL(assetPath, request.url), request);
-    let r = await env.ASSETS.fetch(assetReq);
-    
-    if (r.status === 404 && path === '/login') {
-      assetReq = new Request(new URL('/login.html', request.url), request);
-      r = await env.ASSETS.fetch(assetReq);
-    }
-    
-    if (r.status === 404 && path === '/account') {
-      assetReq = new Request(new URL('/account.html', request.url), request);
-      r = await env.ASSETS.fetch(assetReq);
-    }
-
+    const assetReq = new Request(new URL(assetPath, request.url), request);
+    const r = await env.ASSETS.fetch(assetReq);
     if(r.status !== 404) return r;
     return env.ASSETS.fetch(request);
   }
