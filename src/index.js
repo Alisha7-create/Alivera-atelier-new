@@ -1,40 +1,30 @@
-import { withEnv, readSession, db } from './compat.js';
-
-import account from '../api/account.js';
-import addresses from '../api/addresses.js';
-import campaigns from '../api/campaigns.js';
-import myOrders from '../api/my-orders.js';
-import orders from '../api/orders.js';
-import payCreate from '../api/payments/create.js';
-import payVerify from '../api/payments/verify.js';
-import products from '../api/products.js';
-import productSlug from '../api/products/[slug].js';
-import stories from '../api/stories.js';
-import brandLogo from '../api/brand/logo.js';
-import adminCampaigns from '../api/admin/campaigns.js';
-import adminOrders from '../api/admin/orders.js';
-import adminProducts from '../api/admin/products.js';
-import adminStories from '../api/admin/stories.js';
-import adminStoryUpload from '../api/admin/story-upload.js';
-import adminUpload from '../api/admin/upload.js';
-import productMedia from '../api/media/product/[id].js';
-import productMediaKind from '../api/media/product/[id]/[kind].js';
-import authRegister from '../api/auth/register.js';
-import authLogin from '../api/auth/login.js';
-import authSession from '../api/auth/session.js';
-import authLogout from '../api/auth/logout.js';
-import storageFile from '../api/storage/[...key].js';
-import cleanupStories from '../api/cleanup-stories.js';
-import submitStory from '../api/stories/submit.js';
-
-const routes = [
-  ['POST','/api/auth/register',authRegister],['POST','/api/auth/login',authLogin],['GET','/api/auth/session',authSession],['POST','/api/auth/logout',authLogout],
-  ['GET','/api/brand/logo',brandLogo],['GET','/api/products',products],['GET','/api/stories',stories],['POST','/api/stories/submit',submitStory],['GET','/api/campaigns',campaigns],
-  ['GET','/api/my-orders',myOrders],['GET','/api/account',account],['PUT','/api/account',account],['DELETE','/api/account',account],
-  ['GET','/api/addresses',addresses],['POST','/api/addresses',addresses],['PUT','/api/addresses',addresses],['DELETE','/api/addresses',addresses],
-  ['POST','/api/orders',orders],['POST','/api/payments/create',payCreate],['POST','/api/payments/verify',payVerify],
-  ['GET','/api/admin/products',adminProducts],['POST','/api/admin/products',adminProducts],['PUT','/api/admin/products',adminProducts],['DELETE','/api/admin/products',adminProducts],
-  ['GET','/api/admin/orders',adminOrders],['PUT','/api/admin/orders',adminOrders],
+export default {
+  async fetch(request, env, ctx) {
+    return withEnv(env, () => dispatch(request, env));
+  },
+  async scheduled(event, env, ctx) {
+    return withEnv(env, async () => {
+      const req = {
+        method: 'POST',
+        headers: { 'x-hatchable-trigger': 'cron' },
+        body: {},
+        files: [],
+        params: {},
+        user: null,
+        member: null,
+        query: {}
+      };
+      const res = makeResponse();
+      try {
+        const result = await cleanupStories(req, res);
+        return result instanceof Response ? result : res.json(result ?? { ok: true });
+      } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: e?.message || 'Story cleanup failed.' });
+      }
+    });
+  }
+};  ['GET','/api/admin/orders',adminOrders],['PUT','/api/admin/orders',adminOrders],
   ['GET','/api/admin/stories',adminStories],['POST','/api/admin/stories',adminStories],['PUT','/api/admin/stories',adminStories],['DELETE','/api/admin/stories',adminStories],
   ['GET','/api/admin/campaigns',adminCampaigns],['POST','/api/admin/campaigns',adminCampaigns],['PUT','/api/admin/campaigns',adminCampaigns],['DELETE','/api/admin/campaigns',adminCampaigns],
   ['POST','/api/admin/upload',adminUpload],['POST','/api/admin/story-upload',adminStoryUpload],
