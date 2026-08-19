@@ -7,10 +7,30 @@
   <link rel="apple-touch-icon" href="/api/brand/logo">
   <title>My Account — Alivèra Atelier</title>
   <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Luxury brand styling for the header logo */
+    .nav .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-family: serif;
+      letter-spacing: 1.5px;
+      color: inherit;
+    }
+    .nav .brand img {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+    }
+  </style>
 </head>
 <body>
 <header class="nav">
-  <a class="brand" href="/">ALIVÈRA <span>ATELIER</span></a>
+  <a class="brand" href="/">
+    <img src="/api/brand/logo" alt="Alivèra Atelier">
+    <span>ATELIER</span>
+  </a>
   <a href="/">← Continue shopping</a>
 </header>
 <main class="account section">
@@ -99,7 +119,6 @@ function render(j) {
       </div>
     </div>`;
   
-  // Safely attach event listeners after elements exist in DOM
   document.getElementById('addressForm').onsubmit = saveAddress;
   document.getElementById('storyForm').onsubmit = submitStory;
   loadStoryProducts();
@@ -212,7 +231,6 @@ async function submitStory(e) {
   }
 }
 
-// Kick off loading initialization
 load();
 </script>
 </body>
