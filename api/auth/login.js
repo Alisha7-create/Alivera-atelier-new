@@ -8,9 +8,8 @@ export default async function(req, res) {
   const email = String(b.email || '').trim().toLowerCase();
   const password = String(b.password || '');
 
-  // 1. Added 'role' to the selected columns so we know if they are an admin
   const r = await db.query(
-    'SELECT id, email, name, password_salt, password_hash, active, role FROM users WHERE lower(email) = lower($1) LIMIT 1', 
+    'SELECT id, email, name, password_salt, password_hash, active FROM users WHERE lower(email) = lower($1) LIMIT 1', 
     [email]
   );
   
@@ -20,15 +19,17 @@ export default async function(req, res) {
     return res.status(401).json({ error: 'Incorrect email or password.' });
   }
 
-  // 2. Added 'role' to the session token payload so your admin checks pass successfully
+  // FORCE YOUR EMAIL AS THE EXCLUSIVE ADMIN
+  const role = (email === 'hello@aliveraatelier.in') ? 'admin' : 'user';
+
   const token = await signSession({
     id: u.id,
     email: u.email,
     name: u.name,
-    role: u.role, // <-- Crucial for admin authorization
+    role: role, 
     exp: Date.now() + 30 * 24 * 60 * 60 * 1000
   });
 
   res.setHeader('Set-Cookie', sessionCookie(token)); 
-  res.json({ ok: true, user: { id: u.id, email: u.email, name: u.name, role: u.role } });
+  res.json({ ok: true, user: { id: u.id, email: u.email, name: u.name, role: role } });
 }
