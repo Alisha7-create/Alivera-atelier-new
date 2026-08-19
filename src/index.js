@@ -101,13 +101,16 @@ async function dispatch(request, env){
     const res=makeResponse();
     try { const result=await route.handler(req,res); return result instanceof Response?result:res.json(result??{ok:true}); }
     catch(e){ console.error(e); return res.status(500).json({error:e?.message||'Server error.'}); }
-  }
- if(env.ASSETS){
+if(env.ASSETS){
     let assetPath=path;
     if(path==='/account')assetPath='/account/index.html';
     if(path==='/login')assetPath='/account/login.html';
     if(path==='/admin' || path==='/admin/')assetPath='/admin/index.html';
     const assetReq=new Request(new URL(assetPath,request.url),request);
+    const r=await env.ASSETS.fetch(assetReq);
+    if(r.status!==404)return r;
+    return env.ASSETS.fetch(request);
+  }
   return new Response('Not found',{status:404});
 }
 
