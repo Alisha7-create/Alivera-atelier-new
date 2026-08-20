@@ -157,6 +157,7 @@ async function dispatch(request, env) {
   if (env.ASSETS) {
     let assetPath = path;
     if (path === '/login') assetPath = '/login.html';
+    if (path === '/signup') assetPath = '/login.html';
     if (path === '/my-account') assetPath = '/my-account.html';
     if (path === '/admin' || path === '/admin/') assetPath = '/admin/index.html';
 
