@@ -14,9 +14,9 @@ function storageKeyFromUrl(url) {
   }
 }
 
-export default async function(req,res){
+export default async function(req, res) {
   const { rows } = await db.query(
-    "SELECT id,image_url FROM customer_stories WHERE datetime(created_at) <= datetime('now','-24 hours')"
+    "SELECT id, image_url FROM customer_stories WHERE datetime(created_at) <= datetime('now','-24 hours')"
   );
 
   let deleted = 0;
@@ -37,5 +37,5 @@ export default async function(req,res){
     deleted++;
   }
 
-  res.json({ ok:true, deleted, mediaDeleted });
+  res.json({ ok: true, deleted, mediaDeleted });
 }
