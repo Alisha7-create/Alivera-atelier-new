@@ -1,40 +1,169 @@
-<div class="card">
-    <h2>Upload New Dress / Product</h2>
-    <form id="product-form">
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Dress Name</label>
-                <input type="text" id="prod-name" placeholder="e.g. Silk Evening Gown" required />
-            </div>
-            <div class="form-group">
-                <label>Price ($)</label>
-                <input type="number" step="0.01" id="prod-price" placeholder="150.00" required />
-            </div>
-            <div class="form-group full">
-                <label>Description</label>
-                <textarea id="prod-desc" rows="3" placeholder="Fabric details, cut, etc." required></textarea>
-            </div>
-            <div class="form-group">
-                <label>Dress Image File</label>
-                <input type="file" id="prod-image-file" accept="image/*" required />
-            </div>
-            <div class="form-group">
-                <label>Size Chart Image File</label>
-                <input type="file" id="prod-size-file" accept="image/*" required />
-            </div>
-        </div>
-        <button type="submit">Publish Product with Images</button>
-    </form>
-</div>
-
-<script>
-    document.getElementById('product-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alivera Atelier - Admin Dashboard</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f4f6f9; color: #333; }
+        header { background: #111; color: #fff; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 1.3rem; letter-spacing: 1px; }
+        header a { color: #aaa; text-decoration: none; font-size: 0.9rem; margin-left: 1rem; }
+        header a:hover { color: #fff; }
         
-        // Use FormData to pack text fields and raw image files together
-        const formData = new FormData();
-        formData.append('name', document.getElementById('prod-name').value.trim());
-        formData.append('price', document.getElementById('prod-price').value);
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+        h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 1px solid #eee; padding-bottom: 0.75rem; margin-bottom: 1.5rem; color: #111; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full { grid-column: span 2; }
+        
+        label { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.4rem; color: #555; }
+        input[type="text"], input[type="number"], textarea, input[type="file"] { padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem; background: #fff; }
+        textarea { resize: vertical; }
+        
+        button[type="submit"] { background: #000; color: #fff; border: none; padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 600; border-radius: 4px; cursor: pointer; margin-top: 1rem; }
+        button[type="submit"]:hover { background: #333; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+        th, td { padding: 0.85rem; text-align: left; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        th { background: #fafafa; font-weight: 600; color: #555; }
+        .badge { background: #fff3cd; color: #856404; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Alivera Atelier Dashboard</h1>
+        <div>
+            <a href="/">View Store</a>
+            <a href="/login">My Account</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- SINGLE CLEAN PRODUCT UPLOAD FORM -->
+        <div class="card">
+            <h2>Upload New Dress / Product</h2>
+            <form id="product-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Dress Name</label>
+                        <input type="text" id="prod-name" placeholder="e.g. Silk Evening Gown" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Price ($)</label>
+                        <input type="number" step="0.01" id="prod-price" placeholder="150.00" required />
+                    </div>
+                    <div class="form-group full">
+                        <label>Description</label>
+                        <textarea id="prod-desc" rows="3" placeholder="Fabric details, cut, etc." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Dress Image File</label>
+                        <input type="file" id="prod-image-file" accept="image/*" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Size Chart Image File</label>
+                        <input type="file" id="prod-size-file" accept="image/*" required />
+                    </div>
+                </div>
+                <button type="submit">Publish Product</button>
+            </form>
+        </div>
+
+        <!-- LIVE CUSTOMER ORDERS SECTION -->
+        <div class="card">
+            <h2>Live Customer Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <tr><td colspan="6" style="text-align: center; color: #777;">Loading live orders...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        // Handle Product Upload
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('name', document.getElementById('prod-name').value.trim());
+            formData.append('price', document.getElementById('prod-price').value);
+            formData.append('description', document.getElementById('prod-desc').value.trim());
+            formData.append('image', document.getElementById('prod-image-file').files[0]);
+            formData.append('size_chart', document.getElementById('prod-size-file').files[0]);
+
+            try {
+                const res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Dress and size chart published successfully!');
+                    document.getElementById('product-form').reset();
+                } else {
+                    alert(data.error || 'Failed to upload product.');
+                }
+            } catch (err) {
+                alert('Network error while uploading product.');
+            }
+        });
+
+        // Fetch Live Orders
+        async function fetchOrders() {
+            try {
+                const res = await fetch('/api/admin/orders');
+                if (!res.ok) return;
+                const orders = await res.json();
+                
+                const tbody = document.getElementById('orders-table-body');
+                if (!orders || orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #777;">No orders placed yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = orders.map(o => `
+                    <tr>
+                        <td>#${o.id}</td>
+                        <td>${o.customer_name || o.email}</td>
+                        <td>${o.items_summary || 'Custom Order'}</td>
+                        <td>$${Number(o.total_price).toFixed(2)}</td>
+                        <td><span class="badge">${o.status || 'Pending'}</span></td>
+                        <td><button onclick="processOrder(${o.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background:#000; color:#fff; border:none; border-radius:3px; cursor:pointer;">Process</button></td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Error fetching live orders', err);
+            }
+        }
+
+        async function processOrder(orderId) {
+            const res = await fetch(`/api/admin/orders/${orderId}/process`, { method: 'POST' });
+            if (res.ok) fetchOrders();
+            else alert('Could not update order status.');
+        }
+
+        fetchOrders();
+        setInterval(fetchOrders, 5000);
+    </script>
+</body>
+</html>        formData.append('price', document.getElementById('prod-price').value);
         formData.append('description', document.getElementById('prod-desc').value.trim());
         formData.append('image', document.getElementById('prod-image-file').files[0]);
         formData.append('size_chart', document.getElementById('prod-size-file').files[0]);
