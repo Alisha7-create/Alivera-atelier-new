@@ -1,40 +1,162 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Owner Dashboard — Alivèra Atelier</title>
-  <meta name="theme-color" content="#faf6f0">
-  <meta name="color-scheme" content="light">
-  <link rel="icon" type="image/jpeg" href="/api/brand/logo">
-  <link rel="stylesheet" href="/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alivera Atelier - Admin Dashboard</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background: #f8f9fa; color: #333; }
+        header { background: #000; color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+        h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 2px solid #f1f3f5; padding-bottom: 0.5rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1rem; display: flex; flex-direction: column; }
+        .form-group.full { grid-column: span 2; }
+        label { font-weight: bold; font-size: 0.85rem; margin-bottom: 0.3rem; }
+        input, textarea { padding: 0.6rem; border: 1px solid #ced4da; border-radius: 4px; font-size: 1rem; }
+        button { padding: 0.7rem 1.5rem; background: #000; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #dee2e6; font-size: 0.9rem; }
+        th { background: #f1f3f5; }
+        .badge { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: #ffc107; color: #000; }
+    </style>
 </head>
 <body>
-<header class="nav">
-  <a class="brand" href="/">ALIVÈRA <span>ATELIER</span></a>
-  <nav>
-    <a href="/my-account">Account</a>
-    <a href="/admin/" class="active">Owner Dashboard</a>
-  </nav>
-</header>
-<main class="section">
-  <div class="sectionhead">
-    <div>
-      <p class="eyebrow">ADMINISTRATION</p>
-      <h2>Owner Control Panel</h2>
+
+    <header>
+        <h1>Alivera Atelier Dashboard</h1>
+        <a href="/" style="color: #fff; text-decoration: none;">View Store</a>
+    </header>
+
+    <div class="container">
+        
+        <!-- PRODUCT UPLOAD SECTION -->
+        <div class="card">
+            <h2>Upload New Dress / Product</h2>
+            <form id="product-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Dress Name</label>
+                        <input type="text" id="prod-name" placeholder="e.g. Silk Evening Gown" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Price ($)</label>
+                        <input type="number" step="0.01" id="prod-price" placeholder="150.00" required />
+                    </div>
+                    <div class="form-group full">
+                        <label>Description</label>
+                        <textarea id="prod-desc" rows="3" placeholder="Fabric details, cut, etc." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Size Chart Details</label>
+                        <input type="text" id="prod-sizes" placeholder="S, M, L, XL or custom measurements" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="prod-image" placeholder="https://example.com/dress.jpg" required />
+                    </div>
+                </div>
+                <button type="submit">Publish Product</button>
+            </form>
+        </div>
+
+        <!-- LIVE ORDERS SECTION -->
+        <div class="card">
+            <h2>Live Customer Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <tr><td colspan="6" style="text-align: center;">Loading live orders...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
-  </div>
-  <div class="admin-wrap">
-    <p>Manage your atelier products, customer campaigns, and orders here.</p>
-    <!-- Admin management modules will load dynamically through your app scripts -->
-  </div>
-</main>
-<footer>
-  <div>
-    <a class="brand" href="/">ALIVÈRA <span>ATELIER</span></a>
-    <p>Beautiful, just the way you are.</p>
-  </div>
-  <div>
+
+    <script>
+        // 1. Handle Product Upload
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('prod-name').value.trim(),
+                price: parseFloat(document.getElementById('prod-price').value),
+                description: document.getElementById('prod-desc').value.trim(),
+                sizes: document.getElementById('prod-sizes').value.trim(),
+                image_url: document.getElementById('prod-image').value.trim()
+            };
+
+            try {
+                const res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Product uploaded successfully!');
+                    document.getElementById('product-form').reset();
+                } else {
+                    alert(data.error || 'Failed to upload product.');
+                }
+            } catch (err) {
+                alert('Network error while uploading product.');
+            }
+        });
+
+        // 2. Fetch and Live-Update Orders Every 5 Seconds
+        async function fetchOrders() {
+            try {
+                const res = await fetch('/api/admin/orders');
+                if (!res.ok) return;
+                const orders = await res.json();
+                
+                const tbody = document.getElementById('orders-table-body');
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No orders placed yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = orders.map(o => `
+                    <tr>
+                        #${o.id}
+                        <td>${o.customer_name || o.email}</td>
+                        <td>${o.items_summary || 'Custom Dress Order'}</td>
+                        <td>$${o.total_price}</td>
+                        <td><span class="badge">${o.status || 'Pending'}</span></td>
+                        <td><button onclick="processOrder(${o.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Process</button></td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Error fetching live orders', err);
+            }
+        }
+
+        async function processOrder(orderId) {
+            const res = await fetch(`/api/admin/orders/${orderId}/process`, { method: 'POST' });
+            if (res.ok) {
+                fetchOrders();
+            } else {
+                alert('Could not update order status.');
+            }
+        }
+
+        // Run immediately and poll every 5 seconds for live updates
+        fetchOrders();
+        setInterval(fetchOrders, 5000);
+    </script>
+</body>
+</html>  <div>
     <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a>
     <a href="/my-account">My Account</a>
     <a href="/admin/">Owner Dashboard</a>
