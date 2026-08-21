@@ -1,40 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" type="image/jpeg" href="/api/brand/logo">
-  <link rel="apple-touch-icon" href="/api/brand/logo">
-  <title>Sign In — Alivèra Atelier</title>
-  <link rel="stylesheet" href="/styles.css">
-  <style>
-    .nav .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      font-family: serif;
-      letter-spacing: 1.5px;
-      color: inherit;
-    }
-    .nav .brand img {
-      height: 38px;
-      width: auto;
-      object-fit: contain;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alivera Atelier - Sign Up</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-<header class="nav">
-  <a class="brand" href="/">
-    <img src="/api/brand/logo" alt="Alivèra Atelier">
-    <span>ATELIER</span>
-  </a>
-  <a href="/">← Return home</a>
-</header>
-<main class="auth section">
-  <div class="authbox">
-    <p class="eyebrow">WELCOME BACK</p>
+    <div class="auth-container">
+        <h2>Create an Account</h2>
+        
+        <!-- Sign-Up Form -->
+        <form id="signup-form">
+            <div class="form-group">
+                <label for="signup-name">Name</label>
+                <input type="text" id="signup-name" placeholder="Your Name" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="signup-email">Email</label>
+                <input type="email" id="signup-email" placeholder="Your Email" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" placeholder="At least 8 characters" required />
+            </div>
+            
+            <button type="submit" id="signup-btn">Sign Up</button>
+        </form>
+
+        <p id="error-message" class="error-text" style="color: red; display: none;"></p>
+    </div>
+
+    <!-- Link your frontend JavaScript file -->
+    <script src="/js/script.js"></script>
+</body>
+</html>    <p class="eyebrow">WELCOME BACK</p>
     <h1 class="checkouttitle">Sign in to your account</h1>
     <form id="loginForm" style="margin-top: 24px;">
       <div class="field" style="margin-bottom: 16px;">
