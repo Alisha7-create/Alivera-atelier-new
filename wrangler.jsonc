@@ -3,33 +3,26 @@
   "name": "alivera-atelier",
   "main": "src/index.js",
   "compatibility_date": "2026-03-01",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
   "assets": {
-    "directory": "./public",
-    "binding": "ASSETS"
-  },
-  "observability": {
-    "enabled": false,
-    "head_sampling_rate": 1,
-    "logs": {
-      "enabled": true,
-      "head_sampling_rate": 1,
-      "persist": true,
-      "invocation_logs": true
-    },
-    "traces": {
-      "enabled": false,
-      "persist": true,
-      "head_sampling_rate": 1
-    }
+    "directory": "public"
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "alivera-atelier-db",
-      "database_id": "ee801693-fa25-4363-8df0-5b04d7f49a2c"
+      "database_id": "your-database-id-here"
     }
-  ]
+  ],
+  "r2_buckets": [
+    {
+      "binding": "storage",
+      "bucket_name": "alivera-atelier-media"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "ADMIN_EMAILS": "contact@aliveraatelier.in"
+  }
 }
