@@ -13,7 +13,7 @@
     {
       "binding": "DB",
       "database_name": "alivera-atelier-db",
-      "database_id": "your-database-id-here"
+      "database_id": "YOUR_ACTUAL_D1_DATABASE_ID"
     }
   ],
   "ai": {
