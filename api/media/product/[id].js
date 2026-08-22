@@ -1,34 +1,22 @@
-import { db, storage } from '../../../src/compat.js';
+import { db } from '../../../src/compat.js';
 
 export const access = 'public';
 export const methods = ['GET'];
 
 export default async function(req, res) {
   const { rows } = await db.query('SELECT image_url FROM products WHERE id=$1 LIMIT 1', [req.params.id]);
-  const url = rows[0]?.image_url;
-  
-  if (!url || String(url).startsWith('pending-')) return res.status(404).send('Not found');
+  const base64Data = rows[0]?.image_url;
 
-  try {
-    const s = String(url);
-    let file;
-
-    if (s.startsWith('r2://')) {
-      file = await storage.get(s.slice(5));
-    } else if (s.startsWith('http')) {
-      const r = await fetch(s);
-      if (!r.ok) return res.status(404).send('Not found');
-      res.setHeader('Content-Type', r.headers.get('content-type') || 'application/octet-stream');
-      res.setHeader('Cache-Control', 'public, max-age=86400');
-      return res.send(await r.arrayBuffer());
-    } else {
-      return res.status(404).send('Not found');
-    }
-
-    res.setHeader('Content-Type', file.contentType || 'application/octet-stream');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
-    return res.send(file.buffer);
-  } catch {
+  if (!base64Data || !base64Data.startsWith('data:image/')) {
     return res.status(404).send('Not found');
   }
+
+  // Split "data:image/png;base64,iVBORw0KG..."
+  const parts = base64Data.split(',');
+  const contentType = parts[0].split(':')[1].split(';')[0];
+  const buffer = Buffer.from(parts[1], 'base64');
+
+  res.setHeader('Content-Type', contentType);
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  return res.send(buffer);
 }
