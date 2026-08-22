@@ -16,12 +16,6 @@
       "database_id": "your-database-id-here"
     }
   ],
-  "r2_buckets": [
-    {
-      "binding": "storage",
-      "bucket_name": "alivera-atelier-media"
-    }
-  ],
   "ai": {
     "binding": "AI"
   },
