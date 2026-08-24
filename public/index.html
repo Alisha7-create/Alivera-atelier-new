@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Timeless Craftsmanship</title>
-    <link rel="icon" href="/favicon.ico">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
@@ -68,8 +67,8 @@
             margin-bottom: 2rem;
         }
 
-        /* Container Section */
-        .content-container {
+        /* Catalog Section (Visible to Everyone) */
+        .catalog-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 2rem 4rem 2rem;
@@ -82,11 +81,70 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             color: #d4af37;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
             font-weight: 300;
         }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+        .dress-card {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .dress-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-4px);
+        }
+        .dress-image-placeholder {
+            height: 320px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #222;
+        }
+        .dress-info {
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .dress-name {
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .dress-price {
+            color: #d4af37;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            margin-bottom: 1.2rem;
+        }
+        .btn-buy {
+            display: inline-block;
+            background: #d4af37;
+            color: #000;
+            padding: 0.6rem 1.5rem;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+        .btn-buy:hover { background: #e6c55c; }
 
-        /* Admin Dashboard Panel Style */
+        /* Admin Dashboard Panel (Only visible when logged in) */
         .admin-panel {
             background: #141414;
             border: 1px solid #d4af37;
@@ -137,7 +195,6 @@
 
         .hidden { display: none !important; }
 
-        /* Footer Details */
         footer {
             background: #000;
             border-top: 1px solid #222;
@@ -183,15 +240,15 @@
         <p>Timeless Craftsmanship & Exclusive Haute Couture</p>
     </div>
 
-    <div class="content-container">
+    <div class="catalog-container">
         
-        <!-- Admin Dashboard Section (Visible only when logged in) -->
+        <!-- Admin Dashboard Section (Hidden by default, unlocks upon login) -->
         <div id="admin-dashboard" class="admin-panel hidden">
             <div class="admin-header">
                 <h3>Admin Control Panel</h3>
                 <span id="admin-welcome-text" style="color: #aaa; font-size: 0.9rem;"></span>
             </div>
-            <p style="color: #ccc; margin-bottom: 1rem;">Welcome back. Manage your atelier orders, catalog updates, and client inquiries below.</p>
+            <p style="color: #ccc; margin-bottom: 1rem;">Welcome back. Manage your atelier orders, client inquiries, and collection items below.</p>
             
             <div class="admin-stats">
                 <div class="stat-card">
@@ -209,11 +266,34 @@
             </div>
         </div>
 
-        <!-- Catalog Container (Clean space for your upcoming atelier collection) -->
-        <div id="catalog-section">
-            <h2 class="section-title">The Collection</h2>
-            <div style="text-align: center; padding: 4rem 0; color: #666; letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.9rem;">
-                New haute couture pieces arriving shortly. Sign in to access your dashboard.
+        <!-- Public Dress Collection (Visible to all visitors without logging in) -->
+        <h2 class="section-title">The Collection</h2>
+        <div class="grid">
+            <div class="dress-card">
+                <div class="dress-image-placeholder">Aurelia Gown</div>
+                <div class="dress-info">
+                    <div class="dress-name">Aurelia Silk Gown</div>
+                    <div class="dress-price">₹45,000</div>
+                    <a href="/login" class="btn-buy">Inquire / Buy</a>
+                </div>
+            </div>
+
+            <div class="dress-card">
+                <div class="dress-image-placeholder">Celeste Ensemble</div>
+                <div class="dress-info">
+                    <div class="dress-name">Celeste Embroidered Set</div>
+                    <div class="dress-price">₹58,000</div>
+                    <a href="/login" class="btn-buy">Inquire / Buy</a>
+                </div>
+            </div>
+
+            <div class="dress-card">
+                <div class="dress-image-placeholder">Nocturne Drape</div>
+                <div class="dress-info">
+                    <div class="dress-name">Nocturne Velvet Drape</div>
+                    <div class="dress-price">₹38,000</div>
+                    <a href="/login" class="btn-buy">Inquire / Buy</a>
+                </div>
             </div>
         </div>
 
@@ -228,14 +308,13 @@
     </footer>
 
     <script>
-        // Check session status on page load to display Admin Dashboard if logged in
         async function checkUserSession() {
             try {
                 const res = await fetch('/api/auth/me');
                 const data = await res.json();
                 
                 if (data && data.user) {
-                    // User is logged in! Hide login button, show Logout and Admin Dashboard
+                    // Logged in: Hide sign in link, add Sign Out button, and reveal Admin Dashboard
                     document.getElementById('nav-login').style.display = 'none';
                     
                     const navMenu = document.getElementById('nav-menu');
