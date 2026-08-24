@@ -8,29 +8,50 @@ export default async function(request, env, ctx) {
         }
 
         const { email, password } = await request.json();
+        const cleanEmail = (email || "").trim().toLowerCase();
         
-        if (!email || !password) {
-            return new Response(JSON.stringify({ error: "Email and password are required" }), {
-                status: 400,
-                headers: { "Content-Type": "application/json" }
-            });
+        let userName = "Admin";
+        let isAuthenticated = false;
+
+        // 1. Hardcoded backup check for your exact admin credentials
+        if (cleanEmail === "hello@aliveraatelier.in" && password === "Alishaaa@7") {
+            isAuthenticated = true;
+            userName = "Alisha";
+        } else {
+            // 2. Otherwise, check your D1 database normally
+            try {
+                const user = await env.DB.prepare(
+                    "SELECT * FROM users WHERE LOWER(email) = ?"
+                ).bind(cleanEmail).first();
+
+                if (user && user.password === password) {
+                    isAuthenticated = true;
+                    userName = user.name || "Admin";
+                }
+            } catch (dbErr) {
+                console.error("D1 Database query error:", dbErr);
+            }
         }
 
-        // Query your D1 database binding (env.DB)
-        const user = await env.DB.prepare(
-            "SELECT * FROM users WHERE email = ?"
-        ).bind(email).first();
-
-        if (!user || user.password !== password) {
+        if (!isAuthenticated) {
             return new Response(JSON.stringify({ error: "Invalid email or password" }), {
                 status: 401,
                 headers: { "Content-Type": "application/json" }
             });
         }
 
-        return new Response(JSON.stringify({ success: true, user: { email: user.email, name: user.name } }), {
+        // Set the session cookie so the site recognizes you as logged in
+        const cookieVal = encodeURIComponent(cleanEmail);
+
+        return new Response(JSON.stringify({ 
+            success: true, 
+            user: { email: cleanEmail, name: userName } 
+        }), {
             status: 200,
-            headers: { "Content-Type": "application/json" }
+            headers: { 
+                "Content-Type": "application/json",
+                "Set-Cookie": `alivera_session=${cookieVal}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
+            }
         });
 
     } catch (err) {
