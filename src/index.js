@@ -5,7 +5,7 @@ export default {
     const url = new URL(request.url);
 
     // 1. Handle Login API endpoint
-    if (url.pathname === '/api/auth/login') {
+    if (url.pathname === '/api/auth/login' && request.method === 'POST') {
       return loginHandler(request, env, ctx);
     }
 
@@ -14,7 +14,7 @@ export default {
       return Response.json({ user: null });
     }
 
-    // 3. For any other API routes, return a standard API 404
+    // 3. Catch-all for unmatched API routes
     if (url.pathname.startsWith('/api/')) {
       return new Response(JSON.stringify({ error: "API Route not found" }), {
         status: 404,
@@ -22,7 +22,7 @@ export default {
       });
     }
 
-    // Note: For regular website paths (like "/" and "/login"), 
-    // Cloudflare's assets configuration handles serving your HTML files automatically.
+    // 4. Fallback for non-API routes (lets Cloudflare serve static assets like index.html, logo, css)
+    return env.ASSETS.fetch(request);
   }
 };
