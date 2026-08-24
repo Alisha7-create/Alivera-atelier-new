@@ -1,6 +1,13 @@
-export async function onRequestPost(context) {
+export default async function(request, env, ctx) {
     try {
-        const { email, password } = await context.request.json();
+        if (request.method !== 'POST') {
+            return new Response(JSON.stringify({ error: "Method not allowed" }), {
+                status: 405,
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+
+        const { email, password } = await request.json();
         
         if (!email || !password) {
             return new Response(JSON.stringify({ error: "Email and password are required" }), {
@@ -9,19 +16,18 @@ export async function onRequestPost(context) {
             });
         }
 
-        // Query your D1 database binding (DB)
-        const user = await context.env.DB.prepare(
+        // Query your D1 database binding (env.DB)
+        const user = await env.DB.prepare(
             "SELECT * FROM users WHERE email = ?"
         ).bind(email).first();
 
-        if (!user || user.password !== password) { // Note: ensure proper hashing in production
+        if (!user || user.password !== password) {
             return new Response(JSON.stringify({ error: "Invalid email or password" }), {
                 status: 401,
                 headers: { "Content-Type": "application/json" }
             });
         }
 
-        // Return successful login response
         return new Response(JSON.stringify({ success: true, user: { email: user.email, name: user.name } }), {
             status: 200,
             headers: { "Content-Type": "application/json" }
