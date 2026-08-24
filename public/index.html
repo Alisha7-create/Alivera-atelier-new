@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier — Timeless Craftsmanship</title>
+    <title>Account - Alivèra Atelier</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            margin: 0; 
             background: #0b0b0b; 
             color: #f5f5f5; 
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
         }
-
+        
         header { 
             background: #000; 
             border-bottom: 1px solid #d4af37; 
             padding: 1.5rem 2rem; 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
         }
-        header a.brand { 
+        header a { 
             font-size: 1.4rem; 
             letter-spacing: 3px; 
             text-transform: uppercase; 
@@ -31,309 +30,141 @@
             text-decoration: none;
             font-weight: bold;
         }
-        header nav a, header nav button {
-            background: transparent;
-            border: none;
-            color: #ccc;
-            text-decoration: none;
-            margin-left: 2rem;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: color 0.2s;
-        }
-        header nav a:hover, header nav button:hover { color: #d4af37; }
 
-        .hero {
-            text-align: center;
-            padding: 5rem 2rem 3rem 2rem;
-            background: linear-gradient(to bottom, #000, #0b0b0b);
-        }
-        .hero h1 {
-            font-size: 2.5rem;
-            letter-spacing: 4px;
-            color: #fff;
-            margin-bottom: 1rem;
-            font-weight: 300;
-            text-transform: uppercase;
-        }
-        .hero p {
-            color: #a89f91;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
+        .auth-wrapper { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 2rem 1.5rem; 
         }
 
-        /* Catalog Section (Visible to Everyone) */
-        .catalog-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 2rem 4rem 2rem;
-            flex: 1;
-            width: 100%;
-        }
-        .section-title {
-            text-align: center;
-            font-size: 1.5rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: #d4af37;
-            margin-bottom: 3rem;
-            font-weight: 300;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2.5rem;
-        }
-        .dress-card {
-            background: #141414;
-            border: 1px solid #262626;
-            border-radius: 4px;
-            overflow: hidden;
-            transition: border-color 0.3s, transform 0.3s;
-        }
-        .dress-card:hover {
-            border-color: #d4af37;
-            transform: translateY(-4px);
-        }
-        .dress-image-placeholder {
-            height: 320px;
-            background: #1a1a1a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #222;
-        }
-        .dress-info {
-            padding: 1.5rem;
-            text-align: center;
-        }
-        .dress-name {
-            font-size: 1.1rem;
-            letter-spacing: 1.5px;
-            color: #fff;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-        .dress-price {
-            color: #d4af37;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            margin-bottom: 1.2rem;
-        }
-        .btn-buy {
-            display: inline-block;
-            background: #d4af37;
-            color: #000;
-            padding: 0.6rem 1.5rem;
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border-radius: 2px;
-            transition: background 0.2s;
-        }
-        .btn-buy:hover { background: #e6c55c; }
-
-        /* Admin Dashboard Panel (Only visible when logged in) */
-        .admin-panel {
-            background: #141414;
-            border: 1px solid #d4af37;
-            border-radius: 4px;
-            padding: 2.5rem;
-            margin-bottom: 3rem;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
-        }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #262626;
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .admin-header h3 {
-            color: #d4af37;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-size: 1.2rem;
-        }
-        .admin-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        .stat-card {
-            background: #0b0b0b;
-            border: 1px solid #333;
-            padding: 1.5rem;
-            border-radius: 2px;
-            text-align: center;
-        }
-        .stat-card h4 {
-            font-size: 0.85rem;
-            color: #888;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-        .stat-card .value {
-            font-size: 1.5rem;
-            color: #fff;
-            font-weight: bold;
+        .auth-card { 
+            background: #141414; 
+            border: 1px solid #262626; 
+            border-radius: 4px; 
+            padding: 3rem 2.5rem; 
+            max-width: 420px; 
+            width: 100%; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .hidden { display: none !important; }
-
-        footer {
-            background: #000;
-            border-top: 1px solid #222;
-            padding: 3rem 2rem;
+        .logo-container {
             text-align: center;
-            color: #888;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
+            margin-bottom: 1.8rem;
         }
-        footer .footer-content {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        .logo-container img {
+            width: 95px;
+            height: 95px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
         }
-        footer a {
-            color: #d4af37;
-            text-decoration: none;
+
+        .auth-title { 
+            text-align: center; 
+            font-size: 1.5rem; 
+            font-weight: 300; 
+            letter-spacing: 2px; 
+            margin-bottom: 2rem; 
+            color: #fff; 
+            text-transform: uppercase; 
         }
-        footer a:hover { text-decoration: underline; }
-        .footer-brand {
-            color: #fff;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
+
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { 
+            display: block; 
+            font-size: 0.85rem; 
+            color: #aaa; 
+            margin-bottom: 0.5rem; 
+            letter-spacing: 1px; 
             text-transform: uppercase;
-            margin-bottom: 0.5rem;
         }
+        .input-group input { 
+            width: 100%; 
+            background: #0b0b0b; 
+            border: 1px solid #333; 
+            color: #fff; 
+            padding: 0.85rem 1rem; 
+            border-radius: 2px; 
+            font-size: 1rem; 
+            outline: none;
+        }
+        .input-group input:focus { border-color: #d4af37; }
+
+        .btn-submit { 
+            width: 100%; 
+            background: #d4af37; 
+            color: #000; 
+            padding: 1rem; 
+            border: none; 
+            border-radius: 2px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            cursor: pointer; 
+            margin-top: 1rem;
+        }
+        .btn-submit:hover { background: #e6c55c; }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="/" class="brand">Alivèra Atelier</a>
-        <nav id="nav-menu">
-            <a href="/">Home</a>
-            <a href="/login" id="nav-login">Sign In</a>
-        </nav>
+        <a href="/">Alivèra Atelier</a>
     </header>
 
-    <div class="hero">
-        <h1>Alivèra Atelier</h1>
-        <p>Timeless Craftsmanship & Exclusive Haute Couture</p>
-    </div>
-
-    <div class="catalog-container">
-        
-        <!-- Admin Dashboard Section (Hidden by default, unlocks upon login) -->
-        <div id="admin-dashboard" class="admin-panel hidden">
-            <div class="admin-header">
-                <h3>Admin Control Panel</h3>
-                <span id="admin-welcome-text" style="color: #aaa; font-size: 0.9rem;"></span>
-            </div>
-            <p style="color: #ccc; margin-bottom: 1rem;">Welcome back. Manage your atelier orders, client inquiries, and collection items below.</p>
+    <div class="auth-wrapper">
+        <div class="auth-card">
             
-            <div class="admin-stats">
-                <div class="stat-card">
-                    <h4>Active Inquiries</h4>
-                    <div class="value">0</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Custom Orders</h4>
-                    <div class="value">0</div>
-                </div>
-                <div class="stat-card">
-                    <h4>Database Status</h4>
-                    <div class="value" style="color: #4ade80; font-size: 1.1rem; margin-top: 5px;">Connected</div>
-                </div>
+            <div class="logo-container">
+                <img src="/logo.png.png" alt="Alivèra Atelier Logo">
             </div>
+
+            <div>
+                <h2 class="auth-title">Sign In</h2>
+                <form id="signin-form">
+                    <div class="input-group">
+                        <label for="signin-email">Email Address</label>
+                        <!-- Notice placeholder only shows an email format example, never a password -->
+                        <input type="email" id="signin-email" required placeholder="name@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="signin-password">Password</label>
+                        <!-- type="password" ensures characters are hidden as dots/bullets -->
+                        <input type="password" id="signin-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-submit">Sign In</button>
+                </form>
+            </div>
+
         </div>
-
-        <!-- Public Dress Collection (Visible to all visitors without logging in) -->
-        <h2 class="section-title">The Collection</h2>
-        <div class="grid">
-            <div class="dress-card">
-                <div class="dress-image-placeholder">Aurelia Gown</div>
-                <div class="dress-info">
-                    <div class="dress-name">Aurelia Silk Gown</div>
-                    <div class="dress-price">₹45,000</div>
-                    <a href="/login" class="btn-buy">Inquire / Buy</a>
-                </div>
-            </div>
-
-            <div class="dress-card">
-                <div class="dress-image-placeholder">Celeste Ensemble</div>
-                <div class="dress-info">
-                    <div class="dress-name">Celeste Embroidered Set</div>
-                    <div class="dress-price">₹58,000</div>
-                    <a href="/login" class="btn-buy">Inquire / Buy</a>
-                </div>
-            </div>
-
-            <div class="dress-card">
-                <div class="dress-image-placeholder">Nocturne Drape</div>
-                <div class="dress-info">
-                    <div class="dress-name">Nocturne Velvet Drape</div>
-                    <div class="dress-price">₹38,000</div>
-                    <a href="/login" class="btn-buy">Inquire / Buy</a>
-                </div>
-            </div>
-        </div>
-
     </div>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-brand">Alivèra Atelier</div>
-            <p>Contact Us: <a href="mailto:hello@aliveraatelier.in">hello@aliveraatelier.in</a> | Instagram: <a href="https://instagram.com" target="_blank">@aliveraatelier</a></p>
-            <p>&copy; 2026 Alivèra Atelier. All Rights Reserved. Crafted with Elegance.</p>
-        </div>
-    </footer>
 
     <script>
-        async function checkUserSession() {
+        document.getElementById('signin-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+
             try {
-                const res = await fetch('/api/auth/me');
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
                 const data = await res.json();
-                
-                if (data && data.user) {
-                    // Logged in: Hide sign in link, add Sign Out button, and reveal Admin Dashboard
-                    document.getElementById('nav-login').style.display = 'none';
-                    
-                    const navMenu = document.getElementById('nav-menu');
-                    navMenu.innerHTML += `<button onclick="logout()">Sign Out</button>`;
-                    
-                    document.getElementById('admin-dashboard').classList.remove('hidden');
-                    document.getElementById('admin-welcome-text').innerText = `Logged in as: ${data.user.name || data.user.email}`;
+                if (res.ok && data.success) {
+                    window.location.href = '/';
+                } else {
+                    alert(data.error || 'Login failed');
                 }
             } catch (err) {
-                console.error("Session check failed", err);
+                alert('Network error or server issue');
             }
-        }
-
-        async function logout() {
-            await fetch('/api/auth/logout', { method: 'POST' });
-            window.location.href = '/';
-        }
-
-        checkUserSession();
+        });
     </script>
 </body>
 </html>
