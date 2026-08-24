@@ -1,6 +1,6 @@
 name = "alivera-atelier"
 main = "src/index.js"
-compatibility_date = "2026-08-19"
+compatibility_date = "2026-08-24"
 
 [assets]
 directory = "./public"
