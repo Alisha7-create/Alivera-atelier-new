@@ -46,6 +46,7 @@
         footer p { color: #888; font-size: 0.9rem; margin: 0; }
         footer a { color: #aaa; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
         footer a:hover { color: #d4af37; }
+        .footer-bottom { width: 100%; border-top: 1px solid #1a1a1a; margin-top: 1.5rem; padding-top: 1.5rem; text-align: center; color: #666; font-size: 0.8rem; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -83,8 +84,11 @@
             <p style="color: #666; font-size: 0.85rem; margin-top: 0.5rem;">Based in India</p>
         </div>
         <div>
-            <a href="mailto:hello@aliveraatelier.in">hello@aliveraatelier.in</a>
-            <a href="https://instagram.com/aliveraatelier" target="_blank" rel="noopener">Instagram</a>
+            <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a>
+            <a href="https://instagram.com/aliveraatelier" target="_blank" rel="noopener">@aliveraatelier</a>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Alivèra Atelier. All rights reserved.
         </div>
     </footer>
 
@@ -96,7 +100,7 @@
                 const data = await res.json();
                 const navLinks = document.getElementById('nav-links');
                 
-                if (res.ok && data.user && data.user.email && data.user.email.toLowerCase() === 'hello@aliveraatelier.in') {
+                if (res.ok && data.user && data.user.email && data.user.email.toLowerCase() === 'contact@aliveraatelier.in') {
                     if (!document.getElementById('owner-dashboard-link')) {
                         navLinks.innerHTML += `<a href="/admin" id="owner-dashboard-link" style="color: #d4af37; font-weight: bold;">Owner Dashboard</a>`;
                     }
