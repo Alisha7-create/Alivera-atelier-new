@@ -11,20 +11,24 @@ export default {
 
     // 2. Handle Auth Session Check Endpoint
     if (url.pathname === '/api/auth/me') {
-      // Return unauthenticated by default, or check session cookies/tokens if implemented
       return Response.json({ user: null });
     }
 
-    // 3. Serve Frontend Pages (via Cloudflare Workers Static Assets binding)
+    // 3. Serve Frontend Pages via Cloudflare Static Assets
     if (env.ASSETS) {
-      // If someone visits /login, rewrite the request to serve login.html
+      // If visiting homepage root, serve index.html
+      if (url.pathname === '/') {
+        return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request));
+      }
+      // If visiting /login, serve login.html
       if (url.pathname === '/login') {
         return env.ASSETS.fetch(new Request(new URL('/login.html', request.url), request));
       }
+      // Serve any other static assets (images, css, etc.)
       return env.ASSETS.fetch(request);
     }
 
-    // Fallback if assets aren't bound
+    // Fallback error if assets binding isn't configured
     return new Response(JSON.stringify({ error: "Route not found" }), {
       status: 404,
       headers: { "Content-Type": "application/json" }
