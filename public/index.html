@@ -4,147 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier</title>
+    <link rel="icon" href="/favicon.ico">
     <style>
         * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #0b0b0b; color: #f5f5f5; display: flex; flex-direction: column; min-height: 100vh; }
-        
-        header { background: #000; border-bottom: 1px solid #d4af37; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-        header h1 { margin: 0; font-size: 1.4rem; letter-spacing: 3px; text-transform: uppercase; color: #d4af37; }
-        .nav-links a { color: #aaa; text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; letter-spacing: 1px; transition: color 0.2s; }
-        .nav-links a:hover { color: #d4af37; }
-        
-        .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; flex: 1; width: 100%; }
-        .intro { text-align: center; margin-bottom: 3.5rem; }
-        .intro h2 { font-size: 2.2rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 0.5rem; color: #fff; text-transform: uppercase; }
-        .tagline { color: #d4af37; font-size: 1.2rem; font-style: italic; letter-spacing: 1px; margin-bottom: 1rem; }
-        .intro p { color: #aaa; font-size: 1rem; letter-spacing: 0.5px; }
-        
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2.5rem; margin-bottom: 4rem; }
-        .dress-card { background: #141414; border: 1px solid #262626; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s ease, border-color 0.2s ease; }
-        .dress-card:hover { transform: translateY(-4px); border-color: #d4af37; }
-        
-        .dress-image-container { width: 100%; height: 400px; background: #1a1a1a; overflow: hidden; }
-        .dress-image-container img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .dress-info { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
-        .dress-title { font-size: 1.1rem; font-weight: 500; margin: 0 0 0.5rem 0; color: #fff; letter-spacing: 0.5px; }
-        .dress-price { font-size: 1rem; color: #d4af37; margin-bottom: 1rem; font-weight: 600; }
-        .dress-desc { font-size: 0.9rem; color: #999; margin-bottom: 1.5rem; line-height: 1.5; flex-grow: 1; }
-        
-        .btn-view { display: block; text-align: center; background: #d4af37; color: #000; padding: 0.75rem; text-decoration: none; border-radius: 2px; font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: background 0.2s; }
-        .btn-view:hover { background: #e6c55c; }
-        
-        .section-block { margin-top: 4rem; border-top: 1px solid #262626; padding-top: 3rem; }
-        .section-block h3 { color: #d4af37; font-size: 1.4rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1rem; }
-        .section-block p { color: #aaa; line-height: 1.6; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            margin: 0; 
+            background: #0b0b0b; 
+            color: #f5f5f5; 
+        }
+        header { 
+            background: #000; 
+            border-bottom: 1px solid #d4af37; 
+            padding: 1.5rem 2rem; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header a.brand { 
+            font-size: 1.4rem; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            color: #d4af37; 
+            text-decoration: none;
+            font-weight: bold;
+        }
+        header nav a {
+            color: #ccc;
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+        header nav a:hover { color: #d4af37; }
 
-        .empty-text { text-align: center; grid-column: span 100; color: #777; padding: 2rem 0; font-size: 1rem; letter-spacing: 1px; }
-
-        footer { background: #000; border-top: 1px solid #262626; padding: 3rem 2rem; margin-top: auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }
-        footer div { display: flex; flex-direction: column; gap: 0.5rem; }
-        footer .brand-footer { font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase; color: #d4af37; font-weight: 500; text-decoration: none; }
-        footer p { color: #888; font-size: 0.9rem; margin: 0; }
-        footer a { color: #aaa; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
-        footer a:hover { color: #d4af37; }
-        .footer-bottom { width: 100%; border-top: 1px solid #1a1a1a; margin-top: 1.5rem; padding-top: 1.5rem; text-align: center; color: #666; font-size: 0.8rem; letter-spacing: 1px; }
+        .hero {
+            text-align: center;
+            padding: 6rem 2rem;
+            background: linear-gradient(to bottom, #000, #0b0b0b);
+            border-bottom: 1px solid #222;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            color: #fff;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+        .hero p {
+            color: #888;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .btn-gold {
+            display: inline-block;
+            background: #d4af37;
+            color: #000;
+            padding: 0.9rem 2.2rem;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+        .btn-gold:hover { background: #e6c55c; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Alivèra Atelier</h1>
-        <div class="nav-links" id="nav-links">
-            <a href="/">Collection</a>
-            <a href="/login">Account</a>
-        </div>
+        <a href="/" class="brand">Alivèra Atelier</a>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/login">Sign In</a>
+        </nav>
     </header>
 
-    <div class="container">
-        <div class="intro">
-            <h2>The Collection</h2>
-            <div class="tagline">"Beautiful, just the way you are."</div>
-            <p>Romantic silhouettes, thoughtful details and made-to-order pieces for the moments you want to remember.</p>
-        </div>
-        
-        <!-- Target container for your product catalog script -->
-        <div class="product-grid" id="store-catalog">
-            <div class="empty-text">Loading latest designs...</div>
-        </div>
-
-        <div class="section-block">
-            <h3>Fashion with feeling.</h3>
-            <p>Alivèra Atelier is a young Indian fashion label creating feminine pieces with an editorial soul. Each design is imagined to help you walk into a room feeling completely yourself.</p>
-        </div>
+    <div class="hero">
+        <h1>Welcome to Alivèra Atelier</h1>
+        <p>Timeless Craftsmanship & Elegance</p>
+        <a href="/login" class="btn-gold">Access Your Account</a>
     </div>
 
-    <footer>
-        <div>
-            <a class="brand-footer" href="/">Alivèra Atelier</a>
-            <p>"Beautiful, just the way you are."</p>
-            <p style="color: #666; font-size: 0.85rem; margin-top: 0.5rem;">Based in India</p>
-        </div>
-        <div>
-            <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a>
-            <a href="https://instagram.com/aliveraatelier" target="_blank" rel="noopener">@aliveraatelier</a>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 Alivèra Atelier. All rights reserved.
-        </div>
-    </footer>
-
-    <script>
-        // Check session to conditionally inject the Owner Dashboard link if logged in as owner
-        async function checkUserSession() {
-            try {
-                const res = await fetch('/api/auth/me');
-                const data = await res.json();
-                const navLinks = document.getElementById('nav-links');
-                
-                if (res.ok && data.user && data.user.email && data.user.email.toLowerCase() === 'contact@aliveraatelier.in') {
-                    if (!document.getElementById('owner-dashboard-link')) {
-                        navLinks.innerHTML += `<a href="/admin" id="owner-dashboard-link" style="color: #d4af37; font-weight: bold;">Owner Dashboard</a>`;
-                    }
-                }
-            } catch (err) {
-                console.error('Session check failed', err);
-            }
-        }
-
-        // Fetch and load products cleanly into #store-catalog
-        async function loadStoreProducts() {
-            const catalog = document.getElementById('store-catalog');
-            try {
-                const res = await fetch('/api/products');
-                if (!res.ok) throw new Error('Failed to fetch catalog');
-                
-                const products = await res.json();
-                
-                if (!products || products.length === 0) {
-                    catalog.innerHTML = '<div class="empty-text">No dresses available yet. Check back soon!</div>';
-                    return;
-                }
-
-                catalog.innerHTML = products.map(p => `
-                    <div class="dress-card">
-                        <div class="dress-image-container">
-                            <img src="${p.image_url || p.image_data || 'https://via.placeholder.com/400x500?text=Aliv%C3%A8ra+Atelier'}" alt="${p.name}" />
-                        </div>
-                        <div class="dress-info">
-                            <h3 class="dress-title">${p.name}</h3>
-                            <div class="dress-price">$${Number(p.price).toFixed(2)}</div>
-                            <p class="dress-desc">${p.description || ''}</p>
-                            <a href="/product?id=${p.id}" class="btn-view">View Details & Size Chart</a>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (err) {
-                console.error('Catalog load error:', err);
-                catalog.innerHTML = '<div class="empty-text">Unable to load products at the moment. Please try again later.</div>';
-            }
-        }
-
-        checkUserSession();
-        loadStoreProducts();
-    </script>
 </body>
 </html>
