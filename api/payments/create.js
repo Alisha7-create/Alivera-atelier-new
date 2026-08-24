@@ -96,7 +96,7 @@ async function quote(b) {
 }
 __name(quote, "quote");
 
-export default async function payments_create_default(req, res) {
+async function payments_create_default(req, res) {
   try {
     const b = req.body || {};
     const q = await quote(b);
@@ -147,3 +147,6 @@ export default async function payments_create_default(req, res) {
     return res.status(400).json({ error: err.message || "Failed to create payment session." });
   }
 }
+__name(payments_create_default, "default");
+
+export { payments_create_default as default };
