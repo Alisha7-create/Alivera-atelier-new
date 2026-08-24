@@ -1,7 +1,11 @@
 name = "alivera-atelier"
 main = "src/index.js"
-compatibility_date = "2026-08-24"
+compatibility_date = "2026-03-24"
 
 [assets]
 directory = "./public"
-binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "alivera-atelier-db"
+database_id = "ee801693-fa25-4363-8df0-5b04d7f49a2c"
