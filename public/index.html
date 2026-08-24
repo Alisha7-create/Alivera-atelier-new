@@ -6,14 +6,14 @@
     <title>Alivèra Atelier</title>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #0b0b0b; color: #f5f5f5; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #0b0b0b; color: #f5f5f5; display: flex; flex-direction: column; min-height: 100vh; }
         
         header { background: #000; border-bottom: 1px solid #d4af37; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         header h1 { margin: 0; font-size: 1.4rem; letter-spacing: 3px; text-transform: uppercase; color: #d4af37; }
         .nav-links a { color: #aaa; text-decoration: none; margin-left: 1.5rem; font-size: 0.9rem; letter-spacing: 1px; transition: color 0.2s; }
         .nav-links a:hover { color: #d4af37; }
         
-        .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
+        .container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; flex: 1; width: 100%; }
         .intro { text-align: center; margin-bottom: 3.5rem; }
         .intro h2 { font-size: 2.2rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 0.5rem; color: #fff; text-transform: uppercase; }
         .tagline { color: #d4af37; font-size: 1.2rem; font-style: italic; letter-spacing: 1px; margin-bottom: 1rem; }
@@ -39,6 +39,13 @@
         .section-block p { color: #aaa; line-height: 1.6; }
 
         .empty-text { text-align: center; grid-column: span 100; color: #777; padding: 2rem 0; font-size: 1rem; letter-spacing: 1px; }
+
+        footer { background: #000; border-top: 1px solid #262626; padding: 3rem 2rem; margin-top: auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }
+        footer div { display: flex; flex-direction: column; gap: 0.5rem; }
+        footer .brand-footer { font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase; color: #d4af37; font-weight: 500; text-decoration: none; }
+        footer p { color: #888; font-size: 0.9rem; margin: 0; }
+        footer a { color: #aaa; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+        footer a:hover { color: #d4af37; }
     </style>
 </head>
 <body>
@@ -68,6 +75,18 @@
             <p>Alivèra Atelier is a young Indian fashion label creating feminine pieces with an editorial soul. Each design is imagined to help you walk into a room feeling completely yourself.</p>
         </div>
     </div>
+
+    <footer>
+        <div>
+            <a class="brand-footer" href="/">Alivèra Atelier</a>
+            <p>"Beautiful, just the way you are."</p>
+            <p style="color: #666; font-size: 0.85rem; margin-top: 0.5rem;">Based in India</p>
+        </div>
+        <div>
+            <a href="mailto:hello@aliveraatelier.in">hello@aliveraatelier.in</a>
+            <a href="https://instagram.com/aliveraatelier" target="_blank" rel="noopener">Instagram</a>
+        </div>
+    </footer>
 
     <script>
         // Check session to conditionally inject the Owner Dashboard link if logged in as owner
