@@ -22,7 +22,7 @@ export default {
       });
     }
 
-    // 4. Fallback for non-API routes (lets Cloudflare serve static assets like index.html, logo, css)
+    // 4. Fallback to Cloudflare's static assets for homepage, login page, and images
     return env.ASSETS.fetch(request);
   }
 };
