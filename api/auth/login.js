@@ -1,35 +1,229 @@
-import { db, verifyPassword, signSession, sessionCookie } from '../../src/compat.js';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - Alivèra Atelier</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            margin: 0; 
+            background: #0b0b0b; 
+            color: #f5f5f5; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+        }
+        
+        /* Minimal Header */
+        header { 
+            background: #000; 
+            border-bottom: 1px solid #d4af37; 
+            padding: 1.5rem 2rem; 
+            text-align: center;
+        }
+        header a { 
+            font-size: 1.4rem; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            color: #d4af37; 
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-export const access = 'public'; 
-export const methods = ['POST'];
+        /* Center the form on the screen */
+        .auth-wrapper { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 2rem 1.5rem; 
+        }
 
-export default async function(req, res) {
-  const b = req.body || {};
-  const email = String(b.email || '').trim().toLowerCase();
-  const password = String(b.password || '');
+        .auth-card { 
+            background: #141414; 
+            border: 1px solid #262626; 
+            border-radius: 4px; 
+            padding: 3rem 2.5rem; 
+            max-width: 420px; 
+            width: 100%; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: border-color 0.3s;
+        }
+        .auth-card:hover { border-color: #d4af37; }
 
-  const r = await db.query(
-    'SELECT id, email, name, password_salt, password_hash, active FROM users WHERE lower(email) = lower($1) LIMIT 1', 
-    [email]
-  );
-  
-  const u = r.rows[0]; 
-  
-  if (!u || !u.active || !(await verifyPassword(password, u.password_salt, u.password_hash))) {
-    return res.status(401).json({ error: 'Incorrect email or password.' });
-  }
+        /* Logo Styling */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .logo-container img {
+            max-width: 160px; /* Adjust this size based on your actual logo */
+            height: auto;
+            display: inline-block;
+        }
 
-  // FORCE YOUR EMAIL AS THE EXCLUSIVE ADMIN
-  const role = (email === 'hello@aliveraatelier.in') ? 'admin' : 'user';
+        .auth-title { 
+            text-align: center; 
+            font-size: 1.5rem; 
+            font-weight: 300; 
+            letter-spacing: 2px; 
+            margin-bottom: 2rem; 
+            color: #fff; 
+            text-transform: uppercase; 
+        }
 
-  const token = await signSession({
-    id: u.id,
-    email: u.email,
-    name: u.name,
-    role: role, 
-    exp: Date.now() + 30 * 24 * 60 * 60 * 1000
-  });
+        /* Form Inputs */
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { 
+            display: block; 
+            font-size: 0.85rem; 
+            color: #aaa; 
+            margin-bottom: 0.5rem; 
+            letter-spacing: 1px; 
+            text-transform: uppercase;
+        }
+        .input-group input { 
+            width: 100%; 
+            background: #0b0b0b; 
+            border: 1px solid #333; 
+            color: #fff; 
+            padding: 0.85rem 1rem; 
+            border-radius: 2px; 
+            font-size: 1rem; 
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .input-group input:focus { 
+            border-color: #d4af37; 
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.2);
+        }
 
-  res.setHeader('Set-Cookie', sessionCookie(token)); 
-  res.json({ ok: true, user: { id: u.id, email: u.email, name: u.name, role: role } });
-}
+        /* Button Styling */
+        .btn-submit { 
+            width: 100%; 
+            background: #d4af37; 
+            color: #000; 
+            padding: 1rem; 
+            border: none; 
+            border-radius: 2px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            margin-top: 1rem;
+        }
+        .btn-submit:hover { background: #e6c55c; }
+
+        /* Toggle between Sign In and Sign Up */
+        .auth-toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        .auth-toggle a {
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .auth-toggle a:hover { color: #e6c55c; }
+
+        /* Hidden class for toggling forms */
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/">Alivèra Atelier</a>
+    </header>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            
+            <!-- Replace 'YOUR-LOGO-IMAGE.jpg' with your actual logo file name -->
+            <div class="logo-container">
+                <img src="/YOUR-LOGO-IMAGE.png" alt="Alivèra Atelier Logo">
+            </div>
+
+            <!-- SIGN IN FORM -->
+            <div id="signin-section">
+                <h2 class="auth-title">Sign In</h2>
+                <form id="signin-form">
+                    <div class="input-group">
+                        <label for="signin-email">Email Address</label>
+                        <input type="email" id="signin-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="signin-password">Password</label>
+                        <input type="password" id="signin-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-submit">Sign In</button>
+                </form>
+                <div class="auth-toggle">
+                    Don't have an account? <a onclick="toggleForms()">Create one</a>
+                </div>
+            </div>
+
+            <!-- SIGN UP FORM -->
+            <div id="signup-section" class="hidden">
+                <h2 class="auth-title">Create Account</h2>
+                <form id="signup-form">
+                    <div class="input-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" required placeholder="Your Name">
+                    </div>
+                    <div class="input-group">
+                        <label for="signup-email">Email Address</label>
+                        <input type="email" id="signup-email" required placeholder="you@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-submit">Sign Up</button>
+                </form>
+                <div class="auth-toggle">
+                    Already have an account? <a onclick="toggleForms()">Sign in</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Simple function to flip between Sign In and Sign Up views
+        function toggleForms() {
+            const signin = document.getElementById('signin-section');
+            const signup = document.getElementById('signup-section');
+            
+            if (signin.classList.contains('hidden')) {
+                signin.classList.remove('hidden');
+                signup.classList.add('hidden');
+            } else {
+                signin.classList.add('hidden');
+                signup.classList.remove('hidden');
+            }
+        }
+
+        // Placeholder for when you connect this to your Cloudflare Worker / D1 API
+        document.getElementById('signin-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert("Sign in logic will connect to your API here!");
+            // Example: await fetch('/api/auth/login', { ... })
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert("Sign up logic will connect to your API here!");
+            // Example: await fetch('/api/auth/register', { ... })
+        });
+    </script>
+</body>
+</html>
