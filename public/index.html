@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier</title>
+    <title>Alivèra Atelier — Timeless Craftsmanship</title>
     <link rel="icon" href="/favicon.ico">
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            margin: 0; 
             background: #0b0b0b; 
             color: #f5f5f5; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+
         header { 
             background: #000; 
             border-bottom: 1px solid #d4af37; 
@@ -42,9 +45,8 @@
 
         .hero {
             text-align: center;
-            padding: 6rem 2rem;
+            padding: 5rem 2rem 3rem 2rem;
             background: linear-gradient(to bottom, #000, #0b0b0b);
-            border-bottom: 1px solid #222;
         }
         .hero h1 {
             font-size: 2.5rem;
@@ -55,26 +57,120 @@
             text-transform: uppercase;
         }
         .hero p {
-            color: #888;
-            letter-spacing: 1.5px;
+            color: #a89f91;
+            letter-spacing: 2px;
             text-transform: uppercase;
             font-size: 0.9rem;
             margin-bottom: 2rem;
         }
-        .btn-gold {
-            display: inline-block;
-            background: #d4af37;
-            color: #000;
-            padding: 0.9rem 2.2rem;
-            text-decoration: none;
-            font-weight: 600;
+
+        /* Dresses Collection Section */
+        .catalog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 2rem 4rem 2rem;
+            flex: 1;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #d4af37;
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+        .dress-card {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .dress-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-4px);
+        }
+        .dress-image-placeholder {
+            height: 360px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 0.85rem;
             letter-spacing: 2px;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            border-radius: 2px;
-            transition: background 0.2s;
+            border-bottom: 1px solid #222;
         }
-        .btn-gold:hover { background: #e6c55c; }
+        .dress-info {
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .dress-name {
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .dress-price {
+            color: #d4af37;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            margin-bottom: 1.2rem;
+        }
+        .btn-view {
+            display: inline-block;
+            background: transparent;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            padding: 0.6rem 1.5rem;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-view:hover {
+            background: #d4af37;
+            color: #000;
+        }
+
+        /* Footer Details */
+        footer {
+            background: #000;
+            border-top: 1px solid #222;
+            padding: 3rem 2rem;
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+        footer .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        footer a {
+            color: #d4af37;
+            text-decoration: none;
+        }
+        footer a:hover { text-decoration: underline; }
+        .footer-brand {
+            color: #fff;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -88,10 +184,53 @@
     </header>
 
     <div class="hero">
-        <h1>Welcome to Alivèra Atelier</h1>
-        <p>Timeless Craftsmanship & Elegance</p>
-        <a href="/login" class="btn-gold">Access Your Account</a>
+        <h1>Alivèra Atelier</h1>
+        <p>Timeless Craftsmanship & Exclusive Haute Couture</p>
     </div>
+
+    <div class="catalog-container">
+        <h2 class="section-title">The Signature Collection</h2>
+        
+        <div class="grid">
+            <!-- Dress Card 1 -->
+            <div class="dress-card">
+                <div class="dress-image-placeholder">Aurelia Gown</div>
+                <div class="dress-info">
+                    <div class="dress-name">Aurelia Silk Gown</div>
+                    <div class="dress-price">₹45,000</div>
+                    <a href="/login" class="btn-view">Inquire / Order</a>
+                </div>
+            </div>
+
+            <!-- Dress Card 2 -->
+            <div class="dress-card">
+                <div class="dress-image-placeholder">Celeste Ensemble</div>
+                <div class="dress-info">
+                    <div class="dress-name">Celeste Embroidered Set</div>
+                    <div class="dress-price">₹58,000</div>
+                    <a href="/login" class="btn-view">Inquire / Order</a>
+                </div>
+            </div>
+
+            <!-- Dress Card 3 -->
+            <div class="dress-card">
+                <div class="dress-image-placeholder">Nocturne Drape</div>
+                <div class="dress-info">
+                    <div class="dress-name">Nocturne Velvet Drape</div>
+                    <div class="dress-price">₹38,000</div>
+                    <a href="/login" class="btn-view">Inquire / Order</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">Alivèra Atelier</div>
+            <p>Contact Us: <a href="mailto:hello@aliveraatelier.in">hello@aliveraatelier.in</a> | Instagram: <a href="https://instagram.com" target="_blank">@aliveraatelier</a></p>
+            <p>&copy; 2026 Alivèra Atelier. All Rights Reserved. Crafted with Elegance.</p>
+        </div>
+    </footer>
 
 </body>
 </html>
