@@ -32,16 +32,20 @@
             text-decoration: none;
             font-weight: bold;
         }
-        header nav a {
+        header nav a, header nav button {
+            background: transparent;
+            border: none;
             color: #ccc;
             text-decoration: none;
             margin-left: 2rem;
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
+            cursor: pointer;
+            font-family: inherit;
             transition: color 0.2s;
         }
-        header nav a:hover { color: #d4af37; }
+        header nav a:hover, header nav button:hover { color: #d4af37; }
 
         .hero {
             text-align: center;
@@ -64,12 +68,13 @@
             margin-bottom: 2rem;
         }
 
-        /* Dresses Collection Section */
-        .catalog-container {
+        /* Container Section */
+        .content-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 2rem 4rem 2rem;
             flex: 1;
+            width: 100%;
         }
         .section-title {
             text-align: center;
@@ -77,70 +82,60 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             color: #d4af37;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             font-weight: 300;
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2.5rem;
-        }
-        .dress-card {
+
+        /* Admin Dashboard Panel Style */
+        .admin-panel {
             background: #141414;
-            border: 1px solid #262626;
+            border: 1px solid #d4af37;
             border-radius: 4px;
-            overflow: hidden;
-            transition: border-color 0.3s, transform 0.3s;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
         }
-        .dress-card:hover {
-            border-color: #d4af37;
-            transform: translateY(-4px);
-        }
-        .dress-image-placeholder {
-            height: 360px;
-            background: #1a1a1a;
+        .admin-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            color: #555;
-            font-size: 0.85rem;
+            border-bottom: 1px solid #262626;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .admin-header h3 {
+            color: #d4af37;
             letter-spacing: 2px;
             text-transform: uppercase;
-            border-bottom: 1px solid #222;
+            font-size: 1.2rem;
         }
-        .dress-info {
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .stat-card {
+            background: #0b0b0b;
+            border: 1px solid #333;
             padding: 1.5rem;
+            border-radius: 2px;
             text-align: center;
         }
-        .dress-name {
-            font-size: 1.1rem;
-            letter-spacing: 1.5px;
-            color: #fff;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-        .dress-price {
-            color: #d4af37;
-            font-size: 1rem;
+        .stat-card h4 {
+            font-size: 0.85rem;
+            color: #888;
             letter-spacing: 1px;
-            margin-bottom: 1.2rem;
-        }
-        .btn-view {
-            display: inline-block;
-            background: transparent;
-            border: 1px solid #d4af37;
-            color: #d4af37;
-            padding: 0.6rem 1.5rem;
-            text-decoration: none;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
             text-transform: uppercase;
-            transition: background 0.2s, color 0.2s;
+            margin-bottom: 0.5rem;
         }
-        .btn-view:hover {
-            background: #d4af37;
-            color: #000;
+        .stat-card .value {
+            font-size: 1.5rem;
+            color: #fff;
+            font-weight: bold;
         }
+
+        .hidden { display: none !important; }
 
         /* Footer Details */
         footer {
@@ -177,9 +172,9 @@
 
     <header>
         <a href="/" class="brand">Alivèra Atelier</a>
-        <nav>
+        <nav id="nav-menu">
             <a href="/">Home</a>
-            <a href="/login">Sign In</a>
+            <a href="/login" id="nav-login">Sign In</a>
         </nav>
     </header>
 
@@ -188,40 +183,40 @@
         <p>Timeless Craftsmanship & Exclusive Haute Couture</p>
     </div>
 
-    <div class="catalog-container">
-        <h2 class="section-title">The Signature Collection</h2>
+    <div class="content-container">
         
-        <div class="grid">
-            <!-- Dress Card 1 -->
-            <div class="dress-card">
-                <div class="dress-image-placeholder">Aurelia Gown</div>
-                <div class="dress-info">
-                    <div class="dress-name">Aurelia Silk Gown</div>
-                    <div class="dress-price">₹45,000</div>
-                    <a href="/login" class="btn-view">Inquire / Order</a>
-                </div>
+        <!-- Admin Dashboard Section (Visible only when logged in) -->
+        <div id="admin-dashboard" class="admin-panel hidden">
+            <div class="admin-header">
+                <h3>Admin Control Panel</h3>
+                <span id="admin-welcome-text" style="color: #aaa; font-size: 0.9rem;"></span>
             </div>
-
-            <!-- Dress Card 2 -->
-            <div class="dress-card">
-                <div class="dress-image-placeholder">Celeste Ensemble</div>
-                <div class="dress-info">
-                    <div class="dress-name">Celeste Embroidered Set</div>
-                    <div class="dress-price">₹58,000</div>
-                    <a href="/login" class="btn-view">Inquire / Order</a>
+            <p style="color: #ccc; margin-bottom: 1rem;">Welcome back. Manage your atelier orders, catalog updates, and client inquiries below.</p>
+            
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <h4>Active Inquiries</h4>
+                    <div class="value">0</div>
                 </div>
-            </div>
-
-            <!-- Dress Card 3 -->
-            <div class="dress-card">
-                <div class="dress-image-placeholder">Nocturne Drape</div>
-                <div class="dress-info">
-                    <div class="dress-name">Nocturne Velvet Drape</div>
-                    <div class="dress-price">₹38,000</div>
-                    <a href="/login" class="btn-view">Inquire / Order</a>
+                <div class="stat-card">
+                    <h4>Custom Orders</h4>
+                    <div class="value">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Database Status</h4>
+                    <div class="value" style="color: #4ade80; font-size: 1.1rem; margin-top: 5px;">Connected</div>
                 </div>
             </div>
         </div>
+
+        <!-- Catalog Container (Clean space for your upcoming atelier collection) -->
+        <div id="catalog-section">
+            <h2 class="section-title">The Collection</h2>
+            <div style="text-align: center; padding: 4rem 0; color: #666; letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.9rem;">
+                New haute couture pieces arriving shortly. Sign in to access your dashboard.
+            </div>
+        </div>
+
     </div>
 
     <footer>
@@ -232,5 +227,34 @@
         </div>
     </footer>
 
+    <script>
+        // Check session status on page load to display Admin Dashboard if logged in
+        async function checkUserSession() {
+            try {
+                const res = await fetch('/api/auth/me');
+                const data = await res.json();
+                
+                if (data && data.user) {
+                    // User is logged in! Hide login button, show Logout and Admin Dashboard
+                    document.getElementById('nav-login').style.display = 'none';
+                    
+                    const navMenu = document.getElementById('nav-menu');
+                    navMenu.innerHTML += `<button onclick="logout()">Sign Out</button>`;
+                    
+                    document.getElementById('admin-dashboard').classList.remove('hidden');
+                    document.getElementById('admin-welcome-text').innerText = `Logged in as: ${data.user.name || data.user.email}`;
+                }
+            } catch (err) {
+                console.error("Session check failed", err);
+            }
+        }
+
+        async function logout() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/';
+        }
+
+        checkUserSession();
+    </script>
 </body>
 </html>
