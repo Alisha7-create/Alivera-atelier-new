@@ -1,13 +1,9 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "alivera-atelier",
   "main": "src/index.js",
   "compatibility_date": "2026-03-01",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "assets": {
-    "directory": "public"
+  "vars": {
+    "ENVIRONMENT": "production"
   },
   "d1_databases": [
     {
@@ -15,11 +11,5 @@
       "database_name": "alivera-atelier-db",
       "database_id": "ee801693-fa25-4363-8df0-5b04d7f49a2c"
     }
-  ],
-  "ai": {
-    "binding": "AI"
-  },
-  "vars": {
-    "ADMIN_EMAILS": "contact@aliveraatelier.in"
-  }
+  ]
 }
