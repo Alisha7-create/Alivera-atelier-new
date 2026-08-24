@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account - Alivèra Atelier</title>
-    <link rel="icon" href="/favicon.ico">
     <style>
         * { box-sizing: border-box; }
         body { 
@@ -48,11 +47,8 @@
             max-width: 420px; 
             width: 100%; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: border-color 0.3s;
         }
-        .auth-card:hover { border-color: #d4af37; }
 
-        /* Perfect Round Logo Styling with Gold Frame */
         .logo-container {
             text-align: center;
             margin-bottom: 1.8rem;
@@ -64,7 +60,6 @@
             border-radius: 50%;
             border: 2px solid #d4af37;
             box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
-            display: inline-block;
         }
 
         .auth-title { 
@@ -95,7 +90,6 @@
             border-radius: 2px; 
             font-size: 1rem; 
             outline: none;
-            transition: border-color 0.2s;
         }
         .input-group input:focus { border-color: #d4af37; }
 
@@ -111,8 +105,8 @@
             letter-spacing: 2px; 
             text-transform: uppercase; 
             cursor: pointer; 
-            transition: background 0.2s; 
             margin-top: 1rem;
+            transition: background 0.2s;
         }
         .btn-submit:hover { background: #e6c55c; }
 
@@ -128,7 +122,7 @@
             cursor: pointer;
         }
         .auth-toggle a:hover { color: #e6c55c; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -140,12 +134,7 @@
     <div class="auth-wrapper">
         <div class="auth-card">
             
-            <!-- Round Logo Display -->
-            <div class="logo-container">
-                <img src="/logo.png.png" alt="Alivèra Atelier Logo">
-            </div>
-
-            <!-- Sign In Form -->
+            <!-- Sign In Section -->
             <div id="signin-section">
                 <h2 class="auth-title">Sign In</h2>
                 <form id="signin-form">
@@ -155,7 +144,7 @@
                     </div>
                     <div class="input-group">
                         <label for="signin-password">Password</label>
-                        <input type="password" id="signin-password" required placeholder="Alishaaa@7">
+                        <input type="password" id="signin-password" required placeholder="••••••••">
                     </div>
                     <button type="submit" class="btn-submit">Sign In</button>
                 </form>
@@ -164,7 +153,7 @@
                 </div>
             </div>
 
-            <!-- Sign Up Form -->
+            <!-- Sign Up Section -->
             <div id="signup-section" class="hidden">
                 <h2 class="auth-title">Create Account</h2>
                 <form id="signup-form">
@@ -174,7 +163,7 @@
                     </div>
                     <div class="input-group">
                         <label for="signup-email">Email Address</label>
-                        <input type="email" id="signup-email" required placeholder="contact@aliveraatelier.in">
+                        <input type="email" id="signup-email" required placeholder="hello@aliveraatelier.in">
                     </div>
                     <div class="input-group">
                         <label for="signup-password">Password</label>
@@ -210,7 +199,7 @@
                     body: JSON.stringify({ email, password })
                 });
                 const data = await res.json();
-                if (res.ok) {
+                if (res.ok && data.success) {
                     window.location.href = '/';
                 } else {
                     alert(data.error || 'Login failed');
