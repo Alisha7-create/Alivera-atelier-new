@@ -148,3 +148,5 @@ async function payments_create_default(req, res) {
   }
 }
 __name(payments_create_default, "default");
+
+export default payments_create_default;
