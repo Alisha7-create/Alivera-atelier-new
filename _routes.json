@@ -1,5 +1,12 @@
 {
   "version": 1,
   "include": ["/*"],
-  "exclude": ["/api/*", "/styles.css", "/api/brand/logo"]
+  "exclude": [
+    "/styles.css",
+    "/app.js",
+    "/assets.js",
+    "/manifest.webmanifest",
+    "/favicon.ico",
+    "/admin/*"
+  ]
 }
