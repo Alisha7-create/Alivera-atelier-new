@@ -13,10 +13,9 @@ export default {
         }
 
         if (!env.DB) {
-          return Response.json({ error: "Database binding 'DB' not found in Wrangler config" }, { status: 500 });
+          return Response.json({ error: "Database binding 'DB' not found" }, { status: 500 });
         }
 
-        // Query D1 Database
         const user = await env.DB.prepare(
           "SELECT * FROM users WHERE LOWER(email) = ?"
         ).bind(cleanEmail).first();
@@ -64,16 +63,23 @@ export default {
         );
       }
 
-      // 4. Catch-all for other unmatched /api/ routes
+      // 4. API catch-all
       if (url.pathname.startsWith('/api/')) {
         return Response.json({ error: "API Route not found" }, { status: 404 });
       }
 
-      // 5. Serve static assets (HTML, images, CSS) from public folder
+      // 5. Explicit HTML page routing
+      if (url.pathname === '/' || url.pathname === '') {
+        return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request));
+      }
+      if (url.pathname === '/login') {
+        return env.ASSETS.fetch(new Request(new URL('/login.html', request.url), request));
+      }
+
+      // 6. Default fallback for assets (images, css, etc.)
       return env.ASSETS.fetch(request);
 
     } catch (err) {
-      // Catch any unexpected crashes and return the error text for easy debugging
       return Response.json({ error: "Server Exception: " + err.message }, { status: 500 });
     }
   }
