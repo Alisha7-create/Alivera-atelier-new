@@ -36,7 +36,46 @@ export default {
         );
       }
 
-      // 2. Handle User Session Check API endpoint
+      // 2. Handle Sign Up API endpoint
+      if (url.pathname === '/api/auth/signup' && request.method === 'POST') {
+        const { name, email, password } = await request.json();
+        const cleanEmail = (email || "").trim().toLowerCase();
+
+        if (!name || !cleanEmail || !password) {
+          return Response.json({ error: "All fields are required" }, { status: 400 });
+        }
+
+        if (!env.DB) {
+          return Response.json({ error: "Database binding 'DB' not found" }, { status: 500 });
+        }
+
+        // Check if user already exists
+        const existing = await env.DB.prepare(
+          "SELECT email FROM users WHERE LOWER(email) = ?"
+        ).bind(cleanEmail).first();
+
+        if (existing) {
+          return Response.json({ error: "Email is already registered" }, { status: 400 });
+        }
+
+        // Insert new user into D1 database
+        await env.DB.prepare(
+          "INSERT INTO users (name, email, password) VALUES (?, ?, ?)"
+        ).bind(name.trim(), cleanEmail, password).run();
+
+        const cookieVal = encodeURIComponent(cleanEmail);
+        return Response.json(
+          { success: true, user: { email: cleanEmail, name: name.trim() } },
+          {
+            status: 200,
+            headers: {
+              "Set-Cookie": `alivera_session=${cookieVal}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
+            }
+          }
+        );
+      }
+
+      // 3. Handle User Session Check API endpoint
       if (url.pathname === '/api/auth/me') {
         const cookieHeader = request.headers.get('Cookie') || '';
         const match = cookieHeader.match(/alivera_session=([^;]+)/);
@@ -51,7 +90,7 @@ export default {
         return Response.json({ user: null });
       }
 
-      // 3. Handle Logout API endpoint
+      // 4. Handle Logout API endpoint
       if (url.pathname === '/api/auth/logout' && request.method === 'POST') {
         return Response.json(
           { success: true },
@@ -63,20 +102,20 @@ export default {
         );
       }
 
-      // 4. API catch-all
+      // 5. API catch-all
       if (url.pathname.startsWith('/api/')) {
         return Response.json({ error: "API Route not found" }, { status: 404 });
       }
 
-      // 5. Explicit HTML page routing
+      // 6. Explicit HTML page routing
       if (url.pathname === '/' || url.pathname === '') {
         return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request));
       }
-      if (url.pathname === '/login') {
+      if (url.pathname === '/login' || url.pathname === '/login.html') {
         return env.ASSETS.fetch(new Request(new URL('/login.html', request.url), request));
       }
 
-      // 6. Default fallback for assets (images, css, etc.)
+      // 7. Default asset fallback
       return env.ASSETS.fetch(request);
 
     } catch (err) {
