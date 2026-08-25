@@ -137,7 +137,7 @@
             </div>
 
             <div style="border-top: 1px solid #222; padding-top: 15px; margin-bottom: 15px;">
-                <label style="color: #d4af37;">PROMO CODE</label>
+                <label style="color: #d4af37;">PROMO CODE (FIRST-COME FIRST-SERVED)</label>
                 <input type="text" id="promo-input" class="custom-input" placeholder="Enter promo code if applicable">
             </div>
 
@@ -154,7 +154,7 @@
 
         async function loadPromoBanner() {
             try {
-                const res = await localStorage.getItem('atelier_promo_settings');
+                const res = localStorage.getItem('atelier_promo_settings');
                 if (res) {
                     const promo = JSON.parse(res);
                     document.getElementById('promo-banner').innerText = promo.bannerText || "✨ WELCOME TO ALIVÈRA ATELIER ✨";
@@ -390,21 +390,29 @@
             const promoCodeInput = document.getElementById('promo-input').value.trim();
             let promoSettings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"code": "LUXURY10", "maxUses": 5, "currentUses": 0}');
 
-            if (promoCodeInput && promoCodeInput.toUpperCase() === promoSettings.code.toUpperCase()) {
-                if (promoSettings.currentUses >= promoSettings.maxUses) {
-                    alert("This promo code has reached its maximum allowed redemptions.");
+            let appliedPromo = "None";
+
+            if (promoCodeInput) {
+                if (promoCodeInput.toUpperCase() === promoSettings.code.toUpperCase()) {
+                    if (promoSettings.currentUses >= promoSettings.maxUses) {
+                        alert("Sorry! This first-come, first-served promo code has already reached its maximum redemptions limit.");
+                        return;
+                    }
+                    // Increment the counter upon successful first-come completion
+                    promoSettings.currentUses += 1;
+                    localStorage.setItem('atelier_promo_settings', JSON.stringify(promoSettings));
+                    appliedPromo = promoCodeInput;
+                } else {
+                    alert("Invalid promo code entered.");
                     return;
                 }
-                // Increment promo usage counter
-                promoSettings.currentUses += 1;
-                localStorage.setItem('atelier_promo_settings', JSON.stringify(promoSettings));
             }
 
             const orderData = {
                 items: cart,
                 address: savedAddresses[selectedAddressIdx],
                 clientEmail: localStorage.getItem('atelier_user_email') || "hello@aliveraatelier.in",
-                promoUsed: promoCodeInput || "None",
+                promoUsed: appliedPromo,
                 date: new Date().toISOString()
             };
 
@@ -418,7 +426,7 @@
             allOrders.push({ id: Date.now().toString().slice(-4), ...orderData, status: 'Processing' });
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            alert("Order placed successfully! Notification sent and processing started.");
+            alert("Order placed successfully! First-come status verified and recorded.");
             cart = [];
             document.getElementById('cart-count').innerText = 0;
             closeModals();
