@@ -3,43 +3,7 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // --- MOCK DATABASE STORAGE (Replace with Cloudflare KV / D1 as needed) ---
-    let coupons = [
-      { code: 'LUXURY10', discountPercent: 10, maxUses: 5, usedCount: 0, expiresAt: '2026-12-31T23:59:59Z' }
-    ];
-
-    // --- COUPON VALIDATION API ---
-    if (path === '/api/coupons/apply' && request.method === 'POST') {
-      try {
-        const { code } = await request.json();
-        const coupon = coupons.find(c => c.code.toUpperCase() === code.toUpperCase());
-        
-        if (!coupon) {
-          return new Response(JSON.stringify({ success: false, error: 'Invalid coupon code.' }), { status: 400 });
-        }
-
-        // Check expiration time
-        if (new Date() > new Date(coupon.expiresAt)) {
-          return new Response(JSON.stringify({ success: false, error: 'This coupon has expired.' }), { status: 400 });
-        }
-
-        // Check limited usage count
-        if (coupon.usedCount >= coupon.maxUses) {
-          return new Response(JSON.stringify({ success: false, error: 'Coupon usage limit has been reached.' }), { status: 400 });
-        }
-
-        // Increment usage count
-        coupon.usedCount += 1;
-
-        return new Response(JSON.stringify({ success: true, discountPercent: coupon.discountPercent }), {
-          headers: { 'Content-Type': 'application/json' }
-        });
-      } catch (e) {
-        return new Response(JSON.stringify({ success: false, error: 'Server error.' }), { status: 500 });
-      }
-    }
-
-    // --- AUTHENTICATION API ---
+    // --- AUTHENTICATION ---
     if (path === '/api/auth/login' && request.method === 'POST') {
       try {
         const { email } = await request.json();
@@ -52,7 +16,7 @@ export default {
             }
           });
         }
-        return new Response(JSON.stringify({ success: false, error: 'Unauthorized administrator email.' }), { status: 401 });
+        return new Response(JSON.stringify({ success: false, error: 'Unauthorized email.' }), { status: 401 });
       } catch (e) {
         return new Response(JSON.stringify({ success: false, error: 'Invalid request.' }), { status: 400 });
       }
@@ -70,17 +34,32 @@ export default {
       });
     }
 
-    // --- ORDER SUBMISSION (Notifies contact@, confirms via hello@) ---
+    // --- ORDER SUBMISSION (Notifies contact@aliveraatelier.in, confirms via hello@aliveraatelier.in) ---
     if (path === '/api/orders' && request.method === 'POST') {
       const orderData = await request.json();
-      console.log('[New Order Notification] Sent to contact@aliveraatelier.in:', orderData);
-      console.log('[Order Confirmation] Dispatched from hello@aliveraatelier.in to client');
+      console.log('[New Order Notification Sent to contact@aliveraatelier.in]:', orderData);
+      console.log('[Order Confirmation Sent from hello@aliveraatelier.in to client]');
       return new Response(JSON.stringify({ success: true, message: 'Order placed successfully.' }), {
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // --- PROTECTED ADMIN ROUTE GUARD ---
+    // --- ORDER STATUS UPDATE & CANCELLATION (Sent via hello@aliveraatelier.in) ---
+    if (path === '/api/admin/update-order' && request.method === 'POST') {
+      const cookieHeader = request.headers.get('Cookie') || '';
+      if (!cookieHeader.includes('auth_session=admin_active')) {
+        return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), { status: 401 });
+      }
+
+      const { orderId, clientEmail, status, reason } = await request.json();
+      console.log(`[Email Dispatched via hello@aliveraatelier.in] Order #${orderId} status update (${status}) to ${clientEmail}. Reason: ${reason || 'N/A'}`);
+
+      return new Response(JSON.stringify({ success: true, message: 'Status updated and email sent.' }), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // --- PROTECTED ADMIN ROUTE GUARD (Secret Admin Portal) ---
     if (path.startsWith('/admin')) {
       const cookieHeader = request.headers.get('Cookie') || '';
       if (!cookieHeader.includes('auth_session=admin_active')) {
@@ -88,7 +67,7 @@ export default {
       }
     }
 
-    // --- EXPLICIT ROOT STOREFRONT ROUTING ---
+    // --- EXPLICIT ROOT ROUTE (Fixes login loop, loads homepage first) ---
     if (path === '/') {
       return env.ASSETS.fetch(new Request(`${url.origin}/index.html`, request));
     }
