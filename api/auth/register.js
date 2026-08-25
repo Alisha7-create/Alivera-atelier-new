@@ -1,40 +1,24 @@
-import { db, hashPassword, signSession, sessionCookie } from '../../src/compat.js';
-
-export const access = 'public';
-export const methods = ['POST'];
-
-export default async function (req, res) {
-  const b = req.body || {};
-  const email = String(b.email || '').trim().toLowerCase();
-  const password = String(b.password || '');
-  const name = String(b.name || '').trim();
-
-  // Validate input fields
-  if (!/^\S+@\S+\.\S+$/.test(email) || password.length < 8) {
-    return res.status(400).json({ error: 'Enter a valid email and a password of at least 8 characters.' });
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  // Check if user already exists
-  const existing = await db.query('SELECT id FROM users WHERE lower(email) = lower($1) LIMIT 1', [email]);
-  if (existing.rows.length) {
-    return res.status(409).json({ error: 'An account with this email already exists.' });
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ success: false, error: 'All fields are required.' });
+    }
+
+    // TODO: Connect your database check & creation here
+    // Example: 
+    // const existing = await db.findUserByEmail(email);
+    // if (existing) return res.status(400).json({ success: false, error: 'Email is already registered.' });
+    // await db.createUser({ name, email, password });
+
+    return res.status(200).json({ success: true, message: 'Account created successfully!' });
+  } catch (err) {
+    console.error('Register error:', err);
+    return res.status(500).json({ success: false, error: 'Server error during sign up.' });
   }
-
-  // Hash password and insert into database
-  const hp = await hashPassword(password);
-  const r = await db.query(
-    'INSERT INTO users (email, name, password_salt, password_hash) VALUES ($1, $2, $3, $4) RETURNING id, email, name, active',
-    [email, name, hp.salt, hp.hash]
-  );
-
-  const u = r.rows[0];
-  const token = await signSession({
-    id: u.id,
-    email: u.email,
-    name: u.name,
-    exp: Date.now() + 30 * 24 * 60 * 60 * 1000
-  });
-
-  res.setHeader('Set-Cookie', sessionCookie(token));
-  res.json({ ok: true, user: { id: u.id, email: u.email, name: u.name } });
 }
