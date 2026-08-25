@@ -113,8 +113,16 @@ export default {
         return env.ASSETS.fetch(new Request(new URL('/login.html', request.url), request));
       }
 
-      // 7. Serve regular static assets (CSS, images, JS)
-      return env.ASSETS.fetch(request);
+      // 7. Safely serve other static assets, returning 404 instead of 500 if missing
+      try {
+        const assetRes = await env.ASSETS.fetch(request);
+        if (assetRes.status === 404) {
+          return new Response("Not Found", { status: 404 });
+        }
+        return assetRes;
+      } catch (assetErr) {
+        return new Response("Not Found", { status: 404 });
+      }
 
     } catch (err) {
       return Response.json({ error: "Server Exception: " + err.message }, { status: 500 });
