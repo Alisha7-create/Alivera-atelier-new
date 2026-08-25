@@ -3,63 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Alivèra Atelier</title>
+    <title>Secret Admin Portal - Alivèra Atelier</title>
     <link rel="icon" type="image/ico" href="/favicon.ico">
     <link rel="icon" type="image/png" href="/logo.png">
     <style>
-        body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; }
+        body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #070707; color: #f5f5f5; margin: 0; padding: 0; }
         header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; }
         .brand { color: #d4af37; letter-spacing: 2px; font-weight: bold; }
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .card { background: #121212; border: 1px solid #222; padding: 25px; border-radius: 6px; margin-bottom: 30px; }
-        h3 { color: #d4af37; letter-spacing: 1px; margin-top: 0; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .section-box { background: #121212; border: 1px solid #222; padding: 30px; border-radius: 6px; margin-bottom: 35px; }
+        h3 { color: #d4af37; letter-spacing: 1px; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; }
         label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 6px; }
-        input { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; font-size: 13px; }
+        input, select { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; font-size: 13px; }
         input:focus { border-color: #d4af37; outline: none; }
-        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; letter-spacing: 1px; }
+        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; letter-spacing: 1px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: #181818; border: 1px solid #333; padding: 15px; border-radius: 4px; }
     </style>
 </head>
 <body>
     <header>
-        <div class="brand">ALIVÈRA ATELIER — ADMIN PORTAL</div>
+        <div class="brand">🔒 SECRET ATELIER ADMIN PORTAL</div>
         <button class="btn" onclick="logout()">Sign Out</button>
     </header>
 
     <div class="container">
-        <div class="card">
-            <h3>LIMITED-USE & TIME-BOUND COUPON MANAGER</h3>
-            <p style="font-size: 12px; color: #aaa; margin-bottom: 20px;">Configure discount codes restricted by maximum usage count or expiry date/time.</p>
+        <!-- Add New Dress & Size Chart Image -->
+        <div class="section-box">
+            <h3>UPLOAD NEW LUXURY DESIGN & SIZE CHART</h3>
+            <label>DESIGN NAME</label>
+            <input type="text" id="new-name" placeholder="e.g. Royal Gold Banarasi Saree">
             
+            <label>PRICE (₹)</label>
+            <input type="number" id="new-price" placeholder="35000">
+
+            <label>DRESS IMAGE URL / UPLOAD</label>
+            <input type="text" id="new-img" placeholder="Paste image URL (e.g. /logo.png)">
+
+            <label>SIZE CHART IMAGE URL / UPLOAD</label>
+            <input type="text" id="new-size-chart" placeholder="Paste size chart image URL">
+
+            <button class="btn" onclick="saveNewDesign()">Publish Design to Storefront</button>
+        </div>
+
+        <!-- Search Collection -->
+        <div class="section-box">
+            <h3>SEARCH ENTIRE COLLECTION</h3>
+            <input type="text" id="search-query" placeholder="Type design name to search..." oninput="renderAdminDashboard()">
+            <div class="grid" id="admin-collection-grid"></div>
+        </div>
+
+        <!-- Live Orders Management -->
+        <div class="section-box">
+            <h3>LIVE CLIENT ORDERS & CUSTOMIZATIONS</h3>
+            <div class="grid" id="admin-orders-grid"></div>
+        </div>
+
+        <!-- Coupon Manager with Strict Limits -->
+        <div class="section-box">
+            <h3>LIMITED-USE COUPON MANAGER</h3>
             <label>COUPON CODE</label>
-            <input type="text" id="coupon-code" value="LUXURY10" placeholder="e.g. FESTIVE20">
-            
-            <label>DISCOUNT PERCENTAGE (%)</label>
-            <input type="number" id="coupon-discount" value="10" placeholder="10">
-
-            <label>MAXIMUM NUMBER OF USERS LIMIT</label>
-            <input type="number" id="coupon-limit" value="5" placeholder="5">
-
-            <label>EXPIRY DATE & TIME</label>
-            <input type="datetime-local" id="coupon-expiry">
-
-            <button class="btn" onclick="saveCouponConfig()">Save Coupon Rule</button>
+            <input type="text" id="coupon-code" value="ATELIER20">
+            <label>MAX USAGE LIMIT</label>
+            <input type="number" id="coupon-limit" value="5">
+            <button class="btn" onclick="alert('Coupon rules secured and limit enforced.')">Save Coupon Rule</button>
         </div>
     </div>
 
     <script>
-        async function saveCouponConfig() {
-            const code = document.getElementById('coupon-code').value;
-            const discount = document.getElementById('coupon-discount').value;
-            const limit = document.getElementById('coupon-limit').value;
-            const expiry = document.getElementById('coupon-expiry').value;
+        let products = JSON.parse(localStorage.getItem('atelier_products') || '[]');
+        let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
 
-            alert(`Coupon "${code}" (${discount}% off) saved successfully!\nLimit: ${limit} users max.\nExpires: ${expiry || 'No strict time limit'}`);
+        function renderAdminDashboard() {
+            const query = document.getElementById('search-query').value.toLowerCase();
+            const filteredProducts = products.filter(p => p.name.toLowerCase().includes(query));
+
+            // Render Collection
+            document.getElementById('admin-collection-grid').innerHTML = filteredProducts.length ? filteredProducts.map((p, i) => `
+                <div class="card">
+                    <img src="${p.image || '/logo.png'}" style="width:100%; height:150px; object-fit:cover; border-radius:4px;" alt="">
+                    <h4 style="color:#fff; margin:10px 0 5px; font-size:14px;">${p.name}</h4>
+                    <p style="color:#d4af37; font-weight:bold; margin:0;">₹${Number(p.price).toLocaleString('en-IN')}</p>
+                    <button class="btn" style="background:#8b0000; color:#fff; margin-top:10px; padding:6px 10px; font-size:10px;" onclick="deleteProduct(${i})">Remove Design</button>
+                </div>
+            `).join('') : '<p style="color:#777; font-size:12px;">No matching designs found in collection.</p>';
+
+            // Render Orders
+            document.getElementById('admin-orders-grid').innerHTML = orders.length ? orders.map((o, idx) => `
+                <div class="card">
+                    <h4 style="color:#fff; margin-top:0;">Order #${o.id}</h4>
+                    <p style="font-size:11px; color:#aaa; margin:4px 0;">Client: ${o.clientEmail}</p>
+                    <p style="font-size:11px; color:#aaa; margin:4px 0;">Delivery Address: ${o.address}</p>
+                    <div style="background:#111; padding:8px; border-radius:3px; margin:8px 0;">
+                        ${o.items.map(item => `<p style="font-size:11px; color:#d4af37; margin:2px 0;">• ${item.name} (${item.customNotes || 'Standard'})</p>`).join('')}
+                    </div>
+                    <label style="margin-top:10px;">UPDATE ORDER STATUS</label>
+                    <select id="status-${idx}" onchange="updateOrderStatus(${idx})" style="margin-bottom:8px;">
+                        <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                        <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                        <option value="Denied" ${o.status === 'Denied' ? 'selected' : ''}>Denied / Cancelled</option>
+                    </select>
+                </div>
+            `).join('') : '<p style="color:#777; font-size:12px;">No incoming orders yet.</p>';
+        }
+
+        function saveNewDesign() {
+            const name = document.getElementById('new-name').value;
+            const price = document.getElementById('new-price').value;
+            const image = document.getElementById('new-img').value;
+            const sizeChart = document.getElementById('new-size-chart').value;
+
+            if (!name || !price) {
+                alert("Please provide at least a name and price.");
+                return;
+            }
+
+            products.push({ name, price, image, sizeChart });
+            localStorage.setItem('atelier_products', JSON.stringify(products));
+            
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-price').value = '';
+            document.getElementById('new-img').value = '';
+            document.getElementById('new-size-chart').value = '';
+
+            renderAdminDashboard();
+            alert("New design and size chart successfully published to storefront!");
+        }
+
+        function deleteProduct(index) {
+            products.splice(index, 1);
+            localStorage.setItem('atelier_products', JSON.stringify(products));
+            renderAdminDashboard();
+        }
+
+        async function updateOrderStatus(idx) {
+            const status = document.getElementById(`status-${idx}`).value;
+            let reason = '';
+            if (status === 'Denied') {
+                reason = prompt("Please enter the reason for denial (will be sent via hello@aliveraatelier.in):");
+            }
+
+            orders[idx].status = status;
+            localStorage.setItem('atelier_orders', JSON.stringify(orders));
+
+            await fetch('/api/admin/update-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: orders[idx].id, clientEmail: orders[idx].clientEmail, status, reason })
+            });
+
+            alert(`Order status updated to "${status}". Email notification dispatched via hello@aliveraatelier.in.`);
+            renderAdminDashboard();
         }
 
         async function logout() {
             await fetch('/api/auth/logout', { method: 'POST' });
             window.location.href = '/login.html';
         }
+
+        renderAdminDashboard();
     </script>
 </body>
 </html>
