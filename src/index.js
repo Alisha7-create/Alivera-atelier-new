@@ -6,10 +6,10 @@ export default {
     // --- AUTHENTICATION API ROUTES ---
     if (path === '/api/auth/login' && request.method === 'POST') {
       try {
-        const { email, password } = await request.json();
+        const { email } = await request.json();
         
-        // Admin credentials check (Change these if needed)
-        if (email.trim().toLowerCase() === 'hello@aliveraatelier.in' && password === 'Alivera@123') {
+        // Allows your email login instantly without restrictive password hurdles
+        if (email && email.trim().toLowerCase() === 'hello@aliveraatelier.in') {
           return new Response(JSON.stringify({ success: true }), {
             status: 200,
             headers: {
@@ -18,7 +18,7 @@ export default {
             }
           });
         } else {
-          return new Response(JSON.stringify({ success: false, error: 'Invalid administrator credentials.' }), {
+          return new Response(JSON.stringify({ success: false, error: 'Please use your authorized administrator email address.' }), {
             status: 401,
             headers: { 'Content-Type': 'application/json' }
           });
