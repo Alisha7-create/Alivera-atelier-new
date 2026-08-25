@@ -1,113 +1,66 @@
 export default {
   async fetch(request, env, ctx) {
-    try {
-      const url = new URL(request.url);
-      const path = url.pathname;
-      const method = request.method;
+    const url = new URL(request.url);
+    const path = url.pathname;
 
-      // 1. SIGN IN (LOGIN) ROUTE WITH DETAILED ERROR LOGGING
-      if (path === '/api/auth/login' && method === 'POST') {
-        try {
-          const { email, password } = await request.json();
-          
-          if (!email || !password) {
-            return new Response(JSON.stringify({ success: false, error: 'Email and password are required.' }), {
-              status: 400, headers: { 'Content-Type': 'application/json' }
-            });
-          }
-
-          if (!env || !env.DB) {
-            return new Response(JSON.stringify({ success: false, error: 'Database binding (env.DB) is missing in Cloudflare settings!' }), {
-              status: 500, headers: { 'Content-Type': 'application/json' }
-            });
-          }
-
-          const user = await env.DB.prepare('SELECT * FROM users WHERE email = ? AND password = ?').bind(email, password).first();
-          if (!user) {
-            return new Response(JSON.stringify({ success: false, error: 'Invalid email or password.' }), {
-              status: 400, headers: { 'Content-Type': 'application/json' }
-            });
-          }
-
-          return new Response(JSON.stringify({ success: true, message: 'Signed in successfully!' }), {
-            status: 200, headers: { 'Content-Type': 'application/json' }
+    // --- AUTHENTICATION API ROUTES ---
+    
+    // 1. Handle Login
+    if (path === '/api/auth/login' && request.method === 'POST') {
+      try {
+        const { email, password } = await request.json();
+        
+        // Secure Admin Credentials Check
+        if (email === 'hello@aliveraatelier.in' && password === 'Alivera@123') {
+          // Set a secure session cookie valid for 7 days
+          return new Response(JSON.stringify({ success: true }), {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              'Set-Cookie': `auth_session=admin_active; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`
+            }
           });
-        } catch (dbErr) {
-          // This returns the exact SQL/Database exception to your frontend alert instead of a blank 500
-          return new Response(JSON.stringify({ success: false, error: 'Database Error: ' + dbErr.message }), {
-            status: 500, headers: { 'Content-Type': 'application/json' }
+        } else {
+          return new Response(JSON.stringify({ success: false, error: 'Invalid administrator credentials.' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' }
           });
         }
-      }
-
-      // 2. SIGN UP (REGISTER) ROUTE
-      if (path === '/api/auth/signup' && method === 'POST') {
-        try {
-          const { name, email, password } = await request.json();
-          if (!name || !email || !password) {
-            return new Response(JSON.stringify({ success: false, error: 'All fields are required.' }), {
-              status: 400, headers: { 'Content-Type': 'application/json' }
-            });
-          }
-
-          if (!env || !env.DB) {
-            return new Response(JSON.stringify({ success: false, error: 'Database binding (env.DB) is missing in Cloudflare settings!' }), {
-              status: 500, headers: { 'Content-Type': 'application/json' }
-            });
-          }
-
-          const existing = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
-          if (existing) {
-            return new Response(JSON.stringify({ success: false, error: 'Email is already registered.' }), {
-              status: 400, headers: { 'Content-Type': 'application/json' }
-            });
-          }
-
-          await env.DB.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)')
-            .bind(name, email, password)
-            .run();
-
-          return new Response(JSON.stringify({ success: true, message: 'Account created successfully!' }), {
-            status: 200, headers: { 'Content-Type': 'application/json' }
-          });
-        } catch (regErr) {
-          return new Response(JSON.stringify({ success: false, error: 'Registration Error: ' + regErr.message }), {
-            status: 500, headers: { 'Content-Type': 'application/json' }
-          });
-        }
-      }
-
-      // 3. LOGOUT ROUTE
-      if (path === '/api/auth/logout' && method === 'POST') {
-        return new Response(JSON.stringify({ success: true, message: 'Signed out successfully!' }), {
-          status: 200, headers: { 'Content-Type': 'application/json' }
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: 'Malformed request.' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
         });
       }
+    }
 
-      // 4. SESSION ROUTE
-      if (path === '/api/auth/session' && method === 'GET') {
-        return new Response(JSON.stringify({ success: true, isAuthenticated: false }), {
-          status: 200, headers: { 'Content-Type': 'application/json' }
-        });
-      }
-
-      // 5. LOGIN PAGE ROUTING
-      if (path === '/login' || path === '/login.html') {
-        return env.ASSETS.fetch(request);
-      }
-
-      // 6. DEFAULT: STATIC ASSETS (Favicon, images, index.html)
-      return await env.ASSETS.fetch(request);
-
-    } catch (err) {
-      // Gracefully handle missing favicons so they don't throw 500 errors
-      if (request.url.includes('favicon.ico')) {
-        return new Response(null, { status: 404 });
-      }
-
-      return new Response(JSON.stringify({ success: false, error: 'Server Error: ' + err.message }), {
-        status: 500, headers: { 'Content-Type': 'application/json' }
+    // 2. Check Session Status
+    if (path === '/api/auth/session') {
+      const cookieHeader = request.headers.get('Cookie') || '';
+      const isAuthenticated = cookieHeader.includes('auth_session=admin_active');
+      return new Response(JSON.stringify({ isAuthenticated }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
       });
     }
-  },
+
+    // 3. Handle Logout
+    if (path === '/api/auth/logout' && request.method === 'POST') {
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Set-Cookie': `auth_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`
+        }
+      });
+    }
+
+    // --- STATIC ASSETS & ADMIN ROUTING ---
+    // Serves index.html, login.html, logo.png, and files inside public/admin/
+    try {
+      return await env.ASSETS.fetch(request);
+    } catch (e) {
+      return new Response('Resource not found', { status: 404 });
+    }
+  }
 };
