@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Admin Portal - Alivèra Atelier</title>
+    <title>Secret Admin Dashboard - Alivèra Atelier</title>
     <link rel="icon" type="image/ico" href="/favicon.ico">
     <link rel="icon" type="image/png" href="/logo.png">
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #070707; color: #f5f5f5; margin: 0; padding: 0; }
         header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; }
         .brand { color: #d4af37; letter-spacing: 2px; font-weight: bold; }
+        .nav-links { display: flex; gap: 15px; align-items: center; }
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .section-box { background: #121212; border: 1px solid #222; padding: 30px; border-radius: 6px; margin-bottom: 35px; }
         h3 { color: #d4af37; letter-spacing: 1px; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; }
         label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 6px; }
         input, select { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; font-size: 13px; }
+        input[type="file"] { padding: 8px; background: #181818; cursor: pointer; }
         input:focus { border-color: #d4af37; outline: none; }
-        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; letter-spacing: 1px; }
+        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; letter-spacing: 1px; text-decoration: none; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .card { background: #181818; border: 1px solid #333; padding: 15px; border-radius: 4px; }
     </style>
@@ -24,24 +26,27 @@
 <body>
     <header>
         <div class="brand">🔒 SECRET ATELIER ADMIN PORTAL</div>
-        <button class="btn" onclick="logout()">Sign Out</button>
+        <div class="nav-links">
+            <a href="/" class="btn" style="background: transparent; border: 1px solid #d4af37; color: #d4af37;">View Homepage</a>
+            <button class="btn" onclick="logout()">Sign Out</button>
+        </div>
     </header>
 
     <div class="container">
-        <!-- Add New Dress & Size Chart Image -->
+        <!-- Upload Dress & Size Chart Files -->
         <div class="section-box">
-            <h3>UPLOAD NEW LUXURY DESIGN & SIZE CHART</h3>
+            <h3>UPLOAD LUXURY DESIGN & SIZE CHART FILES</h3>
             <label>DESIGN NAME</label>
             <input type="text" id="new-name" placeholder="e.g. Royal Gold Banarasi Saree">
             
             <label>PRICE (₹)</label>
             <input type="number" id="new-price" placeholder="35000">
 
-            <label>DRESS IMAGE URL / UPLOAD</label>
-            <input type="text" id="new-img" placeholder="Paste image URL (e.g. /logo.png)">
+            <label>SELECT DRESS IMAGE FILE</label>
+            <input type="file" id="dress-img-file" accept="image/*">
 
-            <label>SIZE CHART IMAGE URL / UPLOAD</label>
-            <input type="text" id="new-size-chart" placeholder="Paste size chart image URL">
+            <label>SELECT SIZE CHART IMAGE FILE</label>
+            <input type="file" id="size-chart-file" accept="image/*">
 
             <button class="btn" onclick="saveNewDesign()">Publish Design to Storefront</button>
         </div>
@@ -58,16 +63,6 @@
             <h3>LIVE CLIENT ORDERS & CUSTOMIZATIONS</h3>
             <div class="grid" id="admin-orders-grid"></div>
         </div>
-
-        <!-- Coupon Manager with Strict Limits -->
-        <div class="section-box">
-            <h3>LIMITED-USE COUPON MANAGER</h3>
-            <label>COUPON CODE</label>
-            <input type="text" id="coupon-code" value="ATELIER20">
-            <label>MAX USAGE LIMIT</label>
-            <input type="number" id="coupon-limit" value="5">
-            <button class="btn" onclick="alert('Coupon rules secured and limit enforced.')">Save Coupon Rule</button>
-        </div>
     </div>
 
     <script>
@@ -78,7 +73,6 @@
             const query = document.getElementById('search-query').value.toLowerCase();
             const filteredProducts = products.filter(p => p.name.toLowerCase().includes(query));
 
-            // Render Collection
             document.getElementById('admin-collection-grid').innerHTML = filteredProducts.length ? filteredProducts.map((p, i) => `
                 <div class="card">
                     <img src="${p.image || '/logo.png'}" style="width:100%; height:150px; object-fit:cover; border-radius:4px;" alt="">
@@ -88,12 +82,11 @@
                 </div>
             `).join('') : '<p style="color:#777; font-size:12px;">No matching designs found in collection.</p>';
 
-            // Render Orders
             document.getElementById('admin-orders-grid').innerHTML = orders.length ? orders.map((o, idx) => `
                 <div class="card">
                     <h4 style="color:#fff; margin-top:0;">Order #${o.id}</h4>
                     <p style="font-size:11px; color:#aaa; margin:4px 0;">Client: ${o.clientEmail}</p>
-                    <p style="font-size:11px; color:#aaa; margin:4px 0;">Delivery Address: ${o.address}</p>
+                    <p style="font-size:11px; color:#aaa; margin:4px 0;">Address: ${o.address}</p>
                     <div style="background:#111; padding:8px; border-radius:3px; margin:8px 0;">
                         ${o.items.map(item => `<p style="font-size:11px; color:#d4af37; margin:2px 0;">• ${item.name} (${item.customNotes || 'Standard'})</p>`).join('')}
                     </div>
@@ -107,27 +100,37 @@
             `).join('') : '<p style="color:#777; font-size:12px;">No incoming orders yet.</p>';
         }
 
-        function saveNewDesign() {
+        async function saveNewDesign() {
             const name = document.getElementById('new-name').value;
             const price = document.getElementById('new-price').value;
-            const image = document.getElementById('new-img').value;
-            const sizeChart = document.getElementById('new-size-chart').value;
+            const dressFile = document.getElementById('dress-img-file').files[0];
+            const sizeChartFile = document.getElementById('size-chart-file').files[0];
 
             if (!name || !price) {
-                alert("Please provide at least a name and price.");
+                alert("Please provide a name and price for the design.");
                 return;
             }
 
+            const getBase64 = (file) => new Promise((resolve) => {
+                if (!file) return resolve('/logo.png');
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(file);
+            });
+
+            const image = await getBase64(dressFile);
+            const sizeChart = await getBase64(sizeChartFile);
+
             products.push({ name, price, image, sizeChart });
             localStorage.setItem('atelier_products', JSON.stringify(products));
-            
+
             document.getElementById('new-name').value = '';
             document.getElementById('new-price').value = '';
-            document.getElementById('new-img').value = '';
-            document.getElementById('new-size-chart').value = '';
+            document.getElementById('dress-img-file').value = '';
+            document.getElementById('size-chart-file').value = '';
 
             renderAdminDashboard();
-            alert("New design and size chart successfully published to storefront!");
+            alert("New design and size chart images uploaded & published to storefront!");
         }
 
         function deleteProduct(index) {
@@ -140,7 +143,7 @@
             const status = document.getElementById(`status-${idx}`).value;
             let reason = '';
             if (status === 'Denied') {
-                reason = prompt("Please enter the reason for denial (will be sent via hello@aliveraatelier.in):");
+                reason = prompt("Enter denial reason (sent via hello@aliveraatelier.in):");
             }
 
             orders[idx].status = status;
@@ -152,7 +155,7 @@
                 body: JSON.stringify({ orderId: orders[idx].id, clientEmail: orders[idx].clientEmail, status, reason })
             });
 
-            alert(`Order status updated to "${status}". Email notification dispatched via hello@aliveraatelier.in.`);
+            alert(`Order status updated to "${status}". Email notification sent via hello@aliveraatelier.in.`);
             renderAdminDashboard();
         }
 
