@@ -1,35 +1,33 @@
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const path = require('path');
+import handleLogin from '../api/auth/login.js';
+import handleRegister from '../api/auth/register.js';
+import handleLogout from '../api/auth/logout.js';
+import handleSession from '../api/auth/session.js';
 
-// Import your auth handlers from the api/auth folder
-const loginHandler = require('./api/auth/login');
-const registerHandler = require('./api/auth/register');
-const logoutHandler = require('./api/auth/logout');
-const sessionHandler = require('./api/auth/session');
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const path = url.pathname;
 
-const app = express();
+    // API Routes mapping to your api/auth/ files
+    if (path === '/api/auth/login') {
+      return handleLogin(request, env);
+    }
+    if (path === '/api/auth/signup') {
+      return handleRegister(request, env);
+    }
+    if (path === '/api/auth/logout') {
+      return handleLogout(request, env);
+    }
+    if (path === '/api/auth/session') {
+      return handleSession(request, env);
+    }
 
-// Middleware
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+    // Route /login to login.html
+    if (path === '/login' || path === '/login.html') {
+      return env.ASSETS.fetch(new Request(new URL('/login.html', request.url), request));
+    }
 
-// API Authentication Routes
-app.post('/api/auth/login', loginHandler);
-app.post('/api/auth/register', registerHandler);
-app.post('/api/auth/logout', logoutHandler);
-app.get('/api/auth/session', sessionHandler);
-
-// Page Routing
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-// Fallback to index.html for root
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-const PORT = process.env.PORT || 3000;
-app.exports = app; // Or app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    // Default: Serve static assets (index.html, logo.png, etc. from public folder)
+    return env.ASSETS.fetch(request);
+  },
+};
