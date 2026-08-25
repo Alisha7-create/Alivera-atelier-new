@@ -47,9 +47,9 @@
 </head>
 <body>
 
-    <!-- Promotional Discount & Time Period Banner -->
+    <!-- Dynamic Promotional Banner -->
     <div class="promo-banner" id="promo-banner">
-        ✨ LIMITED TIME OFFER: USE CODE 'LUXURY10' FOR 10% OFF (LIMITED TO FIRST 5 CLIENTS) ✨
+        ✨ LOADING OFFER... ✨
     </div>
 
     <header>
@@ -74,7 +74,7 @@
         </div>
     </div>
 
-    <!-- Sign In & Register Modal (Unified for Customers & Admin) -->
+    <!-- Sign In & Register Modal -->
     <div id="auth-signin-modal" class="modal">
         <div class="modal-content" style="text-align: left;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
@@ -98,7 +98,7 @@
             <button class="btn" id="auth-action-btn" style="width: 100%; margin-top: 15px;" onclick="handleAuthSubmit()">Sign In</button>
             
             <div style="text-align: center; margin-top: 12px;">
-                <button class="link-item" id="auth-toggle-btn" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: block; width: 100%;">Sign In</button>
+                <button class="link-item" id="auth-toggle-btn" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: none; width: 100%;">Sign In</button>
                 <button class="link-item" id="auth-toggle-btn-sub" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: block; width: 100%; margin-top: 5px;">New to Alivèra Atelier? Create a new account</button>
             </div>
         </div>
@@ -136,6 +136,11 @@
                 <button class="btn" style="width: 100%; margin-top: 5px;" onclick="addNewAddress()">Save & Select Address</button>
             </div>
 
+            <div style="border-top: 1px solid #222; padding-top: 15px; margin-bottom: 15px;">
+                <label style="color: #d4af37;">PROMO CODE</label>
+                <input type="text" id="promo-input" class="custom-input" placeholder="Enter promo code if applicable">
+            </div>
+
             <button class="btn" style="width: 100%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
         </div>
     </div>
@@ -146,6 +151,20 @@
         let selectedAddressIdx = 0;
         let activeCatalog = JSON.parse(localStorage.getItem('atelier_products') || '[]');
         let isRegistering = false;
+
+        async function loadPromoBanner() {
+            try {
+                const res = await localStorage.getItem('atelier_promo_settings');
+                if (res) {
+                    const promo = JSON.parse(res);
+                    document.getElementById('promo-banner').innerText = promo.bannerText || "✨ WELCOME TO ALIVÈRA ATELIER ✨";
+                } else {
+                    document.getElementById('promo-banner').innerText = "✨ WELCOME TO ALIVÈRA ATELIER ✨";
+                }
+            } catch (e) {
+                document.getElementById('promo-banner').innerText = "✨ WELCOME TO ALIVÈRA ATELIER ✨";
+            }
+        }
 
         function renderCatalog() {
             const grid = document.getElementById('live-catalog');
@@ -255,15 +274,10 @@
             const password = document.getElementById('signin-password').value;
             const name = document.getElementById('signup-name').value;
 
-            if (!email) {
-                alert("Please enter your email address.");
+            if (!email || !password) {
+                alert("Please fill in both email and password.");
                 return;
             }
-            if (!password) {
-                alert("Please enter your password.");
-                return;
-            }
-
             if (isRegistering && !name) {
                 alert("Please enter your name to create an account.");
                 return;
@@ -373,10 +387,24 @@
                 return;
             }
 
+            const promoCodeInput = document.getElementById('promo-input').value.trim();
+            let promoSettings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"code": "LUXURY10", "maxUses": 5, "currentUses": 0}');
+
+            if (promoCodeInput && promoCodeInput.toUpperCase() === promoSettings.code.toUpperCase()) {
+                if (promoSettings.currentUses >= promoSettings.maxUses) {
+                    alert("This promo code has reached its maximum allowed redemptions.");
+                    return;
+                }
+                // Increment promo usage counter
+                promoSettings.currentUses += 1;
+                localStorage.setItem('atelier_promo_settings', JSON.stringify(promoSettings));
+            }
+
             const orderData = {
                 items: cart,
                 address: savedAddresses[selectedAddressIdx],
                 clientEmail: localStorage.getItem('atelier_user_email') || "hello@aliveraatelier.in",
+                promoUsed: promoCodeInput || "None",
                 date: new Date().toISOString()
             };
 
@@ -390,7 +418,7 @@
             allOrders.push({ id: Date.now().toString().slice(-4), ...orderData, status: 'Processing' });
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            alert("Order placed successfully! Notification sent to contact@aliveraatelier.in and processing started.");
+            alert("Order placed successfully! Notification sent and processing started.");
             cart = [];
             document.getElementById('cart-count').innerText = 0;
             closeModals();
@@ -400,6 +428,7 @@
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
 
+        loadPromoBanner();
         checkAuthStatus();
         renderCatalog();
     </script>
