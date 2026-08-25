@@ -8,6 +8,10 @@
     <link rel="icon" type="image/png" href="/logo.png">
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; }
+        
+        /* Promotional Banner */
+        .promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 11px; letter-spacing: 2px; font-weight: bold; }
+
         header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 100; }
         .logo-area { display: flex; align-items: center; gap: 15px; text-decoration: none; }
         .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; }
@@ -19,14 +23,13 @@
         .link-item:hover { color: #d4af37; }
         
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .hero { text-align: center; padding: 50px 20px; border-bottom: 1px solid #222; margin-bottom: 40px; }
+        .hero { text-align: center; padding: 40px 20px; border-bottom: 1px solid #222; margin-bottom: 40px; }
         .hero h1 { color: #d4af37; font-size: 26px; letter-spacing: 3px; margin-bottom: 15px; }
 
         .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
         .empty-catalog { text-align: center; color: #777; grid-column: 1 / -1; padding: 50px; font-size: 14px; letter-spacing: 1px; }
         .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; padding: 20px; }
         
-        /* Fully visible uncropped image with zoom click */
         .product-img-container { width: 100%; height: 380px; background: #141414; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #222; }
         .product-img { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.3s; }
         .product-img:hover { transform: scale(1.03); }
@@ -44,12 +47,17 @@
 </head>
 <body>
 
+    <!-- Promotional Discount & Time Period Banner -->
+    <div class="promo-banner" id="promo-banner">
+        ✨ LIMITED TIME OFFER: USE CODE 'LUXURY10' FOR 10% OFF (LIMITED TO FIRST 5 CLIENTS) ✨
+    </div>
+
     <header>
         <a href="/" class="logo-area">
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
-        <div class="nav-links">
+        <div class="nav-links" id="header-nav">
             <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
             <a href="/login.html" class="btn" id="header-auth-btn">Sign In</a>
         </div>
@@ -87,18 +95,18 @@
     <div id="checkout-modal" class="modal">
         <div class="modal-content" style="text-align: left;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h3 style="color: #d4af37; letter-spacing: 1px; text-align: center;">SELECT DELIVERY ADDRESS</h3>
+            <h3 style="color: #d4af37; letter-spacing: 1px; text-align: center;">CHECKOUT & DELIVERY</h3>
             <p style="font-size: 11px; color: #aaa; margin-bottom: 15px; text-align: center;">Select your delivery location or add a new address.</p>
             
             <div id="address-list" style="margin-bottom: 15px;"></div>
 
-            <div style="border-top: 1px solid #222; padding-top: 15px;">
+            <div style="border-top: 1px solid #222; padding-top: 15px; margin-bottom: 15px;">
                 <label style="color: #d4af37;">ADD NEW ADDRESS</label>
                 <input type="text" id="new-addr" class="custom-input" placeholder="Full street address, city, pincode">
                 <button class="btn" style="width: 100%; margin-top: 5px;" onclick="addNewAddress()">Save & Select Address</button>
             </div>
 
-            <button class="btn" style="width: 100%; margin-top: 20px; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
+            <button class="btn" style="width: 100%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
         </div>
     </div>
 
@@ -114,7 +122,7 @@
 
     <script>
         let cart = [];
-        let savedAddresses = []; // Cleaned: No fake preset addresses
+        let savedAddresses = [];
         let selectedAddressIdx = 0;
         let activeCatalog = JSON.parse(localStorage.getItem('atelier_products') || '[]');
 
@@ -147,7 +155,7 @@
                     </select>
 
                     <div id="custom-wrap-${idx}" style="display: none; margin-top: 5px;">
-                        <label>CUSTOM MEASUREMENTS (Bust, Waist, Length)</label>
+                        <label>CUSTOM MEASUREMENTS</label>
                         <input type="text" class="custom-input" id="cust-spec-${idx}" placeholder="e.g. Bust: 34in, Waist: 28in, Length: 58in">
                     </div>
 
@@ -163,11 +171,21 @@
             try {
                 const res = await fetch('/api/auth/session');
                 const data = await res.json();
+                const nav = document.getElementById('header-nav');
                 if (data.isAuthenticated) {
-                    document.getElementById('header-auth-btn').innerText = 'Admin Portal';
-                    document.getElementById('header-auth-btn').href = '/admin/';
+                    // Unified Sign-In: If admin is signed in, give them direct access to the Secret Admin Dashboard right from the header
+                    nav.innerHTML = `
+                        <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
+                        <a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>
+                        <button class="link-item" onclick="logout()" style="color: #e74c3c;">Sign Out</button>
+                    `;
                 }
             } catch (e) {}
+        }
+
+        async function logout() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.reload();
         }
 
         function openImageZoom(url) {
@@ -215,16 +233,12 @@
                 return;
             }
 
-            if (savedAddresses.length === 0) {
-                alert("Please add at least one delivery address below before checkout.");
-            }
-
             const addrList = document.getElementById('address-list');
             addrList.innerHTML = savedAddresses.length ? savedAddresses.map((addr, i) => `
                 <div style="background:#181818; padding:10px; border-radius:4px; margin-bottom:8px; border: 1px solid ${i === selectedAddressIdx ? '#d4af37' : '#333'}; cursor:pointer;" onclick="selectAddress(${i})">
                     <input type="radio" name="delivery-addr" ${i === selectedAddressIdx ? 'checked' : ''}> <span style="font-size:12px; color:#fff;">${addr}</span>
                 </div>
-            `).join('') : '<p style="color:#777; font-size:11px;">No addresses saved yet. Add one below.</p>';
+            `).join('') : '<p style="color:#777; font-size:11px; text-align:center;">No addresses saved yet. Add one below.</p>';
 
             document.getElementById('checkout-modal').style.display = 'flex';
         }
