@@ -3,125 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Alivèra Atelier</title>
+    <title>Alivèra Atelier — Luxury Couture</title>
     <link rel="icon" type="image/png" href="/logo.png">
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; }
-        header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; }
-        .logo-area { display: flex; align-items: center; gap: 15px; }
+        header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 100; }
+        .logo-area { display: flex; align-items: center; gap: 15px; text-decoration: none; }
         .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; box-shadow: 0 0 10px rgba(212,175,55,0.3); }
         .brand-title { font-size: 18px; letter-spacing: 3px; color: #d4af37; font-weight: bold; }
-        .container { max-width: 1100px; margin: 40px auto; padding: 30px; background: #121212; border: 1px solid #222; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.8); }
-        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; transition: background 0.3s; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; transition: background 0.3s; font-size: 12px; }
         .btn:hover { background: #c59b27; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .card-section { background: #1a1a1a; border: 1px solid #333; padding: 25px; border-radius: 6px; }
-        .card-section h2 { color: #d4af37; font-size: 15px; letter-spacing: 2px; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 12px; }
-        label { display: block; font-size: 11px; color: #aaa; letter-spacing: 1px; margin-bottom: 5px; margin-top: 15px; }
-        input, textarea, select { width: 100%; padding: 11px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; box-sizing: border-box; }
-        input:focus, textarea:focus { border-color: #d4af37; outline: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #333; font-size: 13px; }
-        th { color: #d4af37; letter-spacing: 1px; }
-        .badge { background: #222; color: #d4af37; border: 1px solid #d4af37; padding: 4px 8px; border-radius: 3px; font-size: 10px; letter-spacing: 1px; }
+        .link-item { color: #aaa; text-decoration: none; font-size: 13px; letter-spacing: 1px; cursor: pointer; }
+        .link-item:hover { color: #d4af37; }
+        
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .hero { text-align: center; padding: 60px 20px; border-bottom: 1px solid #222; margin-bottom: 40px; }
+        .hero h1 { color: #d4af37; font-size: 32px; letter-spacing: 4px; margin-bottom: 10px; }
+        .hero p { color: #888; letter-spacing: 1px; font-size: 13px; }
+
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; overflow: hidden; transition: border-color 0.3s; }
+        .product-card:hover { border-color: #d4af37; }
+        .product-img { width: 100%; height: 350px; object-fit: cover; background: #1a1a1a; }
+        .product-info { padding: 20px; }
+        .product-title { font-size: 15px; letter-spacing: 1px; color: #fff; margin-bottom: 8px; }
+        .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 15px; }
+        
+        .pincode-section { margin-top: 15px; display: flex; gap: 8px; }
+        .pincode-input { flex: 1; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; }
+        
+        /* Modal & Cart styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 400px; text-align: center; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-area">
+        <a href="/" class="logo-area">
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-            <div class="brand-title">ALIVÈRA ATELIER — ADMIN</div>
-        </div>
-        <div>
-            <button onclick="handleLogout()" class="btn" style="background: transparent; border: 1px solid #d4af37; color: #d4af37;">Sign Out</button>
+            <div class="brand-title">ALIVÈRA ATELIER</div>
+        </a>
+        <div class="nav-links">
+            <span class="link-item" onclick="openCart()">Cart (<span id="cart-count">0</span>)</span>
+            <a href="/login.html" class="btn">Sign In / Register</a>
         </div>
     </header>
 
     <div class="container">
-        <div class="grid-2">
-            <!-- Left Column: Upload New Dress, Price & Size Chart -->
-            <div>
-                <div class="card-section">
-                    <h2>UPLOAD NEW DESIGN / DRESS</h2>
-                    <form id="upload-dress-form" onsubmit="handleUpload(event)">
-                        <label>DRESS NAME</label>
-                        <input type="text" id="dress-name" placeholder="e.g. Velvet Royal Gown" required>
+        <div class="hero">
+            <h1>HAUTE COUTURE COLLECTION</h1>
+            <p>Explore our exclusive handcrafted garments. Select a piece to view size charts, pricing, and delivery availability.</p>
+        </div>
 
-                        <label>PRICE (₹)</label>
-                        <input type="number" id="dress-price" placeholder="25000" required>
-
-                        <label>DRESS IMAGE FILE</label>
-                        <input type="file" id="dress-image" accept="image/*" required>
-
-                        <label>SIZE CHART IMAGE FILE</label>
-                        <input type="file" id="size-chart" accept="image/*" required>
-
-                        <button type="submit" class="btn" style="width: 100%; margin-top: 25px;">Publish to Atelier</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Right Column: Live Order Quick Updates & Processing -->
-            <div>
-                <div class="card-section">
-                    <h2>LIVE CUSTOMER ORDERS</h2>
-                    <p style="font-size: 12px; color: #888; letter-spacing: 0.5px;">Real-time notifications for confirmation and atelier processing.</p>
+        <!-- Catalog Grid -->
+        <div class="catalog-grid" id="dress-catalog">
+            <!-- Sample Dress Card -->
+            <div class="product-card">
+                <div style="background:#222; height:350px; display:flex; align-items:center; justify-content:center; color:#555;">[Dress Image Preview]</div>
+                <div class="product-info">
+                    <div class="product-title">Velvet Royal Anarkali</div>
+                    <div class="product-price">₹28,500</div>
+                    <button class="link-item" style="color: #d4af37; background:none; border:none; padding:0; font-size:12px;" onclick="viewSizeChart()">View Size Chart</button>
                     
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Client / Item</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orders-table-body">
-                            <tr>
-                                <td>#AV-1042</td>
-                                <td>Custom Anarkali Set</td>
-                                <td><span class="badge">PENDING</span></td>
-                                <td><button class="btn" style="padding: 5px 12px; font-size: 10px;" onclick="processOrder('#AV-1042')">Confirm</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="pincode-section">
+                        <input type="text" class="pincode-input" id="pin-1" placeholder="Enter Pincode">
+                        <button class="btn" style="padding: 8px 12px; font-size: 10px;" onclick="checkDelivery('pin-1')">Check</button>
+                    </div>
+                    <div id="delivery-msg-1" style="font-size:11px; margin-top:8px; color:#2ecc71;"></div>
+
+                    <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addToCart('Velvet Royal Anarkali', 28500)">Add to Cart</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Auth Guard Modal (Triggers if trying to checkout/cart unauthenticated) -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="color: #d4af37; letter-spacing: 1px;">AUTHENTICATION REQUIRED</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">Please sign in or create an account to proceed with your luxury order.</p>
+            <a href="/login.html" class="btn" style="display: block; margin-bottom: 10px;">Sign In Now</a>
+            <span class="link-item" onclick="closeModal()">Continue Browsing</span>
+        </div>
+    </div>
+
     <script>
-        async function checkSession() {
-            try {
-                const res = await fetch('/api/auth/session');
-                const data = await res.json();
-                if (!data.isAuthenticated) {
-                    window.location.href = '/login.html';
-                }
-            } catch (err) {
-                window.location.href = '/login.html';
+        let cartItems = [];
+
+        function checkDelivery(inputId) {
+            const val = document.getElementById(inputId).value;
+            const msg = document.getElementById('delivery-msg-1');
+            if(val.length === 6) {
+                msg.innerText = "✓ Express Delivery Available (3-5 Days)";
+            } else {
+                msg.innerText = "Please enter a valid 6-digit pincode.";
+                msg.style.color = "#e74c3c";
             }
         }
 
-        async function handleLogout() {
-            await fetch('/api/auth/logout', { method: 'POST' });
-            window.location.href = '/login.html';
+        function viewSizeChart() {
+            alert("Size Chart: Bust (34-40 in), Waist (28-34 in), Length (58 in). Custom sizing available upon request.");
         }
 
-        function handleUpload(e) {
-            e.preventDefault();
-            const name = document.getElementById('dress-name').value;
-            const price = document.getElementById('dress-price').value;
-            alert(`Success! "${name}" priced at ₹${price} along with its size chart has been published to Alivèra Atelier.`);
-            e.target.reset();
+        async function addToCart(name, price) {
+            // Check session first
+            try {
+                const res = await fetch('/api/auth/session');
+                const data = await res.json();
+                
+                if (!data.isAuthenticated) {
+                    // Trigger Sign-in modal guard
+                    document.getElementById('auth-modal').style.display = 'flex';
+                    return;
+                }
+
+                cartItems.push({ name, price });
+                document.getElementById('cart-count').innerText = cartItems.length;
+                alert(`"${name}" added to your cart.`);
+            } catch (err) {
+                document.getElementById('auth-modal').style.display = 'flex';
+            }
         }
 
-        function processOrder(orderId) {
-            alert(`Order ${orderId} has been confirmed and moved to atelier processing.`);
+        function openCart() {
+            if(cartItems.length === 0) {
+                alert("Your cart is currently empty.");
+            } else {
+                alert(`You have ${cartItems.length} item(s) in your cart ready for checkout.`);
+            }
         }
 
-        checkSession();
+        function closeModal() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
     </script>
 </body>
 </html>
