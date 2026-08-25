@@ -3,168 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Admin Dashboard - Alivèra Atelier</title>
+    <title>Alivèra Atelier — Admin Dashboard</title>
     <link rel="icon" type="image/ico" href="/favicon.ico">
     <link rel="icon" type="image/png" href="/logo.png">
     <style>
-        body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #070707; color: #f5f5f5; margin: 0; padding: 0; }
-        header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; }
-        .brand { color: #d4af37; letter-spacing: 2px; font-weight: bold; }
+        body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; }
+        header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 100; }
+        .logo-area { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+        .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; }
+        .brand-title { font-size: 18px; letter-spacing: 3px; color: #d4af37; font-weight: bold; }
         .nav-links { display: flex; gap: 15px; align-items: center; }
+        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; }
+        .btn:hover { background: #c59b27; }
+        .link-item { color: #aaa; text-decoration: none; font-size: 13px; letter-spacing: 1px; cursor: pointer; background:none; border:none; }
+        .link-item:hover { color: #d4af37; }
+        
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .section-box { background: #121212; border: 1px solid #222; padding: 30px; border-radius: 6px; margin-bottom: 35px; }
-        h3 { color: #d4af37; letter-spacing: 1px; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 6px; }
-        input, select { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; font-size: 13px; }
-        input[type="file"] { padding: 8px; background: #181818; cursor: pointer; }
-        input:focus { border-color: #d4af37; outline: none; }
-        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; letter-spacing: 1px; text-decoration: none; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: #181818; border: 1px solid #333; padding: 15px; border-radius: 4px; }
+        .admin-section { background: #121212; border: 1px solid #d4af37; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
+        .admin-section h2 { color: #d4af37; margin-top: 0; font-size: 20px; letter-spacing: 2px; }
+        
+        label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; margin-top: 15px; }
+        .custom-input, select { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; box-sizing: border-box; margin-bottom: 8px; }
+        
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card-item { background: #181818; border: 1px solid #222; border-radius: 6px; padding: 15px; position: relative; }
+        .card-item img { width: 100%; height: 200px; object-fit: contain; background: #141414; border-radius: 4px; margin-bottom: 10px; border: 1px solid #222; }
     </style>
 </head>
 <body>
+
     <header>
-        <div class="brand">🔒 SECRET ATELIER ADMIN PORTAL</div>
+        <a href="/admin/" class="logo-area">
+            <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+            <div class="brand-title">ATELIER ADMIN</div>
+        </a>
         <div class="nav-links">
-            <a href="/" class="btn" style="background: transparent; border: 1px solid #d4af37; color: #d4af37;">View Homepage</a>
-            <button class="btn" onclick="logout()">Sign Out</button>
+            <a href="/" class="link-item">View Storefront</a>
+            <button class="link-item" onclick="logout()" style="color: #e74c3c;">Sign Out</button>
         </div>
     </header>
 
     <div class="container">
-        <!-- Upload Dress & Size Chart Files -->
-        <div class="section-box">
-            <h3>UPLOAD LUXURY DESIGN & SIZE CHART FILES</h3>
-            <label>DESIGN NAME</label>
-            <input type="text" id="new-name" placeholder="e.g. Royal Gold Banarasi Saree">
+        
+        <!-- Promotional Discount & Banner Control -->
+        <div class="admin-section">
+            <h2>PROMOTIONAL DISCOUNT & BANNER CONTROL</h2>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure the active banner text, discount code, capacity limit, and track redemptions.</p>
             
-            <label>PRICE (₹)</label>
-            <input type="number" id="new-price" placeholder="35000">
+            <label>BANNER TEXT DISPLAY</label>
+            <input type="text" id="admin-banner-text" class="custom-input" placeholder="e.g. ✨ LIMITED TIME: USE CODE 'LUXURY10' FOR 10% OFF ✨">
 
-            <label>SELECT DRESS IMAGE FILE</label>
-            <input type="file" id="dress-img-file" accept="image/*">
+            <label>DISCOUNT CODE</label>
+            <input type="text" id="admin-promo-code" class="custom-input" placeholder="e.g. LUXURY10">
 
-            <label>SELECT SIZE CHART IMAGE FILE</label>
-            <input type="file" id="size-chart-file" accept="image/*">
+            <label>MAXIMUM ALLOWED USERS / CUSTOMERS</label>
+            <input type="number" id="admin-max-uses" class="custom-input" min="1" value="5">
 
-            <button class="btn" onclick="saveNewDesign()">Publish Design to Storefront</button>
+            <div style="margin: 15px 0; font-size: 12px; color: #fff;">
+                <strong>Live Usage Status:</strong> <span id="admin-usage-count" style="color: #d4af37; font-weight: bold;">0 / 5 redeemed</span>
+            </div>
+
+            <button class="btn" style="width: 100%; margin-top: 5px;" onclick="savePromoSettings()">Save & Update Live Banner</button>
         </div>
 
-        <!-- Search Collection -->
-        <div class="section-box">
-            <h3>SEARCH ENTIRE COLLECTION</h3>
-            <input type="text" id="search-query" placeholder="Type design name to search..." oninput="renderAdminDashboard()">
-            <div class="grid" id="admin-collection-grid"></div>
+        <!-- Add New Product Section -->
+        <div class="admin-section">
+            <h2>ADD NEW LUXURY PIECE</h2>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Upload design specifications, pricing, imagery, and sizing details.</p>
+
+            <label>PRODUCT NAME</label>
+            <input type="text" id="prod-name" class="custom-input" placeholder="e.g. Velvet Royal Evening Gown">
+
+            <label>PRICE (INR)</label>
+            <input type="number" id="prod-price" class="custom-input" placeholder="e.g. 24500">
+
+            <label>PRODUCT IMAGE (FILE UPLOAD OR URL)</label>
+            <input type="file" id="prod-image-file" class="custom-input" accept="image/*" onchange="handleImageUpload(event, 'product')">
+            <input type="text" id="prod-image" class="custom-input" placeholder="Or paste image URL here">
+
+            <label>SIZE CHART IMAGE (FILE UPLOAD OR URL)</label>
+            <input type="file" id="chart-image-file" class="custom-input" accept="image/*" onchange="handleImageUpload(event, 'chart')">
+            <input type="text" id="prod-size-chart" class="custom-input" placeholder="Or paste size chart image URL here">
+
+            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addNewProduct()">Publish to Storefront Catalog</button>
         </div>
 
-        <!-- Live Orders Management -->
-        <div class="section-box">
-            <h3>LIVE CLIENT ORDERS & CUSTOMIZATIONS</h3>
-            <div class="grid" id="admin-orders-grid"></div>
+        <!-- Current Catalog Management -->
+        <div class="admin-section">
+            <h2>ACTIVE CATALOG MANAGEMENT</h2>
+            <div class="grid-cards" id="admin-catalog-grid">
+                <p style="color: #777; font-size: 12px;">No active products found.</p>
+            </div>
         </div>
+
+        <!-- Incoming Orders Dashboard -->
+        <div class="admin-section">
+            <h2>INCOMING CLIENT ORDERS</h2>
+            <div id="admin-orders-list">
+                <p style="color: #777; font-size: 12px;">No orders placed yet.</p>
+            </div>
+        </div>
+
     </div>
 
     <script>
         let products = JSON.parse(localStorage.getItem('atelier_products') || '[]');
         let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
 
-        function renderAdminDashboard() {
-            const query = document.getElementById('search-query').value.toLowerCase();
-            const filteredProducts = products.filter(p => p.name.toLowerCase().includes(query));
-
-            document.getElementById('admin-collection-grid').innerHTML = filteredProducts.length ? filteredProducts.map((p, i) => `
-                <div class="card">
-                    <img src="${p.image || '/logo.png'}" style="width:100%; height:150px; object-fit:cover; border-radius:4px;" alt="">
-                    <h4 style="color:#fff; margin:10px 0 5px; font-size:14px;">${p.name}</h4>
-                    <p style="color:#d4af37; font-weight:bold; margin:0;">₹${Number(p.price).toLocaleString('en-IN')}</p>
-                    <button class="btn" style="background:#8b0000; color:#fff; margin-top:10px; padding:6px 10px; font-size:10px;" onclick="deleteProduct(${i})">Remove Design</button>
-                </div>
-            `).join('') : '<p style="color:#777; font-size:12px;">No matching designs found in collection.</p>';
-
-            document.getElementById('admin-orders-grid').innerHTML = orders.length ? orders.map((o, idx) => `
-                <div class="card">
-                    <h4 style="color:#fff; margin-top:0;">Order #${o.id}</h4>
-                    <p style="font-size:11px; color:#aaa; margin:4px 0;">Client: ${o.clientEmail}</p>
-                    <p style="font-size:11px; color:#aaa; margin:4px 0;">Address: ${o.address}</p>
-                    <div style="background:#111; padding:8px; border-radius:3px; margin:8px 0;">
-                        ${o.items.map(item => `<p style="font-size:11px; color:#d4af37; margin:2px 0;">• ${item.name} (${item.customNotes || 'Standard'})</p>`).join('')}
-                    </div>
-                    <label style="margin-top:10px;">UPDATE ORDER STATUS</label>
-                    <select id="status-${idx}" onchange="updateOrderStatus(${idx})" style="margin-bottom:8px;">
-                        <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                        <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-                        <option value="Denied" ${o.status === 'Denied' ? 'selected' : ''}>Denied / Cancelled</option>
-                    </select>
-                </div>
-            `).join('') : '<p style="color:#777; font-size:12px;">No incoming orders yet.</p>';
+        function handleImageUpload(event, type) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (type === 'product') {
+                        document.getElementById('prod-image').value = e.target.result;
+                    } else {
+                        document.getElementById('prod-size-chart').value = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        async function saveNewDesign() {
-            const name = document.getElementById('new-name').value;
-            const price = document.getElementById('new-price').value;
-            const dressFile = document.getElementById('dress-img-file').files[0];
-            const sizeChartFile = document.getElementById('size-chart-file').files[0];
+        function loadAdminPromoSettings() {
+            const settings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"bannerText": "✨ USE CODE LUXURY10 FOR 10% OFF ✨", "code": "LUXURY10", "maxUses": 5, "currentUses": 0}');
+            document.getElementById('admin-banner-text').value = settings.bannerText || "";
+            document.getElementById('admin-promo-code').value = settings.code || "";
+            document.getElementById('admin-max-uses').value = settings.maxUses || 5;
+            document.getElementById('admin-usage-count').innerText = `${settings.currentUses || 0} of ${settings.maxUses || 5} redeemed`;
+        }
+
+        function savePromoSettings() {
+            const bannerText = document.getElementById('admin-banner-text').value;
+            const code = document.getElementById('admin-promo-code').value;
+            const maxUses = parseInt(document.getElementById('admin-max-uses').value) || 5;
+            
+            let existing = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{}');
+            const currentUses = existing.currentUses || 0;
+
+            const updated = { bannerText, code, maxUses, currentUses };
+            localStorage.setItem('atelier_promo_settings', JSON.stringify(updated));
+            
+            alert("Promotion settings successfully updated on storefront!");
+            loadAdminPromoSettings();
+        }
+
+        function addNewProduct() {
+            const name = document.getElementById('prod-name').value;
+            const price = document.getElementById('prod-price').value;
+            const image = document.getElementById('prod-image').value;
+            const sizeChart = document.getElementById('prod-size-chart').value;
 
             if (!name || !price) {
-                alert("Please provide a name and price for the design.");
+                alert("Please provide at least a product name and price.");
                 return;
             }
 
-            const getBase64 = (file) => new Promise((resolve) => {
-                if (!file) return resolve('/logo.png');
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.readAsDataURL(file);
-            });
+            const newProduct = {
+                id: Date.now(),
+                name,
+                price,
+                image: image || '/logo.png',
+                sizeChart: sizeChart || ''
+            };
 
-            const image = await getBase64(dressFile);
-            const sizeChart = await getBase64(sizeChartFile);
-
-            products.push({ name, price, image, sizeChart });
+            products.push(newProduct);
             localStorage.setItem('atelier_products', JSON.stringify(products));
 
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-price').value = '';
-            document.getElementById('dress-img-file').value = '';
-            document.getElementById('size-chart-file').value = '';
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-price').value = '';
+            document.getElementById('prod-image').value = '';
+            document.getElementById('prod-size-chart').value = '';
+            document.getElementById('prod-image-file').value = '';
+            document.getElementById('chart-image-file').value = '';
 
-            renderAdminDashboard();
-            alert("New design and size chart images uploaded & published to storefront!");
+            renderAdminCatalog();
+            alert("Product published successfully to storefront!");
         }
 
-        function deleteProduct(index) {
-            products.splice(index, 1);
-            localStorage.setItem('atelier_products', JSON.stringify(products));
-            renderAdminDashboard();
+        function deleteProduct(idx) {
+            if (confirm("Are you sure you want to remove this piece from the catalog?")) {
+                products.splice(idx, 1);
+                localStorage.setItem('atelier_products', JSON.stringify(products));
+                renderAdminCatalog();
+            }
         }
 
-        async function updateOrderStatus(idx) {
-            const status = document.getElementById(`status-${idx}`).value;
-            let reason = '';
-            if (status === 'Denied') {
-                reason = prompt("Enter denial reason (sent via hello@aliveraatelier.in):");
+        function renderAdminCatalog() {
+            const grid = document.getElementById('admin-catalog-grid');
+            if (products.length === 0) {
+                grid.innerHTML = `<p style="color: #777; font-size: 12px;">No active products found.</p>`;
+                return;
             }
 
-            orders[idx].status = status;
-            localStorage.setItem('atelier_orders', JSON.stringify(orders));
+            grid.innerHTML = products.map((p, idx) => `
+                <div class="card-item">
+                    <img src="${p.image}" alt="${p.name}">
+                    <div style="font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 5px;">${p.name}</div>
+                    <div style="color: #d4af37; font-size: 14px; margin-bottom: 10px;">₹${Number(p.price).toLocaleString('en-IN')}</div>
+                    ${p.sizeChart ? '<div style="font-size:10px; color:#27ae60; margin-bottom:10px;">✓ Size Chart Attached</div>' : ''}
+                    <button class="btn" style="background: #e74c3c; color: #fff; width: 100%;" onclick="deleteProduct(${idx})">Remove Design</button>
+                </div>
+            `).join('');
+        }
 
-            await fetch('/api/admin/update-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderId: orders[idx].id, clientEmail: orders[idx].clientEmail, status, reason })
-            });
+        function renderAdminOrders() {
+            const container = document.getElementById('admin-orders-list');
+            if (orders.length === 0) {
+                container.innerHTML = `<p style="color: #777; font-size: 12px;">No orders placed yet.</p>`;
+                return;
+            }
 
-            alert(`Order status updated to "${status}". Email notification sent via hello@aliveraatelier.in.`);
-            renderAdminDashboard();
+            container.innerHTML = orders.map((o) => `
+                <div style="background: #181818; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #d4af37; font-size: 13px; font-weight: bold;">Order #${o.id || 'N/A'}</span>
+                        <span style="color: #aaa; font-size: 11px;">${new Date(o.date).toLocaleString()}</span>
+                    </div>
+                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Client:</strong> ${o.clientEmail}</div>
+                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Delivery Address:</strong> ${o.address}</div>
+                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Promo Used:</strong> ${o.promoUsed || 'None'}</div>
+                    <div style="font-size: 12px; color: #aaa; margin-top: 8px;"><strong>Items:</strong></div>
+                    <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 11px; color: #ccc;">
+                        ${o.items.map(i => `<li>${i.quantity}x ${i.name} (${i.size}) — ${i.customNotes}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
         }
 
         async function logout() {
             await fetch('/api/auth/logout', { method: 'POST' });
-            window.location.href = '/login.html';
+            window.location.href = '/';
         }
 
-        renderAdminDashboard();
+        loadAdminPromoSettings();
+        renderAdminCatalog();
+        renderAdminOrders();
     </script>
 </body>
 </html>
