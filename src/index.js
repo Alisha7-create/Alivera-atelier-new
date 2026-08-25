@@ -26,7 +26,7 @@ export default {
 
         const cookieVal = encodeURIComponent(cleanEmail);
         return Response.json(
-          { success: true, user: { email: cleanEmail, name: user.name || "Admin" } },
+          { success: true, user: { email: cleanEmail, name: user.name || "User" } },
           {
             status: 200,
             headers: {
@@ -105,12 +105,15 @@ export default {
         return Response.json({ error: "API Route not found" }, { status: 404 });
       }
 
-      // 6. Explicit HTML Route mapping (CRITICAL: Root "/" goes to index.html)
+      // 6. Explicit HTML Route mapping
       if (url.pathname === '/' || url.pathname === '') {
         return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request));
       }
       if (url.pathname === '/login' || url.pathname === '/login.html') {
         return env.ASSETS.fetch(new Request(new URL('/login.html', request.url), request));
+      }
+      if (url.pathname === '/admin' || url.pathname === '/admin.html') {
+        return env.ASSETS.fetch(new Request(new URL('/admin.html', request.url), request));
       }
 
       // 7. Safely serve other static assets
