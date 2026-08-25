@@ -10,16 +10,13 @@
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; }
         header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; }
         .brand { color: #d4af37; letter-spacing: 2px; font-weight: bold; }
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .section-title { color: #d4af37; font-size: 18px; letter-spacing: 2px; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .search-bar { width: 100%; padding: 12px; background: #121212; border: 1px solid #333; color: #fff; border-radius: 4px; box-sizing: border-box; margin-bottom: 25px; font-size: 14px; }
-        .search-bar:focus { border-color: #d4af37; outline: none; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .card { background: #121212; border: 1px solid #222; padding: 20px; border-radius: 6px; }
-        .card h3 { color: #fff; margin-top: 0; font-size: 16px; letter-spacing: 1px; }
-        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 11px; letter-spacing: 1px; }
-        .btn-danger { background: #8b0000; color: #fff; margin-top: 10px; }
-        .btn-danger:hover { background: #a80000; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .card { background: #121212; border: 1px solid #222; padding: 25px; border-radius: 6px; margin-bottom: 30px; }
+        h3 { color: #d4af37; letter-spacing: 1px; margin-top: 0; }
+        label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 6px; }
+        input { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; box-sizing: border-box; margin-bottom: 15px; font-size: 13px; }
+        input:focus { border-color: #d4af37; outline: none; }
+        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -29,80 +26,40 @@
     </header>
 
     <div class="container">
-        <div class="section-title">DESIGN INVENTORY & CATALOG SEARCH</div>
-        <input type="text" class="search-bar" id="design-search" placeholder="Search your luxury designs by name..." oninput="filterDesigns()">
-        <div class="grid" id="admin-designs-grid">
-            <!-- Dynamic Active Designs -->
-        </div>
+        <div class="card">
+            <h3>LIMITED-USE & TIME-BOUND COUPON MANAGER</h3>
+            <p style="font-size: 12px; color: #aaa; margin-bottom: 20px;">Configure discount codes restricted by maximum usage count or expiry date/time.</p>
+            
+            <label>COUPON CODE</label>
+            <input type="text" id="coupon-code" value="LUXURY10" placeholder="e.g. FESTIVE20">
+            
+            <label>DISCOUNT PERCENTAGE (%)</label>
+            <input type="number" id="coupon-discount" value="10" placeholder="10">
 
-        <div class="section-title">CLIENT ORDERS & CANCELLATION MANAGEMENT</div>
-        <div class="grid" id="admin-orders-grid">
-            <!-- Dynamic Orders -->
+            <label>MAXIMUM NUMBER OF USERS LIMIT</label>
+            <input type="number" id="coupon-limit" value="5" placeholder="5">
+
+            <label>EXPIRY DATE & TIME</label>
+            <input type="datetime-local" id="coupon-expiry">
+
+            <button class="btn" onclick="saveCouponConfig()">Save Coupon Rule</button>
         </div>
     </div>
 
     <script>
-        // Mock sample states for demonstration; connects to backend data
-        let designs = [
-            { id: 1, name: "Velvet Royal Anarkali", price: 28500 },
-            { id: 2, name: "Silk Embroidered Lehenga", price: 45000 }
-        ];
+        async function saveCouponConfig() {
+            const code = document.getElementById('coupon-code').value;
+            const discount = document.getElementById('coupon-discount').value;
+            const limit = document.getElementById('coupon-limit').value;
+            const expiry = document.getElementById('coupon-expiry').value;
 
-        let orders = [
-            { id: 101, designName: "Velvet Royal Anarkali", clientEmail: "client@example.com", status: "Processing", specs: "Waist: 32in" }
-        ];
-
-        function renderDashboard() {
-            const query = document.getElementById('design-search').value.toLowerCase();
-            const filteredDesigns = designs.filter(d => d.name.toLowerCase().includes(query));
-
-            document.getElementById('admin-designs-grid').innerHTML = filteredDesigns.length ? filteredDesigns.map(d => `
-                <div class="card">
-                    <h3>${d.name}</h3>
-                    <p style="color: #d4af37;">₹${d.price.toLocaleString('en-IN')}</p>
-                </div>
-            `).join('') : '<p style="color:#777;">No matching designs found.</p>';
-
-            document.getElementById('admin-orders-grid').innerHTML = orders.map(o => `
-                <div class="card">
-                    <h3>Order #${o.id}</h3>
-                    <p style="font-size:12px; color:#aaa;">Item: ${o.designName}</p>
-                    <p style="font-size:12px; color:#aaa;">Client: ${o.clientEmail}</p>
-                    <p style="font-size:12px; color:#aaa;">Specs: ${o.specs}</p>
-                    <button class="btn btn-danger" onclick="cancelOrder(${o.id}, '${o.clientEmail}')">Cancel & Notify Reason</button>
-                </div>
-            `).join('');
-        }
-
-        function filterDesigns() {
-            renderDashboard();
-        }
-
-        async function cancelOrder(orderId, clientEmail) {
-            const reason = prompt("Enter the cancellation reason to send via hello@aliveraatelier.in:");
-            if (!reason) return;
-
-            const res = await fetch('/api/admin/cancel-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderId, clientEmail, reason })
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert("Cancellation email successfully sent via hello@aliveraatelier.in");
-                orders = orders.filter(o => o.id !== orderId);
-                renderDashboard();
-            } else {
-                alert("Failed to cancel order.");
-            }
+            alert(`Coupon "${code}" (${discount}% off) saved successfully!\nLimit: ${limit} users max.\nExpires: ${expiry || 'No strict time limit'}`);
         }
 
         async function logout() {
             await fetch('/api/auth/logout', { method: 'POST' });
             window.location.href = '/login.html';
         }
-
-        renderDashboard();
     </script>
 </body>
 </html>
