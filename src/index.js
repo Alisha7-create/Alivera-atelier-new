@@ -49,7 +49,6 @@ export default {
           return Response.json({ error: "Database binding 'DB' not found" }, { status: 500 });
         }
 
-        // Check if user already exists
         const existing = await env.DB.prepare(
           "SELECT email FROM users WHERE LOWER(email) = ?"
         ).bind(cleanEmail).first();
@@ -58,7 +57,6 @@ export default {
           return Response.json({ error: "Email is already registered" }, { status: 400 });
         }
 
-        // Insert new user into D1 database
         await env.DB.prepare(
           "INSERT INTO users (name, email, password) VALUES (?, ?, ?)"
         ).bind(name.trim(), cleanEmail, password).run();
@@ -107,15 +105,15 @@ export default {
         return Response.json({ error: "API Route not found" }, { status: 404 });
       }
 
-      // 6. Explicit HTML page routing
-      if (url.pathname === '/' || url.pathname === '') {
+      // 6. Explicit HTML Route mapping
+      if (url.pathname === '/' || url.pathname === '/index.html') {
         return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request));
       }
       if (url.pathname === '/login' || url.pathname === '/login.html') {
         return env.ASSETS.fetch(new Request(new URL('/login.html', request.url), request));
       }
 
-      // 7. Default asset fallback
+      // 7. Serve regular static assets (CSS, images, JS)
       return env.ASSETS.fetch(request);
 
     } catch (err) {
