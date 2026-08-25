@@ -105,7 +105,7 @@ export default {
         return Response.json({ error: "API Route not found" }, { status: 404 });
       }
 
-      // 6. Explicit HTML Route mapping
+      // 6. Explicit HTML Route mapping (Root "/" loads index.html)
       if (url.pathname === '/' || url.pathname === '') {
         return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request));
       }
@@ -116,7 +116,7 @@ export default {
         return env.ASSETS.fetch(new Request(new URL('/admin.html', request.url), request));
       }
 
-      // 7. Safely serve other static assets
+      // 7. Safely serve other static assets (returns 404 if missing instead of crashing)
       try {
         const assetRes = await env.ASSETS.fetch(request);
         if (assetRes.status === 404) {
