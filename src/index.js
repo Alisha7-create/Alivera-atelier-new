@@ -34,7 +34,7 @@ export default {
       });
     }
 
-    // --- ORDER SUBMISSION (Notifies contact@aliveraatelier.in, confirms via hello@aliveraatelier.in) ---
+    // --- ORDER ROUTING & NOTIFICATIONS ---
     if (path === '/api/orders' && request.method === 'POST') {
       const orderData = await request.json();
       console.log('[New Order Notification Sent to contact@aliveraatelier.in]:', orderData);
@@ -44,35 +44,30 @@ export default {
       });
     }
 
-    // --- ORDER STATUS UPDATE & CANCELLATION (Sent via hello@aliveraatelier.in) ---
     if (path === '/api/admin/update-order' && request.method === 'POST') {
       const cookieHeader = request.headers.get('Cookie') || '';
       if (!cookieHeader.includes('auth_session=admin_active')) {
         return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), { status: 401 });
       }
-
       const { orderId, clientEmail, status, reason } = await request.json();
-      console.log(`[Email Dispatched via hello@aliveraatelier.in] Order #${orderId} status update (${status}) to ${clientEmail}. Reason: ${reason || 'N/A'}`);
-
-      return new Response(JSON.stringify({ success: true, message: 'Status updated and email sent.' }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      console.log(`[Email Dispatched via hello@aliveraatelier.in] Order #${orderId} status (${status}) to ${clientEmail}. Reason: ${reason || 'N/A'}`);
+      return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
     }
 
-    // --- PROTECTED ADMIN ROUTE GUARD (Secret Admin Portal) ---
+    // --- SECRET ADMIN PANEL GUARD ---
     if (path.startsWith('/admin')) {
       const cookieHeader = request.headers.get('Cookie') || '';
       if (!cookieHeader.includes('auth_session=admin_active')) {
+        // Redirect unauthorized attempts directly to the dedicated login page
         return Response.redirect(`${url.origin}/login.html`, 302);
       }
     }
 
-    // --- EXPLICIT ROOT ROUTE (Fixes login loop, loads homepage first) ---
+    // --- ROOT STOREFRONT ROUTING ---
     if (path === '/') {
       return env.ASSETS.fetch(new Request(`${url.origin}/index.html`, request));
     }
 
-    // --- STATIC ASSETS ---
     try {
       return await env.ASSETS.fetch(request);
     } catch (e) {
