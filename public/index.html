@@ -3,181 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - Alivèra Atelier</title>
+    <title>Alivèra Atelier — Luxury Couture</title>
+    <link rel="icon" type="image/ico" href="/favicon.ico">
     <link rel="icon" type="image/png" href="/logo.png">
     <style>
-        body { 
-            font-family: 'Cinzel', serif, Arial, sans-serif; 
-            background: #0a0a0a; 
-            color: #f5f5f5; 
-            margin: 0; 
-            padding: 0; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            min-height: 100vh; 
-        }
+        body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; }
+        header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 100; }
+        .logo-area { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+        .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; }
+        .brand-title { font-size: 18px; letter-spacing: 3px; color: #d4af37; font-weight: bold; }
+        .nav-links { display: flex; gap: 15px; align-items: center; }
+        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; }
+        .btn:hover { background: #c59b27; }
+        .link-item { color: #aaa; text-decoration: none; font-size: 13px; letter-spacing: 1px; cursor: pointer; background:none; border:none; }
+        .link-item:hover { color: #d4af37; }
         
-        /* Top brand header matching your screenshot */
-        .top-brand {
-            width: 100%;
-            text-align: center;
-            padding: 25px 0;
-            border-bottom: 1px solid #d4af37;
-            color: #d4af37;
-            font-size: 20px;
-            letter-spacing: 4px;
-            font-weight: bold;
-        }
-
-        .login-wrapper {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-        }
-
-        .card { 
-            background: #121212; 
-            border: 1px solid #222; 
-            padding: 40px; 
-            border-radius: 4px; 
-            width: 400px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.9); 
-            text-align: center; 
-        }
-
-        .logo-img { 
-            width: 80px; 
-            height: 80px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            border: 1px solid #d4af37; 
-            box-shadow: 0 0 20px rgba(212,175,55,0.4); 
-            margin-bottom: 20px; 
-        }
-
-        h2 { 
-            color: #f5f5f5; 
-            letter-spacing: 3px; 
-            font-size: 22px; 
-            margin-bottom: 30px; 
-            font-weight: normal;
-        }
-
-        .input-group {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 10px;
-            color: #aaa;
-            letter-spacing: 1.5px;
-            margin-bottom: 8px;
-        }
-
-        input { 
-            width: 100%; 
-            padding: 14px; 
-            background: #f8f9fc; 
-            border: 1px solid #ccc; 
-            color: #111; 
-            border-radius: 3px; 
-            box-sizing: border-box; 
-            font-size: 14px;
-        }
-
-        input:focus { 
-            border-color: #d4af37; 
-            outline: none; 
-        }
-
-        button { 
-            width: 100%; 
-            padding: 14px; 
-            background: #d4af37; 
-            color: #0a0a0a; 
-            border: none; 
-            border-radius: 3px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            letter-spacing: 2px; 
-            margin-top: 10px; 
-            transition: background 0.3s; 
-            font-size: 13px;
-        }
-
-        button:hover { 
-            background: #c59b27; 
-        }
-
-        .back-link { 
-            display: inline-block; 
-            margin-top: 25px; 
-            color: #888; 
-            font-size: 11px; 
-            text-decoration: none; 
-            letter-spacing: 1px; 
-        }
-        .back-link:hover { 
-            color: #d4af37; 
-        }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .hero { text-align: center; padding: 50px 20px; border-bottom: 1px solid #222; margin-bottom: 40px; }
+        .hero h1 { color: #d4af37; font-size: 26px; letter-spacing: 3px; margin-bottom: 15px; }
+        
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; padding: 20px; }
+        .product-img { width: 100%; height: 300px; object-fit: cover; background: #1a1a1a; border-radius: 4px; }
+        .product-title { font-size: 16px; letter-spacing: 1px; color: #fff; margin: 15px 0 8px; }
+        .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 12px; }
+        
+        .pincode-section { margin-top: 15px; display: flex; gap: 8px; }
+        .pincode-input { flex: 1; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; }
+        
+        /* Modal Overlay */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 420px; text-align: center; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 20px; color: #888; cursor: pointer; font-size: 18px; }
     </style>
 </head>
 <body>
 
-    <div class="top-brand">ALIVÈRA ATELIER</div>
-
-    <div class="login-wrapper">
-        <div class="card">
+    <header>
+        <a href="/" class="logo-area">
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-            <h2>SIGN IN</h2>
-            
-            <form id="signin-form">
-                <div class="input-group">
-                    <label>EMAIL ADDRESS</label>
-                    <input type="email" id="signin-email" value="hello@aliveraatelier.in" required>
-                </div>
+            <div class="brand-title">ALIVÈRA ATELIER</div>
+        </a>
+        <div class="nav-links">
+            <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
+            <a href="/login.html" class="btn" id="header-auth-btn">Sign In</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <h1>We bring custom sized luxury dresses, for comfort and confidence</h1>
+            <p style="color: #888; font-size: 13px; letter-spacing: 1px;">Browse our collections, view pricing, check delivery pincodes, and examine size guides freely.</p>
+        </div>
+
+        <div class="catalog-grid">
+            <!-- Sample Dress 1 -->
+            <div class="product-card">
+                <img src="/logo.png" alt="Velvet Royal Anarkali" class="product-img">
+                <div class="product-title">Velvet Royal Anarkali</div>
+                <div class="product-price">₹28,500</div>
+                <button class="link-item" style="color: #d4af37; font-size: 11px;" onclick="openSizeChart()">View Size Guide</button>
                 
-                <div class="input-group">
-                    <label>PASSWORD</label>
-                    <input type="password" id="signin-password" value="••••••••" required>
+                <div class="pincode-section">
+                    <input type="text" class="pincode-input" id="pin-1" placeholder="Enter Pincode">
+                    <button class="btn" style="padding: 8px 12px; font-size: 10px;" onclick="checkPin('pin-1', 'msg-1')">Check</button>
                 </div>
+                <div id="msg-1" style="font-size: 11px; margin-top: 6px;"></div>
 
-                <button type="submit">SIGN IN</button>
-            </form>
+                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="handleAddToCart('Velvet Royal Anarkali', 28500)">Add to Cart</button>
+            </div>
+        </div>
+    </div>
 
-            <a href="/" class="back-link">← Return to Storefront</a>
+    <!-- Size Chart Modal -->
+    <div id="size-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h3 style="color: #d4af37; letter-spacing: 2px;">SIZE GUIDE</h3>
+            <p style="font-size: 13px; color: #aaa; text-align: left; line-height: 1.6;">
+                • Small (S): Bust 34", Waist 28"<br>
+                • Medium (M): Bust 36", Waist 30"<br>
+                • Large (L): Bust 38", Waist 32"<br><br>
+                *Custom sizing adjustments are available upon order placement.
+            </p>
+        </div>
+    </div>
+
+    <!-- Auth Guard Modal (Triggers if trying to buy without sign-in) -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h3 style="color: #d4af37; letter-spacing: 1px;">SIGN IN REQUIRED</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 25px;">Please sign in to your account to add items to your cart and process custom luxury orders.</p>
+            <a href="/login.html" class="btn" style="display: block; text-align: center; box-sizing: border-box;">Proceed to Sign In</a>
         </div>
     </div>
 
     <script>
-        document.getElementById('signin-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('signin-email').value;
-            const password = document.getElementById('signin-password').value;
+        let cart = [];
 
+        async function checkAuthStatus() {
             try {
-                const res = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+                const res = await fetch('/api/auth/session');
                 const data = await res.json();
-
-                if (res.ok && data.success) {
-                    // Instantly takes you straight to your secure admin panel
-                    window.location.href = '/admin/';
-                } else {
-                    alert(data.error || 'Invalid credentials');
+                if (data.isAuthenticated) {
+                    document.getElementById('header-auth-btn').innerText = 'Admin Portal';
+                    document.getElementById('header-auth-btn').href = '/admin/';
                 }
-            } catch (err) {
-                alert('Network connection error.');
+            } catch (e) {}
+        }
+
+        function openSizeChart() {
+            document.getElementById('size-modal').style.display = 'flex';
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
+
+        function checkPin(inputId, msgId) {
+            const val = document.getElementById(inputId).value;
+            const msg = document.getElementById(msgId);
+            if(val.length === 6) {
+                msg.innerText = "✓ Express Delivery Available (3-5 Days)";
+                msg.style.color = "#2ecc71";
+            } else {
+                msg.innerText = "Enter a valid 6-digit pincode.";
+                msg.style.color = "#e74c3c";
             }
-        });
+        }
+
+        async function handleAddToCart(name, price) {
+            const res = await fetch('/api/auth/session');
+            const data = await res.json();
+            
+            if (!data.isAuthenticated) {
+                // If not signed in, show sign-in prompt modal instead of letting them buy
+                document.getElementById('auth-modal').style.display = 'flex';
+                return;
+            }
+
+            cart.push({ name, price });
+            document.getElementById('cart-count').innerText = cart.length;
+            alert(`"${name}" added to your cart.`);
+        }
+
+        function openCartModal() {
+            if (cart.length === 0) {
+                alert("Your cart is empty.");
+            } else {
+                alert(`You have ${cart.length} item(s) in your cart.`);
+            }
+        }
+
+        checkAuthStatus();
     </script>
 </body>
 </html>
