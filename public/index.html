@@ -47,8 +47,7 @@
 </head>
 <body>
 
-    <!-- Promotional Discount & Time Period Banner -->
-    <div class="promo-banner" id="promo-banner">
+    <div class="promo-banner">
         ✨ LIMITED TIME OFFER: USE CODE 'LUXURY10' FOR 10% OFF (LIMITED TO FIRST 5 CLIENTS) ✨
     </div>
 
@@ -59,7 +58,7 @@
         </a>
         <div class="nav-links" id="header-nav">
             <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
-            <a href="/login.html" class="btn" id="header-auth-btn">Sign In</a>
+            <button class="btn" onclick="openAuthModal()">Sign In</button>
         </div>
     </header>
 
@@ -71,6 +70,20 @@
 
         <div class="catalog-grid" id="live-catalog">
             <div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the atelier.</div>
+        </div>
+    </div>
+
+    <!-- Sign In Modal (Unified for Customers & Admin) -->
+    <div id="auth-signin-modal" class="modal">
+        <div class="modal-content" style="text-align: left;">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h3 style="color: #d4af37; letter-spacing: 1px; text-align: center;">SIGN IN TO ATELIER</h3>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 20px; text-align: center;">Enter your email to access your account, track orders, or manage the boutique.</p>
+            
+            <label>EMAIL ADDRESS</label>
+            <input type="email" id="signin-email" class="custom-input" placeholder="e.g. hello@aliveraatelier.in">
+            
+            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="handleSignIn()">Sign In</button>
         </div>
     </div>
 
@@ -107,16 +120,6 @@
             </div>
 
             <button class="btn" style="width: 100%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
-        </div>
-    </div>
-
-    <!-- Auth Guard Modal -->
-    <div id="auth-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h3 style="color: #d4af37; letter-spacing: 1px;">SIGN IN REQUIRED</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 25px;">Please sign in to your account to add items to your cart and place custom orders.</p>
-            <a href="/login.html" class="btn" style="display: block; text-align: center; box-sizing: border-box;">Sign In Now</a>
         </div>
     </div>
 
@@ -173,18 +176,53 @@
                 const data = await res.json();
                 const nav = document.getElementById('header-nav');
                 if (data.isAuthenticated) {
-                    // Unified Sign-In: If admin is signed in, give them direct access to the Secret Admin Dashboard right from the header
+                    const userEmail = localStorage.getItem('atelier_user_email') || 'Client';
+                    const displayName = userEmail === 'hello@aliveraatelier.in' ? 'Alivèra Atelier' : userEmail.split('@')[0];
+                    
+                    let adminButtonHtml = userEmail === 'hello@aliveraatelier.in' 
+                        ? `<a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>` 
+                        : '';
+
                     nav.innerHTML = `
+                        <span style="color: #d4af37; font-size: 12px; letter-spacing: 1px;">Hello, ${displayName}</span>
                         <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
-                        <a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>
+                        ${adminButtonHtml}
                         <button class="link-item" onclick="logout()" style="color: #e74c3c;">Sign Out</button>
                     `;
                 }
             } catch (e) {}
         }
 
+        function openAuthModal() {
+            document.getElementById('auth-signin-modal').style.display = 'flex';
+        }
+
+        async function handleSignIn() {
+            const email = document.getElementById('signin-email').value;
+            if (!email) {
+                alert("Please enter your email address.");
+                return;
+            }
+
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            if (response.ok) {
+                localStorage.setItem('atelier_user_email', email.trim().toLowerCase());
+                closeModals();
+                checkAuthStatus();
+                alert(`Welcome, ${email}! You are successfully signed in.`);
+            } else {
+                alert("Sign in failed. Please check your email.");
+            }
+        }
+
         async function logout() {
             await fetch('/api/auth/logout', { method: 'POST' });
+            localStorage.removeItem('atelier_user_email');
             window.location.reload();
         }
 
@@ -214,7 +252,7 @@
             const res = await fetch('/api/auth/session');
             const data = await res.json();
             if (!data.isAuthenticated) {
-                document.getElementById('auth-modal').style.display = 'flex';
+                openAuthModal();
                 return;
             }
 
@@ -269,7 +307,7 @@
             const orderData = {
                 items: cart,
                 address: savedAddresses[selectedAddressIdx],
-                clientEmail: "hello@aliveraatelier.in",
+                clientEmail: localStorage.getItem('atelier_user_email') || "hello@aliveraatelier.in",
                 date: new Date().toISOString()
             };
 
@@ -283,7 +321,7 @@
             allOrders.push({ id: Date.now().toString().slice(-4), ...orderData, status: 'Processing' });
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            alert("Order placed successfully! Notification sent to contact@aliveraatelier.in and processing started via hello@aliveraatelier.in.");
+            alert("Order placed successfully! Notification sent to contact@aliveraatelier.in and processing started.");
             cart = [];
             document.getElementById('cart-count').innerText = 0;
             closeModals();
