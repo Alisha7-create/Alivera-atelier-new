@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alivèra Atelier</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            margin: 0; 
+            background: #0b0b0b; 
+            color: #f5f5f5; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header { 
+            background: #000; 
+            border-bottom: 1px solid #d4af37; 
+            padding: 1.5rem 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        header a.brand { 
+            font-size: 1.4rem; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            color: #d4af37; 
+            text-decoration: none; 
+            font-weight: bold; 
+        }
+        .nav-links a { 
+            color: #fff; 
+            margin-left: 1.5rem; 
+            text-decoration: none; 
+            font-size: 0.85rem; 
+            letter-spacing: 1px; 
+            text-transform: uppercase; 
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: #d4af37; }
+        
+        .hero { 
+            flex: 1;
+            padding: 6rem 2rem; 
+            text-align: center; 
+            background: #141414; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero h1 { 
+            font-size: 2.5rem; 
+            letter-spacing: 4px; 
+            text-transform: uppercase; 
+            margin-bottom: 1rem; 
+            font-weight: 300; 
+            color: #fff;
+        }
+        .hero p { 
+            color: #aaa; 
+            font-size: 1.1rem; 
+            max-width: 600px; 
+            margin: 0 auto 2.5rem auto; 
+            line-height: 1.6;
+        }
+        .btn-primary { 
+            background: #d4af37; 
+            color: #000; 
+            padding: 0.9rem 2.2rem; 
+            text-decoration: none; 
+            font-weight: 600; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            border-radius: 2px; 
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: #e6c55c; }
+
+        footer {
+            background: #000;
+            text-align: center;
+            padding: 2.5rem 1.5rem 1.5rem;
+            border-top: 1px solid #222;
+        }
+        .footer-tagline {
+            color: #d4af37;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+        .footer-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            color: #aaa;
+            letter-spacing: 1px;
+        }
+        .footer-info a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-info a:hover {
+            color: #d4af37;
+        }
+        .footer-separator {
+            color: #333;
+        }
+        .copyright {
+            font-size: 0.75rem;
+            color: #555;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .footer-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .footer-separator {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="brand">Alivèra Atelier</a>
+        <div class="nav-links">
+            <a href="/login">Sign In</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Timeless Elegance</h1>
+        <p>Explore our exclusive luxury collections. Please sign in or create an account to view and manage your orders.</p>
+        <a href="/login" class="btn-primary">Enter Atelier</a>
+    </section>
+
+    <footer>
+        <div class="footer-tagline">Beautiful. The way you are...</div>
+        
+        <div class="footer-info">
+            <span>Location: India</span>
+            <span class="footer-separator">|</span>
+            <a href="mailto:hello@aliveraatelier.in">Email: hello@aliveraatelier.in</a>
+            <span class="footer-separator">|</span>
+            <a href="https://instagram.com/aliveraatelier" target="_blank" rel="noopener noreferrer">Instagram: @AlivèraAtelier</a>
+        </div>
+
+        <div class="copyright">
+            &copy; 2026 Alivèra Atelier. All Rights Reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
