@@ -3,12 +3,21 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    // --- PRODUCTS API (Fetch real items instead of fake mockups) ---
+    if (path === '/api/products' && request.method === 'GET') {
+      // You can connect this to a Cloudflare KV namespace or return an empty array [] 
+      // until you add your real dresses through the admin dashboard.
+      const sampleRealProducts = []; // Set to actual DB results when ready
+      return new Response(JSON.stringify(sampleRealProducts), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     // --- AUTHENTICATION API ROUTES ---
     if (path === '/api/auth/login' && request.method === 'POST') {
       try {
         const { email } = await request.json();
-        
-        // Allows your email login instantly without restrictive password hurdles
         if (email && email.trim().toLowerCase() === 'hello@aliveraatelier.in') {
           return new Response(JSON.stringify({ success: true }), {
             status: 200,
@@ -18,7 +27,7 @@ export default {
             }
           });
         } else {
-          return new Response(JSON.stringify({ success: false, error: 'Please use your authorized administrator email address.' }), {
+          return new Response(JSON.stringify({ success: false, error: 'Unauthorized administrator email.' }), {
             status: 401,
             headers: { 'Content-Type': 'application/json' }
           });
