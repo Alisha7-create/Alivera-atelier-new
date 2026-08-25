@@ -105,15 +105,15 @@ export default {
         return Response.json({ error: "API Route not found" }, { status: 404 });
       }
 
-      // 6. Explicit HTML Route mapping
-      if (url.pathname === '/' || url.pathname === '/index.html') {
+      // 6. Explicit HTML Route mapping (CRITICAL: Root "/" goes to index.html)
+      if (url.pathname === '/' || url.pathname === '') {
         return env.ASSETS.fetch(new Request(new URL('/index.html', request.url), request));
       }
       if (url.pathname === '/login' || url.pathname === '/login.html') {
         return env.ASSETS.fetch(new Request(new URL('/login.html', request.url), request));
       }
 
-      // 7. Safely serve other static assets, returning 404 instead of 500 if missing
+      // 7. Safely serve other static assets
       try {
         const assetRes = await env.ASSETS.fetch(request);
         if (assetRes.status === 404) {
