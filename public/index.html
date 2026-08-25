@@ -15,6 +15,8 @@
             flex-direction: column;
             min-height: 100vh;
         }
+        
+        /* Header Styles */
         header { 
             background: #000; 
             border-bottom: 1px solid #d4af37; 
@@ -42,6 +44,7 @@
         }
         .nav-links a:hover { color: #d4af37; }
         
+        /* Hero Section */
         .hero { 
             flex: 1;
             padding: 6rem 2rem; 
@@ -80,14 +83,58 @@
         }
         .btn-primary:hover { background: #e6c55c; }
 
+        /* Footer Styles */
         footer {
             background: #000;
             text-align: center;
-            padding: 1.5rem;
-            font-size: 0.8rem;
-            color: #666;
+            padding: 2.5rem 1.5rem 1.5rem;
             border-top: 1px solid #222;
+        }
+        .footer-tagline {
+            color: #d4af37;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+        .footer-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            color: #aaa;
             letter-spacing: 1px;
+        }
+        .footer-info a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-info a:hover {
+            color: #d4af37;
+        }
+        .footer-separator {
+            color: #333;
+        }
+        .copyright {
+            font-size: 0.75rem;
+            color: #555;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Responsive spacing for mobile */
+        @media (max-width: 600px) {
+            .footer-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .footer-separator {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -107,7 +154,19 @@
     </section>
 
     <footer>
-        &copy; 2026 Alivèra Atelier. All Rights Reserved.
+        <div class="footer-tagline">Where Art Meets Elegance</div>
+        
+        <div class="footer-info">
+            <span>Location: India</span>
+            <span class="footer-separator">|</span>
+            <a href="mailto:hello@aliveraatelier.in">Email: hello@aliveraatelier.in</a>
+            <span class="footer-separator">|</span>
+            <a href="https://instagram.com/aliveraatelier" target="_blank" rel="noopener noreferrer">Instagram: @AlivèraAtelier</a>
+        </div>
+
+        <div class="copyright">
+            &copy; 2026 Alivèra Atelier. All Rights Reserved.
+        </div>
     </footer>
 
 </body>
