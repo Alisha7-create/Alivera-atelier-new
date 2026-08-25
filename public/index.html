@@ -21,19 +21,18 @@
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .hero { text-align: center; padding: 50px 20px; border-bottom: 1px solid #222; margin-bottom: 40px; }
         .hero h1 { color: #d4af37; font-size: 26px; letter-spacing: 3px; margin-bottom: 15px; }
-        
+
         .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .empty-catalog { text-align: center; color: #777; grid-column: 1 / -1; padding: 50px; font-size: 14px; letter-spacing: 1px; }
         .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; padding: 20px; }
         .product-img { width: 100%; height: 300px; object-fit: cover; background: #1a1a1a; border-radius: 4px; }
         .product-title { font-size: 16px; letter-spacing: 1px; color: #fff; margin: 15px 0 8px; }
         .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 12px; }
         
-        .pincode-section { margin-top: 15px; display: flex; gap: 8px; }
-        .pincode-input { flex: 1; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; }
+        .custom-input { width: 100%; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 11px; box-sizing: border-box; margin-bottom: 8px; }
         
-        /* Modal Overlay */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 420px; text-align: center; position: relative; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 420px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #888; cursor: pointer; font-size: 18px; }
     </style>
 </head>
@@ -53,54 +52,86 @@
     <div class="container">
         <div class="hero">
             <h1>We bring custom sized luxury dresses, for comfort and confidence</h1>
-            <p style="color: #888; font-size: 13px; letter-spacing: 1px;">Browse our collections, view pricing, check delivery pincodes, and examine size guides freely.</p>
+            <p style="color: #888; font-size: 13px; letter-spacing: 1px;">Browse collections, view pricing, check size charts, and verify delivery availability.</p>
         </div>
 
-        <div class="catalog-grid">
-            <!-- Sample Dress 1 -->
-            <div class="product-card">
-                <img src="/logo.png" alt="Velvet Royal Anarkali" class="product-img">
-                <div class="product-title">Velvet Royal Anarkali</div>
-                <div class="product-price">₹28,500</div>
-                <button class="link-item" style="color: #d4af37; font-size: 11px;" onclick="openSizeChart()">View Size Guide</button>
-                
-                <div class="pincode-section">
-                    <input type="text" class="pincode-input" id="pin-1" placeholder="Enter Pincode">
-                    <button class="btn" style="padding: 8px 12px; font-size: 10px;" onclick="checkPin('pin-1', 'msg-1')">Check</button>
-                </div>
-                <div id="msg-1" style="font-size: 11px; margin-top: 6px;"></div>
+        <div class="catalog-grid" id="live-catalog">
+            <div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the atelier.</div>
+        </div>
+    </div>
 
-                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="handleAddToCart('Velvet Royal Anarkali', 28500)">Add to Cart</button>
+    <!-- Size Chart Image Modal -->
+    <div id="size-chart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h3 style="color: #d4af37; letter-spacing: 2px;">SIZE CHART</h3>
+            <div id="size-chart-container" style="margin-top: 15px;">
+                <p style="color: #aaa; font-size: 12px;">Loading size chart reference...</p>
             </div>
         </div>
     </div>
 
-    <!-- Size Chart Modal -->
-    <div id="size-modal" class="modal">
-        <div class="modal-content">
+    <!-- Address Book & Checkout Modal -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content" style="text-align: left;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h3 style="color: #d4af37; letter-spacing: 2px;">SIZE GUIDE</h3>
-            <p style="font-size: 13px; color: #aaa; text-align: left; line-height: 1.6;">
-                • Small (S): Bust 34", Waist 28"<br>
-                • Medium (M): Bust 36", Waist 30"<br>
-                • Large (L): Bust 38", Waist 32"<br><br>
-                *Custom sizing adjustments are available upon order placement.
-            </p>
+            <h3 style="color: #d4af37; letter-spacing: 1px; text-align: center;">SELECT DELIVERY ADDRESS</h3>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Choose from your saved addresses or add a new delivery location.</p>
+            
+            <div id="address-list" style="margin-bottom: 15px;">
+                <!-- Saved addresses rendered here -->
+            </div>
+
+            <div style="border-top: 1px solid #222; padding-top: 15px;">
+                <label style="font-size: 10px; color: #d4af37; letter-spacing: 1px;">ADD NEW ADDRESS</label>
+                <input type="text" id="new-addr" class="custom-input" placeholder="Full street address, city, pincode">
+                <button class="btn" style="width: 100%; margin-top: 5px;" onclick="addNewAddress()">Save & Use Address</button>
+            </div>
+
+            <button class="btn" style="width: 100%; margin-top: 20px; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
         </div>
     </div>
 
-    <!-- Auth Guard Modal (Triggers if trying to buy without sign-in) -->
+    <!-- Auth Guard Modal -->
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
             <h3 style="color: #d4af37; letter-spacing: 1px;">SIGN IN REQUIRED</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 25px;">Please sign in to your account to add items to your cart and process custom luxury orders.</p>
-            <a href="/login.html" class="btn" style="display: block; text-align: center; box-sizing: border-box;">Proceed to Sign In</a>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 25px;">Please sign in to your account to add items to your cart and place custom orders.</p>
+            <a href="/login.html" class="btn" style="display: block; text-align: center; box-sizing: border-box;">Sign In Now</a>
         </div>
     </div>
 
     <script>
         let cart = [];
+        let savedAddresses = ["Flat 402, Royal Palms, Bandra West, Mumbai - 400050", "Villa 12, Golf Course Road, Gurgaon - 122002"];
+        let selectedAddressIdx = 0;
+        let activeCatalog = JSON.parse(localStorage.getItem('atelier_products') || '[]');
+
+        function renderCatalog() {
+            const grid = document.getElementById('live-catalog');
+            if (activeCatalog.length === 0) {
+                grid.innerHTML = `<div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the atelier.</div>`;
+                return;
+            }
+
+            grid.innerHTML = activeCatalog.map((p, idx) => `
+                <div class="product-card">
+                    <img src="${p.image || '/logo.png'}" alt="${p.name}" class="product-img">
+                    <div class="product-title">${p.name}</div>
+                    <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
+                    
+                    ${p.sizeChart ? `<button class="link-item" style="color: #d4af37; font-size: 11px; margin-bottom: 10px;" onclick="viewSizeChart(${idx})">View Size Chart</button>` : ''}
+
+                    <div style="margin-top: 10px;">
+                        <label style="font-size: 9px; color: #aaa; letter-spacing: 1px;">TAILORING CUSTOMIZATIONS</label>
+                        <input type="text" class="custom-input" id="cust-spec-${idx}" placeholder="e.g. Custom waist 32in, sleeve length 22in">
+                    </div>
+
+                    <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addToCart(${idx})">Add to Cart</button>
+                </div>
+            `).join('');
+        }
 
         async function checkAuthStatus() {
             try {
@@ -113,50 +144,93 @@
             } catch (e) {}
         }
 
-        function openSizeChart() {
-            document.getElementById('size-modal').style.display = 'flex';
+        function viewSizeChart(idx) {
+            const product = activeCatalog[idx];
+            const container = document.getElementById('size-chart-container');
+            if (product && product.sizeChart) {
+                container.innerHTML = `<img src="${product.sizeChart}" style="width:100%; border-radius:4px; border:1px solid #333;" alt="Size Chart">`;
+            } else {
+                container.innerHTML = `<p style="color:#aaa; font-size:12px;">No size chart image uploaded for this design.</p>`;
+            }
+            document.getElementById('size-chart-modal').style.display = 'flex';
+        }
+
+        async function addToCart(idx) {
+            const res = await fetch('/api/auth/session');
+            const data = await res.json();
+            if (!data.isAuthenticated) {
+                document.getElementById('auth-modal').style.display = 'flex';
+                return;
+            }
+
+            const customNotes = document.getElementById(`cust-spec-${idx}`).value;
+            cart.push({ ...activeCatalog[idx], customNotes });
+            document.getElementById('cart-count').innerText = cart.length;
+            alert(`"${activeCatalog[idx].name}" added to cart with your custom requests.`);
+        }
+
+        function openCartModal() {
+            if (cart.length === 0) {
+                alert("Your cart is empty.");
+                return;
+            }
+
+            const addrList = document.getElementById('address-list');
+            addrList.innerHTML = savedAddresses.map((addr, i) => `
+                <div style="background:#181818; padding:10px; border-radius:4px; margin-bottom:8px; border: 1px solid ${i === selectedAddressIdx ? '#d4af37' : '#333'}; cursor:pointer;" onclick="selectAddress(${i})">
+                    <input type="radio" name="delivery-addr" ${i === selectedAddressIdx ? 'checked' : ''}> <span style="font-size:12px; color:#fff;">${addr}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function selectAddress(i) {
+            selectedAddressIdx = i;
+            openCartModal();
+        }
+
+        function addNewAddress() {
+            const newAddr = document.getElementById('new-addr').value;
+            if (newAddr) {
+                savedAddresses.push(newAddr);
+                selectedAddressIdx = savedAddresses.length - 1;
+                document.getElementById('new-addr').value = '';
+                openCartModal();
+            }
+        }
+
+        async function finalizeOrder() {
+            const orderData = {
+                items: cart,
+                address: savedAddresses[selectedAddressIdx],
+                clientEmail: "hello@aliveraatelier.in",
+                date: new Date().toISOString()
+            };
+
+            await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+
+            // Save order to localStorage for Secret Admin Dashboard monitoring
+            let allOrders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
+            allOrders.push({ id: Date.now().toString().slice(-4), ...orderData, status: 'Processing' });
+            localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
+
+            alert("Order placed successfully! Notification sent to contact@aliveraatelier.in and confirmation processing started via hello@aliveraatelier.in.");
+            cart = [];
+            document.getElementById('cart-count').innerText = 0;
+            closeModals();
         }
 
         function closeModals() {
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
 
-        function checkPin(inputId, msgId) {
-            const val = document.getElementById(inputId).value;
-            const msg = document.getElementById(msgId);
-            if(val.length === 6) {
-                msg.innerText = "✓ Express Delivery Available (3-5 Days)";
-                msg.style.color = "#2ecc71";
-            } else {
-                msg.innerText = "Enter a valid 6-digit pincode.";
-                msg.style.color = "#e74c3c";
-            }
-        }
-
-        async function handleAddToCart(name, price) {
-            const res = await fetch('/api/auth/session');
-            const data = await res.json();
-            
-            if (!data.isAuthenticated) {
-                // If not signed in, show sign-in prompt modal instead of letting them buy
-                document.getElementById('auth-modal').style.display = 'flex';
-                return;
-            }
-
-            cart.push({ name, price });
-            document.getElementById('cart-count').innerText = cart.length;
-            alert(`"${name}" added to your cart.`);
-        }
-
-        function openCartModal() {
-            if (cart.length === 0) {
-                alert("Your cart is empty.");
-            } else {
-                alert(`You have ${cart.length} item(s) in your cart.`);
-            }
-        }
-
         checkAuthStatus();
+        renderCatalog();
     </script>
 </body>
 </html>
