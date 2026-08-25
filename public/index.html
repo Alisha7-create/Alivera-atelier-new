@@ -3,177 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier — Luxury Couture</title>
-    <!-- Fallback handler so if logo.png is missing or named differently, it doesn't throw a broken icon -->
-    <link rel="icon" type="image/png" href="/logo.png" onerror="this.href='data:image/png;base64,'">
+    <title>Sign In - Alivèra Atelier</title>
+    <link rel="icon" type="image/png" href="/logo.png">
     <style>
-        body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; }
-        header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 100; }
-        .logo-area { display: flex; align-items: center; gap: 15px; text-decoration: none; }
-        .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; box-shadow: 0 0 10px rgba(212,175,55,0.3); }
-        .brand-title { font-size: 18px; letter-spacing: 3px; color: #d4af37; font-weight: bold; }
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; transition: background 0.3s; font-size: 12px; }
-        .btn:hover { background: #c59b27; }
-        .link-item { color: #aaa; text-decoration: none; font-size: 13px; letter-spacing: 1px; cursor: pointer; }
-        .link-item:hover { color: #d4af37; }
+        body { 
+            font-family: 'Cinzel', serif, Arial, sans-serif; 
+            background: #0a0a0a; 
+            color: #f5f5f5; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh; 
+        }
         
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .hero { text-align: center; padding: 60px 20px; border-bottom: 1px solid #222; margin-bottom: 40px; }
-        .hero h1 { color: #d4af37; font-size: 28px; letter-spacing: 3px; margin-bottom: 15px; }
-        .hero p { color: #888; letter-spacing: 1px; font-size: 14px; }
+        /* Top brand header matching your screenshot */
+        .top-brand {
+            width: 100%;
+            text-align: center;
+            padding: 25px 0;
+            border-bottom: 1px solid #d4af37;
+            color: #d4af37;
+            font-size: 20px;
+            letter-spacing: 4px;
+            font-weight: bold;
+        }
 
-        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; overflow: hidden; transition: border-color 0.3s; }
-        .product-card:hover { border-color: #d4af37; }
-        .product-info { padding: 20px; }
-        .product-title { font-size: 15px; letter-spacing: 1px; color: #fff; margin-bottom: 8px; }
-        .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 12px; }
-        
-        .customization-box { margin-top: 15px; background: #181818; padding: 12px; border-radius: 4px; border: 1px solid #333; }
-        .customization-box label { display: block; font-size: 11px; color: #d4af37; letter-spacing: 1px; margin-bottom: 5px; }
-        .custom-input { width: 100%; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 11px; box-sizing: border-box; margin-bottom: 8px; }
-        .custom-input:focus { border-color: #d4af37; outline: none; }
+        .login-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
 
-        .pincode-section { margin-top: 15px; display: flex; gap: 8px; }
-        .pincode-input { flex: 1; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; }
-        
-        .modal { display: none; position: fixed; top: 0; center; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 400px; text-align: center; }
+        .card { 
+            background: #121212; 
+            border: 1px solid #222; 
+            padding: 40px; 
+            border-radius: 4px; 
+            width: 400px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9); 
+            text-align: center; 
+        }
+
+        .logo-img { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 1px solid #d4af37; 
+            box-shadow: 0 0 20px rgba(212,175,55,0.4); 
+            margin-bottom: 20px; 
+        }
+
+        h2 { 
+            color: #f5f5f5; 
+            letter-spacing: 3px; 
+            font-size: 22px; 
+            margin-bottom: 30px; 
+            font-weight: normal;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 10px;
+            color: #aaa;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            background: #f8f9fc; 
+            border: 1px solid #ccc; 
+            color: #111; 
+            border-radius: 3px; 
+            box-sizing: border-box; 
+            font-size: 14px;
+        }
+
+        input:focus { 
+            border-color: #d4af37; 
+            outline: none; 
+        }
+
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background: #d4af37; 
+            color: #0a0a0a; 
+            border: none; 
+            border-radius: 3px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            letter-spacing: 2px; 
+            margin-top: 10px; 
+            transition: background 0.3s; 
+            font-size: 13px;
+        }
+
+        button:hover { 
+            background: #c59b27; 
+        }
+
+        .back-link { 
+            display: inline-block; 
+            margin-top: 25px; 
+            color: #888; 
+            font-size: 11px; 
+            text-decoration: none; 
+            letter-spacing: 1px; 
+        }
+        .back-link:hover { 
+            color: #d4af37; 
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <a href="/" class="logo-area">
-            <!-- Absolute path with onerror fallback to ensure image icon renders gracefully -->
+    <div class="top-brand">ALIVÈRA ATELIER</div>
+
+    <div class="login-wrapper">
+        <div class="card">
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-            <div class="brand-title">ALIVÈRA ATELIER</div>
-        </a>
-        <div class="nav-links" id="header-auth-area">
-            <span class="link-item" onclick="openCart()">Cart (<span id="cart-count">0</span>)</span>
-            <a href="/login.html" class="btn" id="auth-action-btn">Sign In</a>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="hero">
-            <h1>We bring custom sized luxury dresses, for comfort and confidence</h1>
-            <p>Explore our exclusive collection. Check size charts, pricing, delivery availability, and add custom tailoring notes to your order.</p>
-        </div>
-
-        <div class="catalog-grid" id="dress-catalog">
-            <div class="product-card">
-                <div style="background:#1a1a1a; height:300px; display:flex; align-items:center; justify-content:center; color:#555; letter-spacing:1px; font-size:12px;">[Dress Image Preview]</div>
-                <div class="product-info">
-                    <div class="product-title">Velvet Royal Anarkali</div>
-                    <div class="product-price">₹28,500</div>
-                    <button class="link-item" style="color: #d4af37; background:none; border:none; padding:0; font-size:12px;" onclick="viewSizeChart()">View Size Chart</button>
-                    
-                    <!-- Customization requirements input -->
-                    <div class="customization-box">
-                        <label>CUSTOM SIZING & TAILORING REQUESTS</label>
-                        <input type="text" class="custom-input" id="cust-waist" placeholder="Change waist size to...">
-                        <input type="text" class="custom-input" id="cust-sleeves" placeholder="Change sleeve size to...">
-                        <input type="text" class="custom-input" id="cust-length" placeholder="Change length/skirt size to...">
-                    </div>
-
-                    <div class="pincode-section">
-                        <input type="text" class="pincode-input" id="pin-1" placeholder="Pincode">
-                        <button class="btn" style="padding: 8px 12px; font-size: 10px;" onclick="checkDelivery('pin-1')">Check</button>
-                    </div>
-                    <div id="delivery-msg-1" style="font-size:11px; margin-top:8px; color:#2ecc71;"></div>
-
-                    <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addToCart('Velvet Royal Anarkali', 28500)">Add to Cart</button>
+            <h2>SIGN IN</h2>
+            
+            <form id="signin-form">
+                <div class="input-group">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" id="signin-email" value="hello@aliveraatelier.in" required>
                 </div>
-            </div>
-        </div>
-    </div>
+                
+                <div class="input-group">
+                    <label>PASSWORD</label>
+                    <input type="password" id="signin-password" value="••••••••" required>
+                </div>
 
-    <!-- Auth Guard Modal -->
-    <div id="auth-modal" class="modal">
-        <div class="modal-content">
-            <h3 style="color: #d4af37; letter-spacing: 1px; margin-top:0;">AUTHENTICATION REQUIRED</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">Please sign in to your account to proceed with your luxury order.</p>
-            <a href="/login.html" class="btn" style="display: block; margin-bottom: 10px; text-align:center; box-sizing:border-box;">Sign In Now</a>
-            <span class="link-item" onclick="closeModal()">Continue Browsing</span>
+                <button type="submit">SIGN IN</button>
+            </form>
+
+            <a href="/" class="back-link">← Return to Storefront</a>
         </div>
     </div>
 
     <script>
-        let cartItems = [];
+        document.getElementById('signin-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
 
-        // Dynamically update header if admin session is active
-        async function verifyHeaderSession() {
             try {
-                const res = await fetch('/api/auth/session');
-                const data = await res.json();
-                const authArea = document.getElementById('auth-action-btn');
-
-                if (data.isAuthenticated) {
-                    authArea.outerHTML = `<a href="/admin/" class="btn" style="background: transparent; border: 1px solid #d4af37; color: #d4af37;">Alisha | Admin Dashboard</a>`;
-                }
-            } catch (err) {
-                console.error("Session check error");
-            }
-        }
-
-        function checkDelivery(inputId) {
-            const val = document.getElementById(inputId).value;
-            const msg = document.getElementById('delivery-msg-1');
-            if(val.length === 6) {
-                msg.innerText = "✓ Express Delivery Available (3-5 Days)";
-                msg.style.color = "#2ecc71";
-            } else {
-                msg.innerText = "Please enter a valid 6-digit pincode.";
-                msg.style.color = "#e74c3c";
-            }
-        }
-
-        function viewSizeChart() {
-            alert("Size Chart Guide:\n• Bust: S(34), M(36), L(38), XL(40)\n• Custom sizing options can be typed directly into the tailoring boxes on each product card before adding to cart.");
-        }
-
-        async function addToCart(name, price) {
-            try {
-                const res = await fetch('/api/auth/session');
-                const data = await res.json();
-                
-                if (!data.isAuthenticated) {
-                    document.getElementById('auth-modal').style.display = 'flex';
-                    return;
-                }
-
-                const waistReq = document.getElementById('cust-waist').value;
-                const sleeveReq = document.getElementById('cust-sleeves').value;
-                const lengthReq = document.getElementById('cust-length').value;
-
-                cartItems.push({ 
-                    name, 
-                    price, 
-                    customizations: { waist: waistReq, sleeves: sleeveReq, length: lengthReq } 
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
                 });
-                
-                document.getElementById('cart-count').innerText = cartItems.length;
-                alert(`"${name}" with custom tailoring specs added to your cart.`);
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    // Instantly takes you straight to your secure admin panel
+                    window.location.href = '/admin/';
+                } else {
+                    alert(data.error || 'Invalid credentials');
+                }
             } catch (err) {
-                document.getElementById('auth-modal').style.display = 'flex';
+                alert('Network connection error.');
             }
-        }
-
-        function openCart() {
-            if(cartItems.length === 0) {
-                alert("Your cart is currently empty.");
-            } else {
-                alert(`You have ${cartItems.length} custom luxury item(s) in your cart.`);
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('auth-modal').style.display = 'none';
-        }
-
-        verifyHeaderSession();
+        });
     </script>
 </body>
 </html>
