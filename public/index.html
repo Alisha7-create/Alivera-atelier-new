@@ -25,7 +25,6 @@
         .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
         .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; overflow: hidden; transition: border-color 0.3s; }
         .product-card:hover { border-color: #d4af37; }
-        .product-img { width: 100%; height: 350px; object-fit: cover; background: #1a1a1a; }
         .product-info { padding: 20px; }
         .product-title { font-size: 15px; letter-spacing: 1px; color: #fff; margin-bottom: 8px; }
         .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 15px; }
@@ -33,7 +32,6 @@
         .pincode-section { margin-top: 15px; display: flex; gap: 8px; }
         .pincode-input { flex: 1; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; }
         
-        /* Modal & Cart styles */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 400px; text-align: center; }
     </style>
@@ -45,23 +43,21 @@
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
-        <div class="nav-links">
+        <div class="nav-links" id="header-auth-area">
             <span class="link-item" onclick="openCart()">Cart (<span id="cart-count">0</span>)</span>
-            <a href="/login.html" class="btn">Sign In / Register</a>
+            <a href="/login.html" class="btn" id="auth-action-btn">Sign In</a>
         </div>
     </header>
 
     <div class="container">
         <div class="hero">
             <h1>HAUTE COUTURE COLLECTION</h1>
-            <p>Explore our exclusive handcrafted garments. Select a piece to view size charts, pricing, and delivery availability.</p>
+            <p>Explore our exclusive handcrafted garments. Check size charts, pricing, and delivery availability.</p>
         </div>
 
-        <!-- Catalog Grid -->
         <div class="catalog-grid" id="dress-catalog">
-            <!-- Sample Dress Card -->
             <div class="product-card">
-                <div style="background:#222; height:350px; display:flex; align-items:center; justify-content:center; color:#555;">[Dress Image Preview]</div>
+                <div style="background:#1a1a1a; height:320px; display:flex; align-items:center; justify-content:center; color:#555; letter-spacing:1px; font-size:12px;">[Dress Image Preview]</div>
                 <div class="product-info">
                     <div class="product-title">Velvet Royal Anarkali</div>
                     <div class="product-price">₹28,500</div>
@@ -79,12 +75,12 @@
         </div>
     </div>
 
-    <!-- Auth Guard Modal (Triggers if trying to checkout/cart unauthenticated) -->
+    <!-- Auth Guard Modal -->
     <div id="auth-modal" class="modal">
         <div class="modal-content">
-            <h3 style="color: #d4af37; letter-spacing: 1px;">AUTHENTICATION REQUIRED</h3>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">Please sign in or create an account to proceed with your luxury order.</p>
-            <a href="/login.html" class="btn" style="display: block; margin-bottom: 10px;">Sign In Now</a>
+            <h3 style="color: #d4af37; letter-spacing: 1px; margin-top:0;">AUTHENTICATION REQUIRED</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">Please sign in to your account to proceed with your luxury order.</p>
+            <a href="/login.html" class="btn" style="display: block; margin-bottom: 10px; text-align:center; box-sizing:border-box;">Sign In Now</a>
             <span class="link-item" onclick="closeModal()">Continue Browsing</span>
         </div>
     </div>
@@ -92,11 +88,28 @@
     <script>
         let cartItems = [];
 
+        // Check if Admin (Alisha) is logged in to dynamically update header
+        async function verifyHeaderSession() {
+            try {
+                const res = await fetch('/api/auth/session');
+                const data = await res.json();
+                const authArea = document.getElementById('auth-action-btn');
+
+                if (data.isAuthenticated) {
+                    // Instantly transforms top right into Alisha's private admin link!
+                    authArea.outerHTML = `<a href="/admin/" class="btn" style="background: transparent; border: 1px solid #d4af37; color: #d4af37;">Alisha | Admin Dashboard</a>`;
+                }
+            } catch (err) {
+                console.error("Session check error");
+            }
+        }
+
         function checkDelivery(inputId) {
             const val = document.getElementById(inputId).value;
             const msg = document.getElementById('delivery-msg-1');
             if(val.length === 6) {
                 msg.innerText = "✓ Express Delivery Available (3-5 Days)";
+                msg.style.color = "#2ecc71";
             } else {
                 msg.innerText = "Please enter a valid 6-digit pincode.";
                 msg.style.color = "#e74c3c";
@@ -104,17 +117,15 @@
         }
 
         function viewSizeChart() {
-            alert("Size Chart: Bust (34-40 in), Waist (28-34 in), Length (58 in). Custom sizing available upon request.");
+            alert("Size Chart: Bust (34-40 in), Waist (28-34 in), Length (58 in). Custom sizing available.");
         }
 
         async function addToCart(name, price) {
-            // Check session first
             try {
                 const res = await fetch('/api/auth/session');
                 const data = await res.json();
                 
                 if (!data.isAuthenticated) {
-                    // Trigger Sign-in modal guard
                     document.getElementById('auth-modal').style.display = 'flex';
                     return;
                 }
@@ -131,13 +142,15 @@
             if(cartItems.length === 0) {
                 alert("Your cart is currently empty.");
             } else {
-                alert(`You have ${cartItems.length} item(s) in your cart ready for checkout.`);
+                alert(`You have ${cartItems.length} item(s) in your cart.`);
             }
         }
 
         function closeModal() {
             document.getElementById('auth-modal').style.display = 'none';
         }
+
+        verifyHeaderSession();
     </script>
 </body>
 </html>
