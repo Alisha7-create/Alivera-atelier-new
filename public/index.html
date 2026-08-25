@@ -47,7 +47,8 @@
 </head>
 <body>
 
-    <div class="promo-banner">
+    <!-- Promotional Discount & Time Period Banner -->
+    <div class="promo-banner" id="promo-banner">
         ✨ LIMITED TIME OFFER: USE CODE 'LUXURY10' FOR 10% OFF (LIMITED TO FIRST 5 CLIENTS) ✨
     </div>
 
@@ -73,17 +74,29 @@
         </div>
     </div>
 
-    <!-- Sign In Modal (Unified for Customers & Admin) -->
+    <!-- Sign In & Register Modal (Unified for Customers & Admin) -->
     <div id="auth-signin-modal" class="modal">
         <div class="modal-content" style="text-align: left;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h3 style="color: #d4af37; letter-spacing: 1px; text-align: center;">SIGN IN TO ATELIER</h3>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 20px; text-align: center;">Enter your email to access your account, track orders, or manage the boutique.</p>
             
+            <div id="modal-title-view" style="text-align: center; margin-bottom: 15px;">
+                <h3 id="modal-heading" style="color: #d4af37; letter-spacing: 1px; margin-bottom: 5px;">SIGN IN TO ATELIER</h3>
+                <p id="modal-subtext" style="font-size: 11px; color: #aaa;">Enter your email to access your account and track orders.</p>
+            </div>
+            
+            <div id="register-name-wrap" style="display: none;">
+                <label>FULL NAME</label>
+                <input type="text" id="signup-name" class="custom-input" placeholder="e.g. Ananya Sharma">
+            </div>
+
             <label>EMAIL ADDRESS</label>
             <input type="email" id="signin-email" class="custom-input" placeholder="e.g. hello@aliveraatelier.in">
             
-            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="handleSignIn()">Sign In</button>
+            <button class="btn" id="auth-action-btn" style="width: 100%; margin-top: 15px;" onclick="handleAuthSubmit()">Sign In</button>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="link-item" id="auth-toggle-btn" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37;">New to Alivèra Atelier? Create a new account</button>
+            </div>
         </div>
     </div>
 
@@ -128,6 +141,7 @@
         let savedAddresses = [];
         let selectedAddressIdx = 0;
         let activeCatalog = JSON.parse(localStorage.getItem('atelier_products') || '[]');
+        let isRegistering = false;
 
         function renderCatalog() {
             const grid = document.getElementById('live-catalog');
@@ -177,7 +191,8 @@
                 const nav = document.getElementById('header-nav');
                 if (data.isAuthenticated) {
                     const userEmail = localStorage.getItem('atelier_user_email') || 'Client';
-                    const displayName = userEmail === 'hello@aliveraatelier.in' ? 'Alivèra Atelier' : userEmail.split('@')[0];
+                    const storedName = localStorage.getItem('atelier_user_name');
+                    const displayName = storedName ? storedName : (userEmail === 'hello@aliveraatelier.in' ? 'Alivèra Atelier' : userEmail.split('@')[0]);
                     
                     let adminButtonHtml = userEmail === 'hello@aliveraatelier.in' 
                         ? `<a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>` 
@@ -194,13 +209,49 @@
         }
 
         function openAuthModal() {
+            isRegistering = false;
+            updateAuthModalView();
             document.getElementById('auth-signin-modal').style.display = 'flex';
         }
 
-        async function handleSignIn() {
+        function toggleAuthMode() {
+            isRegistering = !isRegistering;
+            updateAuthModalView();
+        }
+
+        function updateAuthModalView() {
+            const heading = document.getElementById('modal-heading');
+            const subtext = document.getElementById('modal-subtext');
+            const nameWrap = document.getElementById('register-name-wrap');
+            const actionBtn = document.getElementById('auth-action-btn');
+            const toggleBtn = document.getElementById('auth-toggle-btn');
+
+            if (isRegistering) {
+                heading.innerText = 'CREATE ACCOUNT';
+                subtext.innerText = 'Register your profile with your name and email.';
+                nameWrap.style.display = 'block';
+                actionBtn.innerText = 'Create Account & Sign In';
+                toggleBtn.innerText = 'Already have an account? Sign In';
+            } else {
+                heading.innerText = 'SIGN IN TO ATELIER';
+                subtext.innerText = 'Enter your email to access your account and track orders.';
+                nameWrap.style.display = 'none';
+                actionBtn.innerText = 'Sign In';
+                toggleBtn.innerText = 'New to Alivèra Atelier? Create a new account';
+            }
+        }
+
+        async function handleAuthSubmit() {
             const email = document.getElementById('signin-email').value;
+            const name = document.getElementById('signup-name').value;
+
             if (!email) {
                 alert("Please enter your email address.");
+                return;
+            }
+
+            if (isRegistering && !name) {
+                alert("Please enter your name to create an account.");
                 return;
             }
 
@@ -212,17 +263,21 @@
 
             if (response.ok) {
                 localStorage.setItem('atelier_user_email', email.trim().toLowerCase());
+                if (isRegistering && name) {
+                    localStorage.setItem('atelier_user_name', name.trim());
+                }
                 closeModals();
                 checkAuthStatus();
-                alert(`Welcome, ${email}! You are successfully signed in.`);
+                alert(isRegistering ? `Account successfully created! Welcome, ${name}.` : `Welcome back, ${email}!`);
             } else {
-                alert("Sign in failed. Please check your email.");
+                alert("Authentication failed. Please check your details.");
             }
         }
 
         async function logout() {
             await fetch('/api/auth/logout', { method: 'POST' });
             localStorage.removeItem('atelier_user_email');
+            localStorage.removeItem('atelier_user_name');
             window.location.reload();
         }
 
