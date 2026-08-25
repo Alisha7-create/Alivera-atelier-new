@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Luxury Couture</title>
-    <link rel="icon" type="image/png" href="/logo.png">
+    <!-- Fallback handler so if logo.png is missing or named differently, it doesn't throw a broken icon -->
+    <link rel="icon" type="image/png" href="/logo.png" onerror="this.href='data:image/png;base64,'">
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; }
         header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 100; }
@@ -19,20 +20,25 @@
         
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .hero { text-align: center; padding: 60px 20px; border-bottom: 1px solid #222; margin-bottom: 40px; }
-        .hero h1 { color: #d4af37; font-size: 32px; letter-spacing: 4px; margin-bottom: 10px; }
-        .hero p { color: #888; letter-spacing: 1px; font-size: 13px; }
+        .hero h1 { color: #d4af37; font-size: 28px; letter-spacing: 3px; margin-bottom: 15px; }
+        .hero p { color: #888; letter-spacing: 1px; font-size: 14px; }
 
-        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; overflow: hidden; transition: border-color 0.3s; }
         .product-card:hover { border-color: #d4af37; }
         .product-info { padding: 20px; }
         .product-title { font-size: 15px; letter-spacing: 1px; color: #fff; margin-bottom: 8px; }
-        .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 15px; }
+        .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 12px; }
         
+        .customization-box { margin-top: 15px; background: #181818; padding: 12px; border-radius: 4px; border: 1px solid #333; }
+        .customization-box label { display: block; font-size: 11px; color: #d4af37; letter-spacing: 1px; margin-bottom: 5px; }
+        .custom-input { width: 100%; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 11px; box-sizing: border-box; margin-bottom: 8px; }
+        .custom-input:focus { border-color: #d4af37; outline: none; }
+
         .pincode-section { margin-top: 15px; display: flex; gap: 8px; }
         .pincode-input { flex: 1; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
+        .modal { display: none; position: fixed; top: 0; center; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 400px; text-align: center; }
     </style>
 </head>
@@ -40,6 +46,7 @@
 
     <header>
         <a href="/" class="logo-area">
+            <!-- Absolute path with onerror fallback to ensure image icon renders gracefully -->
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
@@ -51,20 +58,28 @@
 
     <div class="container">
         <div class="hero">
-            <h1>HAUTE COUTURE COLLECTION</h1>
-            <p>Explore our exclusive handcrafted garments. Check size charts, pricing, and delivery availability.</p>
+            <h1>We bring custom sized luxury dresses, for comfort and confidence</h1>
+            <p>Explore our exclusive collection. Check size charts, pricing, delivery availability, and add custom tailoring notes to your order.</p>
         </div>
 
         <div class="catalog-grid" id="dress-catalog">
             <div class="product-card">
-                <div style="background:#1a1a1a; height:320px; display:flex; align-items:center; justify-content:center; color:#555; letter-spacing:1px; font-size:12px;">[Dress Image Preview]</div>
+                <div style="background:#1a1a1a; height:300px; display:flex; align-items:center; justify-content:center; color:#555; letter-spacing:1px; font-size:12px;">[Dress Image Preview]</div>
                 <div class="product-info">
                     <div class="product-title">Velvet Royal Anarkali</div>
                     <div class="product-price">₹28,500</div>
                     <button class="link-item" style="color: #d4af37; background:none; border:none; padding:0; font-size:12px;" onclick="viewSizeChart()">View Size Chart</button>
                     
+                    <!-- Customization requirements input -->
+                    <div class="customization-box">
+                        <label>CUSTOM SIZING & TAILORING REQUESTS</label>
+                        <input type="text" class="custom-input" id="cust-waist" placeholder="Change waist size to...">
+                        <input type="text" class="custom-input" id="cust-sleeves" placeholder="Change sleeve size to...">
+                        <input type="text" class="custom-input" id="cust-length" placeholder="Change length/skirt size to...">
+                    </div>
+
                     <div class="pincode-section">
-                        <input type="text" class="pincode-input" id="pin-1" placeholder="Enter Pincode">
+                        <input type="text" class="pincode-input" id="pin-1" placeholder="Pincode">
                         <button class="btn" style="padding: 8px 12px; font-size: 10px;" onclick="checkDelivery('pin-1')">Check</button>
                     </div>
                     <div id="delivery-msg-1" style="font-size:11px; margin-top:8px; color:#2ecc71;"></div>
@@ -88,7 +103,7 @@
     <script>
         let cartItems = [];
 
-        // Check if Admin (Alisha) is logged in to dynamically update header
+        // Dynamically update header if admin session is active
         async function verifyHeaderSession() {
             try {
                 const res = await fetch('/api/auth/session');
@@ -96,7 +111,6 @@
                 const authArea = document.getElementById('auth-action-btn');
 
                 if (data.isAuthenticated) {
-                    // Instantly transforms top right into Alisha's private admin link!
                     authArea.outerHTML = `<a href="/admin/" class="btn" style="background: transparent; border: 1px solid #d4af37; color: #d4af37;">Alisha | Admin Dashboard</a>`;
                 }
             } catch (err) {
@@ -117,7 +131,7 @@
         }
 
         function viewSizeChart() {
-            alert("Size Chart: Bust (34-40 in), Waist (28-34 in), Length (58 in). Custom sizing available.");
+            alert("Size Chart Guide:\n• Bust: S(34), M(36), L(38), XL(40)\n• Custom sizing options can be typed directly into the tailoring boxes on each product card before adding to cart.");
         }
 
         async function addToCart(name, price) {
@@ -130,9 +144,18 @@
                     return;
                 }
 
-                cartItems.push({ name, price });
+                const waistReq = document.getElementById('cust-waist').value;
+                const sleeveReq = document.getElementById('cust-sleeves').value;
+                const lengthReq = document.getElementById('cust-length').value;
+
+                cartItems.push({ 
+                    name, 
+                    price, 
+                    customizations: { waist: waistReq, sleeves: sleeveReq, length: lengthReq } 
+                });
+                
                 document.getElementById('cart-count').innerText = cartItems.length;
-                alert(`"${name}" added to your cart.`);
+                alert(`"${name}" with custom tailoring specs added to your cart.`);
             } catch (err) {
                 document.getElementById('auth-modal').style.display = 'flex';
             }
@@ -142,7 +165,7 @@
             if(cartItems.length === 0) {
                 alert("Your cart is currently empty.");
             } else {
-                alert(`You have ${cartItems.length} item(s) in your cart.`);
+                alert(`You have ${cartItems.length} custom luxury item(s) in your cart.`);
             }
         }
 
