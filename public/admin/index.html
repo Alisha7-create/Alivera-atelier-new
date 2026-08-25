@@ -45,25 +45,25 @@
 
     <div class="container">
         
-        <!-- Promotional Discount & Banner Control -->
+        <!-- First-Come First-Served Promo & Banner Control -->
         <div class="admin-section">
-            <h2>PROMOTIONAL DISCOUNT & BANNER CONTROL</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure the active banner text, discount code, capacity limit, and track redemptions.</p>
+            <h2>FIRST-COME FIRST-SERVED PROMO CONTROL</h2>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Set the limit for how many customers can redeem the promo code. It locks automatically once reached.</p>
             
             <label>BANNER TEXT DISPLAY</label>
-            <input type="text" id="admin-banner-text" class="custom-input" placeholder="e.g. ✨ LIMITED TIME: USE CODE 'LUXURY10' FOR 10% OFF ✨">
+            <input type="text" id="admin-banner-text" class="custom-input" placeholder="e.g. ✨ FIRST 5 CUSTOMERS: USE 'LUXURY10' FOR 10% OFF ✨">
 
             <label>DISCOUNT CODE</label>
             <input type="text" id="admin-promo-code" class="custom-input" placeholder="e.g. LUXURY10">
 
-            <label>MAXIMUM ALLOWED USERS / CUSTOMERS</label>
+            <label>MAXIMUM FIRST-COME CUSTOMERS</label>
             <input type="number" id="admin-max-uses" class="custom-input" min="1" value="5">
 
             <div style="margin: 15px 0; font-size: 12px; color: #fff;">
-                <strong>Live Usage Status:</strong> <span id="admin-usage-count" style="color: #d4af37; font-weight: bold;">0 / 5 redeemed</span>
+                <strong>Live Redemptions Count:</strong> <span id="admin-usage-count" style="color: #d4af37; font-weight: bold;">0 / 5 redeemed</span>
             </div>
 
-            <button class="btn" style="width: 100%; margin-top: 5px;" onclick="savePromoSettings()">Save & Update Live Banner</button>
+            <button class="btn" style="width: 100%; margin-top: 5px;" onclick="savePromoSettings()">Save & Update Storefront</button>
         </div>
 
         <!-- Add New Product Section -->
@@ -126,7 +126,7 @@
         }
 
         function loadAdminPromoSettings() {
-            const settings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"bannerText": "✨ USE CODE LUXURY10 FOR 10% OFF ✨", "code": "LUXURY10", "maxUses": 5, "currentUses": 0}');
+            const settings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"bannerText": "✨ FIRST 5 CUSTOMERS: USE CODE LUXURY10 FOR 10% OFF ✨", "code": "LUXURY10", "maxUses": 5, "currentUses": 0}');
             document.getElementById('admin-banner-text').value = settings.bannerText || "";
             document.getElementById('admin-promo-code').value = settings.code || "";
             document.getElementById('admin-max-uses').value = settings.maxUses || 5;
@@ -144,7 +144,7 @@
             const updated = { bannerText, code, maxUses, currentUses };
             localStorage.setItem('atelier_promo_settings', JSON.stringify(updated));
             
-            alert("Promotion settings successfully updated on storefront!");
+            alert("First-come promo settings successfully updated!");
             loadAdminPromoSettings();
         }
 
