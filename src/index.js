@@ -4,15 +4,12 @@ export default {
     const path = url.pathname;
 
     // --- AUTHENTICATION API ROUTES ---
-    
-    // 1. Handle Login
     if (path === '/api/auth/login' && request.method === 'POST') {
       try {
         const { email, password } = await request.json();
         
-        // Secure Admin Credentials Check
-        if (email === 'hello@aliveraatelier.in' && password === 'Alivera@123') {
-          // Set a secure session cookie valid for 7 days
+        // Admin credentials check (Change these if needed)
+        if (email.trim().toLowerCase() === 'hello@aliveraatelier.in' && password === 'Alivera@123') {
           return new Response(JSON.stringify({ success: true }), {
             status: 200,
             headers: {
@@ -34,7 +31,6 @@ export default {
       }
     }
 
-    // 2. Check Session Status
     if (path === '/api/auth/session') {
       const cookieHeader = request.headers.get('Cookie') || '';
       const isAuthenticated = cookieHeader.includes('auth_session=admin_active');
@@ -44,7 +40,6 @@ export default {
       });
     }
 
-    // 3. Handle Logout
     if (path === '/api/auth/logout' && request.method === 'POST') {
       return new Response(JSON.stringify({ success: true }), {
         status: 200,
@@ -56,7 +51,6 @@ export default {
     }
 
     // --- STATIC ASSETS & ADMIN ROUTING ---
-    // Serves index.html, login.html, logo.png, and files inside public/admin/
     try {
       return await env.ASSETS.fetch(request);
     } catch (e) {
