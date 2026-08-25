@@ -38,12 +38,16 @@ export default {
     if (path.startsWith('/admin')) {
       const cookieHeader = request.headers.get('Cookie') || '';
       if (!cookieHeader.includes('auth_session=admin_active')) {
-        // Redirect unauthorized users trying to access admin panel to login page
         return Response.redirect(`${url.origin}/login.html`, 302);
       }
     }
 
-    // --- STATIC ASSETS & PUBLIC PAGES (Storefront, Login, Logo, etc.) ---
+    // --- EXPLICIT ROOT STOREFRONT ROUTING ---
+    if (path === '/') {
+      return env.ASSETS.fetch(new Request(`${url.origin}/index.html`, request));
+    }
+
+    // --- STATIC ASSETS ---
     try {
       return await env.ASSETS.fetch(request);
     } catch (e) {
