@@ -1,22 +1,31 @@
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, error: 'Method not allowed' });
+export default async function handler(request, env) {
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ success: false, error: 'Method not allowed' }), { status: 405 });
   }
 
   try {
-    const { email, password } = req.body;
+    const { email, password } = await request.json();
 
     if (!email || !password) {
-      return res.status(400).json({ success: false, error: 'Email and password are required.' });
+      return new Response(JSON.stringify({ success: false, error: 'Email and password are required.' }), { status: 400 });
     }
 
-    // TODO: Connect your database query here to verify the user
-    // Example: const user = await db.findUser(email, password);
-    // if (!user) return res.status(400).json({ success: false, error: 'Invalid email or password.' });
+    // Safety check if D1 database binding is configured
+    if (!env || !env.DB) {
+      return new Response(JSON.stringify({ success: false, error: 'Database configuration missing on server.' }), { status: 500 });
+    }
 
-    return res.status(200).json({ success: true, message: 'Signed in successfully!' });
+    const user = await env.DB.prepare('SELECT * FROM users WHERE email = ? AND password = ?').bind(email, password).first();
+    if (!user) {
+      return new Response(JSON.stringify({ success: false, error: 'Invalid email or password.' }), { status: 400 });
+    }
+
+    return new Response(JSON.stringify({ success: true, message: 'Signed in successfully!' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (err) {
-    console.error('Login error:', err);
-    return res.status(500).json({ success: false, error: 'Server error during login.' });
+    console.error('Login backend error:', err);
+    return new Response(JSON.stringify({ success: false, error: 'Server error during login.' }), { status: 500 });
   }
 }
