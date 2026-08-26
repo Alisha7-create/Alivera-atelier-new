@@ -45,39 +45,50 @@
 
     <div class="container">
         
-        <!-- Occasion & Promo Image Banner Control -->
+        <!-- Permanent First-Order Control Notice -->
+        <div class="admin-section" style="border-color: #27ae60;">
+            <h2 style="color: #27ae60;">PERMANENT FIRST-ACCOUNT WELCOME DISCOUNT</h2>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">The promo code <strong style="color: #fff;">FIRST10</strong> (10% off) is permanently active for any new customer account on their first order only. Each account can use it strictly once.</p>
+        </div>
+
+        <!-- Additional Promo & Occasion Campaign Control -->
         <div class="admin-section">
-            <h2>PROMO & OCCASION IMAGE BANNER CONTROL</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure promo codes like <strong>FIRST10</strong> for first-time account orders or occasion durations.</p>
+            <h2>ADDITIONAL CAMPAIGN & BANNER CONTROL</h2>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure an extra promotional campaign banner (e.g., limited people or date-to-date range).</p>
             
             <label>BANNER IMAGE (FILE UPLOAD OR URL)</label>
             <input type="file" id="banner-image-file" class="custom-input" accept="image/*" onchange="handleBannerUpload(event)">
             <input type="text" id="admin-banner-image" class="custom-input" placeholder="Or paste banner image URL here">
 
             <label>BANNER ALT / TEXT OVERLAY NOTE</label>
-            <input type="text" id="admin-banner-text" class="custom-input" placeholder="e.g. ✨ WELCOME OFFER: 10% OFF FIRST ORDER | USE CODE: FIRST10 ✨">
+            <input type="text" id="admin-banner-text" class="custom-input" placeholder="e.g. ✨ FESTIVE SALE: USE CODE FESTIVE20 FOR 20% OFF ✨">
 
-            <label>PROMO CODE NAME</label>
-            <input type="text" id="admin-promo-code" class="custom-input" placeholder="e.g. FIRST10">
+            <label>EXTRA PROMO CODE NAME</label>
+            <input type="text" id="admin-promo-code" class="custom-input" placeholder="e.g. FESTIVE20">
 
-            <label>PROMO TYPE</label>
+            <label>CAMPAIGN TYPE</label>
             <select id="admin-promo-type" class="custom-input" onchange="togglePromoTypeFields()">
-                <option value="first-order">First Order Only (Once Per Customer Account)</option>
-                <option value="first-come">First-Come, First-Served (Global User Count Limit)</option>
-                <option value="time-bound">Time-Bound Occasion (Duration in Hours)</option>
+                <option value="first-come">First-Come, First-Served (Limited People Count)</option>
+                <option value="date-range">Date-to-Date Range (Specific Start & End Date)</option>
             </select>
 
-            <div id="field-first-come-wrap" style="display: none;">
-                <label>MAXIMUM ALLOWED CUSTOMERS</label>
-                <input type="number" id="admin-max-uses" class="custom-input" min="1" value="5">
+            <div id="field-first-come-wrap">
+                <label>MAXIMUM ALLOWED CUSTOMERS (PEOPLE)</label>
+                <input type="number" id="admin-max-uses" class="custom-input" min="1" value="10">
+                <div style="margin: 10px 0; font-size: 12px; color: #fff;">
+                    <strong>Current Redemptions:</strong> <span id="admin-usage-count" style="color: #d4af37; font-weight: bold;">0 redeemed</span>
+                </div>
             </div>
 
-            <div id="field-time-bound-wrap" style="display: none;">
-                <label>DURATION (HOURS)</label>
-                <input type="number" id="admin-hours-duration" class="custom-input" min="1" value="24" placeholder="e.g. 24, 36, 48">
+            <div id="field-date-range-wrap" style="display: none;">
+                <label>START DATE & TIME</label>
+                <input type="datetime-local" id="admin-start-date" class="custom-input">
+
+                <label>END DATE & TIME</label>
+                <input type="datetime-local" id="admin-end-date" class="custom-input">
             </div>
 
-            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="savePromoSettings()">Save & Activate Image Banner Campaign</button>
+            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="savePromoSettings()">Save Campaign & Banner Settings</button>
         </div>
 
         <!-- Add New Product Section -->
@@ -153,18 +164,20 @@
         function togglePromoTypeFields() {
             const type = document.getElementById('admin-promo-type').value;
             document.getElementById('field-first-come-wrap').style.display = type === 'first-come' ? 'block' : 'none';
-            document.getElementById('field-time-bound-wrap').style.display = type === 'time-bound' ? 'block' : 'none';
+            document.getElementById('field-date-range-wrap').style.display = type === 'date-range' ? 'block' : 'none';
         }
 
         function loadAdminPromoSettings() {
-            const settings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"bannerImage": "", "bannerText": "✨ WELCOME OFFER: 10% OFF FIRST ORDER | USE CODE: FIRST10 ✨", "code": "FIRST10", "type": "first-order", "maxUses": 5, "currentUses": 0, "durationHours": 24, "startTime": null}');
+            const settings = JSON.parse(localStorage.getItem('atelier_extra_promo') || '{"bannerImage": "", "bannerText": "✨ WELCOME TO ALIVÈRA ATELIER ✨", "code": "", "type": "first-come", "maxUses": 10, "currentUses": 0, "startDate": "", "endDate": ""}');
             
             document.getElementById('admin-banner-image').value = settings.bannerImage || "";
             document.getElementById('admin-banner-text').value = settings.bannerText || "";
-            document.getElementById('admin-promo-code').value = settings.code || "FIRST10";
-            document.getElementById('admin-promo-type').value = settings.type || "first-order";
-            document.getElementById('admin-max-uses').value = settings.maxUses || 5;
-            document.getElementById('admin-hours-duration').value = settings.durationHours || 24;
+            document.getElementById('admin-promo-code').value = settings.code || "";
+            document.getElementById('admin-promo-type').value = settings.type || "first-come";
+            document.getElementById('admin-max-uses').value = settings.maxUses || 10;
+            document.getElementById('admin-usage-count').innerText = `${settings.currentUses || 0} redeemed`;
+            document.getElementById('admin-start-date').value = settings.startDate || "";
+            document.getElementById('admin-end-date').value = settings.endDate || "";
 
             togglePromoTypeFields();
         }
@@ -172,19 +185,19 @@
         function savePromoSettings() {
             const bannerImage = document.getElementById('admin-banner-image').value;
             const bannerText = document.getElementById('admin-banner-text').value;
-            const code = document.getElementById('admin-promo-code').value;
+            const code = document.getElementById('admin-promo-code').value.trim();
             const type = document.getElementById('admin-promo-type').value;
-            const maxUses = parseInt(document.getElementById('admin-max-uses').value) || 5;
-            const durationHours = parseInt(document.getElementById('admin-hours-duration').value) || 24;
+            const maxUses = parseInt(document.getElementById('admin-max-uses').value) || 10;
+            const startDate = document.getElementById('admin-start-date').value;
+            const endDate = document.getElementById('admin-end-date').value;
             
-            let existing = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{}');
+            let existing = JSON.parse(localStorage.getItem('atelier_extra_promo') || '{}');
             const currentUses = existing.code === code ? (existing.currentUses || 0) : 0;
-            const startTime = (existing.code === code && existing.startTime) ? existing.startTime : new Date().toISOString();
 
-            const updated = { bannerImage, bannerText, code, type, maxUses, currentUses, durationHours, startTime };
-            localStorage.setItem('atelier_promo_settings', JSON.stringify(updated));
+            const updated = { bannerImage, bannerText, code, type, maxUses, currentUses, startDate, endDate };
+            localStorage.setItem('atelier_extra_promo', JSON.stringify(updated));
             
-            alert("Promo campaign & image banner successfully updated!");
+            alert("Extra promotional banner & campaign settings saved successfully!");
             loadAdminPromoSettings();
         }
 
