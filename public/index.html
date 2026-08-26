@@ -504,7 +504,6 @@
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
 
-        // Real-time listener for both catalog and promotion updates
         window.addEventListener('storage', (e) => {
             if (e.key === 'atelier_products' || e.key === 'atelier_extra_promo' || e.key === 'atelier_last_publish') {
                 renderCatalog();
