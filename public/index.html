@@ -47,7 +47,7 @@
 </head>
 <body>
 
-    <!-- Dynamic Promotional Banner -->
+    <!-- Dynamic Promotional Banner & Clock -->
     <div class="promo-banner" id="promo-banner">
         ✨ LOADING OFFER... ✨
     </div>
@@ -74,7 +74,7 @@
         </div>
     </div>
 
-    <!-- Sign In & Register Modal -->
+    <!-- Sign In & Register Modal (Cleaned placeholders) -->
     <div id="auth-signin-modal" class="modal">
         <div class="modal-content" style="text-align: left;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
@@ -86,14 +86,14 @@
             
             <div id="register-name-wrap" style="display: none;">
                 <label>FULL NAME</label>
-                <input type="text" id="signup-name" class="custom-input" placeholder="e.g. Ananya Sharma">
+                <input type="text" id="signup-name" class="custom-input" placeholder="e.g. Jane Doe">
             </div>
 
             <label>EMAIL ADDRESS</label>
-            <input type="email" id="signin-email" class="custom-input" placeholder="e.g. hello@aliveraatelier.in">
+            <input type="email" id="signin-email" class="custom-input" placeholder="e.g. name@example.com">
 
             <label>PASSWORD</label>
-            <input type="password" id="signin-password" class="custom-input" placeholder="Enter your password">
+            <input type="password" id="signin-password" class="custom-input" placeholder="••••••••">
             
             <button class="btn" id="auth-action-btn" style="width: 100%; margin-top: 15px;" onclick="handleAuthSubmit()">Sign In</button>
             
@@ -137,8 +137,8 @@
             </div>
 
             <div style="border-top: 1px solid #222; padding-top: 15px; margin-bottom: 15px;">
-                <label style="color: #d4af37;">PROMO CODE (FIRST-COME FIRST-SERVED)</label>
-                <input type="text" id="promo-input" class="custom-input" placeholder="Enter promo code if applicable">
+                <label style="color: #d4af37;">PROMO / OCCASION CODE</label>
+                <input type="text" id="promo-input" class="custom-input" placeholder="Enter discount code if applicable">
             </div>
 
             <button class="btn" style="width: 100%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
@@ -157,7 +157,21 @@
                 const res = localStorage.getItem('atelier_promo_settings');
                 if (res) {
                     const promo = JSON.parse(res);
-                    document.getElementById('promo-banner').innerText = promo.bannerText || "✨ WELCOME TO ALIVÈRA ATELIER ✨";
+                    if (promo.type === 'time-bound' && promo.startTime) {
+                        const expiresAt = new Date(promo.startTime).getTime() + (promo.durationHours * 3600 * 1000);
+                        const now = new Date().getTime();
+                        const timeLeft = expiresAt - now;
+
+                        if (timeLeft > 0) {
+                            const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+                            const minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                            document.getElementById('promo-banner').innerText = `${promo.bannerText} — (Ends in ${hoursLeft}h ${minsLeft}m)`;
+                        } else {
+                            document.getElementById('promo-banner').innerText = `✨ OCCASION PROMO HAS EXPIRED ✨`;
+                        }
+                    } else {
+                        document.getElementById('promo-banner').innerText = promo.bannerText || "✨ WELCOME TO ALIVÈRA ATELIER ✨";
+                    }
                 } else {
                     document.getElementById('promo-banner').innerText = "✨ WELCOME TO ALIVÈRA ATELIER ✨";
                 }
@@ -296,7 +310,7 @@
                 }
                 closeModals();
                 checkAuthStatus();
-                alert(isRegistering ? `Account successfully created! Welcome, ${name}.` : `Welcome back, ${email}!`);
+                alert(isRegistering ? `Account successfully created! Welcome, ${name}.` : `Welcome back!`);
             } else {
                 alert("Authentication failed. Please check your credentials.");
             }
@@ -388,20 +402,29 @@
             }
 
             const promoCodeInput = document.getElementById('promo-input').value.trim();
-            let promoSettings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"code": "LUXURY10", "maxUses": 5, "currentUses": 0}');
+            let promoSettings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"code": "LUXURY10", "type": "first-come", "maxUses": 5, "currentUses": 0, "durationHours": 24, "startTime": null}');
 
             let appliedPromo = "None";
 
             if (promoCodeInput) {
                 if (promoCodeInput.toUpperCase() === promoSettings.code.toUpperCase()) {
-                    if (promoSettings.currentUses >= promoSettings.maxUses) {
-                        alert("Sorry! This first-come, first-served promo code has already reached its maximum redemptions limit.");
-                        return;
+                    if (promoSettings.type === 'first-come') {
+                        if (promoSettings.currentUses >= promoSettings.maxUses) {
+                            alert("Sorry! This first-come promo code has already reached its maximum redemptions limit.");
+                            return;
+                        }
+                        promoSettings.currentUses += 1;
+                        localStorage.setItem('atelier_promo_settings', JSON.stringify(promoSettings));
+                        appliedPromo = promoCodeInput;
+                    } else if (promoSettings.type === 'time-bound') {
+                        const expiresAt = new Date(promoSettings.startTime).getTime() + (promoSettings.durationHours * 3600 * 1000);
+                        const now = new Date().getTime();
+                        if (now > expiresAt) {
+                            alert("Sorry! This occasion promo code has expired.");
+                            return;
+                        }
+                        appliedPromo = promoCodeInput;
                     }
-                    // Increment the counter upon successful first-come completion
-                    promoSettings.currentUses += 1;
-                    localStorage.setItem('atelier_promo_settings', JSON.stringify(promoSettings));
-                    appliedPromo = promoCodeInput;
                 } else {
                     alert("Invalid promo code entered.");
                     return;
@@ -411,7 +434,7 @@
             const orderData = {
                 items: cart,
                 address: savedAddresses[selectedAddressIdx],
-                clientEmail: localStorage.getItem('atelier_user_email') || "hello@aliveraatelier.in",
+                clientEmail: localStorage.getItem('atelier_user_email') || "client@example.com",
                 promoUsed: appliedPromo,
                 date: new Date().toISOString()
             };
@@ -426,7 +449,7 @@
             allOrders.push({ id: Date.now().toString().slice(-4), ...orderData, status: 'Processing' });
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            alert("Order placed successfully! First-come status verified and recorded.");
+            alert("Order placed successfully with discount applied!");
             cart = [];
             document.getElementById('cart-count').innerText = 0;
             closeModals();
