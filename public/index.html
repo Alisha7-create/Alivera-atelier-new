@@ -504,7 +504,7 @@
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
 
-        // Instant live synchronization listener for storefront catalog updates
+        // Real-time listener for both catalog and promotion updates
         window.addEventListener('storage', (e) => {
             if (e.key === 'atelier_products' || e.key === 'atelier_extra_promo' || e.key === 'atelier_last_publish') {
                 renderCatalog();
