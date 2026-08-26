@@ -63,7 +63,7 @@
         <!-- Additional Promo & Occasion Campaign Control -->
         <div class="admin-section">
             <h2>ADDITIONAL CAMPAIGN & BANNER CONTROL</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure an extra promotional campaign banner (e.g., limited people or date-to-date range).</p>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure an extra promotional campaign banner.</p>
             
             <label>BANNER IMAGE (FILE UPLOAD OR URL)</label>
             <input type="file" id="banner-image-file" class="custom-input" accept="image/*" onchange="handleBannerUpload(event)">
@@ -151,8 +151,15 @@
     </footer>
 
     <script>
-        let products = JSON.parse(localStorage.getItem('atelier_products') || '[]');
-        let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
+        function getProducts() {
+            return JSON.parse(localStorage.getItem('atelier_products') || '[]');
+        }
+
+        function saveProducts(prods) {
+            localStorage.setItem('atelier_products', JSON.stringify(prods));
+            // Dispatch custom storage event so other open tabs/windows sync instantly
+            window.dispatchEvent(new Event('storage'));
+        }
 
         function handleBannerUpload(event) {
             const file = event.target.files[0];
@@ -221,16 +228,17 @@
         }
 
         function addNewProduct() {
-            const name = document.getElementById('prod-name').value;
-            const price = document.getElementById('prod-price').value;
-            const image = document.getElementById('prod-image').value;
-            const sizeChart = document.getElementById('prod-size-chart').value;
+            const name = document.getElementById('prod-name').value.trim();
+            const price = document.getElementById('prod-price').value.trim();
+            const image = document.getElementById('prod-image').value.trim();
+            const sizeChart = document.getElementById('prod-size-chart').value.trim();
 
             if (!name || !price) {
                 alert("Please provide at least a product name and price.");
                 return;
             }
 
+            let products = getProducts();
             const newProduct = {
                 id: Date.now(),
                 name,
@@ -240,7 +248,7 @@
             };
 
             products.push(newProduct);
-            localStorage.setItem('atelier_products', JSON.stringify(products));
+            saveProducts(products);
 
             document.getElementById('prod-name').value = '';
             document.getElementById('prod-price').value = '';
@@ -255,14 +263,17 @@
 
         function deleteProduct(idx) {
             if (confirm("Are you sure you want to remove this piece from the catalog?")) {
+                let products = getProducts();
                 products.splice(idx, 1);
-                localStorage.setItem('atelier_products', JSON.stringify(products));
+                saveProducts(products);
                 renderAdminCatalog();
             }
         }
 
         function renderAdminCatalog() {
             const grid = document.getElementById('admin-catalog-grid');
+            let products = getProducts();
+            
             if (products.length === 0) {
                 grid.innerHTML = `<p style="color: #777; font-size: 12px;">No active products found.</p>`;
                 return;
@@ -270,7 +281,7 @@
 
             grid.innerHTML = products.map((p, idx) => `
                 <div class="card-item">
-                    <img src="${p.image}" alt="${p.name}">
+                    <img src="${p.image}" alt="${p.name}" onerror="this.src='/logo.png'">
                     <div style="font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 5px;">${p.name}</div>
                     <div style="color: #d4af37; font-size: 14px; margin-bottom: 10px;">₹${Number(p.price).toLocaleString('en-IN')}</div>
                     ${p.sizeChart ? '<div style="font-size:10px; color:#27ae60; margin-bottom:10px;">✓ Size Chart Attached</div>' : ''}
@@ -281,6 +292,8 @@
 
         function renderAdminOrders() {
             const container = document.getElementById('admin-orders-list');
+            let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
+            
             if (orders.length === 0) {
                 container.innerHTML = `<p style="color: #777; font-size: 12px;">No orders placed yet.</p>`;
                 return;
