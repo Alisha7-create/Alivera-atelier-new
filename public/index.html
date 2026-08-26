@@ -9,8 +9,10 @@
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; }
         
-        /* Promotional Banner */
-        .promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 11px; letter-spacing: 2px; font-weight: bold; }
+        /* Promotional Image Banner */
+        .promo-banner-container { width: 100%; background: #121212; position: relative; text-align: center; border-bottom: 1px solid #d4af37; overflow: hidden; }
+        .promo-banner-img { width: 100%; max-height: 250px; object-fit: cover; display: block; filter: brightness(0.85); }
+        .promo-banner-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(10, 10, 10, 0.85); padding: 10px; color: #d4af37; font-size: 12px; letter-spacing: 2px; font-weight: bold; border-top: 1px solid #d4af37; }
 
         header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 100; }
         .logo-area { display: flex; align-items: center; gap: 15px; text-decoration: none; }
@@ -47,9 +49,10 @@
 </head>
 <body>
 
-    <!-- Dynamic Promotional Banner & Clock -->
-    <div class="promo-banner" id="promo-banner">
-        ✨ LOADING OFFER... ✨
+    <!-- Dynamic Promotional Image Banner -->
+    <div class="promo-banner-container" id="promo-banner-wrap" style="display: none;">
+        <img id="promo-banner-img" src="" alt="Promo Banner" class="promo-banner-img" onerror="this.parentElement.style.display='none'">
+        <div class="promo-banner-overlay" id="promo-banner-text">✨ WELCOME TO ALIVÈRA ATELIER ✨</div>
     </div>
 
     <header>
@@ -74,7 +77,7 @@
         </div>
     </div>
 
-    <!-- Sign In & Register Modal (Cleaned placeholders) -->
+    <!-- Sign In & Register Modal -->
     <div id="auth-signin-modal" class="modal">
         <div class="modal-content" style="text-align: left;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
@@ -157,6 +160,17 @@
                 const res = localStorage.getItem('atelier_promo_settings');
                 if (res) {
                     const promo = JSON.parse(res);
+                    const bannerWrap = document.getElementById('promo-banner-wrap');
+                    const bannerImg = document.getElementById('promo-banner-img');
+                    const bannerText = document.getElementById('promo-banner-text');
+
+                    if (promo.bannerImage) {
+                        bannerImg.src = promo.bannerImage;
+                        bannerWrap.style.display = 'block';
+                    } else {
+                        bannerWrap.style.display = 'none';
+                    }
+
                     if (promo.type === 'time-bound' && promo.startTime) {
                         const expiresAt = new Date(promo.startTime).getTime() + (promo.durationHours * 3600 * 1000);
                         const now = new Date().getTime();
@@ -165,18 +179,16 @@
                         if (timeLeft > 0) {
                             const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
                             const minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                            document.getElementById('promo-banner').innerText = `${promo.bannerText} — (Ends in ${hoursLeft}h ${minsLeft}m)`;
+                            bannerText.innerText = `${promo.bannerText || ''} — (Ends in ${hoursLeft}h ${minsLeft}m)`;
                         } else {
-                            document.getElementById('promo-banner').innerText = `✨ OCCASION PROMO HAS EXPIRED ✨`;
+                            bannerText.innerText = `✨ OCCASION PROMO HAS EXPIRED ✨`;
                         }
                     } else {
-                        document.getElementById('promo-banner').innerText = promo.bannerText || "✨ WELCOME TO ALIVÈRA ATELIER ✨";
+                        bannerText.innerText = promo.bannerText || "✨ WELCOME TO ALIVÈRA ATELIER ✨";
                     }
-                } else {
-                    document.getElementById('promo-banner').innerText = "✨ WELCOME TO ALIVÈRA ATELIER ✨";
                 }
             } catch (e) {
-                document.getElementById('promo-banner').innerText = "✨ WELCOME TO ALIVÈRA ATELIER ✨";
+                document.getElementById('promo-banner-wrap').style.display = 'none';
             }
         }
 
