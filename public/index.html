@@ -141,7 +141,7 @@
 
             <div style="border-top: 1px solid #222; padding-top: 15px; margin-bottom: 15px;">
                 <label style="color: #d4af37;">PROMO / OCCASION CODE</label>
-                <input type="text" id="promo-input" class="custom-input" placeholder="Enter discount code if applicable">
+                <input type="text" id="promo-input" class="custom-input" placeholder="Enter discount code (e.g. FIRST10)">
             </div>
 
             <button class="btn" style="width: 100%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
@@ -322,7 +322,7 @@
                 }
                 closeModals();
                 checkAuthStatus();
-                alert(isRegistering ? `Account successfully created! Welcome, ${name}.` : `Welcome back!`);
+                alert(isRegistering ? `Account successfully created! Welcome, ${name}. Use code FIRST10 for 10% off your first order.` : `Welcome back!`);
             } else {
                 alert("Authentication failed. Please check your credentials.");
             }
@@ -414,15 +414,27 @@
             }
 
             const promoCodeInput = document.getElementById('promo-input').value.trim();
-            let promoSettings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"code": "LUXURY10", "type": "first-come", "maxUses": 5, "currentUses": 0, "durationHours": 24, "startTime": null}');
+            let promoSettings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"code": "FIRST10", "type": "first-order"}');
+            const currentUserEmail = localStorage.getItem('atelier_user_email') || "client@example.com";
 
             let appliedPromo = "None";
 
             if (promoCodeInput) {
                 if (promoCodeInput.toUpperCase() === promoSettings.code.toUpperCase()) {
-                    if (promoSettings.type === 'first-come') {
+                    if (promoSettings.type === 'first-order') {
+                        // Check if this specific user account has already used this promo
+                        let usedAccounts = JSON.parse(localStorage.getItem('atelier_used_first_order_accounts') || '[]');
+                        if (usedAccounts.includes(currentUserEmail)) {
+                            alert("Sorry! You have already used your one-time 10% first order discount on this account.");
+                            return;
+                        }
+                        // Mark user account as having used it
+                        usedAccounts.push(currentUserEmail);
+                        localStorage.setItem('atelier_used_first_order_accounts', JSON.stringify(usedAccounts));
+                        appliedPromo = promoCodeInput;
+                    } else if (promoSettings.type === 'first-come') {
                         if (promoSettings.currentUses >= promoSettings.maxUses) {
-                            alert("Sorry! This first-come promo code has already reached its maximum redemptions limit.");
+                            alert("Sorry! This first-come promo code has reached its maximum redemptions limit.");
                             return;
                         }
                         promoSettings.currentUses += 1;
@@ -446,7 +458,7 @@
             const orderData = {
                 items: cart,
                 address: savedAddresses[selectedAddressIdx],
-                clientEmail: localStorage.getItem('atelier_user_email') || "client@example.com",
+                clientEmail: currentUserEmail,
                 promoUsed: appliedPromo,
                 date: new Date().toISOString()
             };
