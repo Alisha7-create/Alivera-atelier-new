@@ -47,7 +47,7 @@
             <div class="brand-title">ATELIER ADMIN</div>
         </a>
         <div class="nav-links">
-            <a href="/" class="link-item">View Storefront</a>
+            <a href="/" target="_blank" class="link-item">View Storefront</a>
             <button class="link-item" onclick="logout()" style="color: #e74c3c;">Sign Out</button>
         </div>
     </header>
@@ -157,8 +157,10 @@
 
         function saveProducts(prods) {
             localStorage.setItem('atelier_products', JSON.stringify(prods));
-            // Dispatch custom storage event so other open tabs/windows sync instantly
+            // Trigger cross-tab storage sync
             window.dispatchEvent(new Event('storage'));
+            // Trigger custom event for same-browser open storefront tabs
+            localStorage.setItem('atelier_last_publish', Date.now().toString());
         }
 
         function handleBannerUpload(event) {
@@ -222,6 +224,7 @@
 
             const updated = { bannerImage, bannerText, code, type, maxUses, currentUses, startDate, endDate };
             localStorage.setItem('atelier_extra_promo', JSON.stringify(updated));
+            localStorage.setItem('atelier_last_publish', Date.now().toString());
             
             alert("Extra promotional banner & campaign settings saved successfully!");
             loadAdminPromoSettings();
@@ -258,7 +261,7 @@
             document.getElementById('chart-image-file').value = '';
 
             renderAdminCatalog();
-            alert("Product published successfully to storefront!");
+            alert("Product published successfully to storefront control!");
         }
 
         function deleteProduct(idx) {
