@@ -52,7 +52,7 @@
     <!-- Dynamic Promotional Image Banner -->
     <div class="promo-banner-container" id="promo-banner-wrap" style="display: none;">
         <img id="promo-banner-img" src="" alt="Promo Banner" class="promo-banner-img" onerror="this.parentElement.style.display='none'">
-        <div class="promo-banner-overlay" id="promo-banner-text">✨ WELCOME TO ALIVÈRA ATELIER ✨</div>
+        <div class="promo-banner-overlay" id="promo-banner-text">✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨</div>
     </div>
 
     <header>
@@ -141,7 +141,7 @@
 
             <div style="border-top: 1px solid #222; padding-top: 15px; margin-bottom: 15px;">
                 <label style="color: #d4af37;">PROMO / OCCASION CODE</label>
-                <input type="text" id="promo-input" class="custom-input" placeholder="Enter discount code (e.g. FIRST10)">
+                <input type="text" id="promo-input" class="custom-input" placeholder="e.g. FIRST10 or extra code">
             </div>
 
             <button class="btn" style="width: 100%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
@@ -157,35 +157,25 @@
 
         async function loadPromoBanner() {
             try {
-                const res = localStorage.getItem('atelier_promo_settings');
+                const res = localStorage.getItem('atelier_extra_promo');
+                const bannerWrap = document.getElementById('promo-banner-wrap');
+                const bannerImg = document.getElementById('promo-banner-img');
+                const bannerText = document.getElementById('promo-banner-text');
+
                 if (res) {
                     const promo = JSON.parse(res);
-                    const bannerWrap = document.getElementById('promo-banner-wrap');
-                    const bannerImg = document.getElementById('promo-banner-img');
-                    const bannerText = document.getElementById('promo-banner-text');
-
                     if (promo.bannerImage) {
                         bannerImg.src = promo.bannerImage;
                         bannerWrap.style.display = 'block';
                     } else {
-                        bannerWrap.style.display = 'none';
+                        bannerWrap.style.display = 'block';
+                        bannerImg.src = '/logo.png';
                     }
-
-                    if (promo.type === 'time-bound' && promo.startTime) {
-                        const expiresAt = new Date(promo.startTime).getTime() + (promo.durationHours * 3600 * 1000);
-                        const now = new Date().getTime();
-                        const timeLeft = expiresAt - now;
-
-                        if (timeLeft > 0) {
-                            const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
-                            const minsLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                            bannerText.innerText = `${promo.bannerText || ''} — (Ends in ${hoursLeft}h ${minsLeft}m)`;
-                        } else {
-                            bannerText.innerText = `✨ OCCASION PROMO HAS EXPIRED ✨`;
-                        }
-                    } else {
-                        bannerText.innerText = promo.bannerText || "✨ WELCOME TO ALIVÈRA ATELIER ✨";
-                    }
+                    bannerText.innerText = promo.bannerText || "✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨";
+                } else {
+                    bannerWrap.style.display = 'block';
+                    bannerImg.src = '/logo.png';
+                    bannerText.innerText = "✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨";
                 }
             } catch (e) {
                 document.getElementById('promo-banner-wrap').style.display = 'none';
@@ -322,7 +312,7 @@
                 }
                 closeModals();
                 checkAuthStatus();
-                alert(isRegistering ? `Account successfully created! Welcome, ${name}. Use code FIRST10 for 10% off your first order.` : `Welcome back!`);
+                alert(isRegistering ? `Account successfully created! Use code FIRST10 for 10% off your first order.` : `Welcome back!`);
             } else {
                 alert("Authentication failed. Please check your credentials.");
             }
@@ -413,45 +403,52 @@
                 return;
             }
 
-            const promoCodeInput = document.getElementById('promo-input').value.trim();
-            let promoSettings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"code": "FIRST10", "type": "first-order"}');
+            const promoCodeInput = document.getElementById('promo-input').value.trim().toUpperCase();
             const currentUserEmail = localStorage.getItem('atelier_user_email') || "client@example.com";
-
             let appliedPromo = "None";
 
             if (promoCodeInput) {
-                if (promoCodeInput.toUpperCase() === promoSettings.code.toUpperCase()) {
-                    if (promoSettings.type === 'first-order') {
-                        // Check if this specific user account has already used this promo
-                        let usedAccounts = JSON.parse(localStorage.getItem('atelier_used_first_order_accounts') || '[]');
-                        if (usedAccounts.includes(currentUserEmail)) {
-                            alert("Sorry! You have already used your one-time 10% first order discount on this account.");
-                            return;
-                        }
-                        // Mark user account as having used it
-                        usedAccounts.push(currentUserEmail);
-                        localStorage.setItem('atelier_used_first_order_accounts', JSON.stringify(usedAccounts));
-                        appliedPromo = promoCodeInput;
-                    } else if (promoSettings.type === 'first-come') {
-                        if (promoSettings.currentUses >= promoSettings.maxUses) {
-                            alert("Sorry! This first-come promo code has reached its maximum redemptions limit.");
-                            return;
-                        }
-                        promoSettings.currentUses += 1;
-                        localStorage.setItem('atelier_promo_settings', JSON.stringify(promoSettings));
-                        appliedPromo = promoCodeInput;
-                    } else if (promoSettings.type === 'time-bound') {
-                        const expiresAt = new Date(promoSettings.startTime).getTime() + (promoSettings.durationHours * 3600 * 1000);
-                        const now = new Date().getTime();
-                        if (now > expiresAt) {
-                            alert("Sorry! This occasion promo code has expired.");
-                            return;
-                        }
-                        appliedPromo = promoCodeInput;
+                if (promoCodeInput === "FIRST10") {
+                    // Check if this account has already used FIRST10
+                    let usedAccounts = JSON.parse(localStorage.getItem('atelier_used_first_order_accounts') || '[]');
+                    if (usedAccounts.includes(currentUserEmail)) {
+                        alert("Sorry! You have already used your one-time 10% first order discount on this account.");
+                        return;
                     }
+                    usedAccounts.push(currentUserEmail);
+                    localStorage.setItem('atelier_used_first_order_accounts', JSON.stringify(usedAccounts));
+                    appliedPromo = "FIRST10";
                 } else {
-                    alert("Invalid promo code entered.");
-                    return;
+                    // Check additional campaign promo codes
+                    let extraPromo = JSON.parse(localStorage.getItem('atelier_extra_promo') || '{}');
+                    if (extraPromo.code && promoCodeInput === extraPromo.code.toUpperCase()) {
+                        if (extraPromo.type === 'first-come') {
+                            if ((extraPromo.currentUses || 0) >= extraPromo.maxUses) {
+                                alert("Sorry! This campaign promo has reached its maximum person redemption limit.");
+                                return;
+                            }
+                            extraPromo.currentUses = (extraPromo.currentUses || 0) + 1;
+                            localStorage.setItem('atelier_extra_promo', JSON.stringify(extraPromo));
+                            appliedPromo = extraPromo.code;
+                        } else if (extraPromo.type === 'date-range') {
+                            const now = new Date().getTime();
+                            const start = extraPromo.startDate ? new Date(extraPromo.startDate).getTime() : 0;
+                            const end = extraPromo.endDate ? new Date(extraPromo.endDate).getTime() : 0;
+
+                            if (start && now < start) {
+                                alert("Sorry! This promo code campaign has not started yet.");
+                                return;
+                            }
+                            if (end && now > end) {
+                                alert("Sorry! This promo code campaign has already expired.");
+                                return;
+                            }
+                            appliedPromo = extraPromo.code;
+                        }
+                    } else {
+                        alert("Invalid promo code entered.");
+                        return;
+                    }
                 }
             }
 
