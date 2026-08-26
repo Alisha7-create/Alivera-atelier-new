@@ -45,12 +45,16 @@
 
     <div class="container">
         
-        <!-- Occasion & Promo Control Section -->
+        <!-- Occasion & Promo Image Banner Control -->
         <div class="admin-section">
-            <h2>OCCASION & PROMO CODE MANAGEMENT</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure promotional campaigns based on quantity limits (First-Come) or specific hour durations (Time-Bound Occasions).</p>
+            <h2>PROMO & OCCASION IMAGE BANNER CONTROL</h2>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure your promo codes, select campaign types, and upload an image banner for your storefront.</p>
             
-            <label>BANNER TEXT DISPLAY</label>
+            <label>BANNER IMAGE (FILE UPLOAD OR URL)</label>
+            <input type="file" id="banner-image-file" class="custom-input" accept="image/*" onchange="handleBannerUpload(event)">
+            <input type="text" id="admin-banner-image" class="custom-input" placeholder="Or paste banner image URL here">
+
+            <label>BANNER ALT / TEXT OVERLAY NOTE</label>
             <input type="text" id="admin-banner-text" class="custom-input" placeholder="e.g. ✨ FESTIVE SPECIAL: USE 'DIWALI20' FOR 20% OFF ✨">
 
             <label>PROMO CODE NAME</label>
@@ -78,7 +82,7 @@
                 </div>
             </div>
 
-            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="savePromoSettings()">Save & Activate Promo Campaign</button>
+            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="savePromoSettings()">Save & Activate Image Banner Campaign</button>
         </div>
 
         <!-- Add New Product Section -->
@@ -125,6 +129,17 @@
         let products = JSON.parse(localStorage.getItem('atelier_products') || '[]');
         let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
 
+        function handleBannerUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('admin-banner-image').value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
         function handleImageUpload(event, type) {
             const file = event.target.files[0];
             if (file) {
@@ -147,8 +162,9 @@
         }
 
         function loadAdminPromoSettings() {
-            const settings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"bannerText": "✨ USE CODE LUXURY10 FOR 10% OFF ✨", "code": "LUXURY10", "type": "first-come", "maxUses": 5, "currentUses": 0, "durationHours": 24, "startTime": null}');
+            const settings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"bannerImage": "", "bannerText": "✨ USE CODE LUXURY10 FOR 10% OFF ✨", "code": "LUXURY10", "type": "first-come", "maxUses": 5, "currentUses": 0, "durationHours": 24, "startTime": null}');
             
+            document.getElementById('admin-banner-image').value = settings.bannerImage || "";
             document.getElementById('admin-banner-text').value = settings.bannerText || "";
             document.getElementById('admin-promo-code').value = settings.code || "";
             document.getElementById('admin-promo-type').value = settings.type || "first-come";
@@ -171,6 +187,7 @@
         }
 
         function savePromoSettings() {
+            const bannerImage = document.getElementById('admin-banner-image').value;
             const bannerText = document.getElementById('admin-banner-text').value;
             const code = document.getElementById('admin-promo-code').value;
             const type = document.getElementById('admin-promo-type').value;
@@ -181,10 +198,10 @@
             const currentUses = existing.code === code ? (existing.currentUses || 0) : 0;
             const startTime = (existing.code === code && existing.startTime) ? existing.startTime : new Date().toISOString();
 
-            const updated = { bannerText, code, type, maxUses, currentUses, durationHours, startTime };
+            const updated = { bannerImage, bannerText, code, type, maxUses, currentUses, durationHours, startTime };
             localStorage.setItem('atelier_promo_settings', JSON.stringify(updated));
             
-            alert("Promo campaign successfully updated and applied live!");
+            alert("Promo campaign & image banner successfully updated!");
             loadAdminPromoSettings();
         }
 
