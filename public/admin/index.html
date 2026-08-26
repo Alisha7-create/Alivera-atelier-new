@@ -157,9 +157,8 @@
 
         function saveProducts(prods) {
             localStorage.setItem('atelier_products', JSON.stringify(prods));
-            // Trigger cross-tab storage sync
+            // Trigger cross-tab sync & instant storefront updates
             window.dispatchEvent(new Event('storage'));
-            // Trigger custom event for same-browser open storefront tabs
             localStorage.setItem('atelier_last_publish', Date.now().toString());
         }
 
@@ -224,9 +223,12 @@
 
             const updated = { bannerImage, bannerText, code, type, maxUses, currentUses, startDate, endDate };
             localStorage.setItem('atelier_extra_promo', JSON.stringify(updated));
+            
+            // Trigger instant real-time update on active storefronts
+            window.dispatchEvent(new Event('storage'));
             localStorage.setItem('atelier_last_publish', Date.now().toString());
             
-            alert("Extra promotional banner & campaign settings saved successfully!");
+            alert("Extra promotional banner & campaign settings saved and updated instantly on storefront!");
             loadAdminPromoSettings();
         }
 
