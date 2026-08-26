@@ -78,7 +78,7 @@
     <div class="container">
         <div class="hero">
             <h1>We bring custom sized luxury dresses, for comfort and confidence</h1>
-            <p style="color: #888; font-size: 13px; letter-spacing: 1px;">Browse collections, view full images, select sizing from XS to Custom, and place orders.</p>
+            <p style="color: #888; font-size: 13px; letter-spacing: 1px;">Beautiful. The way you are</p>
         </div>
 
         <div class="catalog-grid" id="live-catalog">
@@ -171,8 +171,11 @@
         let cart = [];
         let savedAddresses = [];
         let selectedAddressIdx = 0;
-        let activeCatalog = JSON.parse(localStorage.getItem('atelier_products') || '[]');
         let isRegistering = false;
+
+        function getActiveCatalog() {
+            return JSON.parse(localStorage.getItem('atelier_products') || '[]');
+        }
 
         async function loadPromoBanner() {
             try {
@@ -203,6 +206,8 @@
 
         function renderCatalog() {
             const grid = document.getElementById('live-catalog');
+            let activeCatalog = getActiveCatalog();
+
             if (activeCatalog.length === 0) {
                 grid.innerHTML = `<div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the atelier.</div>`;
                 return;
@@ -211,7 +216,7 @@
             grid.innerHTML = activeCatalog.map((p, idx) => `
                 <div class="product-card">
                     <div class="product-img-container" onclick="openImageZoom('${p.image || '/logo.png'}')">
-                        <img src="${p.image || '/logo.png'}" alt="${p.name}" class="product-img">
+                        <img src="${p.image || '/logo.png'}" alt="${p.name}" class="product-img" onerror="this.src='/logo.png'">
                     </div>
                     <div class="product-title">${p.name}</div>
                     <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
@@ -356,6 +361,7 @@
         }
 
         function viewSizeChart(idx) {
+            let activeCatalog = getActiveCatalog();
             const product = activeCatalog[idx];
             const container = document.getElementById('size-chart-container');
             if (product && product.sizeChart) {
@@ -374,6 +380,7 @@
                 return;
             }
 
+            let activeCatalog = getActiveCatalog();
             const size = document.getElementById(`size-select-${idx}`).value;
             const customNotes = size === 'Custom' ? document.getElementById(`cust-spec-${idx}`).value : `Standard Size: ${size}`;
             const quantity = parseInt(document.getElementById(`qty-${idx}`).value) || 1;
@@ -496,6 +503,12 @@
         function closeModals() {
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
+
+        // Real-time synchronization when admin publishes or deletes products
+        window.addEventListener('storage', () => {
+            renderCatalog();
+            loadPromoBanner();
+        });
 
         loadPromoBanner();
         checkAuthStatus();
