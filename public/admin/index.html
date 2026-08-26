@@ -48,38 +48,33 @@
         <!-- Occasion & Promo Image Banner Control -->
         <div class="admin-section">
             <h2>PROMO & OCCASION IMAGE BANNER CONTROL</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure your promo codes, select campaign types, and upload an image banner for your storefront.</p>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure promo codes like <strong>FIRST10</strong> for first-time account orders or occasion durations.</p>
             
             <label>BANNER IMAGE (FILE UPLOAD OR URL)</label>
             <input type="file" id="banner-image-file" class="custom-input" accept="image/*" onchange="handleBannerUpload(event)">
             <input type="text" id="admin-banner-image" class="custom-input" placeholder="Or paste banner image URL here">
 
             <label>BANNER ALT / TEXT OVERLAY NOTE</label>
-            <input type="text" id="admin-banner-text" class="custom-input" placeholder="e.g. ✨ FESTIVE SPECIAL: USE 'DIWALI20' FOR 20% OFF ✨">
+            <input type="text" id="admin-banner-text" class="custom-input" placeholder="e.g. ✨ WELCOME OFFER: 10% OFF FIRST ORDER | USE CODE: FIRST10 ✨">
 
             <label>PROMO CODE NAME</label>
-            <input type="text" id="admin-promo-code" class="custom-input" placeholder="e.g. DIWALI20">
+            <input type="text" id="admin-promo-code" class="custom-input" placeholder="e.g. FIRST10">
 
             <label>PROMO TYPE</label>
             <select id="admin-promo-type" class="custom-input" onchange="togglePromoTypeFields()">
-                <option value="first-come">First-Come, First-Served (User Count Limit)</option>
+                <option value="first-order">First Order Only (Once Per Customer Account)</option>
+                <option value="first-come">First-Come, First-Served (Global User Count Limit)</option>
                 <option value="time-bound">Time-Bound Occasion (Duration in Hours)</option>
             </select>
 
-            <div id="field-first-come-wrap">
+            <div id="field-first-come-wrap" style="display: none;">
                 <label>MAXIMUM ALLOWED CUSTOMERS</label>
                 <input type="number" id="admin-max-uses" class="custom-input" min="1" value="5">
-                <div style="margin: 10px 0; font-size: 12px; color: #fff;">
-                    <strong>Live Redemptions:</strong> <span id="admin-usage-count" style="color: #d4af37; font-weight: bold;">0 / 5 redeemed</span>
-                </div>
             </div>
 
             <div id="field-time-bound-wrap" style="display: none;">
                 <label>DURATION (HOURS)</label>
                 <input type="number" id="admin-hours-duration" class="custom-input" min="1" value="24" placeholder="e.g. 24, 36, 48">
-                <div style="margin: 10px 0; font-size: 12px; color: #fff;">
-                    <strong>Campaign Status:</strong> <span id="admin-timer-status" style="color: #d4af37; font-weight: bold;">Active</span>
-                </div>
             </div>
 
             <button class="btn" style="width: 100%; margin-top: 15px;" onclick="savePromoSettings()">Save & Activate Image Banner Campaign</button>
@@ -162,26 +157,14 @@
         }
 
         function loadAdminPromoSettings() {
-            const settings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"bannerImage": "", "bannerText": "✨ USE CODE LUXURY10 FOR 10% OFF ✨", "code": "LUXURY10", "type": "first-come", "maxUses": 5, "currentUses": 0, "durationHours": 24, "startTime": null}');
+            const settings = JSON.parse(localStorage.getItem('atelier_promo_settings') || '{"bannerImage": "", "bannerText": "✨ WELCOME OFFER: 10% OFF FIRST ORDER | USE CODE: FIRST10 ✨", "code": "FIRST10", "type": "first-order", "maxUses": 5, "currentUses": 0, "durationHours": 24, "startTime": null}');
             
             document.getElementById('admin-banner-image').value = settings.bannerImage || "";
             document.getElementById('admin-banner-text').value = settings.bannerText || "";
-            document.getElementById('admin-promo-code').value = settings.code || "";
-            document.getElementById('admin-promo-type').value = settings.type || "first-come";
+            document.getElementById('admin-promo-code').value = settings.code || "FIRST10";
+            document.getElementById('admin-promo-type').value = settings.type || "first-order";
             document.getElementById('admin-max-uses').value = settings.maxUses || 5;
             document.getElementById('admin-hours-duration').value = settings.durationHours || 24;
-            document.getElementById('admin-usage-count').innerText = `${settings.currentUses || 0} of ${settings.maxUses || 5} redeemed`;
-
-            if (settings.type === 'time-bound' && settings.startTime) {
-                const expiresAt = new Date(settings.startTime).getTime() + (settings.durationHours * 3600 * 1000);
-                const now = new Date().getTime();
-                if (now < expiresAt) {
-                    document.getElementById('admin-timer-status').innerText = "Active & Running";
-                } else {
-                    document.getElementById('admin-timer-status').innerText = "Expired";
-                    document.getElementById('admin-timer-status').style.color = '#e74c3c';
-                }
-            }
 
             togglePromoTypeFields();
         }
