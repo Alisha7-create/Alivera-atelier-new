@@ -157,7 +157,6 @@
 
         function saveProducts(prods) {
             localStorage.setItem('atelier_products', JSON.stringify(prods));
-            // Trigger cross-tab sync & instant storefront updates
             window.dispatchEvent(new Event('storage'));
             localStorage.setItem('atelier_last_publish', Date.now().toString());
         }
@@ -222,9 +221,14 @@
             const currentUses = existing.code === code ? (existing.currentUses || 0) : 0;
 
             const updated = { bannerImage, bannerText, code, type, maxUses, currentUses, startDate, endDate };
-            localStorage.setItem('atelier_extra_promo', JSON.stringify(updated));
             
-            // Trigger instant real-time update on active storefronts
+            try {
+                localStorage.setItem('atelier_extra_promo', JSON.stringify(updated));
+            } catch (e) {
+                alert("Storage limit exceeded. The banner image file is too large. Please use a smaller image or paste an image URL.");
+                return;
+            }
+            
             window.dispatchEvent(new Event('storage'));
             localStorage.setItem('atelier_last_publish', Date.now().toString());
             
@@ -239,7 +243,7 @@
             const sizeChart = document.getElementById('prod-size-chart').value.trim();
 
             if (!name || !price) {
-                alert("Please provide at least a product name and price.");
+                alert("Please provide both a product name and price.");
                 return;
             }
 
@@ -253,7 +257,13 @@
             };
 
             products.push(newProduct);
-            saveProducts(products);
+            
+            try {
+                saveProducts(products);
+            } catch (e) {
+                alert("Storage limit exceeded. The image file is too large for browser storage. Please compress the image or use a direct image URL.");
+                return;
+            }
 
             document.getElementById('prod-name').value = '';
             document.getElementById('prod-price').value = '';
