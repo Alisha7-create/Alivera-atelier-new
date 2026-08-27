@@ -3,18 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SEO Title & Description -->
     <title>Alivèra Atelier — Luxury Custom Couture & Bespoke Dresses for Women</title>
-    <meta name="description" content="Discover Alivèra Atelier for exquisite, custom-sized luxury dresses crafted for comfort and confidence. Handcrafted bespoke silhouettes tailored precisely to your measurements.">
+    <meta name="description" content="Discover Alivèra Atelier for exquisite, custom-sized luxury dresses crafted for comfort and confidence.">
 
-    <!-- Google Search Console Verification -->
-    <meta name="google-site-verification" content="dpuBziIFpePHXWQA4K8gciuLp-NBR-kTSQWzoVvoYm4" />
-    
-    <!-- Favicon Links for .ico -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="favicon.ico">
 
     <!-- EmailJS Browser SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -38,7 +30,6 @@
         .link-item { color: #aaa; text-decoration: none; font-size: 13px; letter-spacing: 1px; cursor: pointer; background:none; border:none; }
         .link-item:hover, .link-item.active { color: #d4af37; }
         
-        /* Tab Navigation Bar */
         .tab-bar { background: #121212; border-bottom: 1px solid #222; display: flex; justify-content: center; gap: 30px; padding: 12px 0; position: sticky; top: 85px; z-index: 99; }
         .tab-btn { background: none; border: none; color: #888; font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 2px; cursor: pointer; padding: 6px 12px; transition: 0.3s; }
         .tab-btn:hover, .tab-btn.active-tab { color: #d4af37; border-bottom: 2px solid #d4af37; }
@@ -81,7 +72,7 @@
 <body>
 
     <header>
-        <a href="/" class="logo-area">
+        <a href="#" class="logo-area" onclick="switchTab('collection', document.querySelectorAll('.tab-btn')[0]); return false;">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
         <div class="nav-links" id="header-nav">
@@ -90,7 +81,6 @@
         </div>
     </header>
 
-    <!-- Tab Navigation Bar -->
     <div class="tab-bar">
         <button class="tab-btn active-tab" onclick="switchTab('collection', this)">COLLECTION</button>
         <button class="tab-btn" onclick="switchTab('sizing', this)">BESPOKE SIZING</button>
@@ -99,7 +89,6 @@
 
     <div class="container">
         
-        <!-- TAB 1: COLLECTION CATALOG -->
         <div id="tab-collection" class="tab-content active-content">
             <div class="hero">
                 <h1>We bring custom sized luxury dresses, for comfort and confidence</h1>
@@ -110,7 +99,6 @@
             </div>
         </div>
 
-        <!-- TAB 2: BESPOKE SIZING GUIDE -->
         <div id="tab-sizing" class="tab-content">
             <div class="hero">
                 <h1>Bespoke Sizing & Measurement Guide</h1>
@@ -125,12 +113,9 @@
                     <li><strong>L:</strong> Bust 38 | Waist 30 | Hips 40</li>
                     <li><strong>XL:</strong> Bust 40 | Waist 32 | Hips 42</li>
                 </ul>
-                <h3 style="color: #d4af37; letter-spacing: 2px;">How to Submit Custom Measurements</h3>
-                <p>When selecting a piece, choose <strong style="color: #fff;">"Custom Measurements"</strong> from the dropdown menu and specify your exact tailored dimensions (e.g., Bust, Waist, Hips, Sleeve Length, and Shoulder width) in the instruction box. Our master tailors will handcraft your garment explicitly to your profile.</p>
             </div>
         </div>
 
-        <!-- TAB 3: ORDERS & TRACKING -->
         <div id="tab-orders" class="tab-content">
             <div class="hero">
                 <h1>Order History & Live Tracking</h1>
@@ -148,7 +133,6 @@
         <div class="footer-tagline">Beautiful. The way you are</div>
         <div class="footer-links">
             <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a>
-            <a href="https://instagram.com/aliveraatelier" target="_blank">Instagram: @aliveraatelier</a>
         </div>
         <div class="footer-copy">&copy; 2026 Alivèra Atelier. All rights reserved.</div>
     </footer>
@@ -169,7 +153,7 @@
                 <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
             </div>
             <button class="btn" id="auth-action-btn" style="width: 100%; margin-top: 15px;" onclick="handleAuthSubmit()">Sign In</button>
-            <button class="link-item" id="auth-toggle-btn-sub" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: block; width: 100%; margin-top: 12px; text-align: center;">New to Alivèra Atelier? Create a new account</button>
+            <button class="link-item" id="auth-toggle-btn-sub" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: block; width: 100%; margin-top: 12px; text-align: center; background:none; border:none;">New to Alivèra Atelier? Create a new account</button>
         </div>
     </div>
 
@@ -228,8 +212,9 @@
         function switchTab(tabId, btnElement) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active-tab'));
-            document.getElementById(`tab-${tabId}`).classList.add('active-content');
-            btnElement.classList.add('active-tab');
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) targetTab.classList.add('active-content');
+            if (btnElement) btnElement.classList.add('active-tab');
             if (tabId === 'orders') {
                 renderCustomerOrders();
             }
@@ -241,7 +226,7 @@
             const grid = document.getElementById('live-catalog');
             let activeCatalog = getActiveCatalog();
             if (activeCatalog.length === 0) {
-                grid.innerHTML = `<div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the atelier.</div>`;
+                grid.innerHTML = `<div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the admin dashboard.</div>`;
                 return;
             }
             grid.innerHTML = activeCatalog.map((p, idx) => `
@@ -284,24 +269,33 @@
             if (currentEmail) {
                 const storedName = localStorage.getItem('atelier_current_user_name');
                 const displayName = storedName ? storedName : currentEmail.split('@')[0];
-                let adminButtonHtml = currentEmail === 'hello@aliveraatelier.in' ? `<a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>` : '';
+                let adminButtonHtml = currentEmail === 'hello@aliveraatelier.in' ? `<a href="admin.html" class="btn" style="background: #27ae60; color: #fff; margin-left:5px;">Admin</a>` : '';
                 nav.innerHTML = `
                     <span style="color: #d4af37; font-size: 11px;">Hello, ${displayName}</span>
                     <button class="link-item" onclick="switchTab('orders', document.querySelectorAll('.tab-btn')[2])">My Orders</button>
-                    <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
+                    <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">${cart.reduce((a,b)=>a+b.quantity,0)}</span>)</button>
                     ${adminButtonHtml}
                     <button class="link-item" onclick="logout()" style="color: #e74c3c;">Sign Out</button>
                 `;
             } else {
                 nav.innerHTML = `
-                    <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
+                    <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">${cart.reduce((a,b)=>a+b.quantity,0)}</span>)</button>
                     <button class="btn" onclick="openAuthModal()">Sign In</button>
                 `;
             }
         }
 
-        function openAuthModal() { isRegistering = false; updateAuthModalView(); document.getElementById('auth-signin-modal').style.display = 'flex'; }
-        function toggleAuthMode() { isRegistering = !isRegistering; updateAuthModalView(); }
+        function openAuthModal() { 
+            isRegistering = false; 
+            updateAuthModalView(); 
+            document.getElementById('auth-signin-modal').style.display = 'flex'; 
+        }
+
+        function toggleAuthMode() { 
+            isRegistering = !isRegistering; 
+            updateAuthModalView(); 
+        }
+
         function updateAuthModalView() {
             const heading = document.getElementById('modal-heading');
             const subtext = document.getElementById('modal-subtext');
@@ -322,6 +316,7 @@
                 toggleBtnSub.innerText = 'New to Alivèra Atelier? Create a new account';
             }
         }
+
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('signin-password');
             passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
@@ -355,7 +350,12 @@
             }
         }
 
-        function logout() { localStorage.removeItem('atelier_current_user_email'); localStorage.removeItem('atelier_current_user_name'); window.location.reload(); }
+        function logout() { 
+            localStorage.removeItem('atelier_current_user_email'); 
+            localStorage.removeItem('atelier_current_user_name'); 
+            checkAuthStatus();
+            alert("Signed out successfully.");
+        }
 
         function toggleCustomSize(idx) {
             const val = document.getElementById(`size-select-${idx}`).value;
@@ -438,12 +438,11 @@
 
             if (paymentMethod === "RuPay") {
                 var options = {
-                    "key": "rzp_live_YOUR_ACTUAL_LIVE_KEY_ID", rzp_live_TUhsK2amojFPDpe
+                    "key": "rzp_test_YOUR_TEST_KEY_ID" : rzp_live_TUhsK2amojFPDp, 
                     "amount": finalTotal * 100, 
                     "currency": "INR",
                     "name": "Alivèra Atelier",
                     "description": "Luxury Bespoke Couture",
-                    "image": "https://www.aliveraatelier.in/favicon.ico",
                     "handler": function (response) {
                         completeOrderProcessing("Online (PayID: " + response.razorpay_payment_id + ")");
                     },
@@ -452,9 +451,7 @@
                         "email": localStorage.getItem('atelier_current_user_email') || "",
                         "contact": shippingDetails.phone
                     },
-                    "theme": {
-                        "color": "#d4af37"
-                    }
+                    "theme": { "color": "#d4af37" }
                 };
                 var rzp1 = new Razorpay(options);
                 rzp1.open();
