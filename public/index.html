@@ -32,13 +32,15 @@
         .product-img-container { width: 100%; height: 380px; background: #141414; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #222; }
         .product-img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        .product-title { font-size: 16px; letter-spacing: 1px; color: #fff; margin: 15px 0 6px; }
+        .product-title { font-size: 16px; letter-spacing: 1px; color: #fff; margin: 15px 0 4px; }
+        .size-chart-link { color: #d4af37; font-weight: bold; font-size: 11px; letter-spacing: 1px; cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; margin-bottom: 10px; display: inline-block; }
+        .size-chart-link:hover { color: #f39c12; }
+        
         .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 12px; }
         
         label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; margin-top: 10px; }
         .custom-input, select { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; box-sizing: border-box; margin-bottom: 8px; }
         
-        /* Password wrapper for show/hide toggle */
         .password-container { position: relative; width: 100%; margin-bottom: 8px; }
         .password-container input { width: 100%; margin-bottom: 0; padding-right: 40px; }
         .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #aaa; cursor: pointer; font-size: 14px; }
@@ -176,6 +178,14 @@
         </div>
     </div>
 
+    <!-- Image Popup Modal for Size Chart -->
+    <div id="image-popup-modal" class="modal" onclick="closeImagePopup()">
+        <div class="modal-content" style="background: transparent; border: none; text-align: center; width: auto; max-width: 90vw; padding: 0;" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeImagePopup()" style="position: absolute; top: -35px; right: 0; color: #fff; font-size: 24px; cursor: pointer;">&times;</span>
+            <img id="popup-img-target" src="" alt="Size Chart Large" style="max-width: 100%; max-height: 85vh; border-radius: 6px; border: 2px solid #d4af37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);">
+        </div>
+    </div>
+
     <script>
         let cart = [];
         let isRegistering = false;
@@ -203,69 +213,56 @@
                 return;
             }
 
-            grid.innerHTML = activeCatalog.map((p, idx) => `
-                <div class="product-card">
-                    <div class="product-img-container">
-                        <img src="${p.image || '/logo.png'}" alt="${p.name}" class="product-img" onerror="this.src='/logo.png'">
-                    </div>
-                    <div class="product-title">${p.name}</div>
-                    <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                        <label style="margin: 0;">SELECT SIZE</label>
-                        <button type="button" class="link-item" onclick="openSizeChartModal()" style="font-size: 10px; color: #d4af37; text-decoration: underline;">View Size Chart</button>
-                    </div>
+            grid.innerHTML = activeCatalog.map((p, idx) => {
+                // If an admin uploaded a size chart image for this product, render it in bold gold below the dress name
+                let sizeChartHtml = p.sizeChartImg 
+                    ? `<button type="button" class="size-chart-link" onclick="openImagePopup('${p.sizeChartImg}')">VIEW SIZE CHART</button>`
+                    : `<button type="button" class="size-chart-link" onclick="openDefaultSizeChart()">VIEW SIZE CHART</button>`;
 
-                    <select id="size-select-${idx}" onchange="toggleCustomSize(${idx})" style="margin-top: 5px;">
-                        <option value="XS">XS (Extra Small)</option>
-                        <option value="S">S (Small)</option>
-                        <option value="M" selected>M (Medium)</option>
-                        <option value="L">L (Large)</option>
-                        <option value="XL">XL (Extra Large)</option>
-                        <option value="Custom">Custom Measurements</option>
-                    </select>
+                return `
+                    <div class="product-card">
+                        <div class="product-img-container">
+                            <img src="${p.image || '/logo.png'}" alt="${p.name}" class="product-img" onerror="this.src='/logo.png'">
+                        </div>
+                        <div class="product-title">${p.name}</div>
+                        ${sizeChartHtml}
+                        <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
+                        
+                        <label>SELECT SIZE</label>
+                        <select id="size-select-${idx}" onchange="toggleCustomSize(${idx})">
+                            <option value="XS">XS (Extra Small)</option>
+                            <option value="S">S (Small)</option>
+                            <option value="M" selected>M (Medium)</option>
+                            <option value="L">L (Large)</option>
+                            <option value="XL">XL (Extra Large)</option>
+                            <option value="Custom">Custom Measurements</option>
+                        </select>
 
-                    <div id="custom-wrap-${idx}" style="display: none; margin-top: 5px;">
-                        <label>CUSTOM MEASUREMENTS</label>
-                        <input type="text" class="custom-input" id="cust-spec-${idx}" placeholder="e.g. Bust: 34in, Waist: 28in">
-                    </div>
+                        <div id="custom-wrap-${idx}" style="display: none; margin-top: 5px;">
+                            <label>CUSTOM MEASUREMENTS</label>
+                            <input type="text" class="custom-input" id="cust-spec-${idx}" placeholder="e.g. Bust: 34in, Waist: 28in">
+                        </div>
 
-                    <label>QUANTITY</label>
-                    <input type="number" class="custom-input" id="qty-${idx}" value="1" min="1" max="10">
+                        <label>QUANTITY</label>
+                        <input type="number" class="custom-input" id="qty-${idx}" value="1" min="1" max="10">
 
-                    <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addToCart(${idx})">Add to Cart</button>
-                </div>
-            `).join('');
-        }
-
-        function openSizeChartModal() {
-            let chartModal = document.getElementById('size-chart-modal');
-            if (!chartModal) {
-                const modalDiv = document.createElement('div');
-                modalDiv.id = 'size-chart-modal';
-                modalDiv.className = 'modal';
-                modalDiv.innerHTML = `
-                    <div class="modal-content" style="max-width: 400px; text-align: center;">
-                        <span class="close-modal" onclick="document.getElementById('size-chart-modal').style.display='none'">&times;</span>
-                        <h3 style="color: #d4af37; margin-bottom: 10px; letter-spacing: 1px;">ATELIER SIZE GUIDE</h3>
-                        <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">All measurements are in inches.</p>
-                        <table style="width: 100%; font-size: 11px; text-align: left; border-collapse: collapse; color: #ddd; margin-bottom: 15px;">
-                            <tr style="border-bottom: 1px solid #333; color: #d4af37;">
-                                <th style="padding: 6px;">Size</th><th style="padding: 6px;">Bust</th><th style="padding: 6px;">Waist</th><th style="padding: 6px;">Hips</th>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #222;"><td style="padding: 6px;">XS</td><td style="padding: 6px;">32"</td><td style="padding: 6px;">26"</td><td style="padding: 6px;">35"</td></tr>
-                            <tr style="border-bottom: 1px solid #222;"><td style="padding: 6px;">S</td><td style="padding: 6px;">34"</td><td style="padding: 6px;">28"</td><td style="padding: 6px;">37"</td></tr>
-                            <tr style="border-bottom: 1px solid #222;"><td style="padding: 6px;">M</td><td style="padding: 6px;">36"</td><td style="padding: 6px;">30"</td><td style="padding: 6px;">39"</td></tr>
-                            <tr style="border-bottom: 1px solid #222;"><td style="padding: 6px;">L</td><td style="padding: 6px;">38"</td><td style="padding: 6px;">32"</td><td style="padding: 6px;">41"</td></tr>
-                            <tr><td style="padding: 6px;">XL</td><td style="padding: 6px;">40"</td><td style="padding: 6px;">34"</td><td style="padding: 6px;">43"</td></tr>
-                        </table>
-                        <p style="font-size: 10px; color: #888; font-style: italic;">Need a bespoke fit? Select "Custom Measurements" from the product card dropdown.</p>
+                        <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addToCart(${idx})">Add to Cart</button>
                     </div>
                 `;
-                document.body.appendChild(modalDiv);
-                chartModal = modalDiv;
-            }
-            chartModal.style.display = 'flex';
+            }).join('');
+        }
+
+        function openImagePopup(imgSrc) {
+            document.getElementById('popup-img-target').src = imgSrc;
+            document.getElementById('image-popup-modal').style.display = 'flex';
+        }
+
+        function closeImagePopup() {
+            document.getElementById('image-popup-modal').style.display = 'none';
+        }
+
+        function openDefaultSizeChart() {
+            openImagePopup('/logo.png'); // Falls back to logo or fallback chart if no custom image is uploaded
         }
 
         function checkAuthStatus() {
