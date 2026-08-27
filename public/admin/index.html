@@ -21,10 +21,10 @@
         
         .container { max-width: 800px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
         
-        /* Auth Screen */
-        #auth-gate { text-align: center; padding: 60px 20px; background: #121212; border: 1px solid #222; border-radius: 8px; margin-top: 40px; }
-        #auth-gate h2 { color: #d4af37; letter-spacing: 2px; margin-bottom: 15px; }
-        #auth-gate p { color: #aaa; font-size: 12px; margin-bottom: 25px; }
+        /* Auth Gate */
+        #auth-gate { text-align: center; padding: 40px 20px; background: #121212; border: 1px solid #222; border-radius: 8px; margin-top: 40px; max-width: 400px; margin-left: auto; margin-right: auto; }
+        #auth-gate h2 { color: #d4af37; letter-spacing: 2px; margin-bottom: 15px; font-size: 16px; }
+        #auth-gate p { color: #aaa; font-size: 11px; margin-bottom: 20px; }
 
         /* Admin Content Dashboard */
         #admin-dashboard { display: none; }
@@ -37,8 +37,6 @@
         
         .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; width: 100%; display: block; box-sizing: border-box; margin-top: 10px; }
         .btn:hover { background: #c59b27; }
-        .btn-google { background: #fff; color: #333; border: 1px solid #ddd; display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: auto; padding: 10px 25px; margin: 0 auto; }
-        .btn-google:hover { background: #f1f1f1; }
 
         .product-list-item { display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 12px; }
         .delete-btn { background: #e74c3c; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 10px; }
@@ -57,12 +55,17 @@
     <div class="container">
         <!-- AUTH GATE (Shown if not logged in as hello@aliveraatelier.in) -->
         <div id="auth-gate">
-            <h2>RESTRICTED ADMIN ACCESS</h2>
-            <p>Please sign in using your official administrator credentials (hello@aliveraatelier.in).</p>
-            <button class="btn btn-google" onclick="signInAdmin()">
-                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.17 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.18C.43 8.12 0 9.83 0 12s.43 3.88 1.18 5.39l4.09-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.17 2.68 1.18 6.61l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
-                Sign In as Admin
-            </button>
+            <h2>ADMIN PORTAL SIGN IN</h2>
+            <p>Enter your administrator credentials to access the management dashboard.</p>
+            <div class="form-group" style="text-align: left;">
+                <label>ADMIN EMAIL</label>
+                <input type="email" id="admin-email" class="form-control" value="hello@aliveraatelier.in">
+            </div>
+            <div class="form-group" style="text-align: left;">
+                <label>PASSWORD</label>
+                <input type="password" id="admin-password" class="form-control" placeholder="••••••••">
+            </div>
+            <button class="btn" onclick="loginAdmin()">Sign In as Admin</button>
         </div>
 
         <!-- ADMIN DASHBOARD (Unlocked only for hello@aliveraatelier.in) -->
@@ -109,18 +112,25 @@
 
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
-        async function signInAdmin() {
-            const provider = new firebase.auth.GoogleAuthProvider();
+        async function loginAdmin() {
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value.trim();
+
+            if (!email || !password) {
+                alert("Please enter both email and password.");
+                return;
+            }
+
             try {
-                const result = await auth.signInWithPopup(provider);
+                const result = await auth.signInWithEmailAndPassword(email, password);
                 if (result.user.email !== ADMIN_EMAIL) {
-                    alert("Access Denied: " + result.user.email + " is not authorized as the admin.");
+                    alert("Access Denied: This account is not authorized as the admin.");
                     await auth.signOut();
                 } else {
                     alert("Admin access granted!");
                 }
             } catch (error) {
-                alert("Sign-in error: " + error.message);
+                alert("Login error: " + error.message);
             }
         }
 
@@ -136,10 +146,6 @@
                 logoutBtn.style.display = 'block';
                 loadAdminCatalog();
             } else {
-                if (user) {
-                    // Logged in with wrong account
-                    auth.signOut();
-                }
                 gate.style.display = 'block';
                 dashboard.style.display = 'none';
                 logoutBtn.style.display = 'none';
