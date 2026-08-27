@@ -50,7 +50,10 @@
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER — MASTER ADMIN</div>
         </a>
-        <button id="logout-btn" style="display:none; background:none; border:none; color:#aaa; cursor:pointer; font-size:11px; letter-spacing:1px;" onclick="auth.signOut()">SIGN OUT</button>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="/" style="color: #aaa; text-decoration: none; font-size: 11px; letter-spacing: 1px;">VIEW STOREFRONT</a>
+            <button id="logout-btn" style="display:none; background:none; border:none; color:#aaa; cursor:pointer; font-size:11px; letter-spacing:1px;" onclick="auth.signOut()">SIGN OUT</button>
+        </div>
     </header>
 
     <div class="container">
@@ -93,12 +96,12 @@
                     <input type="number" id="prod-price" class="form-control" placeholder="38000">
                 </div>
                 <div class="form-group">
-                    <label>DRESS IMAGE (UPLOAD OR FILE URL)</label>
+                    <label>DRESS IMAGE UPLOAD</label>
                     <input type="file" id="prod-image-file" class="form-control" accept="image/*" onchange="convertImageToBase64(this, 'prod-image')">
                     <input type="hidden" id="prod-image">
                 </div>
                 <div class="form-group">
-                    <label>SIZE CHART IMAGE (UPLOAD OR FILE URL)</label>
+                    <label>SIZE CHART IMAGE UPLOAD</label>
                     <input type="file" id="chart-image-file" class="form-control" accept="image/*" onchange="convertImageToBase64(this, 'chart-image')">
                     <input type="hidden" id="chart-image">
                 </div>
@@ -108,6 +111,11 @@
             <!-- Advanced Promo & Countdown Config -->
             <div class="card">
                 <h2>PROMOTIONAL BANNER & DISCOUNT CONFIGURATOR</h2>
+                <div class="form-group">
+                    <label>BANNER IMAGE UPLOAD</label>
+                    <input type="file" id="promo-banner-image-file" class="form-control" accept="image/*" onchange="convertImageToBase64(this, 'promo-banner-image')">
+                    <input type="hidden" id="promo-banner-image">
+                </div>
                 <div class="form-group">
                     <label>BANNER DISPLAY TEXT</label>
                     <input type="text" id="promo-banner-text" class="form-control" placeholder="e.g. LUXURY SPRING SALE IS LIVE — 10% OFF">
@@ -147,7 +155,7 @@
                     <input type="datetime-local" id="promo-countdown-target" class="form-control">
                 </div>
 
-                <button class="btn" onclick="savePromoConfig()">Save Promotion Rules</button>
+                <button class="btn" onclick="savePromoConfig()">Save Promotion Rules & Banner</button>
             </div>
 
             <!-- Manage Catalog -->
@@ -221,17 +229,23 @@
 
         async function savePromoConfig() {
             const bannerText = document.getElementById('promo-banner-text').value;
+            const bannerImage = document.getElementById('promo-banner-image').value;
             const type = document.getElementById('promo-type').value;
             const maxPeople = Number(document.getElementById('promo-max-people').value) || 0;
             const startTime = document.getElementById('promo-start-time').value;
             const endTime = document.getElementById('promo-end-time').value;
             const countdownTarget = document.getElementById('promo-countdown-target').value;
 
+            const existingDoc = await db.collection("atelier_settings").doc("promo").get();
+            const existingImage = existingDoc.exists ? (existingDoc.data().bannerImage || '') : '';
+
             await db.collection("atelier_settings").doc("promo").set({
-                bannerText, type, maxPeople, startTime, endTime, countdownTarget,
+                bannerText,
+                bannerImage: bannerImage || existingImage,
+                type, maxPeople, startTime, endTime, countdownTarget,
                 usedCount: window.currentUsedCount || 0
             }, { merge: true });
-            alert("Promotional configuration saved successfully!");
+            alert("Promotional configuration & banner image saved successfully!");
         }
 
         async function publishProduct() {
@@ -254,11 +268,11 @@
         }
 
         async function loadAdminData() {
-            // Load Promo Config
             const promoDoc = await db.collection("atelier_settings").doc("promo").get();
             if(promoDoc.exists) {
                 const d = promoDoc.data();
                 document.getElementById('promo-banner-text').value = d.bannerText || '';
+                document.getElementById('promo-banner-image').value = d.bannerImage || '';
                 document.getElementById('promo-type').value = d.type || 'none';
                 document.getElementById('promo-max-people').value = d.maxPeople || '';
                 document.getElementById('promo-start-time').value = d.startTime || '';
@@ -270,7 +284,6 @@
                 togglePromoTypeFields();
             }
 
-            // Load Orders
             const ordersEl = document.getElementById('admin-orders-list');
             const ordersSnap = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
             if(ordersSnap.empty) {
@@ -295,7 +308,6 @@
                 }).join('');
             }
 
-            // Load Catalog
             const catEl = document.getElementById('admin-product-list');
             const catSnap = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
             if(catSnap.empty) {
