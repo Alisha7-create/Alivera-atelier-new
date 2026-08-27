@@ -97,12 +97,12 @@
                 </div>
                 <div class="form-group">
                     <label>DRESS IMAGE UPLOAD</label>
-                    <input type="file" id="prod-image-file" class="form-control" accept="image/*" onchange="convertImageToBase64(this, 'prod-image')">
+                    <input type="file" id="prod-image-file" class="form-control" accept="image/*" onchange="compressAndConvertImage(this, 'prod-image', 800)">
                     <input type="hidden" id="prod-image">
                 </div>
                 <div class="form-group">
                     <label>SIZE CHART IMAGE UPLOAD</label>
-                    <input type="file" id="chart-image-file" class="form-control" accept="image/*" onchange="convertImageToBase64(this, 'chart-image')">
+                    <input type="file" id="chart-image-file" class="form-control" accept="image/*" onchange="compressAndConvertImage(this, 'chart-image', 800)">
                     <input type="hidden" id="chart-image">
                 </div>
                 <button class="btn" onclick="publishProduct()">Publish to Storefront Instantly</button>
@@ -113,7 +113,7 @@
                 <h2>PROMOTIONAL BANNER & DISCOUNT CONFIGURATOR</h2>
                 <div class="form-group">
                     <label>BANNER IMAGE UPLOAD</label>
-                    <input type="file" id="promo-banner-image-file" class="form-control" accept="image/*" onchange="convertImageToBase64(this, 'promo-banner-image')">
+                    <input type="file" id="promo-banner-image-file" class="form-control" accept="image/*" onchange="compressAndConvertImage(this, 'promo-banner-image', 1200)">
                     <input type="hidden" id="promo-banner-image">
                 </div>
                 <div class="form-group">
@@ -210,15 +210,38 @@
             }
         });
 
-        function convertImageToBase64(inputElement, targetFieldId) {
+        // Image compression helper to keep document size well under Firestore 1MB limit
+        function compressAndConvertImage(inputElement, targetFieldId, maxWidth = 800) {
             const file = inputElement.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById(targetFieldId).value = e.target.result;
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Compress to JPEG with 85% quality
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    document.getElementById(targetFieldId).value = dataUrl;
+                    console.log(`Image compressed successfully. Size: ${Math.round(dataUrl.length / 1024)} KB`);
                 };
-                reader.readAsDataURL(file);
-            }
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         function togglePromoTypeFields() {
@@ -228,106 +251,129 @@
         }
 
         async function savePromoConfig() {
-            const bannerText = document.getElementById('promo-banner-text').value;
-            const bannerImage = document.getElementById('promo-banner-image').value;
-            const type = document.getElementById('promo-type').value;
-            const maxPeople = Number(document.getElementById('promo-max-people').value) || 0;
-            const startTime = document.getElementById('promo-start-time').value;
-            const endTime = document.getElementById('promo-end-time').value;
-            const countdownTarget = document.getElementById('promo-countdown-target').value;
+            try {
+                const bannerText = document.getElementById('promo-banner-text').value;
+                const bannerImage = document.getElementById('promo-banner-image').value;
+                const type = document.getElementById('promo-type').value;
+                const maxPeople = Number(document.getElementById('promo-max-people').value) || 0;
+                const startTime = document.getElementById('promo-start-time').value;
+                const endTime = document.getElementById('promo-end-time').value;
+                const countdownTarget = document.getElementById('promo-countdown-target').value;
 
-            const existingDoc = await db.collection("atelier_settings").doc("promo").get();
-            const existingImage = existingDoc.exists ? (existingDoc.data().bannerImage || '') : '';
+                const existingDoc = await db.collection("atelier_settings").doc("promo").get();
+                const existingImage = existingDoc.exists ? (existingDoc.data().bannerImage || '') : '';
 
-            await db.collection("atelier_settings").doc("promo").set({
-                bannerText,
-                bannerImage: bannerImage || existingImage,
-                type, maxPeople, startTime, endTime, countdownTarget,
-                usedCount: window.currentUsedCount || 0
-            }, { merge: true });
-            alert("Promotional configuration & banner image saved successfully!");
+                await db.collection("atelier_settings").doc("promo").set({
+                    bannerText,
+                    bannerImage: bannerImage || existingImage,
+                    type, maxPeople, startTime, endTime, countdownTarget,
+                    usedCount: window.currentUsedCount || 0
+                }, { merge: true });
+                alert("Promotional configuration & banner image saved successfully!");
+            } catch (e) {
+                alert("Error saving promo config: " + e.message);
+            }
         }
 
         async function publishProduct() {
-            const name = document.getElementById('prod-name').value.trim();
-            const price = Number(document.getElementById('prod-price').value);
-            const image = document.getElementById('prod-image').value;
-            const sizeChart = document.getElementById('chart-image').value;
+            try {
+                const name = document.getElementById('prod-name').value.trim();
+                const price = Number(document.getElementById('prod-price').value);
+                const image = document.getElementById('prod-image').value;
+                const sizeChart = document.getElementById('chart-image').value;
 
-            if(!name || !price || !image) { alert("Please provide name, price, and dress image."); return; }
+                if(!name || !price || !image) { 
+                    alert("Please provide a dress name, price, and select a dress image."); 
+                    return; 
+                }
 
-            await db.collection("atelier_products").add({
-                name, price, image, sizeChart, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            alert("Dress published to storefront!");
-            document.getElementById('prod-name').value = '';
-            document.getElementById('prod-price').value = '';
-            document.getElementById('prod-image').value = '';
-            document.getElementById('chart-image').value = '';
-            loadAdminData();
+                await db.collection("atelier_products").add({
+                    name, 
+                    price, 
+                    image, 
+                    sizeChart: sizeChart || "", 
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert("Dress successfully published to storefront!");
+                document.getElementById('prod-name').value = '';
+                document.getElementById('prod-price').value = '';
+                document.getElementById('prod-image').value = '';
+                document.getElementById('chart-image').value = '';
+                document.getElementById('prod-image-file').value = '';
+                document.getElementById('chart-image-file').value = '';
+                loadAdminData();
+            } catch (e) {
+                alert("Publishing error: " + e.message);
+                console.error(e);
+            }
         }
 
         async function loadAdminData() {
-            const promoDoc = await db.collection("atelier_settings").doc("promo").get();
-            if(promoDoc.exists) {
-                const d = promoDoc.data();
-                document.getElementById('promo-banner-text').value = d.bannerText || '';
-                document.getElementById('promo-banner-image').value = d.bannerImage || '';
-                document.getElementById('promo-type').value = d.type || 'none';
-                document.getElementById('promo-max-people').value = d.maxPeople || '';
-                document.getElementById('promo-start-time').value = d.startTime || '';
-                document.getElementById('promo-end-time').value = d.endTime || '';
-                document.getElementById('promo-countdown-target').value = d.countdownTarget || '';
-                window.currentUsedCount = d.usedCount || 0;
-                document.getElementById('promo-used-count').innerText = window.currentUsedCount;
-                document.getElementById('promo-max-display').innerText = d.maxPeople || 0;
-                togglePromoTypeFields();
-            }
+            try {
+                const promoDoc = await db.collection("atelier_settings").doc("promo").get();
+                if(promoDoc.exists) {
+                    const d = promoDoc.data();
+                    document.getElementById('promo-banner-text').value = d.bannerText || '';
+                    document.getElementById('promo-banner-image').value = d.bannerImage || '';
+                    document.getElementById('promo-type').value = d.type || 'none';
+                    document.getElementById('promo-max-people').value = d.maxPeople || '';
+                    document.getElementById('promo-start-time').value = d.startTime || '';
+                    document.getElementById('promo-end-time').value = d.endTime || '';
+                    document.getElementById('promo-countdown-target').value = d.countdownTarget || '';
+                    window.currentUsedCount = d.usedCount || 0;
+                    document.getElementById('promo-used-count').innerText = window.currentUsedCount;
+                    document.getElementById('promo-max-display').innerText = d.maxPeople || 0;
+                    togglePromoTypeFields();
+                }
 
-            const ordersEl = document.getElementById('admin-orders-list');
-            const ordersSnap = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
-            if(ordersSnap.empty) {
-                ordersEl.innerHTML = `<p style="color: #777; font-size: 12px;">No orders placed yet.</p>`;
-            } else {
-                ordersEl.innerHTML = ordersSnap.docs.map(doc => {
-                    const o = doc.data();
-                    const id = doc.id;
-                    return `
-                        <div class="list-item">
-                            <div>
-                                <strong>Order #${id.slice(0,6)}</strong> — ${o.clientEmail}<br>
-                                <span style="color: #aaa;">Piece: ${o.itemName} (${o.selectedSize}) | Status: <strong>${o.status}</strong></span><br>
-                                <span style="font-size: 10px; color: #888;">Ship to: ${o.shipping.address}, ${o.shipping.city} - ${o.shipping.pincode}</span>
+                const ordersEl = document.getElementById('admin-orders-list');
+                const ordersSnap = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
+                if(ordersSnap.empty) {
+                    ordersEl.innerHTML = `<p style="color: #777; font-size: 12px;">No orders placed yet.</p>`;
+                } else {
+                    ordersEl.innerHTML = ordersSnap.docs.map(doc => {
+                        const o = doc.data();
+                        const id = doc.id;
+                        return `
+                            <div class="list-item">
+                                <div>
+                                    <strong>Order #${id.slice(0,6)}</strong> — ${o.clientEmail}<br>
+                                    <span style="color: #aaa;">Piece: ${o.itemName} (${o.selectedSize}) | Status: <strong>${o.status}</strong></span><br>
+                                    <span style="font-size: 10px; color: #888;">Ship to: ${o.shipping.address}, ${o.shipping.city} - ${o.shipping.pincode}</span>
+                                </div>
+                                <div style="display: flex; gap: 5px;">
+                                    <button class="action-btn approve-btn" onclick="updateOrderStatus('${id}', 'Confirmed & Dispatched')">Confirm</button>
+                                    <button class="action-btn" onclick="updateOrderStatus('${id}', 'Declined')">Decline</button>
+                                </div>
                             </div>
-                            <div style="display: flex; gap: 5px;">
-                                <button class="action-btn approve-btn" onclick="updateOrderStatus('${id}', 'Confirmed & Dispatched')">Confirm</button>
-                                <button class="action-btn" onclick="updateOrderStatus('${id}', 'Declined')">Decline</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
+                        `;
+                    }).join('');
+                }
 
-            const catEl = document.getElementById('admin-product-list');
-            const catSnap = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
-            if(catSnap.empty) {
-                catEl.innerHTML = `<p style="color: #777; font-size: 12px;">No dresses in catalog.</p>`;
-            } else {
-                catEl.innerHTML = catSnap.docs.map(doc => {
-                    const p = doc.data();
-                    return `
-                        <div class="list-item">
-                            <span><strong>${p.name}</strong> — ₹${Number(p.price).toLocaleString('en-IN')}</span>
-                            <button class="action-btn" onclick="deleteProduct('${doc.id}')">Remove</button>
-                        </div>
-                    `;
-                }).join('');
+                const catEl = document.getElementById('admin-product-list');
+                const catSnap = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
+                if(catSnap.empty) {
+                    catEl.innerHTML = `<p style="color: #777; font-size: 12px;">No dresses in catalog.</p>`;
+                } else {
+                    catEl.innerHTML = catSnap.docs.map(doc => {
+                        const p = doc.data();
+                        return `
+                            <div class="list-item">
+                                <span><strong>${p.name}</strong> — ₹${Number(p.price).toLocaleString('en-IN')}</span>
+                                <button class="action-btn" onclick="deleteProduct('${doc.id}')">Remove</button>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error("Error loading admin data:", e);
             }
         }
 
         async function updateOrderStatus(orderId, status) {
             await db.collection("atelier_orders").doc(orderId).update({ status });
-            alert(`Order status updated to "${status}". Email notification simulation dispatched from hello@aliveraatelier.in to client.`);
+            alert(`Order status updated to "${status}".`);
             loadAdminData();
         }
 
