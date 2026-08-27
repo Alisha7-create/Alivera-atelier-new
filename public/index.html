@@ -23,7 +23,7 @@
         .nav-link { color: #aaa; text-decoration: none; font-size: 12px; letter-spacing: 1px; cursor: pointer; background: none; border: none; font-family: inherit; }
         .nav-link:hover { color: #d4af37; }
 
-        /* Banner & Countdown Bar */
+        /* Announcement Bar */
         #top-announcement-bar { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 11px; font-weight: bold; letter-spacing: 2px; display: none; }
 
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
@@ -32,10 +32,10 @@
         .hero-section p { color: #aaa; letter-spacing: 2px; font-size: 12px; font-style: italic; }
 
         .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-        .store-card { background: #121212; border: 1px solid #222; border-radius: 8px; padding: 15px; text-align: center; transition: border-color 0.3s; }
+        .store-card { background: #121212; border: 1px solid #222; border-radius: 8px; padding: 15px; text-align: center; transition: border-color 0.3s; position: relative; }
         .store-card:hover { border-color: #d4af37; }
         .store-card img { width: 100%; height: 320px; object-fit: contain; background: #0a0a0a; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1a1a1a; }
-        .size-chart-preview { width: 100%; height: 80px; object-fit: contain; background: #000; border: 1px dashed #444; margin-bottom: 10px; border-radius: 4px; cursor: pointer; }
+        .size-chart-preview { width: 100%; height: 70px; object-fit: contain; background: #000; border: 1px dashed #444; margin-bottom: 10px; border-radius: 4px; cursor: pointer; }
         
         .product-title { font-size: 14px; font-weight: bold; color: #fff; letter-spacing: 1px; margin-bottom: 8px; }
         .product-price { color: #d4af37; font-size: 14px; letter-spacing: 1px; margin-bottom: 15px; }
@@ -47,13 +47,20 @@
 
         /* Modal Overlays */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto; border-radius: 8px; padding: 30px; box-sizing: border-box; position: relative; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; border-radius: 8px; padding: 30px; box-sizing: border-box; position: relative; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 20px; cursor: pointer; background: none; border: none; }
         .close-modal:hover { color: #d4af37; }
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; }
         .form-control { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; box-sizing: border-box; }
+
+        /* Account Hub Tabs */
+        .account-tabs { display: flex; gap: 10px; border-bottom: 1px solid #222; margin-bottom: 20px; flex-wrap: wrap; }
+        .account-tab-btn { background: none; border: none; color: #aaa; padding: 8px 12px; cursor: pointer; font-size: 11px; letter-spacing: 1px; font-family: inherit; border-bottom: 2px solid transparent; }
+        .account-tab-btn.active { color: #d4af37; border-bottom-color: #d4af37; font-weight: bold; }
+        .account-panel { display: none; }
+        .account-panel.active { display: block; }
 
         footer { background: #121212; border-top: 1px solid #222; padding: 30px 20px; text-align: center; margin-top: auto; }
         .footer-brand { color: #d4af37; font-size: 14px; letter-spacing: 3px; font-weight: bold; margin-bottom: 8px; }
@@ -63,7 +70,6 @@
 </head>
 <body>
 
-    <!-- Dynamic Promo Banner & Sale Countdown Bar -->
     <div id="top-announcement-bar"></div>
 
     <header>
@@ -74,6 +80,7 @@
         <div class="nav-actions">
             <button class="nav-link" id="auth-nav-btn" onclick="openAuthModal()">SIGN IN / REGISTER</button>
             <button class="nav-link" onclick="openCartModal()">CART (<span id="cart-count">0</span>)</button>
+            <a href="/admin/" class="nav-link" id="admin-header-link" style="color: #d4af37; font-weight: bold; display: none;">⚙️ ADMIN DASHBOARD</a>
         </div>
     </header>
 
@@ -88,7 +95,58 @@
         </div>
     </div>
 
-    <!-- CHECKOUT / BOOKING MODAL (Pincode Check First + Complete Address) -->
+    <!-- CLIENT ACCOUNT HUB MODAL -->
+    <div class="modal-overlay" id="account-hub-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeAccountHubModal()">&times;</button>
+            <h2 style="color: #d4af37; margin-top: 0; font-size: 16px; letter-spacing: 2px;">CLIENT ACCOUNT DASHBOARD</h2>
+            
+            <div class="account-tabs">
+                <button class="account-tab-btn active" onclick="switchAccountTab('profile', this)">Profile</button>
+                <button class="account-tab-btn" onclick="switchAccountTab('orders', this)">Orders & Tracking</button>
+                <button class="account-tab-btn" onclick="switchAccountTab('wishlist', this)">Wishlist</button>
+                <button class="account-tab-btn" onclick="switchAccountTab('addresses', this)">Addresses & Phone</button>
+            </div>
+
+            <!-- Profile Panel -->
+            <div id="panel-profile" class="account-panel active">
+                <p style="color: #aaa; font-size: 12px; margin-bottom: 15px;">Signed in as: <strong id="hub-user-email" style="color: #d4af37;"></strong></p>
+                <button class="btn" onclick="auth.signOut(); closeAccountHubModal();">Sign Out of Account</button>
+            </div>
+
+            <!-- Orders & Tracking Panel -->
+            <div id="panel-orders" class="account-panel">
+                <h3 style="color: #d4af37; font-size: 13px; letter-spacing: 1px;">PREVIOUS ORDERS & LIVE TRACKING</h3>
+                <div id="hub-orders-container">
+                    <p style="color: #777; font-size: 12px;">Loading order history...</p>
+                </div>
+            </div>
+
+            <!-- Wishlist Panel -->
+            <div id="panel-wishlist" class="account-panel">
+                <h3 style="color: #d4af37; font-size: 13px; letter-spacing: 1px;">YOUR SAVED WISHLIST PIECES</h3>
+                <div id="hub-wishlist-container">
+                    <p style="color: #777; font-size: 12px;">Your wishlist is empty.</p>
+                </div>
+            </div>
+
+            <!-- Addresses & Phone Numbers Panel -->
+            <div id="panel-addresses" class="account-panel">
+                <h3 style="color: #d4af37; font-size: 13px; letter-spacing: 1px;">SAVED ADDRESSES & PHONE NUMBERS</h3>
+                <div class="form-group">
+                    <label>DEFAULT PHONE NUMBER</label>
+                    <input type="text" id="user-phone-input" class="form-control" placeholder="+91 98765 43210">
+                </div>
+                <div class="form-group">
+                    <label>DEFAULT STREET ADDRESS</label>
+                    <input type="text" id="user-address-input" class="form-control" placeholder="House/Flat No., Street, City, Pincode">
+                </div>
+                <button class="btn" onclick="saveUserContactInfo()">Save Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL (Pincode Check First) -->
     <div class="modal-overlay" id="checkout-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeCheckoutModal()">&times;</button>
@@ -146,7 +204,7 @@
             </div>
             <button class="btn" id="auth-submit-btn" onclick="handleAuthAction()">Sign In</button>
             <div style="text-align: center; margin-top: 15px;">
-                <button class="nav-link" id="auth-toggle-mode" onclick="toggleAuthMode()">New to Atelier? Create an Account (Claim 10% Welcome Offer)</button>
+                <button class="nav-link" id="auth-toggle-mode" onclick="toggleAuthMode()">New to Atelier? Create an Account</button>
             </div>
         </div>
     </div>
@@ -185,14 +243,24 @@
 
         let isRegisterMode = false;
         let cart = JSON.parse(localStorage.getItem('alivera_cart') || '[]');
+        let wishlist = JSON.parse(localStorage.getItem('alivera_wishlist') || '[]');
         let activeCheckoutItem = null;
 
         function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
         function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
+        function openAccountHubModal() { loadClientAccountData(); document.getElementById('account-hub-modal').style.display = 'flex'; }
+        function closeAccountHubModal() { document.getElementById('account-hub-modal').style.display = 'none'; }
         function openCartModal() { renderCartItems(); document.getElementById('cart-modal').style.display = 'flex'; }
         function closeCartModal() { document.getElementById('cart-modal').style.display = 'none'; }
         function openCheckoutModal(item) { activeCheckoutItem = item; document.getElementById('checkout-modal').style.display = 'flex'; }
         function closeCheckoutModal() { document.getElementById('checkout-modal').style.display = 'none'; }
+
+        function switchAccountTab(tabName, btnEl) {
+            document.querySelectorAll('.account-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.account-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + tabName).classList.add('active');
+            btnEl.classList.add('active');
+        }
 
         function toggleAuthMode() {
             isRegisterMode = !isRegisterMode;
@@ -206,7 +274,7 @@
             try {
                 if(isRegisterMode) {
                     await auth.createUserWithEmailAndPassword(email, password);
-                    alert("Account registered successfully! You are eligible for your first-time customer discount.");
+                    alert("Account registered successfully!");
                 } else {
                     await auth.signInWithEmailAndPassword(email, password);
                     alert("Signed in successfully!");
@@ -217,27 +285,33 @@
 
         auth.onAuthStateChanged(user => {
             const btn = document.getElementById('auth-nav-btn');
+            const adminLink = document.getElementById('admin-header-link');
+
             if(user) {
-                btn.innerText = "MY ACCOUNT (" + user.email.split('@')[0] + ")";
-                btn.onclick = () => { if(confirm("Sign out?")) auth.signOut(); }
+                btn.innerText = "MY ACCOUNT";
+                btn.onclick = openAccountHubModal;
+                
+                // Strict Admin check for header link
+                if(user.email === "hello@aliveraatelier.in") {
+                    adminLink.style.display = 'inline';
+                } else {
+                    adminLink.style.display = 'none';
+                }
             } else {
                 btn.innerText = "SIGN IN / REGISTER";
                 btn.onclick = openAuthModal;
+                adminLink.style.display = 'none';
             }
         });
 
-        // Load Products, Size Charts & Promo Engine / Countdown Timer
         async function loadStorefront() {
             const grid = document.getElementById('storefront-catalog-grid');
             
-            // Fetch Promo & Countdown
             const promoDoc = await db.collection("atelier_settings").doc("promo").get();
             if(promoDoc.exists) {
                 const p = promoDoc.data();
                 const bar = document.getElementById('top-announcement-bar');
-                
                 if (p.countdownTarget && new Date().getTime() < new Date(p.countdownTarget).getTime()) {
-                    // Show Timer until sharp 12 AM
                     startCountdownTimer(p.countdownTarget, p.bannerText);
                 } else if(p.bannerText) {
                     bar.innerText = p.bannerText;
@@ -253,7 +327,8 @@
 
             grid.innerHTML = snapshot.docs.map(doc => {
                 const item = doc.data();
-                const itemJson = JSON.stringify({id: doc.id, name: item.name, price: item.price}).replace(/"/g, '&quot;');
+                const itemJson = JSON.stringify({id: doc.id, name: item.name, price: item.price, image: item.image}).replace(/"/g, '&quot;');
+                const isWishlisted = wishlist.some(w => w.id === doc.id);
                 return `
                     <div class="store-card">
                         <img src="${item.image}" alt="${item.name}" onerror="this.src='/logo.png'">
@@ -262,6 +337,9 @@
                         <div class="product-price">₹${Number(item.price).toLocaleString('en-IN')}</div>
                         <button class="btn" onclick="addToCart(${itemJson})">Add to Cart</button>
                         <button class="btn btn-outline" onclick="openCheckoutModal(${itemJson})">Buy Now</button>
+                        <button class="nav-link" style="margin-top: 10px; width: 100%; text-align: center;" onclick="toggleWishlist(${itemJson})">
+                            ${isWishlisted ? '❤️ Remove from Wishlist' : '🤍 Add to Wishlist'}
+                        </button>
                     </div>
                 `;
             }).join('');
@@ -270,24 +348,90 @@
         function startCountdownTimer(targetTimeStr, bannerText) {
             const bar = document.getElementById('top-announcement-bar');
             bar.style.display = 'block';
-            
             const target = new Date(targetTimeStr).getTime();
             const interval = setInterval(() => {
                 const now = new Date().getTime();
                 const diff = target - now;
-
                 if (diff <= 0) {
                     clearInterval(interval);
                     bar.innerText = bannerText || "SALE IS NOW LIVE!";
                     return;
                 }
-
                 const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
                 bar.innerText = `⏳ SALE STARTS IN: ${hours}h ${minutes}m ${seconds}s`;
             }, 1000);
+        }
+
+        // Wishlist Actions
+        function toggleWishlist(item) {
+            const idx = wishlist.findIndex(w => w.id === item.id);
+            if(idx > -1) {
+                wishlist.splice(idx, 1);
+                alert("Removed from wishlist.");
+            } else {
+                wishlist.push(item);
+                alert("Added to wishlist!");
+            }
+            localStorage.setItem('alivera_wishlist', JSON.stringify(wishlist));
+            loadStorefront();
+        }
+
+        // Load Client Account Hub Data
+        async function loadClientAccountData() {
+            const user = auth.currentUser;
+            if(!user) return;
+            document.getElementById('hub-user-email').innerText = user.email;
+
+            // Load saved contact info from Firestore user profile
+            const userDoc = await db.collection("atelier_users").doc(user.uid).get();
+            if(userDoc.exists) {
+                const d = userDoc.data();
+                document.getElementById('user-phone-input').value = d.phone || '';
+                document.getElementById('user-address-input').value = d.address || '';
+            }
+
+            // Load Orders & Live Tracking
+            const ordersContainer = document.getElementById('hub-orders-container');
+            const ordersSnap = await db.collection("atelier_orders").where("clientEmail", "==", user.email).get();
+            if(ordersSnap.empty) {
+                ordersContainer.innerHTML = `<p style="color: #777; font-size: 12px;">No previous orders found.</p>`;
+            } else {
+                ordersContainer.innerHTML = ordersSnap.docs.map(doc => {
+                    const o = doc.data();
+                    return `
+                        <div style="background: #0a0a0a; border: 1px solid #222; padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 12px;">
+                            <strong>Piece: ${o.itemName} (${o.selectedSize})</strong><br>
+                            <span style="color: #d4af37;">Status / Tracking: ${o.status}</span><br>
+                            <span style="color: #aaa; font-size: 10px;">Ship to: ${o.shipping.address}, ${o.shipping.city} - ${o.shipping.pincode}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Load Wishlist UI
+            const wishContainer = document.getElementById('hub-wishlist-container');
+            if(wishlist.length === 0) {
+                wishContainer.innerHTML = `<p style="color: #777; font-size: 12px;">Your wishlist is empty.</p>`;
+            } else {
+                wishContainer.innerHTML = wishlist.map(w => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 10px; border-radius: 4px; margin-bottom: 8px; font-size: 12px;">
+                        <span>${w.name} — ₹${Number(w.price).toLocaleString('en-IN')}</span>
+                        <button class="btn" style="width: auto; padding: 6px 12px;" onclick="openCheckoutModal(${JSON.stringify(w).replace(/"/g, '&quot;')})">Buy Now</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function saveUserContactInfo() {
+            const user = auth.currentUser;
+            if(!user) return;
+            const phone = document.getElementById('user-phone-input').value.trim();
+            const address = document.getElementById('user-address-input').value.trim();
+
+            await db.collection("atelier_users").doc(user.uid).set({ phone, address }, { merge: true });
+            alert("Contact & Address details saved successfully!");
         }
 
         // Cart Actions
@@ -327,10 +471,9 @@
         function proceedCheckoutFromCart() {
             if(cart.length === 0) return;
             closeCartModal();
-            openCheckoutModal(cart[0]); // Primary item checkout flow
+            openCheckoutModal(cart[0]);
         }
 
-        // Pincode Verification First
         function verifyPincode() {
             const pincode = document.getElementById('check-pincode').value.trim();
             if(!pincode || pincode.length < 6) {
@@ -340,7 +483,6 @@
             document.getElementById('full-address-section').style.display = 'block';
         }
 
-        // Final Order Submission
         async function submitFinalOrder() {
             const address = document.getElementById('ship-address').value.trim();
             const city = document.getElementById('ship-city').value.trim();
@@ -364,14 +506,6 @@
                     status: "Pending Admin Confirmation",
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-
-                // Increment people discount usage count if applicable
-                const promoRef = db.collection("atelier_settings").doc("promo");
-                const pDoc = await promoRef.get();
-                if(pDoc.exists && pDoc.data().type === 'people') {
-                    const currentUsed = (pDoc.data().usedCount || 0) + 1;
-                    await promoRef.update({ usedCount: currentUsed });
-                }
 
                 alert("Order successfully placed! Awaiting confirmation from hello@aliveraatelier.in.");
                 closeCheckoutModal();
