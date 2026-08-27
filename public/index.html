@@ -24,6 +24,9 @@
        })();
     </script>
     
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
         header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 100; }
@@ -378,6 +381,10 @@
             document.getElementById('checkout-modal').style.display = 'flex';
         }
 
+        function closeModals() {
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
+
         function proceedToPayment() {
             const name = document.getElementById('ship-name').value.trim();
             const phone = document.getElementById('ship-phone').value.trim();
@@ -426,8 +433,38 @@
         }
 
         function finalizeOrder() {
-            const currentUserEmail = localStorage.getItem('atelier_current_user_email') || "";
             const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            const { finalTotal } = calculateTotals();
+
+            if (paymentMethod === "RuPay") {
+                var options = {
+                    "key": "rzp_live_YOUR_ACTUAL_LIVE_KEY_ID", rzp_live_TUhsK2amojFPDpe
+                    "amount": finalTotal * 100, 
+                    "currency": "INR",
+                    "name": "Alivèra Atelier",
+                    "description": "Luxury Bespoke Couture",
+                    "image": "https://www.aliveraatelier.in/favicon.ico",
+                    "handler": function (response) {
+                        completeOrderProcessing("Online (PayID: " + response.razorpay_payment_id + ")");
+                    },
+                    "prefill": {
+                        "name": shippingDetails.name,
+                        "email": localStorage.getItem('atelier_current_user_email') || "",
+                        "contact": shippingDetails.phone
+                    },
+                    "theme": {
+                        "color": "#d4af37"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            } else {
+                completeOrderProcessing("COD");
+            }
+        }
+
+        function completeOrderProcessing(paymentMethodLabel) {
+            const currentUserEmail = localStorage.getItem('atelier_current_user_email') || "";
             const { subtotal, discountAmount, finalTotal } = calculateTotals();
 
             if (currentDiscountPercent > 0) {
@@ -454,7 +491,7 @@
             let allOrders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
             allOrders.push({
                 id: orderId, items: cart, shipping: shippingDetails, clientEmail: currentUserEmail,
-                paymentMethod, subtotal, discount: discountAmount, deliveryFee: currentShippingFee,
+                paymentMethod: paymentMethodLabel, subtotal, discount: discountAmount, deliveryFee: currentShippingFee,
                 total: finalTotal, status: 'Pending Admin Review', trackingId: '', carrier: '', date: new Date().toISOString()
             });
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
@@ -463,7 +500,7 @@
                 order_id: orderId, order_date: orderDate, customer_name: shippingDetails.name,
                 customer_email: currentUserEmail, customer_phone: shippingDetails.phone,
                 shipping_address: `${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.state} - ${shippingDetails.pincode}`,
-                payment_method: paymentMethod, subtotal: `₹${subtotal.toLocaleString('en-IN')}`,
+                payment_method: paymentMethodLabel, subtotal: `₹${subtotal.toLocaleString('en-IN')}`,
                 discount: discountAmount > 0 ? `-₹${discountAmount.toLocaleString('en-IN')}` : '₹0',
                 delivery_fee: `₹${currentShippingFee}`, total_amount: `₹${finalTotal.toLocaleString('en-IN')}`,
                 items_list_html: itemsHtml
@@ -486,35 +523,34 @@
                 container.innerHTML = `<p style="color: #777; font-size: 12px; text-align: center;">Please sign in to view your active orders and tracking details.</p>`;
                 return;
             }
-            let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]').filter(o => o.clientEmail === currentEmail);
-
-            if (orders.length === 0) {
-                container.innerHTML = `<p style="color: #777; font-size: 12px; text-align: center;">You have no active orders.</p>`;
-            } else {
-                container.innerHTML = orders.map(o => `
-                    <div style="background: #181818; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-bottom: 12px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                            <span style="color: #d4af37; font-size: 12px; font-weight: bold;">Order #${o.id}</span>
-                            <span style="color: #fff; font-size: 11px;">Status: <strong>${o.status}</strong></span>
-                        </div>
-                        <div style="font-size: 11px; color: #aaa; margin-bottom: 6px;">Placed: ${new Date(o.date).toLocaleString()}</div>
-                        <ul style="margin: 5px 0 10px 18px; padding: 0; font-size: 11px; color: #ccc;">
-                            ${o.items.map(i => `<li>${i.quantity}x ${i.name} (${i.size})</li>`).join('')}
-                        </ul>
-                        ${o.trackingId ? `
-                            <div style="background: #111; padding: 8px; border-radius: 4px; border: 1px solid #d4af37; font-size: 11px; color: #d4af37;">
-                                <strong>Tracking ID:</strong> ${o.trackingId} <br><strong>Carrier:</strong> ${o.carrier || 'Standard Courier'}
-                            </div>
-                        ` : `<div style="font-size: 11px; color: #888; font-style: italic;">Tracking ID will appear here once your order is confirmed/shipped.</div>`}
-                    </div>
-                `).join('');
+            let allOrders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
+            let userOrders = allOrders.filter(o => o.clientEmail === currentEmail);
+            if (userOrders.length === 0) {
+                container.innerHTML = `<p style="color: #777; font-size: 12px; text-align: center;">You haven't placed any atelier orders yet.</p>`;
+                return;
             }
+            container.innerHTML = userOrders.map(o => `
+                <div style="background: #121212; border: 1px solid #222; border-radius: 6px; padding: 20px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 15px; font-size: 12px;">
+                        <div><strong style="color: #d4af37;">Order #${o.id}</strong> <span style="color: #888; margin-left: 10px;">${o.date}</span></div>
+                        <div><span style="background: #222; color: #d4af37; padding: 4px 8px; border-radius: 4px;">${o.status}</span></div>
+                    </div>
+                    <div style="font-size: 12px; margin-bottom: 10px; color: #ccc;"><strong>Payment:</strong> ${o.paymentMethod}</div>
+                    ${o.trackingId ? `<div style="font-size: 12px; margin-bottom: 10px; color: #27ae60;"><strong>Carrier:</strong> ${o.carrier} | <strong>Tracking ID:</strong> ${o.trackingId}</div>` : ''}
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        ${o.items.map(i => `<tr><td style="padding: 6px 0; color: #fff;">${i.name} (${i.size}) x ${i.quantity}</td><td style="padding: 6px 0; text-align: right; color: #d4af37;">₹${Number(i.price * i.quantity).toLocaleString('en-IN')}</td></tr>`).join('')}
+                    </table>
+                    <div style="border-top: 1px solid #222; margin-top: 10px; padding-top: 10px; text-align: right; color: #d4af37; font-size: 13px;">
+                        <strong>Total Paid: ₹${o.total.toLocaleString('en-IN')}</strong>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-
-        checkAuthStatus();
-        renderCatalog();
+        window.onload = function() {
+            renderCatalog();
+            checkAuthStatus();
+        };
     </script>
 </body>
 </html>
