@@ -204,6 +204,22 @@
             `).join('');
         }
 
+        function updateOrderStatus(index) {
+            let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
+            const selectedStatus = document.getElementById(`status-select-${index}`).value;
+            
+            if (selectedStatus === 'Denied/Cancelled') {
+                const reason = prompt("Enter a reason for declining/cancelling this order (this will be logged for the client):");
+                if (reason === null) return; // Cancelled prompt
+                orders[index].cancellationReason = reason;
+            }
+
+            orders[index].status = selectedStatus;
+            localStorage.setItem('atelier_orders', JSON.stringify(orders));
+            alert(`Order status updated to: ${selectedStatus}`);
+            renderAdminOrders();
+        }
+
         function renderAdminOrders() {
             const container = document.getElementById('admin-orders-list');
             let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
@@ -213,19 +229,41 @@
                 return;
             }
 
-            container.innerHTML = orders.map((o) => `
-                <div style="background: #181818; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-bottom: 10px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #d4af37; font-size: 13px; font-weight: bold;">Order #${o.id || 'N/A'}</span>
-                        <span style="color: #aaa; font-size: 11px;">${new Date(o.date).toLocaleString()}</span>
+            container.innerHTML = orders.map((o, index) => {
+                let statusColor = '#d4af37';
+                if (o.status === 'Confirmed') statusColor = '#27ae60';
+                if (o.status === 'Denied/Cancelled') statusColor = '#e74c3c';
+
+                return `
+                    <div style="background: #181818; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #d4af37; font-size: 13px; font-weight: bold;">Order #${o.id || 'N/A'}</span>
+                            <span style="color: ${statusColor}; font-size: 12px; font-weight: bold;">Status: ${o.status || 'Pending Admin Review'}</span>
+                        </div>
+                        <div style="font-size: 11px; color: #aaa; margin-bottom: 8px;">Placed on: ${new Date(o.date).toLocaleString()}</div>
+                        <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Client:</strong> ${o.clientEmail} (${o.shipping.name}, ${o.shipping.phone})</div>
+                        <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Delivery Address:</strong> ${o.shipping.address}, ${o.shipping.landmark ? o.shipping.landmark + ', ' : ''}${o.shipping.city}, ${o.shipping.state} - ${o.shipping.pincode}</div>
+                        <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Payment Method:</strong> ${o.paymentMethod} | <strong>Total:</strong> ₹${o.total.toLocaleString('en-IN')}</div>
+                        
+                        <ul style="margin: 8px 0 10px 20px; padding: 0; font-size: 11px; color: #ccc;">
+                            ${o.items.map(i => `<li>${i.quantity}x ${i.name} (${i.size}) — ${i.customNotes}</li>`).join('')}
+                        </ul>
+
+                        ${o.cancellationReason ? `<div style="font-size: 11px; color: #e74c3c; margin-bottom: 10px;"><strong>Cancellation Reason:</strong> ${o.cancellationReason}</div>` : ''}
+
+                        <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px; border-top: 1px solid #222; padding-top: 10px;">
+                            <label style="margin:0; font-size:11px;">UPDATE ORDER STATUS:</label>
+                            <select id="status-select-${index}" class="custom-input" style="width: 200px; margin-bottom: 0;">
+                                <option value="Pending Admin Review" ${o.status === 'Pending Admin Review' ? 'selected' : ''}>Pending Review</option>
+                                <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                                <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                <option value="Denied/Cancelled" ${o.status === 'Denied/Cancelled' ? 'selected' : ''}>Denied/Cancelled</option>
+                            </select>
+                            <button class="btn" style="padding: 8px 14px;" onclick="updateOrderStatus(${index})">Save Status</button>
+                        </div>
                     </div>
-                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Client:</strong> ${o.clientEmail}</div>
-                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Delivery Address:</strong> ${o.shipping.address}, ${o.shipping.city}</div>
-                    <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 11px; color: #ccc;">
-                        ${o.items.map(i => `<li>${i.quantity}x ${i.name} (${i.size}) — ${i.customNotes}</li>`).join('')}
-                    </ul>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         async function logout() {
