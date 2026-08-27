@@ -4,41 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Luxury Couture</title>
+    <!-- Favicon Link -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <!-- EmailJS Browser SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
        (function(){
-          emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Replace with your EmailJS public key
+          emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); 
        })();
     </script>
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        
-        .promo-banner-container { width: 100%; background: #121212; position: relative; text-align: center; border-bottom: 1px solid #d4af37; overflow: hidden; }
-        .promo-banner-img { width: 100%; max-height: 250px; object-fit: cover; display: block; filter: brightness(0.85); }
-        .promo-banner-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(10, 10, 10, 0.85); padding: 10px; color: #d4af37; font-size: 12px; letter-spacing: 2px; font-weight: bold; border-top: 1px solid #d4af37; }
-
         header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 100; }
         .logo-area { display: flex; align-items: center; gap: 15px; text-decoration: none; }
-        .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; }
+        .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; background: #fdfbf7; }
         .brand-title { font-size: 18px; letter-spacing: 3px; color: #d4af37; font-weight: bold; }
         .nav-links { display: flex; gap: 15px; align-items: center; }
         .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; }
         .btn:hover { background: #c59b27; }
         .link-item { color: #aaa; text-decoration: none; font-size: 13px; letter-spacing: 1px; cursor: pointer; background:none; border:none; }
-        .link-item:hover { color: #d4af37; }
+        .link-item:hover, .link-item.active { color: #d4af37; }
         
+        /* Tab Navigation Bar */
+        .tab-bar { background: #121212; border-bottom: 1px solid #222; display: flex; justify-content: center; gap: 30px; padding: 12px 0; position: sticky; top: 85px; z-index: 99; }
+        .tab-btn { background: none; border: none; color: #888; font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 2px; cursor: pointer; padding: 6px 12px; transition: 0.3s; }
+        .tab-btn:hover, .tab-btn.active-tab { color: #d4af37; border-bottom: 2px solid #d4af37; }
+
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
-        .hero { text-align: center; padding: 40px 20px; border-bottom: 1px solid #222; margin-bottom: 40px; }
+        .tab-content { display: none; }
+        .tab-content.active-content { display: block; }
+
+        .hero { text-align: center; padding: 20px 20px 40px; border-bottom: 1px solid #222; margin-bottom: 40px; }
         .hero h1 { color: #d4af37; font-size: 26px; letter-spacing: 3px; margin-bottom: 15px; }
 
         .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
         .empty-catalog { text-align: center; color: #777; grid-column: 1 / -1; padding: 50px; font-size: 14px; letter-spacing: 1px; }
         .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; padding: 20px; }
-        
         .product-img-container { width: 100%; height: 380px; background: #141414; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #222; }
         .product-img { max-width: 100%; max-height: 100%; object-fit: contain; }
-
         .product-title { font-size: 16px; letter-spacing: 1px; color: #fff; margin: 15px 0 4px; }
         .size-chart-link { color: #d4af37; font-weight: bold; font-size: 11px; letter-spacing: 1px; cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; margin-bottom: 10px; display: inline-block; }
         .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 12px; }
@@ -64,14 +67,8 @@
 </head>
 <body>
 
-    <div class="promo-banner-container" id="promo-banner-wrap" style="display: none;">
-        <img id="promo-banner-img" src="/logo.png" alt="Promo Banner" class="promo-banner-img" onerror="this.parentElement.style.display='none'">
-        <div class="promo-banner-overlay" id="promo-banner-text">✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨</div>
-    </div>
-
     <header>
         <a href="/" class="logo-area">
-            <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
         <div class="nav-links" id="header-nav">
@@ -80,15 +77,57 @@
         </div>
     </header>
 
+    <!-- Tab Navigation Bar -->
+    <div class="tab-bar">
+        <button class="tab-btn active-tab" onclick="switchTab('collection', this)">COLLECTION</button>
+        <button class="tab-btn" onclick="switchTab('sizing', this)">BESPOKE SIZING</button>
+        <button class="tab-btn" onclick="switchTab('orders', this)">MY ORDERS & TRACKING</button>
+    </div>
+
     <div class="container">
-        <div class="hero">
-            <h1>We bring custom sized luxury dresses, for comfort and confidence</h1>
-            <p style="color: #888; font-size: 13px; letter-spacing: 1px;">Beautiful. The way you are</p>
+        
+        <!-- TAB 1: COLLECTION CATALOG -->
+        <div id="tab-collection" class="tab-content active-content">
+            <div class="hero">
+                <h1>We bring custom sized luxury dresses, for comfort and confidence</h1>
+                <p style="color: #888; font-size: 13px; letter-spacing: 1px;">Beautiful. The way you are</p>
+            </div>
+            <div class="catalog-grid" id="live-catalog">
+                <div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the atelier.</div>
+            </div>
         </div>
 
-        <div class="catalog-grid" id="live-catalog">
-            <div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the atelier.</div>
+        <!-- TAB 2: BESPOKE SIZING GUIDE -->
+        <div id="tab-sizing" class="tab-content">
+            <div class="hero">
+                <h1>Bespoke Sizing & Measurement Guide</h1>
+                <p style="color: #888; font-size: 13px; letter-spacing: 1px;">Crafted precisely to your personal silhouettes</p>
+            </div>
+            <div style="background: #121212; border: 1px solid #222; padding: 30px; border-radius: 8px; max-width: 800px; margin: 0 auto; font-size: 13px; line-height: 1.8; color: #ccc;">
+                <h3 style="color: #d4af37; letter-spacing: 2px; margin-top: 0;">Standard Size Matrix (Inches)</h3>
+                <ul style="margin-bottom: 25px; padding-left: 20px;">
+                    <li><strong>XS:</strong> Bust 32 | Waist 24 | Hips 34</li>
+                    <li><strong>S:</strong> Bust 34 | Waist 26 | Hips 36</li>
+                    <li><strong>M:</strong> Bust 36 | Waist 28 | Hips 38</li>
+                    <li><strong>L:</strong> Bust 38 | Waist 30 | Hips 40</li>
+                    <li><strong>XL:</strong> Bust 40 | Waist 32 | Hips 42</li>
+                </ul>
+                <h3 style="color: #d4af37; letter-spacing: 2px;">How to Submit Custom Measurements</h3>
+                <p>When selecting a piece, choose <strong style="color: #fff;">"Custom Measurements"</strong> from the dropdown menu and specify your exact tailored dimensions (e.g., Bust, Waist, Hips, Sleeve Length, and Shoulder width) in the instruction box. Our master tailors will handcraft your garment explicitly to your profile.</p>
+            </div>
         </div>
+
+        <!-- TAB 3: ORDERS & TRACKING -->
+        <div id="tab-orders" class="tab-content">
+            <div class="hero">
+                <h1>Order History & Live Tracking</h1>
+                <p style="color: #888; font-size: 13px; letter-spacing: 1px;">Track your atelier pieces from tailoring to doorstep</p>
+            </div>
+            <div style="max-width: 800px; margin: 0 auto;" id="tab-customer-orders-list">
+                <p style="color: #777; font-size: 12px; text-align: center;">Please sign in to view your active orders and tracking details.</p>
+            </div>
+        </div>
+
     </div>
 
     <footer>
@@ -107,32 +146,25 @@
             <span class="close-modal" onclick="closeModals()">&times;</span>
             <h3 id="modal-heading" style="color: #d4af37; text-align: center; margin-bottom: 5px;">SIGN IN TO ATELIER</h3>
             <p id="modal-subtext" style="font-size: 11px; color: #aaa; text-align: center; margin-bottom: 15px;">Access your account & track orders.</p>
-            
             <div id="register-name-wrap" style="display: none;">
-                <label>FULL NAME</label>
-                <input type="text" id="signup-name" class="custom-input" placeholder="e.g. Jane Doe">
+                <label>FULL NAME</label><input type="text" id="signup-name" class="custom-input" placeholder="e.g. Jane Doe">
             </div>
-            
-            <label>EMAIL ADDRESS</label>
-            <input type="email" id="signin-email" class="custom-input" placeholder="e.g. name@example.com">
-            
+            <label>EMAIL ADDRESS</label><input type="email" id="signin-email" class="custom-input" placeholder="e.g. name@example.com">
             <label>PASSWORD</label>
             <div class="password-container">
                 <input type="password" id="signin-password" class="custom-input" placeholder="••••••••">
                 <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
             </div>
-            
             <button class="btn" id="auth-action-btn" style="width: 100%; margin-top: 15px;" onclick="handleAuthSubmit()">Sign In</button>
             <button class="link-item" id="auth-toggle-btn-sub" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: block; width: 100%; margin-top: 12px; text-align: center;">New to Alivèra Atelier? Create a new account</button>
         </div>
     </div>
 
-    <!-- Cart / Checkout Modal -->
+    <!-- Checkout Modal -->
     <div id="checkout-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
             <h3 style="color: #d4af37; text-align: center; letter-spacing: 1px;">SECURE CHECKOUT</h3>
-            
             <div id="checkout-step-address">
                 <label>FULL NAME</label><input type="text" id="ship-name" class="custom-input" placeholder="Recipient Name">
                 <label>PHONE NUMBER</label><input type="text" id="ship-phone" class="custom-input" placeholder="10-digit mobile">
@@ -145,7 +177,6 @@
                 <label>PINCODE</label><input type="text" id="ship-pincode" class="custom-input" placeholder="6-digit Pincode">
                 <button class="btn" style="width: 100%; margin-top: 15px;" onclick="proceedToPayment()">Proceed to Payment</button>
             </div>
-
             <div id="checkout-step-payment" style="display: none;">
                 <div id="order-summary-box" style="background: #181818; padding: 12px; border-radius: 4px; font-size: 12px; margin-bottom: 15px; border: 1px solid #333;"></div>
                 <label style="color: #d4af37;">PROMO CODE</label>
@@ -166,18 +197,6 @@
         </div>
     </div>
 
-    <!-- Customer Orders & Tracking Modal -->
-    <div id="tracking-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h3 style="color: #d4af37; text-align: center; letter-spacing: 1px; margin-bottom: 5px;">MY ORDERS & TRACKING</h3>
-            <p style="font-size: 11px; color: #aaa; text-align: center; margin-bottom: 20px;">Review your atelier purchases, live status, and tracking info.</p>
-            <div id="customer-orders-list">
-                <p style="color: #777; font-size: 12px; text-align: center;">You have no active orders.</p>
-            </div>
-        </div>
-    </div>
-
     <!-- Image Popup Modal -->
     <div id="image-popup-modal" class="modal" onclick="closeImagePopup()">
         <div class="modal-content" style="background: transparent; border: none; text-align: center; width: auto; max-width: 90vw; padding: 0;" onclick="event.stopPropagation()">
@@ -193,14 +212,17 @@
         let currentShippingFee = 49;
         let shippingDetails = {};
 
-        function getActiveCatalog() { return JSON.parse(localStorage.getItem('atelier_products') || '[]'); }
-
-        function loadPromoBanner() {
-            const bannerWrap = document.getElementById('promo-banner-wrap');
-            const promoRes = JSON.parse(localStorage.getItem('atelier_extra_promo') || '{}');
-            bannerWrap.style.display = 'block';
-            document.getElementById('promo-banner-text').innerText = promoRes.bannerText || "✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨";
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active-tab'));
+            document.getElementById(`tab-${tabId}`).classList.add('active-content');
+            btnElement.classList.add('active-tab');
+            if (tabId === 'orders') {
+                renderCustomerOrders();
+            }
         }
+
+        function getActiveCatalog() { return JSON.parse(localStorage.getItem('atelier_products') || '[]'); }
 
         function renderCatalog() {
             const grid = document.getElementById('live-catalog');
@@ -209,37 +231,32 @@
                 grid.innerHTML = `<div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the atelier.</div>`;
                 return;
             }
-            grid.innerHTML = activeCatalog.map((p, idx) => {
-                let sizeChartHtml = p.sizeChart 
-                    ? `<button type="button" class="size-chart-link" onclick="openImagePopup('${p.sizeChart}')">VIEW SIZE CHART</button>`
-                    : `<button type="button" class="size-chart-link" onclick="openDefaultSizeChart()">VIEW SIZE CHART</button>`;
-                return `
-                    <div class="product-card">
-                        <div class="product-img-container" onclick="openImagePopup('${p.image || '/logo.png'}')">
-                            <img src="${p.image || '/logo.png'}" alt="${p.name}" class="product-img" onerror="this.src='/logo.png'">
-                        </div>
-                        <div class="product-title">${p.name}</div>
-                        ${sizeChartHtml}
-                        <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                        <label>SELECT SIZE</label>
-                        <select id="size-select-${idx}" onchange="toggleCustomSize(${idx})">
-                            <option value="XS">XS (Extra Small)</option>
-                            <option value="S">S (Small)</option>
-                            <option value="M" selected>M (Medium)</option>
-                            <option value="L">L (Large)</option>
-                            <option value="XL">XL (Extra Large)</option>
-                            <option value="Custom">Custom Measurements</option>
-                        </select>
-                        <div id="custom-wrap-${idx}" style="display: none; margin-top: 5px;">
-                            <label>CUSTOM MEASUREMENTS</label>
-                            <input type="text" class="custom-input" id="cust-spec-${idx}" placeholder="e.g. Bust: 34in, Waist: 28in">
-                        </div>
-                        <label>QUANTITY</label>
-                        <input type="number" class="custom-input" id="qty-${idx}" value="1" min="1" max="10">
-                        <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addToCart(${idx})">Add to Cart</button>
+            grid.innerHTML = activeCatalog.map((p, idx) => `
+                <div class="product-card">
+                    <div class="product-img-container" onclick="openImagePopup('${p.image || ''}')">
+                        <img src="${p.image || ''}" alt="${p.name}" class="product-img">
                     </div>
-                `;
-            }).join('');
+                    <div class="product-title">${p.name}</div>
+                    <button type="button" class="size-chart-link" onclick="openImagePopup('${p.sizeChart || p.image}')">VIEW SIZE CHART</button>
+                    <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
+                    <label>SELECT SIZE</label>
+                    <select id="size-select-${idx}" onchange="toggleCustomSize(${idx})">
+                        <option value="XS">XS (Extra Small)</option>
+                        <option value="S">S (Small)</option>
+                        <option value="M" selected>M (Medium)</option>
+                        <option value="L">L (Large)</option>
+                        <option value="XL">XL (Extra Large)</option>
+                        <option value="Custom">Custom Measurements</option>
+                    </select>
+                    <div id="custom-wrap-${idx}" style="display: none; margin-top: 5px;">
+                        <label>CUSTOM MEASUREMENTS</label>
+                        <input type="text" class="custom-input" id="cust-spec-${idx}" placeholder="e.g. Bust: 34in, Waist: 28in">
+                    </div>
+                    <label>QUANTITY</label>
+                    <input type="number" class="custom-input" id="qty-${idx}" value="1" min="1" max="10">
+                    <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addToCart(${idx})">Add to Cart</button>
+                </div>
+            `).join('');
         }
 
         function openImagePopup(imgSrc) {
@@ -247,7 +264,6 @@
             document.getElementById('image-popup-modal').style.display = 'flex';
         }
         function closeImagePopup() { document.getElementById('image-popup-modal').style.display = 'none'; }
-        function openDefaultSizeChart() { openImagePopup('/logo.png'); }
 
         function checkAuthStatus() {
             const currentEmail = localStorage.getItem('atelier_current_user_email');
@@ -258,7 +274,7 @@
                 let adminButtonHtml = currentEmail === 'hello@aliveraatelier.in' ? `<a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>` : '';
                 nav.innerHTML = `
                     <span style="color: #d4af37; font-size: 11px;">Hello, ${displayName}</span>
-                    <button class="link-item" onclick="openTrackingModal()">My Orders & Tracking</button>
+                    <button class="link-item" onclick="switchTab('orders', document.querySelectorAll('.tab-btn')[2])">My Orders</button>
                     <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
                     ${adminButtonHtml}
                     <button class="link-item" onclick="logout()" style="color: #e74c3c;">Sign Out</button>
@@ -418,7 +434,6 @@
             const itemsHtml = cart.map(i => `
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 10px; color: #fff;">
-                        <img src="${i.image || 'https://aliveraatelier.in/logo.png'}" width="50" height="50" style="object-fit:cover; border-radius:4px; vertical-align:middle; margin-right:10px;">
                         <strong>${i.name}</strong> (${i.size})
                         <br><span style="font-size:10px; color:#aaa;">${i.customNotes}</span>
                     </td>
@@ -427,37 +442,20 @@
             `).join('');
 
             let allOrders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
-            const newOrder = {
-                id: orderId,
-                items: cart,
-                shipping: shippingDetails,
-                clientEmail: currentUserEmail,
-                paymentMethod,
-                subtotal,
-                discount: discountAmount,
-                deliveryFee: currentShippingFee,
-                total: finalTotal,
-                status: 'Pending Admin Review',
-                trackingId: '',
-                carrier: '',
-                date: new Date().toISOString()
-            };
-            allOrders.push(newOrder);
+            allOrders.push({
+                id: orderId, items: cart, shipping: shippingDetails, clientEmail: currentUserEmail,
+                paymentMethod, subtotal, discount: discountAmount, deliveryFee: currentShippingFee,
+                total: finalTotal, status: 'Pending Admin Review', trackingId: '', carrier: '', date: new Date().toISOString()
+            });
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            // EmailJS Dispatch
             const emailParams = {
-                order_id: orderId,
-                order_date: orderDate,
-                customer_name: shippingDetails.name,
-                customer_email: currentUserEmail,
-                customer_phone: shippingDetails.phone,
-                shipping_address: `${shippingDetails.address}, ${shippingDetails.landmark ? shippingDetails.landmark + ', ' : ''}${shippingDetails.city}, ${shippingDetails.state} - ${shippingDetails.pincode}`,
-                payment_method: paymentMethod,
-                subtotal: `₹${subtotal.toLocaleString('en-IN')}`,
+                order_id: orderId, order_date: orderDate, customer_name: shippingDetails.name,
+                customer_email: currentUserEmail, customer_phone: shippingDetails.phone,
+                shipping_address: `${shippingDetails.address}, ${shippingDetails.city}, ${shippingDetails.state} - ${shippingDetails.pincode}`,
+                payment_method: paymentMethod, subtotal: `₹${subtotal.toLocaleString('en-IN')}`,
                 discount: discountAmount > 0 ? `-₹${discountAmount.toLocaleString('en-IN')}` : '₹0',
-                delivery_fee: `₹${currentShippingFee}`,
-                total_amount: `₹${finalTotal.toLocaleString('en-IN')}`,
+                delivery_fee: `₹${currentShippingFee}`, total_amount: `₹${finalTotal.toLocaleString('en-IN')}`,
                 items_list_html: itemsHtml
             };
 
@@ -468,11 +466,16 @@
             cart = [];
             document.getElementById('cart-count').innerText = 0;
             closeModals();
+            switchTab('orders', document.querySelectorAll('.tab-btn')[2]);
         }
 
-        function openTrackingModal() {
+        function renderCustomerOrders() {
             const currentEmail = localStorage.getItem('atelier_current_user_email');
-            const container = document.getElementById('customer-orders-list');
+            const container = document.getElementById('tab-customer-orders-list');
+            if (!currentEmail) {
+                container.innerHTML = `<p style="color: #777; font-size: 12px; text-align: center;">Please sign in to view your active orders and tracking details.</p>`;
+                return;
+            }
             let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]').filter(o => o.clientEmail === currentEmail);
 
             if (orders.length === 0) {
@@ -490,20 +493,16 @@
                         </ul>
                         ${o.trackingId ? `
                             <div style="background: #111; padding: 8px; border-radius: 4px; border: 1px solid #d4af37; font-size: 11px; color: #d4af37;">
-                                <strong>Tracking ID:</strong> ${o.trackingId} <br>
-                                <strong>Carrier:</strong> ${o.carrier || 'Standard Courier'}
+                                <strong>Tracking ID:</strong> ${o.trackingId} <br><strong>Carrier:</strong> ${o.carrier || 'Standard Courier'}
                             </div>
-                        ` : `<div style="font-size: 11px; color: #888; font-style: italic;">Tracking ID will appear here once your order is confirmed/shipped by the atelier.</div>`}
-                        ${o.cancellationReason ? `<div style="font-size: 11px; color: #e74c3c; margin-top: 6px;"><strong>Note:</strong> ${o.cancellationReason}</div>` : ''}
+                        ` : `<div style="font-size: 11px; color: #888; font-style: italic;">Tracking ID will appear here once your order is confirmed/shipped.</div>`}
                     </div>
                 `).join('');
             }
-            document.getElementById('tracking-modal').style.display = 'flex';
         }
 
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
 
-        loadPromoBanner();
         checkAuthStatus();
         renderCatalog();
     </script>
