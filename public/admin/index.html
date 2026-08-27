@@ -53,17 +53,13 @@
 
     <div class="container">
         
-        <!-- Permanent First-Order Control Notice -->
         <div class="admin-section" style="border-color: #27ae60;">
             <h2 style="color: #27ae60;">PERMANENT FIRST-ACCOUNT WELCOME DISCOUNT</h2>
             <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">The promo code <strong style="color: #fff;">FIRST10</strong> (10% off) is permanently active for any new customer account on their first order only.</p>
         </div>
 
-        <!-- Add New Product Section -->
         <div class="admin-section">
             <h2>ADD NEW LUXURY PIECE</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Upload design specifications, pricing, imagery, and sizing details.</p>
-
             <label>PRODUCT NAME</label>
             <input type="text" id="prod-name" class="custom-input" placeholder="e.g. Velvet Royal Evening Gown">
 
@@ -81,7 +77,6 @@
             <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addNewProduct()">Publish to Storefront Catalog</button>
         </div>
 
-        <!-- Current Catalog Management -->
         <div class="admin-section">
             <h2>ACTIVE CATALOG MANAGEMENT</h2>
             <div class="grid-cards" id="admin-catalog-grid">
@@ -89,7 +84,6 @@
             </div>
         </div>
 
-        <!-- Incoming Orders Dashboard -->
         <div class="admin-section">
             <h2>INCOMING CLIENT ORDERS</h2>
             <div id="admin-orders-list">
@@ -147,36 +141,25 @@
             }
 
             let products = getProducts();
-            const newProduct = {
+            products.push({
                 id: Date.now(),
                 name,
                 price,
                 image: image || '/logo.png',
                 sizeChart: sizeChart || ''
-            };
-
-            products.push(newProduct);
+            });
             
-            try {
-                saveProducts(products);
-            } catch (e) {
-                alert("Storage limit exceeded. The image file is too large for browser storage.");
-                return;
-            }
-
+            saveProducts(products);
             document.getElementById('prod-name').value = '';
             document.getElementById('prod-price').value = '';
             document.getElementById('prod-image').value = '';
             document.getElementById('prod-size-chart').value = '';
-            document.getElementById('prod-image-file').value = '';
-            document.getElementById('chart-image-file').value = '';
-
             renderAdminCatalog();
-            alert("Product published successfully to storefront control!");
+            alert("Product published successfully!");
         }
 
         function deleteProduct(idx) {
-            if (confirm("Are you sure you want to remove this piece from the catalog?")) {
+            if (confirm("Remove this design from the catalog?")) {
                 let products = getProducts();
                 products.splice(idx, 1);
                 saveProducts(products);
@@ -187,18 +170,15 @@
         function renderAdminCatalog() {
             const grid = document.getElementById('admin-catalog-grid');
             let products = getProducts();
-            
             if (products.length === 0) {
                 grid.innerHTML = `<p style="color: #777; font-size: 12px;">No active products found.</p>`;
                 return;
             }
-
             grid.innerHTML = products.map((p, idx) => `
                 <div class="card-item">
                     <img src="${p.image}" alt="${p.name}" onerror="this.src='/logo.png'">
                     <div style="font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 5px;">${p.name}</div>
                     <div style="color: #d4af37; font-size: 14px; margin-bottom: 10px;">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                    ${p.sizeChart ? '<div style="font-size:10px; color:#27ae60; margin-bottom:10px;">✓ Size Chart Attached</div>' : '<div style="font-size:10px; color:#aaa; margin-bottom:10px;">No Size Chart Attached</div>'}
                     <button class="btn" style="background: #e74c3c; color: #fff; width: 100%;" onclick="deleteProduct(${idx})">Remove Design</button>
                 </div>
             `).join('');
@@ -207,16 +187,21 @@
         function updateOrderStatus(index) {
             let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
             const selectedStatus = document.getElementById(`status-select-${index}`).value;
+            const trackingId = document.getElementById(`tracking-id-${index}`).value.trim();
+            const carrier = document.getElementById(`carrier-${index}`).value.trim();
             
             if (selectedStatus === 'Denied/Cancelled') {
-                const reason = prompt("Enter a reason for declining/cancelling this order (this will be logged for the client):");
-                if (reason === null) return; // Cancelled prompt
+                const reason = prompt("Enter a reason for declining/cancelling this order:");
+                if (reason === null) return;
                 orders[index].cancellationReason = reason;
             }
 
             orders[index].status = selectedStatus;
+            orders[index].trackingId = trackingId;
+            orders[index].carrier = carrier;
+
             localStorage.setItem('atelier_orders', JSON.stringify(orders));
-            alert(`Order status updated to: ${selectedStatus}`);
+            alert(`Order status & tracking info updated successfully!`);
             renderAdminOrders();
         }
 
@@ -229,47 +214,47 @@
                 return;
             }
 
-            container.innerHTML = orders.map((o, index) => {
-                let statusColor = '#d4af37';
-                if (o.status === 'Confirmed') statusColor = '#27ae60';
-                if (o.status === 'Denied/Cancelled') statusColor = '#e74c3c';
-
-                return `
-                    <div style="background: #181818; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="color: #d4af37; font-size: 13px; font-weight: bold;">Order #${o.id || 'N/A'}</span>
-                            <span style="color: ${statusColor}; font-size: 12px; font-weight: bold;">Status: ${o.status || 'Pending Admin Review'}</span>
-                        </div>
-                        <div style="font-size: 11px; color: #aaa; margin-bottom: 8px;">Placed on: ${new Date(o.date).toLocaleString()}</div>
-                        <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Client:</strong> ${o.clientEmail} (${o.shipping.name}, ${o.shipping.phone})</div>
-                        <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Delivery Address:</strong> ${o.shipping.address}, ${o.shipping.landmark ? o.shipping.landmark + ', ' : ''}${o.shipping.city}, ${o.shipping.state} - ${o.shipping.pincode}</div>
-                        <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Payment Method:</strong> ${o.paymentMethod} | <strong>Total:</strong> ₹${o.total.toLocaleString('en-IN')}</div>
-                        
-                        <ul style="margin: 8px 0 10px 20px; padding: 0; font-size: 11px; color: #ccc;">
-                            ${o.items.map(i => `<li>${i.quantity}x ${i.name} (${i.size}) — ${i.customNotes}</li>`).join('')}
-                        </ul>
-
-                        ${o.cancellationReason ? `<div style="font-size: 11px; color: #e74c3c; margin-bottom: 10px;"><strong>Cancellation Reason:</strong> ${o.cancellationReason}</div>` : ''}
-
-                        <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px; border-top: 1px solid #222; padding-top: 10px;">
-                            <label style="margin:0; font-size:11px;">UPDATE ORDER STATUS:</label>
-                            <select id="status-select-${index}" class="custom-input" style="width: 200px; margin-bottom: 0;">
-                                <option value="Pending Admin Review" ${o.status === 'Pending Admin Review' ? 'selected' : ''}>Pending Review</option>
-                                <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-                                <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                                <option value="Denied/Cancelled" ${o.status === 'Denied/Cancelled' ? 'selected' : ''}>Denied/Cancelled</option>
-                            </select>
-                            <button class="btn" style="padding: 8px 14px;" onclick="updateOrderStatus(${index})">Save Status</button>
-                        </div>
+            container.innerHTML = orders.map((o, index) => `
+                <div style="background: #181818; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #d4af37; font-size: 13px; font-weight: bold;">Order #${o.id || 'N/A'}</span>
+                        <span style="color: #fff; font-size: 12px;">Status: <strong>${o.status || 'Pending Review'}</strong></span>
                     </div>
-                `;
-            }).join('');
+                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Client:</strong> ${o.clientEmail} (${o.shipping.name}, ${o.shipping.phone})</div>
+                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Address:</strong> ${o.shipping.address}, ${o.shipping.city}, ${o.shipping.state} - ${o.shipping.pincode}</div>
+                    
+                    <ul style="margin: 8px 0 10px 20px; padding: 0; font-size: 11px; color: #ccc;">
+                        ${o.items.map(i => `<li>${i.quantity}x ${i.name} (${i.size}) — ${i.customNotes}</li>`).join('')}
+                    </ul>
+
+                    <div style="background: #111; padding: 10px; border-radius: 4px; margin-top: 10px; border: 1px solid #222;">
+                        <label style="margin-top:0;">UPDATE ORDER STATUS</label>
+                        <select id="status-select-${index}" class="custom-input">
+                            <option value="Pending Admin Review" ${o.status === 'Pending Admin Review' ? 'selected' : ''}>Pending Review</option>
+                            <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                            <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                            <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                            <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                            <option value="Denied/Cancelled" ${o.status === 'Denied/Cancelled' ? 'selected' : ''}>Denied/Cancelled</option>
+                        </select>
+
+                        <div style="display: flex; gap: 10px; margin-top: 8px;">
+                            <div style="flex:1;">
+                                <label style="margin-top:0;">TRACKING ID / WAYBILL</label>
+                                <input type="text" id="tracking-id-${index}" class="custom-input" value="${o.trackingId || ''}" placeholder="e.g. TRK9847521">
+                            </div>
+                            <div style="flex:1;">
+                                <label style="margin-top:0;">COURIER / CARRIER</label>
+                                <input type="text" id="carrier-${index}" class="custom-input" value="${o.carrier || ''}" placeholder="e.g. Blue Dart / Delhivery">
+                            </div>
+                        </div>
+                        <button class="btn" style="width: 100%; margin-top: 8px;" onclick="updateOrderStatus(${index})">Save Status & Tracking Info</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        async function logout() {
-            window.location.href = '/';
-        }
-
+        async function logout() { window.location.href = '/'; }
         renderAdminCatalog();
         renderAdminOrders();
     </script>
