@@ -41,9 +41,6 @@
         .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; width: 100%; display: block; box-sizing: border-box; margin-top: 8px; }
         .btn:hover { background: #c59b27; }
 
-        .btn-google { background: #fff; color: #333; border: 1px solid #ddd; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-google:hover { background: #f1f1f1; }
-
         /* Modal Overlays */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #121212; border: 1px solid #d4af37; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; border-radius: 8px; padding: 30px; box-sizing: border-box; position: relative; }
@@ -53,9 +50,6 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; }
         .form-control { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; box-sizing: border-box; }
-
-        .divider { text-align: center; border-bottom: 1px solid #222; line-height: 0.1em; margin: 20px 0; font-size: 10px; color: #777; letter-spacing: 1px; }
-        .divider span { background: #121212; padding: 0 10px; }
 
         footer { background: #121212; border-top: 1px solid #222; padding: 30px 20px; text-align: center; margin-top: auto; }
         .footer-brand { color: #d4af37; font-size: 14px; letter-spacing: 3px; font-weight: bold; margin-bottom: 8px; }
@@ -76,6 +70,7 @@
         <div class="nav-actions">
             <button class="nav-link" id="auth-nav-btn" onclick="openAuthModal()">SIGN IN / REGISTER</button>
             <button class="nav-link" onclick="openCartModal()">CART</button>
+            <a href="/admin/" class="nav-link" style="color: #d4af37; display: none;" id="admin-link">ADMIN</a>
         </div>
     </header>
 
@@ -90,19 +85,12 @@
         </div>
     </div>
 
-    <!-- AUTHENTICATION MODAL (Sign In & Create Account with Google option) -->
+    <!-- AUTHENTICATION MODAL (Email & Password Login / Register) -->
     <div class="modal-overlay" id="auth-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeAuthModal()">&times;</button>
             <h2 id="auth-modal-title" style="color: #d4af37; margin-top: 0; font-size: 18px; letter-spacing: 2px;">CLIENT SIGN IN</h2>
             
-            <button class="btn btn-google" onclick="signInWithGoogle()">
-                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.17 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.18C.43 8.12 0 9.83 0 12s.43 3.88 1.18 5.39l4.09-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.17 2.68 1.18 6.61l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
-                Continue with Google
-            </button>
-
-            <div class="divider"><span>OR EMAIL</span></div>
-
             <div class="form-group">
                 <label>EMAIL ADDRESS</label>
                 <input type="email" id="auth-email" class="form-control" placeholder="name@domain.com">
@@ -166,28 +154,6 @@
             document.getElementById('auth-toggle-mode').innerText = isRegisterMode ? 'Already have an account? Sign In' : 'New to Atelier? Create an Account';
         }
 
-        // Google Sign-In Handler
-        async function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                const result = await auth.signInWithPopup(provider);
-                // Check if user profile doc exists, if not create it for first-time tracking
-                const userRef = db.collection("atelier_users").doc(result.user.uid);
-                const userDoc = await userRef.get();
-                if (!userDoc.exists) {
-                    await userRef.set({
-                        email: result.user.email,
-                        hasClaimedWelcomeDiscount: false,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-                alert("Successfully signed in with Google!");
-                closeAuthModal();
-            } catch (error) {
-                alert("Google Sign-In error: " + error.message);
-            }
-        }
-
         // Email/Password Authentication Handler
         async function handleAuthAction() {
             const email = document.getElementById('auth-email').value.trim();
@@ -217,17 +183,27 @@
             }
         }
 
-        // Monitor Auth State for Header Updates
+        // Monitor Auth State for Header Updates & Admin link visibility
         auth.onAuthStateChanged(user => {
             const navBtn = document.getElementById('auth-nav-btn');
+            const adminLink = document.getElementById('admin-link');
+            
             if (user) {
-                navBtn.innerText = "MY ACCOUNT (" + (user.displayName || user.email.split('@')[0]) + ")";
+                navBtn.innerText = "MY ACCOUNT (" + user.email.split('@')[0] + ")";
                 navBtn.onclick = () => { 
                     if(confirm("Sign out of your account?")) { auth.signOut(); } 
                 };
+                
+                // Show Admin link in header if logged in as admin email
+                if (user.email === "hello@aliveraatelier.in") {
+                    adminLink.style.display = 'inline';
+                } else {
+                    adminLink.style.display = 'none';
+                }
             } else {
                 navBtn.innerText = "SIGN IN / REGISTER";
                 navBtn.onclick = openAuthModal;
+                adminLink.style.display = 'none';
             }
         });
 
