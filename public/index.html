@@ -214,14 +214,13 @@
             }
 
             grid.innerHTML = activeCatalog.map((p, idx) => {
-                // If an admin uploaded a size chart image for this product, render it in bold gold below the dress name
-                let sizeChartHtml = p.sizeChartImg 
-                    ? `<button type="button" class="size-chart-link" onclick="openImagePopup('${p.sizeChartImg}')">VIEW SIZE CHART</button>`
+                let sizeChartHtml = p.sizeChart 
+                    ? `<button type="button" class="size-chart-link" onclick="openImagePopup('${p.sizeChart}')">VIEW SIZE CHART</button>`
                     : `<button type="button" class="size-chart-link" onclick="openDefaultSizeChart()">VIEW SIZE CHART</button>`;
 
                 return `
                     <div class="product-card">
-                        <div class="product-img-container">
+                        <div class="product-img-container" onclick="openImagePopup('${p.image || '/logo.png'}')">
                             <img src="${p.image || '/logo.png'}" alt="${p.name}" class="product-img" onerror="this.src='/logo.png'">
                         </div>
                         <div class="product-title">${p.name}</div>
@@ -262,7 +261,7 @@
         }
 
         function openDefaultSizeChart() {
-            openImagePopup('/logo.png'); // Falls back to logo or fallback chart if no custom image is uploaded
+            openImagePopup('/logo.png');
         }
 
         function checkAuthStatus() {
@@ -326,11 +325,7 @@
 
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('signin-password');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-            } else {
-                passwordInput.type = 'password';
-            }
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
         }
 
         function handleAuthSubmit() {
@@ -524,18 +519,7 @@
             allOrders.push(orderData);
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    access_key: 'YOUR_WEB3FORMS_ACCESS_KEY_HERE', 
-                    subject: `New Luxury Order #${orderData.id} - Alivèra Atelier`,
-                    from_name: 'Alivèra Atelier Storefront',
-                    message: `New Order Placed!\n\nOrder ID: #${orderData.id}\nClient: ${shippingDetails.name} (${shippingDetails.phone})\nEmail: ${currentUserEmail}\n\nAddress:\n${shippingDetails.address}, ${shippingDetails.landmark ? shippingDetails.landmark + ', ' : ''}${shippingDetails.city}, ${shippingDetails.state} - ${shippingDetails.pincode}\n\nPayment Method: ${paymentMethod}\nTotal Payable: ₹${finalTotal}\n\nPlease check your Admin Panel to Confirm or Reject this order for Shiprocket.`
-                })
-            }).catch(err => console.error("Email notification error:", err));
-
-            alert(`Order placed successfully via ${paymentMethod}! Awaiting admin review before fulfillment setup on Shiprocket.`);
+            alert(`Order placed successfully via ${paymentMethod}! Awaiting admin review.`);
             cart = [];
             document.getElementById('cart-count').innerText = 0;
             closeModals();
