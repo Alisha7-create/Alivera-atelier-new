@@ -23,8 +23,8 @@
         .nav-link { color: #aaa; text-decoration: none; font-size: 12px; letter-spacing: 1px; cursor: pointer; background: none; border: none; font-family: inherit; }
         .nav-link:hover { color: #d4af37; }
 
-        /* Promo Banner Announcement Bar */
-        #promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 8px; font-size: 11px; font-weight: bold; letter-spacing: 2px; display: none; }
+        /* Banner & Countdown Bar */
+        #top-announcement-bar { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 11px; font-weight: bold; letter-spacing: 2px; display: none; }
 
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
         .hero-section { text-align: center; margin-bottom: 50px; }
@@ -35,15 +35,19 @@
         .store-card { background: #121212; border: 1px solid #222; border-radius: 8px; padding: 15px; text-align: center; transition: border-color 0.3s; }
         .store-card:hover { border-color: #d4af37; }
         .store-card img { width: 100%; height: 320px; object-fit: contain; background: #0a0a0a; border-radius: 6px; margin-bottom: 15px; border: 1px solid #1a1a1a; }
+        .size-chart-preview { width: 100%; height: 80px; object-fit: contain; background: #000; border: 1px dashed #444; margin-bottom: 10px; border-radius: 4px; cursor: pointer; }
+        
         .product-title { font-size: 14px; font-weight: bold; color: #fff; letter-spacing: 1px; margin-bottom: 8px; }
         .product-price { color: #d4af37; font-size: 14px; letter-spacing: 1px; margin-bottom: 15px; }
         
         .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; width: 100%; display: block; box-sizing: border-box; margin-top: 8px; }
         .btn:hover { background: #c59b27; }
+        .btn-outline { background: transparent; border: 1px solid #d4af37; color: #d4af37; }
+        .btn-outline:hover { background: #d4af37; color: #0a0a0a; }
 
         /* Modal Overlays */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; border-radius: 8px; padding: 30px; box-sizing: border-box; position: relative; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto; border-radius: 8px; padding: 30px; box-sizing: border-box; position: relative; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 20px; cursor: pointer; background: none; border: none; }
         .close-modal:hover { color: #d4af37; }
 
@@ -59,8 +63,8 @@
 </head>
 <body>
 
-    <!-- Dynamic Promotional Banner -->
-    <div id="promo-banner"></div>
+    <!-- Dynamic Promo Banner & Sale Countdown Bar -->
+    <div id="top-announcement-bar"></div>
 
     <header>
         <a href="/" class="logo-area">
@@ -69,8 +73,7 @@
         </a>
         <div class="nav-actions">
             <button class="nav-link" id="auth-nav-btn" onclick="openAuthModal()">SIGN IN / REGISTER</button>
-            <button class="nav-link" onclick="openCartModal()">CART</button>
-            <a href="/admin/" class="nav-link" style="color: #d4af37; display: none;" id="admin-link">ADMIN</a>
+            <button class="nav-link" onclick="openCartModal()">CART (<span id="cart-count">0</span>)</button>
         </div>
     </header>
 
@@ -85,12 +88,54 @@
         </div>
     </div>
 
-    <!-- AUTHENTICATION MODAL (Email & Password Login / Register) -->
+    <!-- CHECKOUT / BOOKING MODAL (Pincode Check First + Complete Address) -->
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeCheckoutModal()">&times;</button>
+            <h2 style="color: #d4af37; margin-top: 0; font-size: 18px; letter-spacing: 2px;">SECURE ACQUISITION</h2>
+            
+            <div id="pincode-section">
+                <div class="form-group">
+                    <label>ENTER PINCODE FOR DELIVERY CHECK</label>
+                    <input type="text" id="check-pincode" class="form-control" placeholder="e.g. 110001">
+                </div>
+                <button class="btn" onclick="verifyPincode()">Verify Delivery Availability</button>
+            </div>
+
+            <div id="full-address-section" style="display:none; margin-top: 20px; border-top: 1px solid #222; padding-top: 15px;">
+                <p style="color: #2ecc71; font-size: 11px; margin-bottom: 15px;">✓ Delivery available to your pincode!</p>
+                <div class="form-group">
+                    <label>FULL STREET ADDRESS</label>
+                    <input type="text" id="ship-address" class="form-control" placeholder="House/Flat No., Building, Street">
+                </div>
+                <div class="form-group">
+                    <label>CITY</label>
+                    <input type="text" id="ship-city" class="form-control" placeholder="City">
+                </div>
+                <div class="form-group">
+                    <label>PHONE NUMBER</label>
+                    <input type="text" id="ship-phone" class="form-control" placeholder="+91 98765 43210">
+                </div>
+                <div class="form-group">
+                    <label>SELECT SIZE</label>
+                    <select id="ship-size" class="form-control">
+                        <option value="XS">XS - Extra Small</option>
+                        <option value="S">S - Small</option>
+                        <option value="M" selected>M - Medium</option>
+                        <option value="L">L - Large</option>
+                        <option value="XL">XL - Extra Large</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="submitFinalOrder()">Complete Booking / Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION MODAL -->
     <div class="modal-overlay" id="auth-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeAuthModal()">&times;</button>
             <h2 id="auth-modal-title" style="color: #d4af37; margin-top: 0; font-size: 18px; letter-spacing: 2px;">CLIENT SIGN IN</h2>
-            
             <div class="form-group">
                 <label>EMAIL ADDRESS</label>
                 <input type="email" id="auth-email" class="form-control" placeholder="name@domain.com">
@@ -99,11 +144,9 @@
                 <label>PASSWORD</label>
                 <input type="password" id="auth-password" class="form-control" placeholder="••••••••">
             </div>
-
             <button class="btn" id="auth-submit-btn" onclick="handleAuthAction()">Sign In</button>
-            
             <div style="text-align: center; margin-top: 15px;">
-                <button class="nav-link" id="auth-toggle-mode" onclick="toggleAuthMode()">New to Atelier? Create an Account</button>
+                <button class="nav-link" id="auth-toggle-mode" onclick="toggleAuthMode()">New to Atelier? Create an Account (Claim 10% Welcome Offer)</button>
             </div>
         </div>
     </div>
@@ -116,6 +159,7 @@
             <div id="cart-items-container">
                 <p style="color: #777; font-size: 12px;">Your bag is empty.</p>
             </div>
+            <button class="btn" id="checkout-cart-btn" style="display:none; margin-top: 20px;" onclick="proceedCheckoutFromCart()">Proceed to Secure Checkout</button>
         </div>
     </div>
 
@@ -140,115 +184,207 @@
         const auth = firebase.auth();
 
         let isRegisterMode = false;
+        let cart = JSON.parse(localStorage.getItem('alivera_cart') || '[]');
+        let activeCheckoutItem = null;
 
-        // Modal Controls
         function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
         function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
-        function openCartModal() { document.getElementById('cart-modal').style.display = 'flex'; }
+        function openCartModal() { renderCartItems(); document.getElementById('cart-modal').style.display = 'flex'; }
         function closeCartModal() { document.getElementById('cart-modal').style.display = 'none'; }
+        function openCheckoutModal(item) { activeCheckoutItem = item; document.getElementById('checkout-modal').style.display = 'flex'; }
+        function closeCheckoutModal() { document.getElementById('checkout-modal').style.display = 'none'; }
 
         function toggleAuthMode() {
             isRegisterMode = !isRegisterMode;
             document.getElementById('auth-modal-title').innerText = isRegisterMode ? 'CREATE NEW ACCOUNT' : 'CLIENT SIGN IN';
             document.getElementById('auth-submit-btn').innerText = isRegisterMode ? 'Register Account & Claim 10% Welcome Offer' : 'Sign In';
-            document.getElementById('auth-toggle-mode').innerText = isRegisterMode ? 'Already have an account? Sign In' : 'New to Atelier? Create an Account';
         }
 
-        // Email/Password Authentication Handler
         async function handleAuthAction() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-
-            if (!email || !password) {
-                alert("Please enter both your email and password.");
-                return;
-            }
-
             try {
-                if (isRegisterMode) {
-                    const userCred = await auth.createUserWithEmailAndPassword(email, password);
-                    await db.collection("atelier_users").doc(userCred.user.uid).set({
-                        email: email,
-                        hasClaimedWelcomeDiscount: false,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    alert("Account created successfully! You are eligible for a 10% first-time customer discount on your first order.");
+                if(isRegisterMode) {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                    alert("Account registered successfully! You are eligible for your first-time customer discount.");
                 } else {
                     await auth.signInWithEmailAndPassword(email, password);
                     alert("Signed in successfully!");
                 }
                 closeAuthModal();
-            } catch (error) {
-                alert("Authentication error: " + error.message);
-            }
+            } catch(e) { alert("Auth error: " + e.message); }
         }
 
-        // Monitor Auth State for Header Updates & Admin link visibility
         auth.onAuthStateChanged(user => {
-            const navBtn = document.getElementById('auth-nav-btn');
-            const adminLink = document.getElementById('admin-link');
-            
-            if (user) {
-                navBtn.innerText = "MY ACCOUNT (" + user.email.split('@')[0] + ")";
-                navBtn.onclick = () => { 
-                    if(confirm("Sign out of your account?")) { auth.signOut(); } 
-                };
-                
-                // Show Admin link in header if logged in as admin email
-                if (user.email === "hello@aliveraatelier.in") {
-                    adminLink.style.display = 'inline';
-                } else {
-                    adminLink.style.display = 'none';
-                }
+            const btn = document.getElementById('auth-nav-btn');
+            if(user) {
+                btn.innerText = "MY ACCOUNT (" + user.email.split('@')[0] + ")";
+                btn.onclick = () => { if(confirm("Sign out?")) auth.signOut(); }
             } else {
-                navBtn.innerText = "SIGN IN / REGISTER";
-                navBtn.onclick = openAuthModal;
-                adminLink.style.display = 'none';
+                btn.innerText = "SIGN IN / REGISTER";
+                btn.onclick = openAuthModal;
             }
         });
 
-        // Load Products & Promotional Rules
-        async function loadStorefrontData() {
+        // Load Products, Size Charts & Promo Engine / Countdown Timer
+        async function loadStorefront() {
             const grid = document.getElementById('storefront-catalog-grid');
-            if (!grid) return;
-
-            try {
-                const promoDoc = await db.collection("atelier_settings").doc("promo").get();
-                if (promoDoc.exists) {
-                    const pData = promoDoc.data();
-                    const bannerEl = document.getElementById('promo-banner');
-                    if(pData.bannerText) {
-                        bannerEl.innerText = pData.bannerText;
-                        bannerEl.style.display = 'block';
-                    } else {
-                        bannerEl.style.display = 'none';
-                    }
+            
+            // Fetch Promo & Countdown
+            const promoDoc = await db.collection("atelier_settings").doc("promo").get();
+            if(promoDoc.exists) {
+                const p = promoDoc.data();
+                const bar = document.getElementById('top-announcement-bar');
+                
+                if (p.countdownTarget && new Date().getTime() < new Date(p.countdownTarget).getTime()) {
+                    // Show Timer until sharp 12 AM
+                    startCountdownTimer(p.countdownTarget, p.bannerText);
+                } else if(p.bannerText) {
+                    bar.innerText = p.bannerText;
+                    bar.style.display = 'block';
                 }
+            }
 
-                const snapshot = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
-                if (snapshot.empty) {
-                    grid.innerHTML = `<p style="color: #777; text-align: center; width: 100%;">New luxury collections coming soon.</p>`;
+            const snapshot = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
+            if(snapshot.empty) {
+                grid.innerHTML = `<p style="color: #777; text-align: center; width: 100%;">Collections coming soon.</p>`;
+                return;
+            }
+
+            grid.innerHTML = snapshot.docs.map(doc => {
+                const item = doc.data();
+                const itemJson = JSON.stringify({id: doc.id, name: item.name, price: item.price}).replace(/"/g, '&quot;');
+                return `
+                    <div class="store-card">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='/logo.png'">
+                        ${item.sizeChart ? `<img src="${item.sizeChart}" alt="Size Chart" class="size-chart-preview" title="Click to view Size Chart" onclick="window.open('${item.sizeChart}', '_blank')">` : ''}
+                        <div class="product-title">${item.name}</div>
+                        <div class="product-price">₹${Number(item.price).toLocaleString('en-IN')}</div>
+                        <button class="btn" onclick="addToCart(${itemJson})">Add to Cart</button>
+                        <button class="btn btn-outline" onclick="openCheckoutModal(${itemJson})">Buy Now</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startCountdownTimer(targetTimeStr, bannerText) {
+            const bar = document.getElementById('top-announcement-bar');
+            bar.style.display = 'block';
+            
+            const target = new Date(targetTimeStr).getTime();
+            const interval = setInterval(() => {
+                const now = new Date().getTime();
+                const diff = target - now;
+
+                if (diff <= 0) {
+                    clearInterval(interval);
+                    bar.innerText = bannerText || "SALE IS NOW LIVE!";
                     return;
                 }
 
-                grid.innerHTML = snapshot.docs.map(doc => {
-                    const p = doc.data();
-                    return `
-                        <div class="store-card">
-                            <img src="${p.image}" alt="${p.name}" onerror="this.src='/logo.png'">
-                            <div class="product-title">${p.name}</div>
-                            <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                            <button class="btn" onclick="alert('Proceeding to checkout for ${p.name.replace(/'/g, "\\'")}')">Acquire Piece</button>
-                        </div>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error("Error loading store data:", error);
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                bar.innerText = `⏳ SALE STARTS IN: ${hours}h ${minutes}m ${seconds}s`;
+            }, 1000);
+        }
+
+        // Cart Actions
+        function addToCart(item) {
+            cart.push(item);
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            document.getElementById('cart-count').innerText = cart.length;
+            alert(item.name + " added to your shopping bag.");
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cart-items-container');
+            const checkoutBtn = document.getElementById('checkout-cart-btn');
+            document.getElementById('cart-count').innerText = cart.length;
+
+            if(cart.length === 0) {
+                container.innerHTML = `<p style="color: #777; font-size: 12px;">Your bag is empty.</p>`;
+                checkoutBtn.style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = cart.map((item, idx) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 10px; border-radius: 4px; margin-bottom: 8px; font-size: 12px;">
+                    <span>${item.name} — ₹${Number(item.price).toLocaleString('en-IN')}</span>
+                    <button style="background:none; border:none; color:#e74c3c; cursor:pointer;" onclick="removeFromCart(${idx})">Remove</button>
+                </div>
+            `).join('');
+            checkoutBtn.style.display = 'block';
+        }
+
+        function removeFromCart(idx) {
+            cart.splice(idx, 1);
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            renderCartItems();
+        }
+
+        function proceedCheckoutFromCart() {
+            if(cart.length === 0) return;
+            closeCartModal();
+            openCheckoutModal(cart[0]); // Primary item checkout flow
+        }
+
+        // Pincode Verification First
+        function verifyPincode() {
+            const pincode = document.getElementById('check-pincode').value.trim();
+            if(!pincode || pincode.length < 6) {
+                alert("Please enter a valid 6-digit delivery pincode.");
+                return;
+            }
+            document.getElementById('full-address-section').style.display = 'block';
+        }
+
+        // Final Order Submission
+        async function submitFinalOrder() {
+            const address = document.getElementById('ship-address').value.trim();
+            const city = document.getElementById('ship-city').value.trim();
+            const pincode = document.getElementById('check-pincode').value.trim();
+            const phone = document.getElementById('ship-phone').value.trim();
+            const size = document.getElementById('ship-size').value;
+            const user = auth.currentUser;
+
+            if(!address || !city || !phone) {
+                alert("Please complete all shipping address fields.");
+                return;
+            }
+
+            try {
+                await db.collection("atelier_orders").add({
+                    clientEmail: user ? user.email : "guest@atelier.in",
+                    itemName: activeCheckoutItem ? activeCheckoutItem.name : "Custom Atelier Piece",
+                    itemPrice: activeCheckoutItem ? activeCheckoutItem.price : 0,
+                    selectedSize: size,
+                    shipping: { address, city, pincode, phone },
+                    status: "Pending Admin Confirmation",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Increment people discount usage count if applicable
+                const promoRef = db.collection("atelier_settings").doc("promo");
+                const pDoc = await promoRef.get();
+                if(pDoc.exists && pDoc.data().type === 'people') {
+                    const currentUsed = (pDoc.data().usedCount || 0) + 1;
+                    await promoRef.update({ usedCount: currentUsed });
+                }
+
+                alert("Order successfully placed! Awaiting confirmation from hello@aliveraatelier.in.");
+                closeCheckoutModal();
+                cart = [];
+                localStorage.removeItem('alivera_cart');
+                document.getElementById('cart-count').innerText = '0';
+            } catch(e) {
+                alert("Order submission error: " + e.message);
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            loadStorefrontData();
+            loadStorefront();
         });
     </script>
 </body>
