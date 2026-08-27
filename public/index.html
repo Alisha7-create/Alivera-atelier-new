@@ -34,8 +34,6 @@
 
         .product-title { font-size: 16px; letter-spacing: 1px; color: #fff; margin: 15px 0 4px; }
         .size-chart-link { color: #d4af37; font-weight: bold; font-size: 11px; letter-spacing: 1px; cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; margin-bottom: 10px; display: inline-block; }
-        .size-chart-link:hover { color: #f39c12; }
-        
         .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 12px; }
         
         label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; margin-top: 10px; }
@@ -44,10 +42,9 @@
         .password-container { position: relative; width: 100%; margin-bottom: 8px; }
         .password-container input { width: 100%; margin-bottom: 0; padding-right: 40px; }
         .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #aaa; cursor: pointer; font-size: 14px; }
-        .toggle-password:hover { color: #d4af37; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 480px; text-align: left; position: relative; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 520px; text-align: left; position: relative; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #888; cursor: pointer; font-size: 18px; }
 
         footer { background: #121212; border-top: 1px solid #222; padding: 30px 20px; text-align: center; margin-top: auto; }
@@ -55,7 +52,6 @@
         .footer-tagline { color: #aaa; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 15px; font-style: italic; }
         .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 15px; font-size: 12px; }
         .footer-links a { color: #ccc; text-decoration: none; letter-spacing: 1px; }
-        .footer-links a:hover { color: #d4af37; }
         .footer-copy { color: #666; font-size: 10px; letter-spacing: 1px; }
     </style>
 </head>
@@ -98,12 +94,12 @@
         <div class="footer-copy">&copy; 2026 Alivèra Atelier. All rights reserved.</div>
     </footer>
 
-    <!-- Auth Modal with View Password Toggle -->
+    <!-- Auth Modal -->
     <div id="auth-signin-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
             <h3 id="modal-heading" style="color: #d4af37; text-align: center; margin-bottom: 5px;">SIGN IN TO ATELIER</h3>
-            <p id="modal-subtext" style="font-size: 11px; color: #aaa; text-align: center; margin-bottom: 15px;">Access your account & manage your orders.</p>
+            <p id="modal-subtext" style="font-size: 11px; color: #aaa; text-align: center; margin-bottom: 15px;">Access your account & track orders.</p>
             
             <div id="register-name-wrap" style="display: none;">
                 <label>FULL NAME</label>
@@ -124,52 +120,37 @@
         </div>
     </div>
 
-    <!-- Checkout Modal -->
+    <!-- Cart / Checkout Modal -->
     <div id="checkout-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
             <h3 style="color: #d4af37; text-align: center; letter-spacing: 1px;">SECURE CHECKOUT</h3>
             
             <div id="checkout-step-address">
-                <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">Enter your complete shipping destination details:</p>
-                <label>FULL NAME</label>
-                <input type="text" id="ship-name" class="custom-input" placeholder="Recipient Name">
-                <label>PHONE NUMBER</label>
-                <input type="text" id="ship-phone" class="custom-input" placeholder="10-digit mobile number">
-                <label>STREET ADDRESS</label>
-                <input type="text" id="ship-address" class="custom-input" placeholder="House/Flat no., Street Name, Area">
-                <label>LANDMARK</label>
-                <input type="text" id="ship-landmark" class="custom-input" placeholder="e.g. Near City Mall">
-                
+                <label>FULL NAME</label><input type="text" id="ship-name" class="custom-input" placeholder="Recipient Name">
+                <label>PHONE NUMBER</label><input type="text" id="ship-phone" class="custom-input" placeholder="10-digit mobile">
+                <label>STREET ADDRESS</label><input type="text" id="ship-address" class="custom-input" placeholder="House/Flat no., Street">
+                <label>LANDMARK</label><input type="text" id="ship-landmark" class="custom-input" placeholder="e.g. Near City Mall">
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;"><label>CITY</label><input type="text" id="ship-city" class="custom-input" placeholder="City"></div>
                     <div style="flex: 1;"><label>STATE</label><input type="text" id="ship-state" class="custom-input" placeholder="State"></div>
                 </div>
-                <label>PINCODE</label>
-                <input type="text" id="ship-pincode" class="custom-input" placeholder="6-digit Pincode">
-
+                <label>PINCODE</label><input type="text" id="ship-pincode" class="custom-input" placeholder="6-digit Pincode">
                 <button class="btn" style="width: 100%; margin-top: 15px;" onclick="proceedToPayment()">Proceed to Payment</button>
             </div>
 
             <div id="checkout-step-payment" style="display: none;">
                 <div id="order-summary-box" style="background: #181818; padding: 12px; border-radius: 4px; font-size: 12px; margin-bottom: 15px; border: 1px solid #333;"></div>
-
-                <label style="color: #d4af37;">PROMO CODE (Use FIRST10 for 10% off)</label>
+                <label style="color: #d4af37;">PROMO CODE</label>
                 <div style="display: flex; gap: 10px; margin-bottom: 12px;">
                     <input type="text" id="promo-input" class="custom-input" placeholder="e.g. FIRST10" style="margin-bottom:0;">
                     <button class="btn" onclick="applyPromoCode()">Apply</button>
                 </div>
-
-                <label style="color: #d4af37;">CHOOSE PAYMENT METHOD</label>
+                <label style="color: #d4af37;">PAYMENT METHOD</label>
                 <div style="margin-bottom: 12px;">
-                    <label style="cursor: pointer; color: #fff; font-size: 12px; margin-top: 5px;">
-                        <input type="radio" name="payment-method" value="COD" checked> Cash on Delivery (COD)
-                    </label>
-                    <label style="cursor: pointer; color: #fff; font-size: 12px; margin-top: 5px;">
-                        <input type="radio" name="payment-method" value="RuPay"> RuPay Secure Payment / UPI Gateway
-                    </label>
+                    <label style="color: #fff; font-size: 12px;"><input type="radio" name="payment-method" value="COD" checked> Cash on Delivery (COD)</label>
+                    <label style="color: #fff; font-size: 12px;"><input type="radio" name="payment-method" value="RuPay"> RuPay Secure Payment / UPI</label>
                 </div>
-
                 <div style="display: flex; gap: 10px;">
                     <button class="link-item" onclick="backToAddress()" style="width: 40%; background: #222; padding: 10px; border-radius: 4px; text-align: center; color: #aaa;">Back</button>
                     <button class="btn" style="width: 60%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Place Order Now</button>
@@ -178,11 +159,23 @@
         </div>
     </div>
 
-    <!-- Image Popup Modal for Size Chart -->
+    <!-- Customer Orders & Tracking Modal -->
+    <div id="tracking-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h3 style="color: #d4af37; text-align: center; letter-spacing: 1px; margin-bottom: 5px;">MY ORDERS & TRACKING</h3>
+            <p style="font-size: 11px; color: #aaa; text-align: center; margin-bottom: 20px;">Review your atelier purchases, live status, and tracking info.</p>
+            <div id="customer-orders-list">
+                <p style="color: #777; font-size: 12px; text-align: center;">You have no active orders.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Popup Modal -->
     <div id="image-popup-modal" class="modal" onclick="closeImagePopup()">
         <div class="modal-content" style="background: transparent; border: none; text-align: center; width: auto; max-width: 90vw; padding: 0;" onclick="event.stopPropagation()">
             <span class="close-modal" onclick="closeImagePopup()" style="position: absolute; top: -35px; right: 0; color: #fff; font-size: 24px; cursor: pointer;">&times;</span>
-            <img id="popup-img-target" src="" alt="Size Chart Large" style="max-width: 100%; max-height: 85vh; border-radius: 6px; border: 2px solid #d4af37; box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);">
+            <img id="popup-img-target" src="" alt="Size Chart Large" style="max-width: 100%; max-height: 85vh; border-radius: 6px; border: 2px solid #d4af37;">
         </div>
     </div>
 
@@ -193,9 +186,7 @@
         let currentShippingFee = 49;
         let shippingDetails = {};
 
-        function getActiveCatalog() {
-            return JSON.parse(localStorage.getItem('atelier_products') || '[]');
-        }
+        function getActiveCatalog() { return JSON.parse(localStorage.getItem('atelier_products') || '[]'); }
 
         function loadPromoBanner() {
             const bannerWrap = document.getElementById('promo-banner-wrap');
@@ -207,17 +198,14 @@
         function renderCatalog() {
             const grid = document.getElementById('live-catalog');
             let activeCatalog = getActiveCatalog();
-
             if (activeCatalog.length === 0) {
                 grid.innerHTML = `<div class="empty-catalog">No luxury pieces currently active. New arrivals will appear as added by the atelier.</div>`;
                 return;
             }
-
             grid.innerHTML = activeCatalog.map((p, idx) => {
                 let sizeChartHtml = p.sizeChart 
                     ? `<button type="button" class="size-chart-link" onclick="openImagePopup('${p.sizeChart}')">VIEW SIZE CHART</button>`
                     : `<button type="button" class="size-chart-link" onclick="openDefaultSizeChart()">VIEW SIZE CHART</button>`;
-
                 return `
                     <div class="product-card">
                         <div class="product-img-container" onclick="openImagePopup('${p.image || '/logo.png'}')">
@@ -226,7 +214,6 @@
                         <div class="product-title">${p.name}</div>
                         ${sizeChartHtml}
                         <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                        
                         <label>SELECT SIZE</label>
                         <select id="size-select-${idx}" onchange="toggleCustomSize(${idx})">
                             <option value="XS">XS (Extra Small)</option>
@@ -236,15 +223,12 @@
                             <option value="XL">XL (Extra Large)</option>
                             <option value="Custom">Custom Measurements</option>
                         </select>
-
                         <div id="custom-wrap-${idx}" style="display: none; margin-top: 5px;">
                             <label>CUSTOM MEASUREMENTS</label>
                             <input type="text" class="custom-input" id="cust-spec-${idx}" placeholder="e.g. Bust: 34in, Waist: 28in">
                         </div>
-
                         <label>QUANTITY</label>
                         <input type="number" class="custom-input" id="qty-${idx}" value="1" min="1" max="10">
-
                         <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addToCart(${idx})">Add to Cart</button>
                     </div>
                 `;
@@ -255,29 +239,19 @@
             document.getElementById('popup-img-target').src = imgSrc;
             document.getElementById('image-popup-modal').style.display = 'flex';
         }
-
-        function closeImagePopup() {
-            document.getElementById('image-popup-modal').style.display = 'none';
-        }
-
-        function openDefaultSizeChart() {
-            openImagePopup('/logo.png');
-        }
+        function closeImagePopup() { document.getElementById('image-popup-modal').style.display = 'none'; }
+        function openDefaultSizeChart() { openImagePopup('/logo.png'); }
 
         function checkAuthStatus() {
             const currentEmail = localStorage.getItem('atelier_current_user_email');
             const nav = document.getElementById('header-nav');
-            
             if (currentEmail) {
                 const storedName = localStorage.getItem('atelier_current_user_name');
                 const displayName = storedName ? storedName : currentEmail.split('@')[0];
-                
-                let adminButtonHtml = currentEmail === 'hello@aliveraatelier.in' 
-                    ? `<a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>` 
-                    : '';
-
+                let adminButtonHtml = currentEmail === 'hello@aliveraatelier.in' ? `<a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>` : '';
                 nav.innerHTML = `
-                    <span style="color: #d4af37; font-size: 12px; letter-spacing: 1px;">Hello, ${displayName}</span>
+                    <span style="color: #d4af37; font-size: 11px;">Hello, ${displayName}</span>
+                    <button class="link-item" onclick="openTrackingModal()">My Orders & Tracking</button>
                     <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
                     ${adminButtonHtml}
                     <button class="link-item" onclick="logout()" style="color: #e74c3c;">Sign Out</button>
@@ -290,27 +264,17 @@
             }
         }
 
-        function openAuthModal() {
-            isRegistering = false;
-            updateAuthModalView();
-            document.getElementById('auth-signin-modal').style.display = 'flex';
-        }
-
-        function toggleAuthMode() {
-            isRegistering = !isRegistering;
-            updateAuthModalView();
-        }
-
+        function openAuthModal() { isRegistering = false; updateAuthModalView(); document.getElementById('auth-signin-modal').style.display = 'flex'; }
+        function toggleAuthMode() { isRegistering = !isRegistering; updateAuthModalView(); }
         function updateAuthModalView() {
             const heading = document.getElementById('modal-heading');
             const subtext = document.getElementById('modal-subtext');
             const nameWrap = document.getElementById('register-name-wrap');
             const actionBtn = document.getElementById('auth-action-btn');
             const toggleBtnSub = document.getElementById('auth-toggle-btn-sub');
-
             if (isRegistering) {
                 heading.innerText = 'CREATE ACCOUNT';
-                subtext.innerText = 'Register your profile with your name, email, and password.';
+                subtext.innerText = 'Register your profile to track your atelier orders.';
                 nameWrap.style.display = 'block';
                 actionBtn.innerText = 'Create Account & Sign In';
                 toggleBtnSub.innerText = 'Already have an account? Sign In';
@@ -322,7 +286,6 @@
                 toggleBtnSub.innerText = 'New to Alivèra Atelier? Create a new account';
             }
         }
-
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('signin-password');
             passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
@@ -332,63 +295,31 @@
             const email = document.getElementById('signin-email').value.trim().toLowerCase();
             const password = document.getElementById('signin-password').value.trim();
             const name = document.getElementById('signup-name').value.trim();
-
-            if (!email || !password) {
-                alert("Please fill in both email and password.");
-                return;
-            }
-
+            if (!email || !password) { alert("Please fill in both email and password."); return; }
             let usersList = JSON.parse(localStorage.getItem('atelier_registered_users') || '[]');
-
             if (isRegistering) {
-                if (!name) {
-                    alert("Please enter your name to create an account.");
-                    return;
-                }
-                const existing = usersList.find(u => u.email === email);
-                if (existing) {
-                    alert("An account with this email already exists. Please sign in instead.");
-                    return;
-                }
-
+                if (!name) { alert("Please enter your name."); return; }
+                if (usersList.find(u => u.email === email)) { alert("Account already exists. Please sign in."); return; }
                 usersList.push({ name, email, password });
                 localStorage.setItem('atelier_registered_users', JSON.stringify(usersList));
                 localStorage.setItem('atelier_current_user_email', email);
                 localStorage.setItem('atelier_current_user_name', name);
-                
-                closeModals();
-                checkAuthStatus();
-                alert("Account successfully created! Use code FIRST10 for 10% off your first order.");
+                closeModals(); checkAuthStatus(); alert("Account successfully created!");
             } else {
                 if (email === 'hello@aliveraatelier.in' && password === 'adminpassword') {
                     localStorage.setItem('atelier_current_user_email', email);
                     localStorage.setItem('atelier_current_user_name', 'Alivèra Atelier');
-                    closeModals();
-                    checkAuthStatus();
-                    alert("Signed in successfully as Admin!");
-                    return;
+                    closeModals(); checkAuthStatus(); alert("Signed in as Admin!"); return;
                 }
-
                 const foundUser = usersList.find(u => u.email === email && u.password === password);
-                if (!foundUser) {
-                    alert("Invalid email or password. Please check your credentials or create a new account.");
-                    return;
-                }
-
+                if (!foundUser) { alert("Invalid email or password."); return; }
                 localStorage.setItem('atelier_current_user_email', foundUser.email);
                 localStorage.setItem('atelier_current_user_name', foundUser.name);
-                
-                closeModals();
-                checkAuthStatus();
-                alert("Welcome back!");
+                closeModals(); checkAuthStatus(); alert("Welcome back!");
             }
         }
 
-        function logout() {
-            localStorage.removeItem('atelier_current_user_email');
-            localStorage.removeItem('atelier_current_user_name');
-            window.location.reload();
-        }
+        function logout() { localStorage.removeItem('atelier_current_user_email'); localStorage.removeItem('atelier_current_user_name'); window.location.reload(); }
 
         function toggleCustomSize(idx) {
             const val = document.getElementById(`size-select-${idx}`).value;
@@ -397,26 +328,18 @@
 
         function addToCart(idx) {
             const currentEmail = localStorage.getItem('atelier_current_user_email');
-            if (!currentEmail) {
-                openAuthModal();
-                return;
-            }
-
+            if (!currentEmail) { openAuthModal(); return; }
             let activeCatalog = getActiveCatalog();
             const size = document.getElementById(`size-select-${idx}`).value;
             const customNotes = size === 'Custom' ? document.getElementById(`cust-spec-${idx}`).value : `Standard Size: ${size}`;
             const quantity = parseInt(document.getElementById(`qty-${idx}`).value) || 1;
-
             cart.push({ ...activeCatalog[idx], size, customNotes, quantity });
             document.getElementById('cart-count').innerText = cart.reduce((acc, item) => acc + item.quantity, 0);
-            alert(`Added ${quantity}x "${activeCatalog[idx].name}" (${size}) to your cart.`);
+            alert(`Added to cart.`);
         }
 
         function openCartModal() {
-            if (cart.length === 0) {
-                alert("Your cart is empty.");
-                return;
-            }
+            if (cart.length === 0) { alert("Your cart is empty."); return; }
             document.getElementById('checkout-step-address').style.display = 'block';
             document.getElementById('checkout-step-payment').style.display = 'none';
             document.getElementById('checkout-modal').style.display = 'flex';
@@ -426,18 +349,11 @@
             const name = document.getElementById('ship-name').value.trim();
             const phone = document.getElementById('ship-phone').value.trim();
             const address = document.getElementById('ship-address').value.trim();
-            const landmark = document.getElementById('ship-landmark').value.trim();
             const city = document.getElementById('ship-city').value.trim();
             const state = document.getElementById('ship-state').value.trim();
             const pincode = document.getElementById('ship-pincode').value.trim();
-
-            if (!name || !phone || !address || !city || !state || !pincode) {
-                alert("Please fill in all mandatory address details.");
-                return;
-            }
-
-            shippingDetails = { name, phone, address, landmark, city, state, pincode };
-
+            if (!name || !phone || !address || !city || !state || !pincode) { alert("Please fill in address details."); return; }
+            shippingDetails = { name, phone, address, landmark: document.getElementById('ship-landmark').value.trim(), city, state, pincode };
             document.getElementById('checkout-step-address').style.display = 'none';
             document.getElementById('checkout-step-payment').style.display = 'block';
             updateOrderSummary();
@@ -451,45 +367,33 @@
         function applyPromoCode() {
             const code = document.getElementById('promo-input').value.trim().toUpperCase();
             const currentUserEmail = localStorage.getItem('atelier_current_user_email') || "";
-
             if (code === "FIRST10") {
                 let usedAccounts = JSON.parse(localStorage.getItem('atelier_used_first_order_accounts') || '[]');
-                if (usedAccounts.includes(currentUserEmail)) {
-                    alert("You have already used your one-time 10% first-order discount.");
-                    return;
-                }
+                if (usedAccounts.includes(currentUserEmail)) { alert("First-order code already used."); return; }
                 currentDiscountPercent = 10;
-                alert("Success! 10% First Order Discount applied.");
-            } else {
-                alert("Invalid promo code.");
-                currentDiscountPercent = 0;
-            }
+                alert("10% discount applied!");
+            } else { alert("Invalid code."); currentDiscountPercent = 0; }
             updateOrderSummary();
         }
 
         function calculateTotals() {
             const subtotal = cart.reduce((acc, item) => acc + (Number(item.price) * item.quantity), 0);
             const discountAmount = (subtotal * currentDiscountPercent) / 100;
-            const finalTotal = subtotal - discountAmount + currentShippingFee;
-            return { subtotal, discountAmount, finalTotal };
+            return { subtotal, discountAmount, finalTotal: subtotal - discountAmount + currentShippingFee };
         }
 
         function updateOrderSummary() {
             const { subtotal, discountAmount, finalTotal } = calculateTotals();
-            const summaryBox = document.getElementById('order-summary-box');
-            
-            summaryBox.innerHTML = `
-                <div><strong>Items Subtotal:</strong> ₹${subtotal.toLocaleString('en-IN')}</div>
-                ${discountAmount > 0 ? `<div style="color: #27ae60;"><strong>First Order Discount (10%):</strong> -₹${discountAmount.toLocaleString('en-IN')}</div>` : ''}
-                <div><strong>Delivery Fee:</strong> ₹${currentShippingFee}</div>
-                <div style="border-top: 1px solid #333; margin-top: 6px; padding-top: 6px; font-size: 13px; color: #d4af37;">
-                    <strong>Total Payable: ₹${finalTotal.toLocaleString('en-IN')}</strong>
-                </div>
+            document.getElementById('order-summary-box').innerHTML = `
+                <div><strong>Subtotal:</strong> ₹${subtotal.toLocaleString('en-IN')}</div>
+                ${discountAmount > 0 ? `<div style="color: #27ae60;"><strong>Discount:</strong> -₹${discountAmount.toLocaleString('en-IN')}</div>` : ''}
+                <div><strong>Delivery:</strong> ₹${currentShippingFee}</div>
+                <div style="border-top: 1px solid #333; margin-top: 6px; padding-top: 6px; color: #d4af37;"><strong>Total: ₹${finalTotal.toLocaleString('en-IN')}</strong></div>
             `;
         }
 
         function finalizeOrder() {
-            const currentUserEmail = localStorage.getItem('atelier_current_user_email') || "client@example.com";
+            const currentUserEmail = localStorage.getItem('atelier_current_user_email') || "";
             const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
             const { subtotal, discountAmount, finalTotal } = calculateTotals();
 
@@ -501,33 +405,62 @@
                 }
             }
 
-            const orderData = {
+            let allOrders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
+            allOrders.push({
                 id: Date.now().toString().slice(-4),
                 items: cart,
                 shipping: shippingDetails,
                 clientEmail: currentUserEmail,
-                paymentMethod: paymentMethod,
+                paymentMethod,
                 subtotal,
                 discount: discountAmount,
                 deliveryFee: currentShippingFee,
                 total: finalTotal,
                 status: 'Pending Admin Review',
+                trackingId: '',
+                carrier: '',
                 date: new Date().toISOString()
-            };
-
-            let allOrders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
-            allOrders.push(orderData);
+            });
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            alert(`Order placed successfully via ${paymentMethod}! Awaiting admin review.`);
+            alert("Order placed successfully!");
             cart = [];
             document.getElementById('cart-count').innerText = 0;
             closeModals();
         }
 
-        function closeModals() {
-            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        function openTrackingModal() {
+            const currentEmail = localStorage.getItem('atelier_current_user_email');
+            const container = document.getElementById('customer-orders-list');
+            let orders = JSON.parse(localStorage.getItem('atelier_orders') || '[]').filter(o => o.clientEmail === currentEmail);
+
+            if (orders.length === 0) {
+                container.innerHTML = `<p style="color: #777; font-size: 12px; text-align: center;">You have no active orders.</p>`;
+            } else {
+                container.innerHTML = orders.map(o => `
+                    <div style="background: #181818; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span style="color: #d4af37; font-size: 12px; font-weight: bold;">Order #${o.id}</span>
+                            <span style="color: #fff; font-size: 11px;">Status: <strong>${o.status}</strong></span>
+                        </div>
+                        <div style="font-size: 11px; color: #aaa; margin-bottom: 6px;">Placed: ${new Date(o.date).toLocaleString()}</div>
+                        <ul style="margin: 5px 0 10px 18px; padding: 0; font-size: 11px; color: #ccc;">
+                            ${o.items.map(i => `<li>${i.quantity}x ${i.name} (${i.size})</li>`).join('')}
+                        </ul>
+                        ${o.trackingId ? `
+                            <div style="background: #111; padding: 8px; border-radius: 4px; border: 1px solid #d4af37; font-size: 11px; color: #d4af37;">
+                                <strong>Tracking ID:</strong> ${o.trackingId} <br>
+                                <strong>Carrier:</strong> ${o.carrier || 'Standard Courier'}
+                            </div>
+                        ` : `<div style="font-size: 11px; color: #888; font-style: italic;">Tracking ID will appear here once your order is confirmed/shipped by the atelier.</div>`}
+                        ${o.cancellationReason ? `<div style="font-size: 11px; color: #e74c3c; margin-top: 6px;"><strong>Note:</strong> ${o.cancellationReason}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+            document.getElementById('tracking-modal').style.display = 'flex';
         }
+
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
 
         loadPromoBanner();
         checkAuthStatus();
