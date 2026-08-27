@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Luxury Couture</title>
-    <link rel="icon" type="image/ico" href="/favicon.ico">
-    <link rel="icon" type="image/png" href="/logo.png">
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* Promotional Banner */
         .promo-banner-container { width: 100%; background: #121212; position: relative; text-align: center; border-bottom: 1px solid #d4af37; overflow: hidden; }
         .promo-banner-img { width: 100%; max-height: 250px; object-fit: cover; display: block; filter: brightness(0.85); }
         .promo-banner-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(10, 10, 10, 0.85); padding: 10px; color: #d4af37; font-size: 12px; letter-spacing: 2px; font-weight: bold; border-top: 1px solid #d4af37; }
@@ -33,8 +30,7 @@
         .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; padding: 20px; }
         
         .product-img-container { width: 100%; height: 380px; background: #141414; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #222; }
-        .product-img { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.3s; }
-        .product-img:hover { transform: scale(1.03); }
+        .product-img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
         .product-title { font-size: 16px; letter-spacing: 1px; color: #fff; margin: 15px 0 6px; }
         .product-price { color: #d4af37; font-size: 16px; font-weight: bold; margin-bottom: 12px; }
@@ -42,11 +38,16 @@
         label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; margin-top: 10px; }
         .custom-input, select { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; box-sizing: border-box; margin-bottom: 8px; }
         
+        /* Password wrapper for show/hide toggle */
+        .password-container { position: relative; width: 100%; margin-bottom: 8px; }
+        .password-container input { width: 100%; margin-bottom: 0; padding-right: 40px; }
+        .toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #aaa; cursor: pointer; font-size: 14px; }
+        .toggle-password:hover { color: #d4af37; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 450px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 480px; text-align: left; position: relative; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #888; cursor: pointer; font-size: 18px; }
 
-        /* Footer Styles */
         footer { background: #121212; border-top: 1px solid #222; padding: 30px 20px; text-align: center; margin-top: auto; }
         .footer-brand { color: #d4af37; font-size: 14px; letter-spacing: 3px; font-weight: bold; margin-bottom: 8px; }
         .footer-tagline { color: #aaa; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 15px; font-style: italic; }
@@ -58,7 +59,6 @@
 </head>
 <body>
 
-    <!-- Promotional Banner -->
     <div class="promo-banner-container" id="promo-banner-wrap" style="display: none;">
         <img id="promo-banner-img" src="/logo.png" alt="Promo Banner" class="promo-banner-img" onerror="this.parentElement.style.display='none'">
         <div class="promo-banner-overlay" id="promo-banner-text">✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨</div>
@@ -96,64 +96,92 @@
         <div class="footer-copy">&copy; 2026 Alivèra Atelier. All rights reserved.</div>
     </footer>
 
-    <!-- Universal Authentication Modal (Sign In & Sign Up) -->
+    <!-- Auth Modal with View Password Toggle -->
     <div id="auth-signin-modal" class="modal">
-        <div class="modal-content" style="text-align: left;">
+        <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
-            
-            <div id="modal-title-view" style="text-align: center; margin-bottom: 15px;">
-                <h3 id="modal-heading" style="color: #d4af37; letter-spacing: 1px; margin-bottom: 5px;">SIGN IN TO ATELIER</h3>
-                <p id="modal-subtext" style="font-size: 11px; color: #aaa;">Enter your details to access your account and track orders.</p>
-            </div>
+            <h3 id="modal-heading" style="color: #d4af37; text-align: center; margin-bottom: 5px;">SIGN IN TO ATELIER</h3>
+            <p id="modal-subtext" style="font-size: 11px; color: #aaa; text-align: center; margin-bottom: 15px;">Access your account & manage your orders.</p>
             
             <div id="register-name-wrap" style="display: none;">
                 <label>FULL NAME</label>
                 <input type="text" id="signup-name" class="custom-input" placeholder="e.g. Jane Doe">
             </div>
-
+            
             <label>EMAIL ADDRESS</label>
             <input type="email" id="signin-email" class="custom-input" placeholder="e.g. name@example.com">
-
+            
             <label>PASSWORD</label>
-            <input type="password" id="signin-password" class="custom-input" placeholder="••••••••">
+            <div class="password-container">
+                <input type="password" id="signin-password" class="custom-input" placeholder="••••••••">
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
+            </div>
             
             <button class="btn" id="auth-action-btn" style="width: 100%; margin-top: 15px;" onclick="handleAuthSubmit()">Sign In</button>
-            
-            <div style="text-align: center; margin-top: 12px;">
-                <button class="link-item" id="auth-toggle-btn-sub" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: block; width: 100%; margin-top: 5px;">New to Alivèra Atelier? Create a new account</button>
-            </div>
+            <button class="link-item" id="auth-toggle-btn-sub" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: block; width: 100%; margin-top: 12px; text-align: center;">New to Alivèra Atelier? Create a new account</button>
         </div>
     </div>
 
-    <!-- Cart & Checkout Modal -->
+    <!-- Checkout Modal -->
     <div id="checkout-modal" class="modal">
-        <div class="modal-content" style="text-align: left;">
+        <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h3 style="color: #d4af37; letter-spacing: 1px; text-align: center;">CHECKOUT & DELIVERY</h3>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px; text-align: center;">Select your delivery location or add a new address.</p>
+            <h3 style="color: #d4af37; text-align: center; letter-spacing: 1px;">SECURE CHECKOUT</h3>
             
-            <div id="address-list" style="margin-bottom: 15px;"></div>
+            <div id="checkout-step-address">
+                <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">Enter your complete shipping destination details:</p>
+                <label>FULL NAME</label>
+                <input type="text" id="ship-name" class="custom-input" placeholder="Recipient Name">
+                <label>PHONE NUMBER</label>
+                <input type="text" id="ship-phone" class="custom-input" placeholder="10-digit mobile number">
+                <label>STREET ADDRESS</label>
+                <input type="text" id="ship-address" class="custom-input" placeholder="House/Flat no., Street Name, Area">
+                <label>LANDMARK</label>
+                <input type="text" id="ship-landmark" class="custom-input" placeholder="e.g. Near City Mall">
+                
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;"><label>CITY</label><input type="text" id="ship-city" class="custom-input" placeholder="City"></div>
+                    <div style="flex: 1;"><label>STATE</label><input type="text" id="ship-state" class="custom-input" placeholder="State"></div>
+                </div>
+                <label>PINCODE</label>
+                <input type="text" id="ship-pincode" class="custom-input" placeholder="6-digit Pincode">
 
-            <div style="border-top: 1px solid #222; padding-top: 15px; margin-bottom: 15px;">
-                <label style="color: #d4af37;">ADD NEW ADDRESS</label>
-                <input type="text" id="new-addr" class="custom-input" placeholder="Full street address, city, pincode">
-                <button class="btn" style="width: 100%; margin-top: 5px;" onclick="addNewAddress()">Save & Select Address</button>
+                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="proceedToPayment()">Proceed to Payment</button>
             </div>
 
-            <div style="border-top: 1px solid #222; padding-top: 15px; margin-bottom: 15px;">
-                <label style="color: #d4af37;">PROMO / OCCASION CODE</label>
-                <input type="text" id="promo-input" class="custom-input" placeholder="e.g. FIRST10">
-            </div>
+            <div id="checkout-step-payment" style="display: none;">
+                <div id="order-summary-box" style="background: #181818; padding: 12px; border-radius: 4px; font-size: 12px; margin-bottom: 15px; border: 1px solid #333;"></div>
 
-            <button class="btn" style="width: 100%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
+                <label style="color: #d4af37;">PROMO CODE (Use FIRST10 for 10% off)</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                    <input type="text" id="promo-input" class="custom-input" placeholder="e.g. FIRST10" style="margin-bottom:0;">
+                    <button class="btn" onclick="applyPromoCode()">Apply</button>
+                </div>
+
+                <label style="color: #d4af37;">CHOOSE PAYMENT METHOD</label>
+                <div style="margin-bottom: 12px;">
+                    <label style="cursor: pointer; color: #fff; font-size: 12px; margin-top: 5px;">
+                        <input type="radio" name="payment-method" value="COD" checked> Cash on Delivery (COD)
+                    </label>
+                    <label style="cursor: pointer; color: #fff; font-size: 12px; margin-top: 5px;">
+                        <input type="radio" name="payment-method" value="RuPay"> RuPay Secure Payment / UPI Gateway
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="link-item" onclick="backToAddress()" style="width: 40%; background: #222; padding: 10px; border-radius: 4px; text-align: center; color: #aaa;">Back</button>
+                    <button class="btn" style="width: 60%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Place Order Now</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         let cart = [];
-        let savedAddresses = [];
-        let selectedAddressIdx = 0;
         let isRegistering = false;
+        let currentDiscountPercent = 0;
+        let currentShippingFee = 49;
+        let shippingDetails = {};
 
         function getActiveCatalog() {
             return JSON.parse(localStorage.getItem('atelier_products') || '[]');
@@ -265,6 +293,15 @@
             }
         }
 
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('signin-password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+
         function handleAuthSubmit() {
             const email = document.getElementById('signin-email').value.trim().toLowerCase();
             const password = document.getElementById('signin-password').value.trim();
@@ -288,11 +325,8 @@
                     return;
                 }
 
-                // Register new user
                 usersList.push({ name, email, password });
                 localStorage.setItem('atelier_registered_users', JSON.stringify(usersList));
-                
-                // Log them in
                 localStorage.setItem('atelier_current_user_email', email);
                 localStorage.setItem('atelier_current_user_name', name);
                 
@@ -300,7 +334,6 @@
                 checkAuthStatus();
                 alert("Account successfully created! Use code FIRST10 for 10% off your first order.");
             } else {
-                // Check if default admin account or registered user
                 if (email === 'hello@aliveraatelier.in' && password === 'adminpassword') {
                     localStorage.setItem('atelier_current_user_email', email);
                     localStorage.setItem('atelier_current_user_name', 'Alivèra Atelier');
@@ -358,68 +391,121 @@
                 alert("Your cart is empty.");
                 return;
             }
-
-            const addrList = document.getElementById('address-list');
-            addrList.innerHTML = savedAddresses.length ? savedAddresses.map((addr, i) => `
-                <div style="background:#181818; padding:10px; border-radius:4px; margin-bottom:8px; border: 1px solid ${i === selectedAddressIdx ? '#d4af37' : '#333'}; cursor:pointer;" onclick="selectAddress(${i})">
-                    <input type="radio" name="delivery-addr" ${i === selectedAddressIdx ? 'checked' : ''}> <span style="font-size:12px; color:#fff;">${addr}</span>
-                </div>
-            `).join('') : '<p style="color:#777; font-size:11px; text-align:center;">No addresses saved yet. Add one below.</p>';
-
+            document.getElementById('checkout-step-address').style.display = 'block';
+            document.getElementById('checkout-step-payment').style.display = 'none';
             document.getElementById('checkout-modal').style.display = 'flex';
         }
 
-        function selectAddress(i) {
-            selectedAddressIdx = i;
-            openCartModal();
-        }
+        function proceedToPayment() {
+            const name = document.getElementById('ship-name').value.trim();
+            const phone = document.getElementById('ship-phone').value.trim();
+            const address = document.getElementById('ship-address').value.trim();
+            const landmark = document.getElementById('ship-landmark').value.trim();
+            const city = document.getElementById('ship-city').value.trim();
+            const state = document.getElementById('ship-state').value.trim();
+            const pincode = document.getElementById('ship-pincode').value.trim();
 
-        function addNewAddress() {
-            const newAddr = document.getElementById('new-addr').value;
-            if (newAddr) {
-                savedAddresses.push(newAddr);
-                selectedAddressIdx = savedAddresses.length - 1;
-                document.getElementById('new-addr').value = '';
-                openCartModal();
-            } else {
-                alert("Please enter a valid address.");
-            }
-        }
-
-        function finalizeOrder() {
-            if (savedAddresses.length === 0) {
-                alert("Please add a delivery address to complete your order.");
+            if (!name || !phone || !address || !city || !state || !pincode) {
+                alert("Please fill in all mandatory address details.");
                 return;
             }
 
-            const promoCodeInput = document.getElementById('promo-input').value.trim().toUpperCase();
-            const currentUserEmail = localStorage.getItem('atelier_current_user_email') || "client@example.com";
-            let appliedPromo = "None";
+            shippingDetails = { name, phone, address, landmark, city, state, pincode };
 
-            if (promoCodeInput === "FIRST10") {
+            document.getElementById('checkout-step-address').style.display = 'none';
+            document.getElementById('checkout-step-payment').style.display = 'block';
+            updateOrderSummary();
+        }
+
+        function backToAddress() {
+            document.getElementById('checkout-step-payment').style.display = 'none';
+            document.getElementById('checkout-step-address').style.display = 'block';
+        }
+
+        function applyPromoCode() {
+            const code = document.getElementById('promo-input').value.trim().toUpperCase();
+            const currentUserEmail = localStorage.getItem('atelier_current_user_email') || "";
+
+            if (code === "FIRST10") {
                 let usedAccounts = JSON.parse(localStorage.getItem('atelier_used_first_order_accounts') || '[]');
                 if (usedAccounts.includes(currentUserEmail)) {
                     alert("You have already used your one-time 10% first-order discount.");
                     return;
                 }
-                usedAccounts.push(currentUserEmail);
-                localStorage.setItem('atelier_used_first_order_accounts', JSON.stringify(usedAccounts));
-                appliedPromo = "FIRST10";
+                currentDiscountPercent = 10;
+                alert("Success! 10% First Order Discount applied.");
+            } else {
+                alert("Invalid promo code.");
+                currentDiscountPercent = 0;
+            }
+            updateOrderSummary();
+        }
+
+        function calculateTotals() {
+            const subtotal = cart.reduce((acc, item) => acc + (Number(item.price) * item.quantity), 0);
+            const discountAmount = (subtotal * currentDiscountPercent) / 100;
+            const finalTotal = subtotal - discountAmount + currentShippingFee;
+            return { subtotal, discountAmount, finalTotal };
+        }
+
+        function updateOrderSummary() {
+            const { subtotal, discountAmount, finalTotal } = calculateTotals();
+            const summaryBox = document.getElementById('order-summary-box');
+            
+            summaryBox.innerHTML = `
+                <div><strong>Items Subtotal:</strong> ₹${subtotal.toLocaleString('en-IN')}</div>
+                ${discountAmount > 0 ? `<div style="color: #27ae60;"><strong>First Order Discount (10%):</strong> -₹${discountAmount.toLocaleString('en-IN')}</div>` : ''}
+                <div><strong>Delivery Fee:</strong> ₹${currentShippingFee}</div>
+                <div style="border-top: 1px solid #333; margin-top: 6px; padding-top: 6px; font-size: 13px; color: #d4af37;">
+                    <strong>Total Payable: ₹${finalTotal.toLocaleString('en-IN')}</strong>
+                </div>
+            `;
+        }
+
+        function finalizeOrder() {
+            const currentUserEmail = localStorage.getItem('atelier_current_user_email') || "client@example.com";
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            const { subtotal, discountAmount, finalTotal } = calculateTotals();
+
+            if (currentDiscountPercent > 0) {
+                let usedAccounts = JSON.parse(localStorage.getItem('atelier_used_first_order_accounts') || '[]');
+                if (!usedAccounts.includes(currentUserEmail)) {
+                    usedAccounts.push(currentUserEmail);
+                    localStorage.setItem('atelier_used_first_order_accounts', JSON.stringify(usedAccounts));
+                }
             }
 
             const orderData = {
+                id: Date.now().toString().slice(-4),
                 items: cart,
-                address: savedAddresses[selectedAddressIdx],
+                shipping: shippingDetails,
                 clientEmail: currentUserEmail,
-                promoUsed: appliedPromo,
+                paymentMethod: paymentMethod,
+                subtotal,
+                discount: discountAmount,
+                deliveryFee: currentShippingFee,
+                total: finalTotal,
+                status: 'Pending Admin Review',
                 date: new Date().toISOString()
             };
 
             let allOrders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
-            allOrders.push({ id: Date.now().toString().slice(-4), ...orderData, status: 'Processing' });
+            allOrders.push(orderData);
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            alert("Order placed successfully with discount applied!");
+            // Replace with your Web3Forms access key if you've created one
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    access_key: 'YOUR_WEB3FORMS_ACCESS_KEY_HERE', 
+                    subject: `New Luxury Order #${orderData.id} - Alivèra Atelier`,
+                    from_name: 'Alivèra Atelier Storefront',
+                    message: `New Order Placed!\n\nOrder ID: #${orderData.id}\nClient: ${shippingDetails.name} (${shippingDetails.phone})\nEmail: ${currentUserEmail}\n\nAddress:\n${shippingDetails.address}, ${shippingDetails.landmark ? shippingDetails.landmark + ', ' : ''}${shippingDetails.city}, ${shippingDetails.state} - ${shippingDetails.pincode}\n\nPayment Method: ${paymentMethod}\nTotal Payable: ₹${finalTotal}\n\nPlease check your Admin Panel to Confirm or Reject this order for Shiprocket.`
+                })
+            }).catch(err => console.error("Email notification error:", err));
+
+            alert(`Order placed successfully via ${paymentMethod}! Awaiting admin review before fulfillment setup on Shiprocket.`);
             cart = [];
             document.getElementById('cart-count').innerText = 0;
             closeModals();
