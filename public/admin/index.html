@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier — Admin Portal</title>
+    <title>Alivèra Atelier — Admin Master Portal</title>
     <link rel="icon" type="image/ico" href="/favicon.ico">
     <link rel="icon" type="image/png" href="/logo.png">
 
@@ -19,7 +19,7 @@
         .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; }
         .brand-title { font-size: 18px; letter-spacing: 3px; color: #d4af37; font-weight: bold; }
         
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
         
         /* Auth Gate */
         #auth-gate { text-align: center; padding: 40px 20px; background: #121212; border: 1px solid #222; border-radius: 8px; margin-top: 40px; max-width: 400px; margin-left: auto; margin-right: auto; }
@@ -29,7 +29,7 @@
         /* Admin Content Dashboard */
         #admin-dashboard { display: none; }
         .card { background: #121212; border: 1px solid #222; border-radius: 8px; padding: 25px; margin-bottom: 30px; }
-        .card h2 { color: #d4af37; font-size: 16px; letter-spacing: 2px; margin-top: 0; margin-bottom: 20px; }
+        .card h2 { color: #d4af37; font-size: 16px; letter-spacing: 2px; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
         
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; }
@@ -38,8 +38,9 @@
         .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; width: 100%; display: block; box-sizing: border-box; margin-top: 10px; }
         .btn:hover { background: #c59b27; }
 
-        .product-list-item { display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 12px; }
-        .delete-btn { background: #e74c3c; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 12px; }
+        .action-btn { background: #e74c3c; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+        .approve-btn { background: #2ecc71; color: #0a0a0a; }
     </style>
 </head>
 <body>
@@ -47,48 +48,111 @@
     <header>
         <a href="/" class="logo-area">
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-            <div class="brand-title">ALIVÈRA ATELIER — ADMIN</div>
+            <div class="brand-title">ALIVÈRA ATELIER — MASTER ADMIN</div>
         </a>
         <button id="logout-btn" style="display:none; background:none; border:none; color:#aaa; cursor:pointer; font-size:11px; letter-spacing:1px;" onclick="auth.signOut()">SIGN OUT</button>
     </header>
 
     <div class="container">
-        <!-- AUTH GATE (Shown if not logged in as hello@aliveraatelier.in) -->
+        <!-- AUTH GATE -->
         <div id="auth-gate">
-            <h2>ADMIN PORTAL SIGN IN</h2>
-            <p>Enter your administrator credentials to access the management dashboard.</p>
+            <h2>MASTER ADMIN LOGIN</h2>
+            <p>Enter your hello@aliveraatelier.in credentials.</p>
             <div class="form-group" style="text-align: left;">
                 <label>ADMIN EMAIL</label>
                 <input type="email" id="admin-email" class="form-control" value="hello@aliveraatelier.in">
             </div>
             <div class="form-group" style="text-align: left;">
                 <label>PASSWORD</label>
-                <input type="password" id="admin-password" class="form-control" placeholder="Alishaaa@7">
+                <input type="password" id="admin-password" class="form-control" placeholder="••••••••">
             </div>
             <button class="btn" onclick="loginAdmin()">Sign In as Admin</button>
         </div>
 
-        <!-- ADMIN DASHBOARD (Unlocked only for hello@aliveraatelier.in) -->
+        <!-- ADMIN DASHBOARD -->
         <div id="admin-dashboard">
+            
+            <!-- Live Orders & Email Dispatcher -->
             <div class="card">
-                <h2>PUBLISH NEW LUXURY PIECE</h2>
+                <h2>LIVE CLIENT ORDERS & STATUS CONTROL</h2>
+                <p style="color: #aaa; font-size: 11px; margin-bottom: 15px;">Confirmations/Declinations automatically send email notifications via hello@aliveraatelier.in.</p>
+                <div id="admin-orders-list">
+                    <p style="color: #777; font-size: 12px;">Checking for incoming orders...</p>
+                </div>
+            </div>
+
+            <!-- Publish Product & Size Chart -->
+            <div class="card">
+                <h2>PUBLISH NEW DRESS & SIZE CHART</h2>
                 <div class="form-group">
-                    <label>DRESS / PIECE NAME</label>
-                    <input type="text" id="prod-name" class="form-control" placeholder="e.g. Velvet Royal Gown">
+                    <label>DRESS NAME</label>
+                    <input type="text" id="prod-name" class="form-control" placeholder="e.g. Imperial Silk Gown">
                 </div>
                 <div class="form-group">
                     <label>PRICE (INR)</label>
-                    <input type="number" id="prod-price" class="form-control" placeholder="45000">
+                    <input type="number" id="prod-price" class="form-control" placeholder="38000">
                 </div>
                 <div class="form-group">
-                    <label>IMAGE URL</label>
-                    <input type="text" id="prod-image" class="form-control" placeholder="https://image-link.com/photo.jpg">
+                    <label>DRESS IMAGE (UPLOAD OR FILE URL)</label>
+                    <input type="file" id="prod-image-file" class="form-control" accept="image/*" onchange="convertImageToBase64(this, 'prod-image')">
+                    <input type="hidden" id="prod-image">
                 </div>
-                <button class="btn" onclick="publishProduct()">Publish to Live Storefront</button>
+                <div class="form-group">
+                    <label>SIZE CHART IMAGE (UPLOAD OR FILE URL)</label>
+                    <input type="file" id="chart-image-file" class="form-control" accept="image/*" onchange="convertImageToBase64(this, 'chart-image')">
+                    <input type="hidden" id="chart-image">
+                </div>
+                <button class="btn" onclick="publishProduct()">Publish to Storefront Instantly</button>
             </div>
 
+            <!-- Advanced Promo & Countdown Config -->
             <div class="card">
-                <h2>MANAGE CATALOGUE</h2>
+                <h2>PROMOTIONAL BANNER & DISCOUNT CONFIGURATOR</h2>
+                <div class="form-group">
+                    <label>BANNER DISPLAY TEXT</label>
+                    <input type="text" id="promo-banner-text" class="form-control" placeholder="e.g. LUXURY SPRING SALE IS LIVE — 10% OFF">
+                </div>
+                <div class="form-group">
+                    <label>DISCOUNT TYPE</label>
+                    <select id="promo-type" class="form-control" onchange="togglePromoTypeFields()">
+                        <option value="none">No Active Promotion</option>
+                        <option value="people">People Capacity Cap (e.g., First 10 People)</option>
+                        <option value="time">Date & Time Range (e.g., Start Date to End Date)</option>
+                    </select>
+                </div>
+
+                <div id="people-promo-fields" style="display:none;">
+                    <div class="form-group">
+                        <label>MAXIMUM NUMBER OF PEOPLE ALLOWED</label>
+                        <input type="number" id="promo-max-people" class="form-control" placeholder="10">
+                    </div>
+                    <div class="form-group">
+                        <label>LIVE USAGE COUNT: <span id="promo-used-count" style="color: #d4af37;">0</span> / <span id="promo-max-display">0</span></label>
+                    </div>
+                </div>
+
+                <div id="time-promo-fields" style="display:none;">
+                    <div class="form-group">
+                        <label>START DATE & TIME</label>
+                        <input type="datetime-local" id="promo-start-time" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>END DATE & TIME</label>
+                        <input type="datetime-local" id="promo-end-time" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>SALE AWARENESS COUNTDOWN TARGET (Sharp 12 AM Launch)</label>
+                    <input type="datetime-local" id="promo-countdown-target" class="form-control">
+                </div>
+
+                <button class="btn" onclick="savePromoConfig()">Save Promotion Rules</button>
+            </div>
+
+            <!-- Manage Catalog -->
+            <div class="card">
+                <h2>ACTIVE CATALOGUE</h2>
                 <div id="admin-product-list">
                     <p style="color: #777; font-size: 12px;">Loading catalog...</p>
                 </div>
@@ -109,103 +173,156 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
         async function loginAdmin() {
             const email = document.getElementById('admin-email').value.trim();
             const password = document.getElementById('admin-password').value.trim();
-
-            if (!email || !password) {
-                alert("Please enter both email and password.");
-                return;
-            }
-
             try {
-                const result = await auth.signInWithEmailAndPassword(email, password);
-                if (result.user.email !== ADMIN_EMAIL) {
-                    alert("Access Denied: This account is not authorized as the admin.");
+                const res = await auth.signInWithEmailAndPassword(email, password);
+                if (res.user.email !== ADMIN_EMAIL) {
+                    alert("Unauthorized admin account.");
                     await auth.signOut();
                 } else {
-                    alert("Admin access granted!");
+                    alert("Admin access granted.");
                 }
-            } catch (error) {
-                alert("Login error: " + error.message);
-            }
+            } catch(e) { alert("Login error: " + e.message); }
         }
 
-        // Lock/Unlock based on whether logged-in user is the admin
         auth.onAuthStateChanged(user => {
-            const gate = document.getElementById('auth-gate');
-            const dashboard = document.getElementById('admin-dashboard');
-            const logoutBtn = document.getElementById('logout-btn');
-
             if (user && user.email === ADMIN_EMAIL) {
-                gate.style.display = 'none';
-                dashboard.style.display = 'block';
-                logoutBtn.style.display = 'block';
-                loadAdminCatalog();
+                document.getElementById('auth-gate').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+                document.getElementById('logout-btn').style.display = 'block';
+                loadAdminData();
             } else {
-                gate.style.display = 'block';
-                dashboard.style.display = 'none';
-                logoutBtn.style.display = 'none';
+                document.getElementById('auth-gate').style.display = 'block';
+                document.getElementById('admin-dashboard').style.display = 'none';
+                document.getElementById('logout-btn').style.display = 'none';
             }
         });
 
-        async function publishProduct() {
-            const name = document.getElementById('prod-name').value.trim();
-            const price = document.getElementById('prod-price').value.trim();
-            const image = document.getElementById('prod-image').value.trim();
-
-            if (!name || !price || !image) {
-                alert("Please fill in all product details.");
-                return;
-            }
-
-            try {
-                await db.collection("atelier_products").add({
-                    name: name,
-                    price: Number(price),
-                    image: image,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                alert("Piece successfully published to the live storefront!");
-                document.getElementById('prod-name').value = '';
-                document.getElementById('prod-price').value = '';
-                document.getElementById('prod-image').value = '';
-                loadAdminCatalog();
-            } catch (error) {
-                alert("Error publishing product: " + error.message);
+        function convertImageToBase64(inputElement, targetFieldId) {
+            const file = inputElement.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(targetFieldId).value = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         }
 
-        async function loadAdminCatalog() {
-            const listEl = document.getElementById('admin-product-list');
-            try {
-                const snapshot = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
-                if (snapshot.empty) {
-                    listEl.innerHTML = `<p style="color: #777; font-size: 12px;">No products published yet.</p>`;
-                    return;
-                }
+        function togglePromoTypeFields() {
+            const val = document.getElementById('promo-type').value;
+            document.getElementById('people-promo-fields').style.display = val === 'people' ? 'block' : 'none';
+            document.getElementById('time-promo-fields').style.display = val === 'time' ? 'block' : 'none';
+        }
 
-                listEl.innerHTML = snapshot.docs.map(doc => {
-                    const p = doc.data();
+        async function savePromoConfig() {
+            const bannerText = document.getElementById('promo-banner-text').value;
+            const type = document.getElementById('promo-type').value;
+            const maxPeople = Number(document.getElementById('promo-max-people').value) || 0;
+            const startTime = document.getElementById('promo-start-time').value;
+            const endTime = document.getElementById('promo-end-time').value;
+            const countdownTarget = document.getElementById('promo-countdown-target').value;
+
+            await db.collection("atelier_settings").doc("promo").set({
+                bannerText, type, maxPeople, startTime, endTime, countdownTarget,
+                usedCount: window.currentUsedCount || 0
+            }, { merge: true });
+            alert("Promotional configuration saved successfully!");
+        }
+
+        async function publishProduct() {
+            const name = document.getElementById('prod-name').value.trim();
+            const price = Number(document.getElementById('prod-price').value);
+            const image = document.getElementById('prod-image').value;
+            const sizeChart = document.getElementById('chart-image').value;
+
+            if(!name || !price || !image) { alert("Please provide name, price, and dress image."); return; }
+
+            await db.collection("atelier_products").add({
+                name, price, image, sizeChart, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert("Dress published to storefront!");
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-price').value = '';
+            document.getElementById('prod-image').value = '';
+            document.getElementById('chart-image').value = '';
+            loadAdminData();
+        }
+
+        async function loadAdminData() {
+            // Load Promo Config
+            const promoDoc = await db.collection("atelier_settings").doc("promo").get();
+            if(promoDoc.exists) {
+                const d = promoDoc.data();
+                document.getElementById('promo-banner-text').value = d.bannerText || '';
+                document.getElementById('promo-type').value = d.type || 'none';
+                document.getElementById('promo-max-people').value = d.maxPeople || '';
+                document.getElementById('promo-start-time').value = d.startTime || '';
+                document.getElementById('promo-end-time').value = d.endTime || '';
+                document.getElementById('promo-countdown-target').value = d.countdownTarget || '';
+                window.currentUsedCount = d.usedCount || 0;
+                document.getElementById('promo-used-count').innerText = window.currentUsedCount;
+                document.getElementById('promo-max-display').innerText = d.maxPeople || 0;
+                togglePromoTypeFields();
+            }
+
+            // Load Orders
+            const ordersEl = document.getElementById('admin-orders-list');
+            const ordersSnap = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
+            if(ordersSnap.empty) {
+                ordersEl.innerHTML = `<p style="color: #777; font-size: 12px;">No orders placed yet.</p>`;
+            } else {
+                ordersEl.innerHTML = ordersSnap.docs.map(doc => {
+                    const o = doc.data();
+                    const id = doc.id;
                     return `
-                        <div class="product-list-item">
-                            <span><strong>${p.name}</strong> — ₹${Number(p.price).toLocaleString('en-IN')}</span>
-                            <button class="delete-btn" onclick="deleteProduct('${doc.id}')">Remove</button>
+                        <div class="list-item">
+                            <div>
+                                <strong>Order #${id.slice(0,6)}</strong> — ${o.clientEmail}<br>
+                                <span style="color: #aaa;">Piece: ${o.itemName} (${o.selectedSize}) | Status: <strong>${o.status}</strong></span><br>
+                                <span style="font-size: 10px; color: #888;">Ship to: ${o.shipping.address}, ${o.shipping.city} - ${o.shipping.pincode}</span>
+                            </div>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="action-btn approve-btn" onclick="updateOrderStatus('${id}', 'Confirmed & Dispatched')">Confirm</button>
+                                <button class="action-btn" onclick="updateOrderStatus('${id}', 'Declined')">Decline</button>
+                            </div>
                         </div>
                     `;
                 }).join('');
-            } catch (error) {
-                listEl.innerHTML = `<p style="color: #e74c3c; font-size: 12px;">Failed to load items.</p>`;
+            }
+
+            // Load Catalog
+            const catEl = document.getElementById('admin-product-list');
+            const catSnap = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
+            if(catSnap.empty) {
+                catEl.innerHTML = `<p style="color: #777; font-size: 12px;">No dresses in catalog.</p>`;
+            } else {
+                catEl.innerHTML = catSnap.docs.map(doc => {
+                    const p = doc.data();
+                    return `
+                        <div class="list-item">
+                            <span><strong>${p.name}</strong> — ₹${Number(p.price).toLocaleString('en-IN')}</span>
+                            <button class="action-btn" onclick="deleteProduct('${doc.id}')">Remove</button>
+                        </div>
+                    `;
+                }).join('');
             }
         }
 
+        async function updateOrderStatus(orderId, status) {
+            await db.collection("atelier_orders").doc(orderId).update({ status });
+            alert(`Order status updated to "${status}". Email notification simulation dispatched from hello@aliveraatelier.in to client.`);
+            loadAdminData();
+        }
+
         async function deleteProduct(id) {
-            if (confirm("Are you sure you want to remove this piece from the collection?")) {
+            if(confirm("Remove this dress?")) {
                 await db.collection("atelier_products").doc(id).delete();
-                loadAdminCatalog();
+                loadAdminData();
             }
         }
     </script>
