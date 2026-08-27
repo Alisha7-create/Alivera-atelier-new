@@ -9,6 +9,7 @@
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
     <style>
@@ -21,6 +22,9 @@
         .nav-actions { display: flex; gap: 20px; align-items: center; }
         .nav-link { color: #aaa; text-decoration: none; font-size: 12px; letter-spacing: 1px; cursor: pointer; background: none; border: none; font-family: inherit; }
         .nav-link:hover { color: #d4af37; }
+
+        /* Promo Banner Announcement Bar */
+        #promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 8px; font-size: 11px; font-weight: bold; letter-spacing: 2px; display: none; }
 
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
         .hero-section { text-align: center; margin-bottom: 50px; }
@@ -37,15 +41,11 @@
         .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; width: 100%; display: block; box-sizing: border-box; margin-top: 8px; }
         .btn:hover { background: #c59b27; }
 
-        /* Modal Overlay for "My Account" / Cart */
+        /* Modal Overlays */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; border-radius: 8px; padding: 30px; box-sizing: border-box; position: relative; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; border-radius: 8px; padding: 30px; box-sizing: border-box; position: relative; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 20px; cursor: pointer; background: none; border: none; }
         .close-modal:hover { color: #d4af37; }
-
-        .account-tabs { display: flex; gap: 10px; border-bottom: 1px solid #222; margin-bottom: 20px; padding-bottom: 10px; flex-wrap: wrap; }
-        .tab-btn { background: none; border: none; color: #aaa; font-size: 11px; letter-spacing: 1.5px; cursor: pointer; padding: 5px 10px; font-family: inherit; }
-        .tab-btn.active { color: #d4af37; border-bottom: 2px solid #d4af37; font-weight: bold; }
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; }
@@ -59,15 +59,17 @@
 </head>
 <body>
 
+    <!-- Dynamic Promotional Banner -->
+    <div id="promo-banner"></div>
+
     <header>
         <a href="/" class="logo-area">
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
         <div class="nav-actions">
-            <button class="nav-link" onclick="openAccountModal()">MY ACCOUNT</button>
+            <button class="nav-link" id="auth-nav-btn" onclick="openAuthModal()">SIGN IN / REGISTER</button>
             <button class="nav-link" onclick="openCartModal()">CART</button>
-            <a href="/admin/" class="nav-link" style="color: #d4af37;">ADMIN</a>
         </div>
     </header>
 
@@ -82,56 +84,25 @@
         </div>
     </div>
 
-    <!-- MY ACCOUNT MODAL (Contains Profile, Orders & Tracking, Wishlist, Addresses) -->
-    <div class="modal-overlay" id="account-modal">
+    <!-- AUTHENTICATION MODAL (Sign In & Create Account) -->
+    <div class="modal-overlay" id="auth-modal">
         <div class="modal-content">
-            <button class="close-modal" onclick="closeAccountModal()">&times;</button>
-            <h2 style="color: #d4af37; margin-top: 0; font-size: 18px; letter-spacing: 2px;">CLIENT ACCOUNT HUB</h2>
+            <button class="close-modal" onclick="closeAuthModal()">&times;</button>
+            <h2 id="auth-modal-title" style="color: #d4af37; margin-top: 0; font-size: 18px; letter-spacing: 2px;">CLIENT SIGN IN</h2>
             
-            <div class="account-tabs">
-                <button class="tab-btn active" onclick="switchAccountTab('profile')">PROFILE & SETTINGS</button>
-                <button class="tab-btn" onclick="switchAccountTab('orders')">ORDERS & TRACKING</button>
-                <button class="tab-btn" onclick="switchAccountTab('wishlist')">WISHLIST</button>
-                <button class="tab-btn" onclick="switchAccountTab('addresses')">SAVED ADDRESSES</button>
+            <div class="form-group">
+                <label>EMAIL ADDRESS</label>
+                <input type="email" id="auth-email" class="form-control" placeholder="name@domain.com">
+            </div>
+            <div class="form-group">
+                <label>PASSWORD</label>
+                <input type="password" id="auth-password" class="form-control" placeholder="••••••••">
             </div>
 
-            <!-- Profile Tab -->
-            <div id="tab-profile" class="account-tab-content">
-                <div class="form-group">
-                    <label>EMAIL ADDRESS (ID)</label>
-                    <input type="email" id="acc-email" class="form-control" value="client@aliveraatelier.in">
-                </div>
-                <div class="form-group">
-                    <label>PHONE NUMBER</label>
-                    <input type="text" id="acc-phone" class="form-control" placeholder="+91 98765 43210">
-                </div>
-                <button class="btn" onclick="saveAccountProfile()">Update Profile Information</button>
-            </div>
-
-            <!-- Orders & Tracking Tab (Supports 24h Cancellation) -->
-            <div id="tab-orders" class="account-tab-content" style="display:none;">
-                <div id="client-orders-list">
-                    <p style="color: #777; font-size: 12px;">Loading your orders and live tracking...</p>
-                </div>
-            </div>
-
-            <!-- Wishlist Tab -->
-            <div id="tab-wishlist" class="account-tab-content" style="display:none;">
-                <div id="client-wishlist-grid" style="display: grid; gap: 10px;">
-                    <p style="color: #777; font-size: 12px;">Your wishlist is currently empty.</p>
-                </div>
-            </div>
-
-            <!-- Multiple Addresses Tab -->
-            <div id="tab-addresses" class="account-tab-content" style="display:none;">
-                <div class="form-group">
-                    <label>ADD NEW SHIPPING ADDRESS</label>
-                    <input type="text" id="new-address-line" class="form-control" placeholder="Street Address, Apartment, Suite">
-                    <input type="text" id="new-city" class="form-control" placeholder="City" style="margin-top: 5px;">
-                    <input type="text" id="new-pincode" class="form-control" placeholder="Pincode" style="margin-top: 5px;">
-                </div>
-                <button class="btn" onclick="saveNewAddress()">Save Address</button>
-                <div id="saved-addresses-list" style="margin-top: 15px;"></div>
+            <button class="btn" id="auth-submit-btn" onclick="handleAuthAction()">Sign In</button>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="nav-link" id="auth-toggle-mode" onclick="toggleAuthMode()">New to Atelier? Create an Account</button>
             </div>
         </div>
     </div>
@@ -165,26 +136,88 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let isRegisterMode = false;
 
         // Modal Controls
-        function openAccountModal() { document.getElementById('account-modal').style.display = 'flex'; loadClientAccountData(); }
-        function closeAccountModal() { document.getElementById('account-modal').style.display = 'none'; }
+        function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
+        function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
         function openCartModal() { document.getElementById('cart-modal').style.display = 'flex'; }
         function closeCartModal() { document.getElementById('cart-modal').style.display = 'none'; }
 
-        function switchAccountTab(tabName) {
-            document.querySelectorAll('.account-tab-content').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabName).style.display = 'block';
-            event.target.classList.add('active');
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('auth-modal-title').innerText = isRegisterMode ? 'CREATE NEW ACCOUNT' : 'CLIENT SIGN IN';
+            document.getElementById('auth-submit-btn').innerText = isRegisterMode ? 'Register Account & Claim 10% Welcome Offer' : 'Sign In';
+            document.getElementById('auth-toggle-mode').innerText = isRegisterMode ? 'Already have an account? Sign In' : 'New to Atelier? Create an Account';
         }
 
-        // Load Products & Catalog
-        async function loadGlobalStorefrontCatalog() {
+        // Authentication Handler (Sign In / Register with 1st time 10% welcome tracking)
+        async function handleAuthAction() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
+
+            if (!email || !password) {
+                alert("Please enter both your email and password.");
+                return;
+            }
+
+            try {
+                if (isRegisterMode) {
+                    // Create Account
+                    const userCred = await auth.createUserWithEmailAndPassword(email, password);
+                    // Check usage or record new account for first-time 10% discount eligibility
+                    await db.collection("atelier_users").doc(userCred.user.uid).set({
+                        email: email,
+                        hasClaimedWelcomeDiscount: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    alert("Account created successfully! You are eligible for a 10% first-time customer discount on your first order.");
+                } else {
+                    // Sign In
+                    await auth.signInWithEmailAndPassword(email, password);
+                    alert("Signed in successfully!");
+                }
+                closeAuthModal();
+            } catch (error) {
+                alert("Authentication error: " + error.message);
+            }
+        }
+
+        // Monitor Auth State for Header Updates
+        auth.onAuthStateChanged(user => {
+            const navBtn = document.getElementById('auth-nav-btn');
+            if (user) {
+                navBtn.innerText = "MY ACCOUNT (" + user.email.split('@')[0] + ")";
+                navBtn.onclick = () => { 
+                    if(confirm("Sign out of your account?")) { auth.signOut(); } 
+                };
+            } else {
+                navBtn.innerText = "SIGN IN / REGISTER";
+                navBtn.onclick = openAuthModal;
+            }
+        });
+
+        // Load Products & Promotional Rules
+        async function loadStorefrontData() {
             const grid = document.getElementById('storefront-catalog-grid');
             if (!grid) return;
 
             try {
+                // Fetch dynamic promotional banner & discount configuration rules
+                const promoDoc = await db.collection("atelier_settings").doc("promo").get();
+                if (promoDoc.exists) {
+                    const pData = promoDoc.data();
+                    const bannerEl = document.getElementById('promo-banner');
+                    if(pData.bannerText) {
+                        bannerEl.innerText = pData.bannerText;
+                        bannerEl.style.display = 'block';
+                    } else {
+                        bannerEl.style.display = 'none';
+                    }
+                }
+
                 const snapshot = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
                 if (snapshot.empty) {
                     grid.innerHTML = `<p style="color: #777; text-align: center; width: 100%;">New luxury collections coming soon.</p>`;
@@ -193,128 +226,22 @@
 
                 grid.innerHTML = snapshot.docs.map(doc => {
                     const p = doc.data();
-                    const pId = doc.id;
                     return `
                         <div class="store-card">
                             <img src="${p.image}" alt="${p.name}" onerror="this.src='/logo.png'">
                             <div class="product-title">${p.name}</div>
                             <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                            <button class="btn" onclick="addToWishlist('${pId}', '${p.name.replace(/'/g, "\\'")}')">Add to Wishlist</button>
-                            <button class="btn" style="background: #222; color: #d4af37; border: 1px solid #d4af37;" onclick="alert('Added ${p.name.replace(/'/g, "\\'")} to Bag!')">Acquire Piece</button>
+                            <button class="btn" onclick="alert('Proceeding to checkout for ${p.name.replace(/'/g, "\\'")}')">Acquire Piece</button>
                         </div>
                     `;
                 }).join('');
             } catch (error) {
-                console.error("Error fetching catalog:", error);
-            }
-        }
-
-        // Account Hub Logic (Simulated local client session storage)
-        function loadClientAccountData() {
-            const savedPhone = localStorage.getItem('alivera_client_phone') || '';
-            const savedEmail = localStorage.getItem('alivera_client_email') || 'client@aliveraatelier.in';
-            document.getElementById('acc-phone').value = savedPhone;
-            document.getElementById('acc-email').value = savedEmail;
-            loadClientOrders();
-            loadSavedAddresses();
-        }
-
-        function saveAccountProfile() {
-            const phone = document.getElementById('acc-phone').value.trim();
-            const email = document.getElementById('acc-email').value.trim();
-            localStorage.setItem('alivera_client_phone', phone);
-            localStorage.setItem('alivera_client_email', email);
-            alert("Profile settings updated successfully!");
-        }
-
-        // Wishlist Handler
-        function addToWishlist(id, name) {
-            let wishlist = JSON.parse(localStorage.getItem('alivera_wishlist') || '[]');
-            if(!wishlist.some(item => item.id === id)) {
-                wishlist.push({id, name});
-                localStorage.setItem('alivera_wishlist', JSON.stringify(wishlist));
-                alert(name + " added to your Wishlist!");
-            } else {
-                alert("This piece is already in your Wishlist.");
-            }
-        }
-
-        // Address Management
-        function saveNewAddress() {
-            const line = document.getElementById('new-address-line').value.trim();
-            const city = document.getElementById('new-city').value.trim();
-            const pincode = document.getElementById('new-pincode').value.trim();
-            if(!line || !city) { alert("Please enter valid address details."); return; }
-
-            let addresses = JSON.parse(localStorage.getItem('alivera_addresses') || '[]');
-            addresses.push({line, city, pincode});
-            localStorage.setItem('alivera_addresses', JSON.stringify(addresses));
-            document.getElementById('new-address-line').value = '';
-            document.getElementById('new-city').value = '';
-            document.getElementById('new-pincode').value = '';
-            loadSavedAddresses();
-            alert("Address added to your account!");
-        }
-
-        function loadSavedAddresses() {
-            let addresses = JSON.parse(localStorage.getItem('alivera_addresses') || '[]');
-            const container = document.getElementById('saved-addresses-list');
-            if(addresses.length === 0) {
-                container.innerHTML = `<p style="color: #777; font-size: 11px;">No alternate addresses saved.</p>`;
-                return;
-            }
-            container.innerHTML = addresses.map((addr, index) => `
-                <div style="background: #0a0a0a; border: 1px solid #333; padding: 10px; border-radius: 4px; margin-top: 8px; font-size: 11px;">
-                    <div><strong>Address #${index + 1}:</strong> ${addr.line}, ${addr.city} - ${addr.pincode}</div>
-                </div>
-            `).join('');
-        }
-
-        // Orders & Live Tracking with 24-hour Cancellation check
-        async function loadClientOrders() {
-            const container = document.getElementById('client-orders-list');
-            const clientEmail = localStorage.getItem('alivera_client_email') || 'client@aliveraatelier.in';
-            try {
-                const snapshot = await db.collection("atelier_orders").where("clientEmail", "==", clientEmail).get();
-                if (snapshot.empty) {
-                    container.innerHTML = `<p style="color: #777; font-size: 12px;">No orders found for this email address.</p>`;
-                    return;
-                }
-                
-                const now = new Date().getTime();
-                container.innerHTML = snapshot.docs.map(doc => {
-                    const o = doc.data();
-                    const docId = doc.id;
-                    const orderTime = o.createdAt ? o.createdAt.toMillis() : now;
-                    const hoursPassed = (now - orderTime) / (1000 * 60 * 60);
-                    const canCancel = hoursPassed <= 24 && o.status !== 'Cancelled';
-
-                    return `
-                        <div style="background: #0a0a0a; border: 1px solid #333; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <span style="color: #d4af37; font-size: 12px; font-weight: bold;">Order #${docId.slice(0,6)}</span>
-                                <span style="font-size: 11px; color: #fff;">Status: <strong>${o.status || 'Processing / Tailoring'}</strong></span>
-                            </div>
-                            <div style="font-size: 11px; color: #aaa; margin-bottom: 8px;">Shipping to: ${o.shipping.address}, ${o.shipping.city}</div>
-                            ${canCancel ? `<button class="btn" style="background: #e74c3c; color: #fff; padding: 6px; font-size: 10px;" onclick="cancelOrder('${docId}')">Cancel Order (Within 24h Window)</button>` : `<span style="font-size: 10px; color: #666;">24-hour cancellation window closed.</span>`}
-                        </div>
-                    `;
-                }).join('');
-            } catch(e) {
-                container.innerHTML = `<p style="color: #777; font-size: 12px;">Could not fetch orders.</p>`;
-            }
-        }
-
-        async function cancelOrder(docId) {
-            if(confirm("Are you sure you wish to cancel this order?")) {
-                await db.collection("atelier_orders").doc(docId).update({ status: 'Cancelled' });
-                alert("Order successfully cancelled.");
-                loadClientOrders();
+                console.error("Error loading store data:", error);
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            loadGlobalStorefrontCatalog();
+            loadStorefrontData();
         });
     </script>
 </body>
