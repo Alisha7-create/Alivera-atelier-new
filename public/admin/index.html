@@ -53,9 +53,28 @@
 
     <div class="container">
         
+        <!-- Discount & Promo Manager Section -->
         <div class="admin-section" style="border-color: #27ae60;">
-            <h2 style="color: #27ae60;">PERMANENT FIRST-ACCOUNT WELCOME DISCOUNT</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">The promo code <strong style="color: #fff;">FIRST10</strong> (10% off) is permanently active for any new customer account on their first order only.</p>
+            <h2 style="color: #27ae60;">ACTIVE DISCOUNT & PROMO CONFIGURATOR</h2>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">Configure custom promo codes, discount percentages, and time-bound availability for your storefront clients.</p>
+            
+            <label>PROMO CODE KEY</label>
+            <input type="text" id="promo-code-input" class="custom-input" placeholder="e.g. FIRST10">
+
+            <label>DISCOUNT PERCENTAGE (%)</label>
+            <input type="number" id="promo-discount-percent" class="custom-input" placeholder="e.g. 10">
+
+            <label>APPLY TO AUDIENCE / RESTRICTION</label>
+            <select id="promo-restriction" class="custom-input">
+                <option value="first_order">First-Time Customer Account Only</option>
+                <option value="all_orders">All Accounts / General Promo</option>
+            </select>
+
+            <label>EXPIRATION DATE & TIME (Optional)</label>
+            <input type="datetime-local" id="promo-expiry" class="custom-input">
+
+            <button class="btn" style="background: #27ae60; color: #fff; width: 100%; margin-top: 15px;" onclick="savePromoConfig()">Save & Publish Promo Configuration</button>
+            <div id="active-promo-status" style="font-size: 11px; color: #27ae60; margin-top: 10px;"></div>
         </div>
 
         <div class="admin-section">
@@ -198,6 +217,51 @@
             }
         }
 
+        function savePromoConfig() {
+            const code = document.getElementById('promo-code-input').value.trim().toUpperCase();
+            const percent = document.getElementById('promo-discount-percent').value.trim();
+            const restriction = document.getElementById('promo-restriction').value;
+            const expiry = document.getElementById('promo-expiry').value;
+
+            if (!code || !percent) {
+                alert("Please enter both a promo code and discount percentage.");
+                return;
+            }
+
+            const promoData = {
+                code: code,
+                discountPercent: Number(percent),
+                restriction: restriction,
+                expiryDate: expiry ? new Date(expiry).getTime() : null
+            };
+
+            localStorage.setItem('atelier_active_promo', JSON.stringify(promoData));
+            window.dispatchEvent(new Event('storage'));
+            loadPromoConfig();
+            alert("Promo code configuration updated successfully for the storefront!");
+        }
+
+        function loadPromoConfig() {
+            const saved = localStorage.getItem('atelier_active_promo');
+            const statusEl = document.getElementById('active-promo-status');
+            if (saved) {
+                const promo = JSON.parse(saved);
+                document.getElementById('promo-code-input').value = promo.code || '';
+                document.getElementById('promo-discount-percent').value = promo.discountPercent || '';
+                document.getElementById('promo-restriction').value = promo.restriction || 'first_order';
+                if (promo.expiryDate) {
+                    const dateStr = new Date(promo.expiryDate).toISOString().slice(0, 16);
+                    document.getElementById('promo-expiry').value = dateStr;
+                }
+                statusEl.innerHTML = `✓ Currently Active: <strong>${promo.code}</strong> (${promo.discountPercent}% off)`;
+            } else {
+                // Default fallback
+                document.getElementById('promo-code-input').value = 'FIRST10';
+                document.getElementById('promo-discount-percent').value = '10';
+                statusEl.innerHTML = `✓ Default Active: <strong>FIRST10</strong> (10% off for first-time orders)`;
+            }
+        }
+
         function renderAdminCatalog() {
             const grid = document.getElementById('admin-catalog-grid');
             if (!grid) return;
@@ -291,6 +355,7 @@
 
         // Wait until the full DOM is loaded before rendering catalog and orders
         window.addEventListener('DOMContentLoaded', () => {
+            loadPromoConfig();
             renderAdminCatalog();
             renderAdminOrders();
         });
