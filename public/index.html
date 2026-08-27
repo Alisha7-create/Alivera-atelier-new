@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Luxury Couture</title>
+    <!-- EmailJS Browser SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Replace with your EmailJS public key
+       })();
+    </script>
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
         
@@ -405,9 +412,23 @@
                 }
             }
 
+            const orderId = Date.now().toString().slice(-4);
+            const orderDate = new Date().toLocaleString();
+
+            const itemsHtml = cart.map(i => `
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 10px; color: #fff;">
+                        <img src="${i.image || 'https://aliveraatelier.in/logo.png'}" width="50" height="50" style="object-fit:cover; border-radius:4px; vertical-align:middle; margin-right:10px;">
+                        <strong>${i.name}</strong> (${i.size})
+                        <br><span style="font-size:10px; color:#aaa;">${i.customNotes}</span>
+                    </td>
+                    <td style="padding: 10px; color: #d4af37; text-align:right;">${i.quantity} x ₹${Number(i.price).toLocaleString('en-IN')}</td>
+                </tr>
+            `).join('');
+
             let allOrders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
-            allOrders.push({
-                id: Date.now().toString().slice(-4),
+            const newOrder = {
+                id: orderId,
                 items: cart,
                 shipping: shippingDetails,
                 clientEmail: currentUserEmail,
@@ -420,10 +441,30 @@
                 trackingId: '',
                 carrier: '',
                 date: new Date().toISOString()
-            });
+            };
+            allOrders.push(newOrder);
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            alert("Order placed successfully!");
+            // EmailJS Dispatch
+            const emailParams = {
+                order_id: orderId,
+                order_date: orderDate,
+                customer_name: shippingDetails.name,
+                customer_email: currentUserEmail,
+                customer_phone: shippingDetails.phone,
+                shipping_address: `${shippingDetails.address}, ${shippingDetails.landmark ? shippingDetails.landmark + ', ' : ''}${shippingDetails.city}, ${shippingDetails.state} - ${shippingDetails.pincode}`,
+                payment_method: paymentMethod,
+                subtotal: `₹${subtotal.toLocaleString('en-IN')}`,
+                discount: discountAmount > 0 ? `-₹${discountAmount.toLocaleString('en-IN')}` : '₹0',
+                delivery_fee: `₹${currentShippingFee}`,
+                total_amount: `₹${finalTotal.toLocaleString('en-IN')}`,
+                items_list_html: itemsHtml
+            };
+
+            emailjs.send("YOUR_SERVICE_ID", "ADMIN_TEMPLATE_ID", { ...emailParams, to_email: "contact@aliveraatelier.in" }).catch(err => console.error(err));
+            emailjs.send("YOUR_SERVICE_ID", "CUSTOMER_TEMPLATE_ID", { ...emailParams, to_email: currentUserEmail }).catch(err => console.error(err));
+
+            alert("Order placed successfully! A confirmation email has been dispatched.");
             cart = [];
             document.getElementById('cart-count').innerText = 0;
             closeModals();
