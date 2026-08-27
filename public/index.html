@@ -9,7 +9,7 @@
     <style>
         body { font-family: 'Cinzel', serif, Arial, sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* Promotional Image Banner */
+        /* Promotional Banner */
         .promo-banner-container { width: 100%; background: #121212; position: relative; text-align: center; border-bottom: 1px solid #d4af37; overflow: hidden; }
         .promo-banner-img { width: 100%; max-height: 250px; object-fit: cover; display: block; filter: brightness(0.85); }
         .promo-banner-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(10, 10, 10, 0.85); padding: 10px; color: #d4af37; font-size: 12px; letter-spacing: 2px; font-weight: bold; border-top: 1px solid #d4af37; }
@@ -43,7 +43,7 @@
         .custom-input, select { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; box-sizing: border-box; margin-bottom: 8px; }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 450px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 30px; border-radius: 8px; width: 450px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #888; cursor: pointer; font-size: 18px; }
 
         /* Footer Styles */
@@ -58,9 +58,9 @@
 </head>
 <body>
 
-    <!-- Dynamic Promotional Image Banner -->
+    <!-- Promotional Banner -->
     <div class="promo-banner-container" id="promo-banner-wrap" style="display: none;">
-        <img id="promo-banner-img" src="" alt="Promo Banner" class="promo-banner-img" onerror="this.parentElement.style.display='none'">
+        <img id="promo-banner-img" src="/logo.png" alt="Promo Banner" class="promo-banner-img" onerror="this.parentElement.style.display='none'">
         <div class="promo-banner-overlay" id="promo-banner-text">✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨</div>
     </div>
 
@@ -96,7 +96,7 @@
         <div class="footer-copy">&copy; 2026 Alivèra Atelier. All rights reserved.</div>
     </footer>
 
-    <!-- Sign In & Register Modal -->
+    <!-- Universal Authentication Modal (Sign In & Sign Up) -->
     <div id="auth-signin-modal" class="modal">
         <div class="modal-content" style="text-align: left;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
@@ -120,30 +120,12 @@
             <button class="btn" id="auth-action-btn" style="width: 100%; margin-top: 15px;" onclick="handleAuthSubmit()">Sign In</button>
             
             <div style="text-align: center; margin-top: 12px;">
-                <button class="link-item" id="auth-toggle-btn" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: none; width: 100%;">Sign In</button>
                 <button class="link-item" id="auth-toggle-btn-sub" onclick="toggleAuthMode()" style="font-size: 11px; color: #d4af37; display: block; width: 100%; margin-top: 5px;">New to Alivèra Atelier? Create a new account</button>
             </div>
         </div>
     </div>
 
-    <!-- Full Image Zoom Modal -->
-    <div id="image-zoom-modal" class="modal">
-        <div class="modal-content" style="background: transparent; border: none; width: auto; max-width: 90vw;">
-            <span class="close-modal" style="color: #fff; font-size: 24px; background: rgba(0,0,0,0.5); padding: 5px 12px; border-radius: 50%;" onclick="closeModals()">&times;</span>
-            <img id="zoomed-img" src="" style="max-width: 100%; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 30px rgba(0,0,0,0.9);" alt="Zoomed Dress">
-        </div>
-    </div>
-
-    <!-- Size Chart Image Modal -->
-    <div id="size-chart-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h3 style="color: #d4af37; letter-spacing: 2px;">SIZE CHART</h3>
-            <div id="size-chart-container" style="margin-top: 15px;"></div>
-        </div>
-    </div>
-
-    <!-- Address Book & Checkout Modal -->
+    <!-- Cart & Checkout Modal -->
     <div id="checkout-modal" class="modal">
         <div class="modal-content" style="text-align: left;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
@@ -160,7 +142,7 @@
 
             <div style="border-top: 1px solid #222; padding-top: 15px; margin-bottom: 15px;">
                 <label style="color: #d4af37;">PROMO / OCCASION CODE</label>
-                <input type="text" id="promo-input" class="custom-input" placeholder="e.g. FIRST10 or extra code">
+                <input type="text" id="promo-input" class="custom-input" placeholder="e.g. FIRST10">
             </div>
 
             <button class="btn" style="width: 100%; background: #27ae60; color: #fff;" onclick="finalizeOrder()">Confirm & Place Order</button>
@@ -177,31 +159,11 @@
             return JSON.parse(localStorage.getItem('atelier_products') || '[]');
         }
 
-        async function loadPromoBanner() {
-            try {
-                const res = localStorage.getItem('atelier_extra_promo');
-                const bannerWrap = document.getElementById('promo-banner-wrap');
-                const bannerImg = document.getElementById('promo-banner-img');
-                const bannerText = document.getElementById('promo-banner-text');
-
-                if (res) {
-                    const promo = JSON.parse(res);
-                    if (promo.bannerImage) {
-                        bannerImg.src = promo.bannerImage;
-                        bannerWrap.style.display = 'block';
-                    } else {
-                        bannerWrap.style.display = 'block';
-                        bannerImg.src = '/logo.png';
-                    }
-                    bannerText.innerText = promo.bannerText || "✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨";
-                } else {
-                    bannerWrap.style.display = 'block';
-                    bannerImg.src = '/logo.png';
-                    bannerText.innerText = "✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨";
-                }
-            } catch (e) {
-                document.getElementById('promo-banner-wrap').style.display = 'none';
-            }
+        function loadPromoBanner() {
+            const bannerWrap = document.getElementById('promo-banner-wrap');
+            const promoRes = JSON.parse(localStorage.getItem('atelier_extra_promo') || '{}');
+            bannerWrap.style.display = 'block';
+            document.getElementById('promo-banner-text').innerText = promoRes.bannerText || "✨ USE CODE FIRST10 FOR 10% OFF YOUR FIRST ORDER ✨";
         }
 
         function renderCatalog() {
@@ -215,14 +177,12 @@
 
             grid.innerHTML = activeCatalog.map((p, idx) => `
                 <div class="product-card">
-                    <div class="product-img-container" onclick="openImageZoom('${p.image || '/logo.png'}')">
+                    <div class="product-img-container">
                         <img src="${p.image || '/logo.png'}" alt="${p.name}" class="product-img" onerror="this.src='/logo.png'">
                     </div>
                     <div class="product-title">${p.name}</div>
                     <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
                     
-                    ${p.sizeChart ? `<button class="link-item" style="color: #d4af37; font-size: 11px; margin-bottom: 10px;" onclick="viewSizeChart(${idx})">View Size Chart Image</button>` : ''}
-
                     <label>SELECT SIZE</label>
                     <select id="size-select-${idx}" onchange="toggleCustomSize(${idx})">
                         <option value="XS">XS (Extra Small)</option>
@@ -230,13 +190,12 @@
                         <option value="M" selected>M (Medium)</option>
                         <option value="L">L (Large)</option>
                         <option value="XL">XL (Extra Large)</option>
-                        <option value="XXL">XXL (Double XL)</option>
                         <option value="Custom">Custom Measurements</option>
                     </select>
 
                     <div id="custom-wrap-${idx}" style="display: none; margin-top: 5px;">
                         <label>CUSTOM MEASUREMENTS</label>
-                        <input type="text" class="custom-input" id="cust-spec-${idx}" placeholder="e.g. Bust: 34in, Waist: 28in, Length: 58in">
+                        <input type="text" class="custom-input" id="cust-spec-${idx}" placeholder="e.g. Bust: 34in, Waist: 28in">
                     </div>
 
                     <label>QUANTITY</label>
@@ -247,28 +206,30 @@
             `).join('');
         }
 
-        async function checkAuthStatus() {
-            try {
-                const res = await fetch('/api/auth/session');
-                const data = await res.json();
-                const nav = document.getElementById('header-nav');
-                if (data.isAuthenticated) {
-                    const userEmail = localStorage.getItem('atelier_user_email') || 'Client';
-                    const storedName = localStorage.getItem('atelier_user_name');
-                    const displayName = storedName ? storedName : (userEmail === 'hello@aliveraatelier.in' ? 'Alivèra Atelier' : userEmail.split('@')[0]);
-                    
-                    let adminButtonHtml = userEmail === 'hello@aliveraatelier.in' 
-                        ? `<a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>` 
-                        : '';
+        function checkAuthStatus() {
+            const currentEmail = localStorage.getItem('atelier_current_user_email');
+            const nav = document.getElementById('header-nav');
+            
+            if (currentEmail) {
+                const storedName = localStorage.getItem('atelier_current_user_name');
+                const displayName = storedName ? storedName : currentEmail.split('@')[0];
+                
+                let adminButtonHtml = currentEmail === 'hello@aliveraatelier.in' 
+                    ? `<a href="/admin/" class="btn" style="background: #27ae60; color: #fff;">Admin Dashboard</a>` 
+                    : '';
 
-                    nav.innerHTML = `
-                        <span style="color: #d4af37; font-size: 12px; letter-spacing: 1px;">Hello, ${displayName}</span>
-                        <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
-                        ${adminButtonHtml}
-                        <button class="link-item" onclick="logout()" style="color: #e74c3c;">Sign Out</button>
-                    `;
-                }
-            } catch (e) {}
+                nav.innerHTML = `
+                    <span style="color: #d4af37; font-size: 12px; letter-spacing: 1px;">Hello, ${displayName}</span>
+                    <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
+                    ${adminButtonHtml}
+                    <button class="link-item" onclick="logout()" style="color: #e74c3c;">Sign Out</button>
+                `;
+            } else {
+                nav.innerHTML = `
+                    <button class="link-item" onclick="openCartModal()">Cart (<span id="cart-count">0</span>)</button>
+                    <button class="btn" onclick="openAuthModal()">Sign In</button>
+                `;
+            }
         }
 
         function openAuthModal() {
@@ -287,7 +248,6 @@
             const subtext = document.getElementById('modal-subtext');
             const nameWrap = document.getElementById('register-name-wrap');
             const actionBtn = document.getElementById('auth-action-btn');
-            const toggleBtn = document.getElementById('auth-toggle-btn');
             const toggleBtnSub = document.getElementById('auth-toggle-btn-sub');
 
             if (isRegistering) {
@@ -295,87 +255,90 @@
                 subtext.innerText = 'Register your profile with your name, email, and password.';
                 nameWrap.style.display = 'block';
                 actionBtn.innerText = 'Create Account & Sign In';
-                toggleBtn.style.display = 'none';
-                toggleBtnSub.style.display = 'block';
                 toggleBtnSub.innerText = 'Already have an account? Sign In';
             } else {
                 heading.innerText = 'SIGN IN TO ATELIER';
                 subtext.innerText = 'Enter your email and password to access your account.';
                 nameWrap.style.display = 'none';
                 actionBtn.innerText = 'Sign In';
-                toggleBtn.style.display = 'none';
-                toggleBtnSub.style.display = 'block';
                 toggleBtnSub.innerText = 'New to Alivèra Atelier? Create a new account';
             }
         }
 
-        async function handleAuthSubmit() {
-            const email = document.getElementById('signin-email').value;
-            const password = document.getElementById('signin-password').value;
-            const name = document.getElementById('signup-name').value;
+        function handleAuthSubmit() {
+            const email = document.getElementById('signin-email').value.trim().toLowerCase();
+            const password = document.getElementById('signin-password').value.trim();
+            const name = document.getElementById('signup-name').value.trim();
 
             if (!email || !password) {
                 alert("Please fill in both email and password.");
                 return;
             }
-            if (isRegistering && !name) {
-                alert("Please enter your name to create an account.");
-                return;
-            }
 
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+            let usersList = JSON.parse(localStorage.getItem('atelier_registered_users') || '[]');
 
-            if (response.ok) {
-                localStorage.setItem('atelier_user_email', email.trim().toLowerCase());
-                if (isRegistering && name) {
-                    localStorage.setItem('atelier_user_name', name.trim());
+            if (isRegistering) {
+                if (!name) {
+                    alert("Please enter your name to create an account.");
+                    return;
                 }
+                const existing = usersList.find(u => u.email === email);
+                if (existing) {
+                    alert("An account with this email already exists. Please sign in instead.");
+                    return;
+                }
+
+                // Register new user
+                usersList.push({ name, email, password });
+                localStorage.setItem('atelier_registered_users', JSON.stringify(usersList));
+                
+                // Log them in
+                localStorage.setItem('atelier_current_user_email', email);
+                localStorage.setItem('atelier_current_user_name', name);
+                
                 closeModals();
                 checkAuthStatus();
-                alert(isRegistering ? `Account successfully created! Use code FIRST10 for 10% off your first order.` : `Welcome back!`);
+                alert("Account successfully created! Use code FIRST10 for 10% off your first order.");
             } else {
-                alert("Authentication failed. Please check your credentials.");
+                // Check if default admin account or registered user
+                if (email === 'hello@aliveraatelier.in' && password === 'adminpassword') {
+                    localStorage.setItem('atelier_current_user_email', email);
+                    localStorage.setItem('atelier_current_user_name', 'Alivèra Atelier');
+                    closeModals();
+                    checkAuthStatus();
+                    alert("Signed in successfully as Admin!");
+                    return;
+                }
+
+                const foundUser = usersList.find(u => u.email === email && u.password === password);
+                if (!foundUser) {
+                    alert("Invalid email or password. Please check your credentials or create a new account.");
+                    return;
+                }
+
+                localStorage.setItem('atelier_current_user_email', foundUser.email);
+                localStorage.setItem('atelier_current_user_name', foundUser.name);
+                
+                closeModals();
+                checkAuthStatus();
+                alert("Welcome back!");
             }
         }
 
-        async function logout() {
-            await fetch('/api/auth/logout', { method: 'POST' });
-            localStorage.removeItem('atelier_user_email');
-            localStorage.removeItem('atelier_user_name');
+        function logout() {
+            localStorage.removeItem('atelier_current_user_email');
+            localStorage.removeItem('atelier_current_user_name');
             window.location.reload();
-        }
-
-        function openImageZoom(url) {
-            document.getElementById('zoomed-img').src = url;
-            document.getElementById('image-zoom-modal').style.display = 'flex';
         }
 
         function toggleCustomSize(idx) {
             const val = document.getElementById(`size-select-${idx}`).value;
-            const wrap = document.getElementById(`custom-wrap-${idx}`);
-            wrap.style.display = (val === 'Custom') ? 'block' : 'none';
+            document.getElementById(`custom-wrap-${idx}`).style.display = (val === 'Custom') ? 'block' : 'none';
         }
 
-        function viewSizeChart(idx) {
-            let activeCatalog = getActiveCatalog();
-            const product = activeCatalog[idx];
-            const container = document.getElementById('size-chart-container');
-            if (product && product.sizeChart) {
-                container.innerHTML = `<img src="${product.sizeChart}" style="width:100%; max-height:70vh; object-fit:contain; border-radius:4px; border:1px solid #333;" alt="Size Chart">`;
-            } else {
-                container.innerHTML = `<p style="color:#aaa; font-size:12px;">No size chart image uploaded for this design.</p>`;
-            }
-            document.getElementById('size-chart-modal').style.display = 'flex';
-        }
-
-        async function addToCart(idx) {
-            const res = await fetch('/api/auth/session');
-            const data = await res.json();
-            if (!data.isAuthenticated) {
+        function addToCart(idx) {
+            const currentEmail = localStorage.getItem('atelier_current_user_email');
+            if (!currentEmail) {
                 openAuthModal();
                 return;
             }
@@ -423,57 +386,25 @@
             }
         }
 
-        async function finalizeOrder() {
+        function finalizeOrder() {
             if (savedAddresses.length === 0) {
                 alert("Please add a delivery address to complete your order.");
                 return;
             }
 
             const promoCodeInput = document.getElementById('promo-input').value.trim().toUpperCase();
-            const currentUserEmail = localStorage.getItem('atelier_user_email') || "client@example.com";
+            const currentUserEmail = localStorage.getItem('atelier_current_user_email') || "client@example.com";
             let appliedPromo = "None";
 
-            if (promoCodeInput) {
-                if (promoCodeInput === "FIRST10") {
-                    let usedAccounts = JSON.parse(localStorage.getItem('atelier_used_first_order_accounts') || '[]');
-                    if (usedAccounts.includes(currentUserEmail)) {
-                        alert("Sorry! You have already used your one-time 10% first order discount on this account.");
-                        return;
-                    }
-                    usedAccounts.push(currentUserEmail);
-                    localStorage.setItem('atelier_used_first_order_accounts', JSON.stringify(usedAccounts));
-                    appliedPromo = "FIRST10";
-                } else {
-                    let extraPromo = JSON.parse(localStorage.getItem('atelier_extra_promo') || '{}');
-                    if (extraPromo.code && promoCodeInput === extraPromo.code.toUpperCase()) {
-                        if (extraPromo.type === 'first-come') {
-                            if ((extraPromo.currentUses || 0) >= extraPromo.maxUses) {
-                                alert("Sorry! This campaign promo has reached its maximum person redemption limit.");
-                                return;
-                            }
-                            extraPromo.currentUses = (extraPromo.currentUses || 0) + 1;
-                            localStorage.setItem('atelier_extra_promo', JSON.stringify(extraPromo));
-                            appliedPromo = extraPromo.code;
-                        } else if (extraPromo.type === 'date-range') {
-                            const now = new Date().getTime();
-                            const start = extraPromo.startDate ? new Date(extraPromo.startDate).getTime() : 0;
-                            const end = extraPromo.endDate ? new Date(extraPromo.endDate).getTime() : 0;
-
-                            if (start && now < start) {
-                                alert("Sorry! This promo code campaign has not started yet.");
-                                return;
-                            }
-                            if (end && now > end) {
-                                alert("Sorry! This promo code campaign has already expired.");
-                                return;
-                            }
-                            appliedPromo = extraPromo.code;
-                        }
-                    } else {
-                        alert("Invalid promo code entered.");
-                        return;
-                    }
+            if (promoCodeInput === "FIRST10") {
+                let usedAccounts = JSON.parse(localStorage.getItem('atelier_used_first_order_accounts') || '[]');
+                if (usedAccounts.includes(currentUserEmail)) {
+                    alert("You have already used your one-time 10% first-order discount.");
+                    return;
                 }
+                usedAccounts.push(currentUserEmail);
+                localStorage.setItem('atelier_used_first_order_accounts', JSON.stringify(usedAccounts));
+                appliedPromo = "FIRST10";
             }
 
             const orderData = {
@@ -483,12 +414,6 @@
                 promoUsed: appliedPromo,
                 date: new Date().toISOString()
             };
-
-            await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
 
             let allOrders = JSON.parse(localStorage.getItem('atelier_orders') || '[]');
             allOrders.push({ id: Date.now().toString().slice(-4), ...orderData, status: 'Processing' });
@@ -503,13 +428,6 @@
         function closeModals() {
             document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
         }
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'atelier_products' || e.key === 'atelier_extra_promo' || e.key === 'atelier_last_publish') {
-                renderCatalog();
-                loadPromoBanner();
-            }
-        });
 
         loadPromoBanner();
         checkAuthStatus();
