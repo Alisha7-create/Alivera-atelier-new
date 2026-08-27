@@ -29,7 +29,6 @@
         .card-item { background: #181818; border: 1px solid #222; border-radius: 6px; padding: 15px; position: relative; }
         .card-item img { width: 100%; height: 200px; object-fit: contain; background: #141414; border-radius: 4px; margin-bottom: 10px; border: 1px solid #222; }
 
-        /* Footer Styles */
         footer { background: #121212; border-top: 1px solid #222; padding: 30px 20px; text-align: center; margin-top: auto; }
         .footer-brand { color: #d4af37; font-size: 14px; letter-spacing: 3px; font-weight: bold; margin-bottom: 8px; }
         .footer-tagline { color: #aaa; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 15px; font-style: italic; }
@@ -57,65 +56,7 @@
         <!-- Permanent First-Order Control Notice -->
         <div class="admin-section" style="border-color: #27ae60;">
             <h2 style="color: #27ae60;">PERMANENT FIRST-ACCOUNT WELCOME DISCOUNT</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">The promo code <strong style="color: #fff;">FIRST10</strong> (10% off) is permanently active for any new customer account on their first order only. Each account can use it strictly once.</p>
-        </div>
-
-        <!-- Upcoming Discount Teaser Banner Control -->
-        <div class="admin-section" style="border-color: #3498db;">
-            <h2 style="color: #3498db;">UPCOMING DISCOUNT TEASER & COUNTDOWN BANNER</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Display a teaser banner with a live countdown before your sale officially begins.</p>
-            
-            <label>TEASER BANNER IMAGE (FILE OR URL)</label>
-            <input type="file" id="teaser-image-file" class="custom-input" accept="image/*" onchange="handleTeaserUpload(event)">
-            <input type="text" id="admin-teaser-image" class="custom-input" placeholder="Or paste teaser image URL">
-
-            <label>TEASER HEADLINE NOTE</label>
-            <input type="text" id="admin-teaser-text" class="custom-input" placeholder="e.g. ⏳ GRAND FESTIVE SALE COMING SOON: GET READY FOR 20% OFF">
-
-            <label>SALE START DATE & TIME (COUNTDOWN TARGET)</label>
-            <input type="datetime-local" id="admin-sale-start-target" class="custom-input">
-
-            <button class="btn" style="width: 100%; margin-top: 15px; background: #3498db; color: #fff;" onclick="saveTeaserSettings()">Save Teaser & Countdown Settings</button>
-        </div>
-
-        <!-- Additional Promo & Occasion Campaign Control -->
-        <div class="admin-section">
-            <h2>ADDITIONAL CAMPAIGN & BANNER CONTROL</h2>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Configure an extra promotional campaign banner.</p>
-            
-            <label>BANNER IMAGE (FILE UPLOAD OR URL)</label>
-            <input type="file" id="banner-image-file" class="custom-input" accept="image/*" onchange="handleBannerUpload(event)">
-            <input type="text" id="admin-banner-image" class="custom-input" placeholder="Or paste banner image URL here">
-
-            <label>BANNER ALT / TEXT OVERLAY NOTE</label>
-            <input type="text" id="admin-banner-text" class="custom-input" placeholder="e.g. ✨ FESTIVE SALE: USE CODE FESTIVE20 FOR 20% OFF ✨">
-
-            <label>EXTRA PROMO CODE NAME</label>
-            <input type="text" id="admin-promo-code" class="custom-input" placeholder="e.g. FESTIVE20">
-
-            <label>CAMPAIGN TYPE</label>
-            <select id="admin-promo-type" class="custom-input" onchange="togglePromoTypeFields()">
-                <option value="first-come">First-Come, First-Served (Limited People Count)</option>
-                <option value="date-range">Date-to-Date Range (Specific Start & End Date)</option>
-            </select>
-
-            <div id="field-first-come-wrap">
-                <label>MAXIMUM ALLOWED CUSTOMERS (PEOPLE)</label>
-                <input type="number" id="admin-max-uses" class="custom-input" min="1" value="10">
-                <div style="margin: 10px 0; font-size: 12px; color: #fff;">
-                    <strong>Current Redemptions:</strong> <span id="admin-usage-count" style="color: #d4af37; font-weight: bold;">0 redeemed</span>
-                </div>
-            </div>
-
-            <div id="field-date-range-wrap" style="display: none;">
-                <label>START DATE & TIME</label>
-                <input type="datetime-local" id="admin-start-date" class="custom-input">
-
-                <label>END DATE & TIME</label>
-                <input type="datetime-local" id="admin-end-date" class="custom-input">
-            </div>
-
-            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="savePromoSettings()">Save Campaign & Banner Settings</button>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">The promo code <strong style="color: #fff;">FIRST10</strong> (10% off) is permanently active for any new customer account on their first order only.</p>
         </div>
 
         <!-- Add New Product Section -->
@@ -179,28 +120,6 @@
             localStorage.setItem('atelier_last_publish', Date.now().toString());
         }
 
-        function handleBannerUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('admin-banner-image').value = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function handleTeaserUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('admin-teaser-image').value = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
         function handleImageUpload(event, type) {
             const file = event.target.files[0];
             if (file) {
@@ -214,80 +133,6 @@
                 };
                 reader.readAsDataURL(file);
             }
-        }
-
-        function togglePromoTypeFields() {
-            const type = document.getElementById('admin-promo-type').value;
-            document.getElementById('field-first-come-wrap').style.display = type === 'first-come' ? 'block' : 'none';
-            document.getElementById('field-date-range-wrap').style.display = type === 'date-range' ? 'block' : 'none';
-        }
-
-        function loadAdminTeaserSettings() {
-            const settings = JSON.parse(localStorage.getItem('atelier_teaser_settings') || '{"image": "", "text": "⏳ UPCOMING DISCOUNT SALE COMING SOON", "targetDate": ""}');
-            document.getElementById('admin-teaser-image').value = settings.image || "";
-            document.getElementById('admin-teaser-text').value = settings.text || "";
-            document.getElementById('admin-sale-start-target').value = settings.targetDate || "";
-        }
-
-        function saveTeaserSettings() {
-            const image = document.getElementById('admin-teaser-image').value;
-            const text = document.getElementById('admin-teaser-text').value;
-            const targetDate = document.getElementById('admin-sale-start-target').value;
-
-            const settings = { image, text, targetDate };
-            
-            try {
-                localStorage.setItem('atelier_teaser_settings', JSON.stringify(settings));
-            } catch (e) {
-                alert("Storage limit exceeded. Image file is too large.");
-                return;
-            }
-
-            window.dispatchEvent(new Event('storage'));
-            alert("Teaser and countdown banner updated successfully!");
-        }
-
-        function loadAdminPromoSettings() {
-            const settings = JSON.parse(localStorage.getItem('atelier_extra_promo') || '{"bannerImage": "", "bannerText": "✨ WELCOME TO ALIVÈRA ATELIER ✨", "code": "", "type": "first-come", "maxUses": 10, "currentUses": 0, "startDate": "", "endDate": ""}');
-            
-            document.getElementById('admin-banner-image').value = settings.bannerImage || "";
-            document.getElementById('admin-banner-text').value = settings.bannerText || "";
-            document.getElementById('admin-promo-code').value = settings.code || "";
-            document.getElementById('admin-promo-type').value = settings.type || "first-come";
-            document.getElementById('admin-max-uses').value = settings.maxUses || 10;
-            document.getElementById('admin-usage-count').innerText = `${settings.currentUses || 0} redeemed`;
-            document.getElementById('admin-start-date').value = settings.startDate || "";
-            document.getElementById('admin-end-date').value = settings.endDate || "";
-
-            togglePromoTypeFields();
-        }
-
-        function savePromoSettings() {
-            const bannerImage = document.getElementById('admin-banner-image').value;
-            const bannerText = document.getElementById('admin-banner-text').value;
-            const code = document.getElementById('admin-promo-code').value.trim();
-            const type = document.getElementById('admin-promo-type').value;
-            const maxUses = parseInt(document.getElementById('admin-max-uses').value) || 10;
-            const startDate = document.getElementById('admin-start-date').value;
-            const endDate = document.getElementById('admin-end-date').value;
-            
-            let existing = JSON.parse(localStorage.getItem('atelier_extra_promo') || '{}');
-            const currentUses = existing.code === code ? (existing.currentUses || 0) : 0;
-
-            const updated = { bannerImage, bannerText, code, type, maxUses, currentUses, startDate, endDate };
-            
-            try {
-                localStorage.setItem('atelier_extra_promo', JSON.stringify(updated));
-            } catch (e) {
-                alert("Storage limit exceeded. The banner image file is too large. Please use a smaller image or paste an image URL.");
-                return;
-            }
-            
-            window.dispatchEvent(new Event('storage'));
-            localStorage.setItem('atelier_last_publish', Date.now().toString());
-            
-            alert("Extra promotional banner & campaign settings saved and updated instantly on storefront!");
-            loadAdminPromoSettings();
         }
 
         function addNewProduct() {
@@ -315,7 +160,7 @@
             try {
                 saveProducts(products);
             } catch (e) {
-                alert("Storage limit exceeded. The image file is too large for browser storage. Please compress the image or use a direct image URL.");
+                alert("Storage limit exceeded. The image file is too large for browser storage.");
                 return;
             }
 
@@ -353,7 +198,7 @@
                     <img src="${p.image}" alt="${p.name}" onerror="this.src='/logo.png'">
                     <div style="font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 5px;">${p.name}</div>
                     <div style="color: #d4af37; font-size: 14px; margin-bottom: 10px;">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                    ${p.sizeChart ? '<div style="font-size:10px; color:#27ae60; margin-bottom:10px;">✓ Size Chart Attached</div>' : ''}
+                    ${p.sizeChart ? '<div style="font-size:10px; color:#27ae60; margin-bottom:10px;">✓ Size Chart Attached</div>' : '<div style="font-size:10px; color:#aaa; margin-bottom:10px;">No Size Chart Attached</div>'}
                     <button class="btn" style="background: #e74c3c; color: #fff; width: 100%;" onclick="deleteProduct(${idx})">Remove Design</button>
                 </div>
             `).join('');
@@ -375,9 +220,7 @@
                         <span style="color: #aaa; font-size: 11px;">${new Date(o.date).toLocaleString()}</span>
                     </div>
                     <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Client:</strong> ${o.clientEmail}</div>
-                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Delivery Address:</strong> ${o.address}</div>
-                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Promo Applied:</strong> ${o.promoUsed || 'None'}</div>
-                    <div style="font-size: 12px; color: #aaa; margin-top: 8px;"><strong>Items:</strong></div>
+                    <div style="font-size: 12px; color: #fff; margin-bottom: 5px;"><strong>Delivery Address:</strong> ${o.shipping.address}, ${o.shipping.city}</div>
                     <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 11px; color: #ccc;">
                         ${o.items.map(i => `<li>${i.quantity}x ${i.name} (${i.size}) — ${i.customNotes}</li>`).join('')}
                     </ul>
@@ -386,12 +229,9 @@
         }
 
         async function logout() {
-            await fetch('/api/auth/logout', { method: 'POST' });
             window.location.href = '/';
         }
 
-        loadAdminTeaserSettings();
-        loadAdminPromoSettings();
         renderAdminCatalog();
         renderAdminOrders();
     </script>
