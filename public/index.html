@@ -211,8 +211,12 @@
                     <div class="product-title">${p.name}</div>
                     <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
                     
-                    <label>SELECT SIZE</label>
-                    <select id="size-select-${idx}" onchange="toggleCustomSize(${idx})">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                        <label style="margin: 0;">SELECT SIZE</label>
+                        <button type="button" class="link-item" onclick="openSizeChartModal()" style="font-size: 10px; color: #d4af37; text-decoration: underline;">View Size Chart</button>
+                    </div>
+
+                    <select id="size-select-${idx}" onchange="toggleCustomSize(${idx})" style="margin-top: 5px;">
                         <option value="XS">XS (Extra Small)</option>
                         <option value="S">S (Small)</option>
                         <option value="M" selected>M (Medium)</option>
@@ -232,6 +236,36 @@
                     <button class="btn" style="width: 100%; margin-top: 15px;" onclick="addToCart(${idx})">Add to Cart</button>
                 </div>
             `).join('');
+        }
+
+        function openSizeChartModal() {
+            let chartModal = document.getElementById('size-chart-modal');
+            if (!chartModal) {
+                const modalDiv = document.createElement('div');
+                modalDiv.id = 'size-chart-modal';
+                modalDiv.className = 'modal';
+                modalDiv.innerHTML = `
+                    <div class="modal-content" style="max-width: 400px; text-align: center;">
+                        <span class="close-modal" onclick="document.getElementById('size-chart-modal').style.display='none'">&times;</span>
+                        <h3 style="color: #d4af37; margin-bottom: 10px; letter-spacing: 1px;">ATELIER SIZE GUIDE</h3>
+                        <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">All measurements are in inches.</p>
+                        <table style="width: 100%; font-size: 11px; text-align: left; border-collapse: collapse; color: #ddd; margin-bottom: 15px;">
+                            <tr style="border-bottom: 1px solid #333; color: #d4af37;">
+                                <th style="padding: 6px;">Size</th><th style="padding: 6px;">Bust</th><th style="padding: 6px;">Waist</th><th style="padding: 6px;">Hips</th>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #222;"><td style="padding: 6px;">XS</td><td style="padding: 6px;">32"</td><td style="padding: 6px;">26"</td><td style="padding: 6px;">35"</td></tr>
+                            <tr style="border-bottom: 1px solid #222;"><td style="padding: 6px;">S</td><td style="padding: 6px;">34"</td><td style="padding: 6px;">28"</td><td style="padding: 6px;">37"</td></tr>
+                            <tr style="border-bottom: 1px solid #222;"><td style="padding: 6px;">M</td><td style="padding: 6px;">36"</td><td style="padding: 6px;">30"</td><td style="padding: 6px;">39"</td></tr>
+                            <tr style="border-bottom: 1px solid #222;"><td style="padding: 6px;">L</td><td style="padding: 6px;">38"</td><td style="padding: 6px;">32"</td><td style="padding: 6px;">41"</td></tr>
+                            <tr><td style="padding: 6px;">XL</td><td style="padding: 6px;">40"</td><td style="padding: 6px;">34"</td><td style="padding: 6px;">43"</td></tr>
+                        </table>
+                        <p style="font-size: 10px; color: #888; font-style: italic;">Need a bespoke fit? Select "Custom Measurements" from the product card dropdown.</p>
+                    </div>
+                `;
+                document.body.appendChild(modalDiv);
+                chartModal = modalDiv;
+            }
+            chartModal.style.display = 'flex';
         }
 
         function checkAuthStatus() {
@@ -493,7 +527,6 @@
             allOrders.push(orderData);
             localStorage.setItem('atelier_orders', JSON.stringify(allOrders));
 
-            // Replace with your Web3Forms access key if you've created one
             fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
