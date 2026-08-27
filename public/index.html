@@ -23,8 +23,10 @@
         .nav-link { color: #aaa; text-decoration: none; font-size: 12px; letter-spacing: 1px; cursor: pointer; background: none; border: none; font-family: inherit; }
         .nav-link:hover { color: #d4af37; }
 
-        /* Announcement Bar */
+        /* Announcement & Banner Section */
         #top-announcement-bar { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 11px; font-weight: bold; letter-spacing: 2px; display: none; }
+        #promo-banner-image-container { width: 100%; max-height: 250px; overflow: hidden; background: #000; text-align: center; display: none; }
+        #promo-banner-image-container img { width: 100%; max-height: 250px; object-fit: cover; }
 
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
         .hero-section { text-align: center; margin-bottom: 50px; }
@@ -54,6 +56,10 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; }
         .form-control { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; box-sizing: border-box; }
+        
+        /* Password wrapper for show/hide toggle */
+        .password-wrapper { position: relative; }
+        .password-toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #aaa; cursor: pointer; font-size: 11px; letter-spacing: 1px; }
 
         /* Account Hub Tabs */
         .account-tabs { display: flex; gap: 10px; border-bottom: 1px solid #222; margin-bottom: 20px; flex-wrap: wrap; }
@@ -71,6 +77,9 @@
 <body>
 
     <div id="top-announcement-bar"></div>
+    <div id="promo-banner-image-container">
+        <img id="promo-banner-img-tag" src="" alt="Promotional Banner">
+    </div>
 
     <header>
         <a href="/" class="logo-area">
@@ -111,6 +120,7 @@
             <!-- Profile Panel -->
             <div id="panel-profile" class="account-panel active">
                 <p style="color: #aaa; font-size: 12px; margin-bottom: 15px;">Signed in as: <strong id="hub-user-email" style="color: #d4af37;"></strong></p>
+                <p id="welcome-offer-status" style="color: #2ecc71; font-size: 11px; margin-bottom: 15px; display: none;">🎁 10% First-Time Account Order Discount Active!</p>
                 <button class="btn" onclick="auth.signOut(); closeAccountHubModal();">Sign Out of Account</button>
             </div>
 
@@ -146,7 +156,7 @@
         </div>
     </div>
 
-    <!-- CHECKOUT MODAL (Pincode Check First) -->
+    <!-- CHECKOUT MODAL (Pincode Check First + 10% Welcome Discount Application) -->
     <div class="modal-overlay" id="checkout-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeCheckoutModal()">&times;</button>
@@ -161,7 +171,8 @@
             </div>
 
             <div id="full-address-section" style="display:none; margin-top: 20px; border-top: 1px solid #222; padding-top: 15px;">
-                <p style="color: #2ecc71; font-size: 11px; margin-bottom: 15px;">✓ Delivery available to your pincode!</p>
+                <p style="color: #2ecc71; font-size: 11px; margin-bottom: 10px;">✓ Delivery available to your pincode!</p>
+                <div id="checkout-price-display" style="color: #d4af37; font-size: 13px; margin-bottom: 15px; font-weight: bold;"></div>
                 <div class="form-group">
                     <label>FULL STREET ADDRESS</label>
                     <input type="text" id="ship-address" class="form-control" placeholder="House/Flat No., Building, Street">
@@ -189,7 +200,7 @@
         </div>
     </div>
 
-    <!-- AUTHENTICATION MODAL -->
+    <!-- AUTHENTICATION MODAL (With View/Hide Password Toggles) -->
     <div class="modal-overlay" id="auth-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeAuthModal()">&times;</button>
@@ -200,11 +211,14 @@
             </div>
             <div class="form-group">
                 <label>PASSWORD</label>
-                <input type="password" id="auth-password" class="form-control" placeholder="••••••••">
+                <div class="password-wrapper">
+                    <input type="password" id="auth-password" class="form-control" placeholder="••••••••" style="padding-right: 65px;">
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('auth-password', this)">VIEW</button>
+                </div>
             </div>
             <button class="btn" id="auth-submit-btn" onclick="handleAuthAction()">Sign In</button>
             <div style="text-align: center; margin-top: 15px;">
-                <button class="nav-link" id="auth-toggle-mode" onclick="toggleAuthMode()">New to Atelier? Create an Account</button>
+                <button class="nav-link" id="auth-toggle-mode" onclick="toggleAuthMode()">New to Atelier? Create an Account (Claim 10% Welcome Offer)</button>
             </div>
         </div>
     </div>
@@ -252,8 +266,24 @@
         function closeAccountHubModal() { document.getElementById('account-hub-modal').style.display = 'none'; }
         function openCartModal() { renderCartItems(); document.getElementById('cart-modal').style.display = 'flex'; }
         function closeCartModal() { document.getElementById('cart-modal').style.display = 'none'; }
-        function openCheckoutModal(item) { activeCheckoutItem = item; document.getElementById('checkout-modal').style.display = 'flex'; }
+        
+        function openCheckoutModal(item) { 
+            activeCheckoutItem = item; 
+            document.getElementById('checkout-modal').style.display = 'flex'; 
+            updateCheckoutPriceDisplay();
+        }
         function closeCheckoutModal() { document.getElementById('checkout-modal').style.display = 'none'; }
+
+        function togglePasswordVisibility(fieldId, btnEl) {
+            const field = document.getElementById(fieldId);
+            if (field.type === 'password') {
+                field.type = 'text';
+                btnEl.innerText = 'HIDE';
+            } else {
+                field.type = 'password';
+                btnEl.innerText = 'VIEW';
+            }
+        }
 
         function switchAccountTab(tabName, btnEl) {
             document.querySelectorAll('.account-panel').forEach(p => p.classList.remove('active'));
@@ -273,8 +303,12 @@
             const password = document.getElementById('auth-password').value.trim();
             try {
                 if(isRegisterMode) {
-                    await auth.createUserWithEmailAndPassword(email, password);
-                    alert("Account registered successfully!");
+                    const res = await auth.createUserWithEmailAndPassword(email, password);
+                    // Mark user as eligible for 10% first-time welcome discount
+                    await db.collection("atelier_users").doc(res.user.uid).set({
+                        email, hasUsedWelcomeDiscount: false, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                    alert("Account registered successfully! Your 10% welcome discount is active for your first order.");
                 } else {
                     await auth.signInWithEmailAndPassword(email, password);
                     alert("Signed in successfully!");
@@ -283,15 +317,13 @@
             } catch(e) { alert("Auth error: " + e.message); }
         }
 
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async user => {
             const btn = document.getElementById('auth-nav-btn');
             const adminLink = document.getElementById('admin-header-link');
 
             if(user) {
                 btn.innerText = "MY ACCOUNT";
                 btn.onclick = openAccountHubModal;
-                
-                // Strict Admin check for header link
                 if(user.email === "hello@aliveraatelier.in") {
                     adminLink.style.display = 'inline';
                 } else {
@@ -307,10 +339,19 @@
         async function loadStorefront() {
             const grid = document.getElementById('storefront-catalog-grid');
             
+            // Load Promotional Banner Image & Text from Settings
             const promoDoc = await db.collection("atelier_settings").doc("promo").get();
             if(promoDoc.exists) {
                 const p = promoDoc.data();
                 const bar = document.getElementById('top-announcement-bar');
+                const bannerImgContainer = document.getElementById('promo-banner-image-container');
+                const bannerImgTag = document.getElementById('promo-banner-img-tag');
+
+                if(p.bannerImage) {
+                    bannerImgTag.src = p.bannerImage;
+                    bannerImgContainer.style.display = 'block';
+                }
+
                 if (p.countdownTarget && new Date().getTime() < new Date(p.countdownTarget).getTime()) {
                     startCountdownTimer(p.countdownTarget, p.bannerText);
                 } else if(p.bannerText) {
@@ -364,7 +405,6 @@
             }, 1000);
         }
 
-        // Wishlist Actions
         function toggleWishlist(item) {
             const idx = wishlist.findIndex(w => w.id === item.id);
             if(idx > -1) {
@@ -378,21 +418,21 @@
             loadStorefront();
         }
 
-        // Load Client Account Hub Data
         async function loadClientAccountData() {
             const user = auth.currentUser;
             if(!user) return;
             document.getElementById('hub-user-email').innerText = user.email;
 
-            // Load saved contact info from Firestore user profile
             const userDoc = await db.collection("atelier_users").doc(user.uid).get();
             if(userDoc.exists) {
                 const d = userDoc.data();
                 document.getElementById('user-phone-input').value = d.phone || '';
                 document.getElementById('user-address-input').value = d.address || '';
+                if(!d.hasUsedWelcomeDiscount) {
+                    document.getElementById('welcome-offer-status').style.display = 'block';
+                }
             }
 
-            // Load Orders & Live Tracking
             const ordersContainer = document.getElementById('hub-orders-container');
             const ordersSnap = await db.collection("atelier_orders").where("clientEmail", "==", user.email).get();
             if(ordersSnap.empty) {
@@ -402,7 +442,7 @@
                     const o = doc.data();
                     return `
                         <div style="background: #0a0a0a; border: 1px solid #222; padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 12px;">
-                            <strong>Piece: ${o.itemName} (${o.selectedSize})</strong><br>
+                            <strong>Piece: ${o.itemName} (${o.selectedSize})</strong> — ₹${Number(o.finalPrice || o.itemPrice).toLocaleString('en-IN')}<br>
                             <span style="color: #d4af37;">Status / Tracking: ${o.status}</span><br>
                             <span style="color: #aaa; font-size: 10px;">Ship to: ${o.shipping.address}, ${o.shipping.city} - ${o.shipping.pincode}</span>
                         </div>
@@ -410,7 +450,6 @@
                 }).join('');
             }
 
-            // Load Wishlist UI
             const wishContainer = document.getElementById('hub-wishlist-container');
             if(wishlist.length === 0) {
                 wishContainer.innerHTML = `<p style="color: #777; font-size: 12px;">Your wishlist is empty.</p>`;
@@ -429,12 +468,10 @@
             if(!user) return;
             const phone = document.getElementById('user-phone-input').value.trim();
             const address = document.getElementById('user-address-input').value.trim();
-
             await db.collection("atelier_users").doc(user.uid).set({ phone, address }, { merge: true });
             alert("Contact & Address details saved successfully!");
         }
 
-        // Cart Actions
         function addToCart(item) {
             cart.push(item);
             localStorage.setItem('alivera_cart', JSON.stringify(cart));
@@ -474,6 +511,24 @@
             openCheckoutModal(cart[0]);
         }
 
+        async function updateCheckoutPriceDisplay() {
+            const displayEl = document.getElementById('checkout-price-display');
+            if(!activeCheckoutItem) return;
+
+            let price = activeCheckoutItem.price;
+            const user = auth.currentUser;
+            
+            if(user) {
+                const userDoc = await db.collection("atelier_users").doc(user.uid).get();
+                if(userDoc.exists && userDoc.data().hasUsedWelcomeDiscount === false) {
+                    const discounted = Math.round(price * 0.9);
+                    displayEl.innerHTML = `Price: <span style="text-decoration: line-through; color: #777;">₹${Number(price).toLocaleString('en-IN')}</span> <span style="color: #2ecc71;">₹${Number(discounted).toLocaleString('en-IN')} (10% New Account First Order Discount Applied!)</span>`;
+                    return;
+                }
+            }
+            displayEl.innerHTML = `Price: ₹${Number(price).toLocaleString('en-IN')}`;
+        }
+
         function verifyPincode() {
             const pincode = document.getElementById('check-pincode').value.trim();
             if(!pincode || pincode.length < 6) {
@@ -496,11 +551,26 @@
                 return;
             }
 
+            let finalPrice = activeCheckoutItem ? activeCheckoutItem.price : 0;
+            let discountApplied = false;
+
+            if(user) {
+                const userRef = db.collection("atelier_users").doc(user.uid);
+                const userDoc = await userRef.get();
+                if(userDoc.exists && userDoc.data().hasUsedWelcomeDiscount === false) {
+                    finalPrice = Math.round(finalPrice * 0.9);
+                    discountApplied = true;
+                    await userRef.update({ hasUsedWelcomeDiscount: true });
+                }
+            }
+
             try {
                 await db.collection("atelier_orders").add({
                     clientEmail: user ? user.email : "guest@atelier.in",
                     itemName: activeCheckoutItem ? activeCheckoutItem.name : "Custom Atelier Piece",
                     itemPrice: activeCheckoutItem ? activeCheckoutItem.price : 0,
+                    finalPrice,
+                    discountApplied,
                     selectedSize: size,
                     shipping: { address, city, pincode, phone },
                     status: "Pending Admin Confirmation",
