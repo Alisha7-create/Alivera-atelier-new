@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Admin Master Portal</title>
-    <link rel="icon" type="image/ico" href="/favicon.ico">
-    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
 
+    <!-- Firebase SDKs (Compat Version) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
@@ -54,6 +55,7 @@
     </header>
 
     <div class="container">
+        <!-- AUTH GATE -->
         <div id="auth-gate">
             <h2>MASTER ADMIN LOGIN</h2>
             <p>Enter your hello@aliveraatelier.in credentials.</p>
@@ -68,6 +70,7 @@
             <button class="btn" onclick="loginAdmin()">Sign In as Admin</button>
         </div>
 
+        <!-- ADMIN DASHBOARD -->
         <div id="admin-dashboard">
             <div class="card">
                 <h2>LIVE CLIENT ORDERS & STATUS CONTROL</h2>
@@ -190,6 +193,7 @@
 
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
                     document.getElementById(targetFieldId).value = dataUrl;
+                    console.log("Image compressed successfully.");
                 };
                 img.src = event.target.result;
             };
