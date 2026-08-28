@@ -52,7 +52,6 @@
         .action-btn { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; letter-spacing: 1px; }
         .approve-btn { background: #2ecc71; color: #0a0a0a; }
 
-        /* CIRCULAR USER PROFILE AVATAR */
         .profile-header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 20px; }
         .user-avatar-circle { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #d4af37; background: #1a1a1a; color: #d4af37; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; font-family: 'Cinzel', serif; margin-bottom: 10px; overflow: hidden; }
         .user-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
@@ -96,7 +95,7 @@
             <button id="auth-btn" class="btn" onclick="handleAuthAction()">Sign In to Account</button>
         </div>
 
-        <!-- CUSTOMER DASHBOARD (MY ACCOUNT) -->
+        <!-- CUSTOMER DASHBOARD -->
         <div id="customer-dashboard">
             <div class="card">
                 <div class="profile-header">
@@ -135,6 +134,40 @@
             </div>
 
             <div class="card">
+                <h2>GENERAL STORE SETTINGS</h2>
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="setting-new-cust-disc" checked style="width: 18px; height: 18px;">
+                    <label style="margin: 0; color: #fff;">Enable Automatic 10% New Member First Order Discount</label>
+                </div>
+                <button class="btn" style="margin-top: 10px;" onclick="saveGeneralSettings()">Save General Settings</button>
+            </div>
+
+            <!-- HERO BANNER POOL / ROTATOR CONFIGURATOR -->
+            <div class="card">
+                <h2>HERO BANNER POOL (RANDOM ROTATION)</h2>
+                <p style="color: #aaa; font-size: 11px; margin-bottom: 15px;">Upload multiple banners here. The storefront will randomly select and display one of these banners whenever a sale is not active.</p>
+                <div class="form-group">
+                    <label>BANNER TITLE</label>
+                    <input type="text" id="banner-title-input" class="form-control" placeholder="e.g. BESPOKE ELEGANCE">
+                </div>
+                <div class="form-group">
+                    <label>BANNER SUBTITLE</label>
+                    <input type="text" id="banner-sub-input" class="form-control" placeholder="e.g. Crafted to celebrate your unique essence">
+                </div>
+                <div class="form-group">
+                    <label>BANNER IMAGE UPLOAD</label>
+                    <input type="file" id="banner-img-file" class="form-control" accept="image/*" onchange="compressAndConvertImage(this, 'banner-img-data', 1200)">
+                    <input type="hidden" id="banner-img-data">
+                </div>
+                <button class="btn" onclick="addBannerToPool()">Add Banner to Rotation Pool</button>
+                
+                <h3 style="color: #d4af37; font-size: 12px; margin-top: 25px; margin-bottom: 10px; font-family: 'Cinzel', serif;">ACTIVE BANNERS IN POOL</h3>
+                <div id="admin-banner-list">
+                    <p style="color: #777; font-size: 11px;">Loading banners...</p>
+                </div>
+            </div>
+
+            <div class="card">
                 <h2>VISUAL SALE COUNTDOWN BANNER CONFIGURATOR</h2>
                 <div class="form-group">
                     <label>SALE TITLE</label>
@@ -158,24 +191,33 @@
             </div>
 
             <div class="card">
-                <h2>CREATE CODE-BASED DISCOUNT COUPON</h2>
+                <h2>CREATE ADVANCED DISCOUNT COUPON</h2>
                 <div class="form-group">
                     <label>COUPON CODE</label>
-                    <input type="text" id="coupon-code" class="form-control" placeholder="e.g. ALIVERA20" style="text-transform:uppercase;">
+                    <input type="text" id="coupon-code" class="form-control" placeholder="e.g. FIRST10 or FLASH20" style="text-transform:uppercase;">
                 </div>
                 <div class="form-group">
                     <label>DISCOUNT PERCENTAGE (%)</label>
                     <input type="number" id="coupon-pct" class="form-control" placeholder="15">
                 </div>
+                <div class="form-group">
+                    <label>MAX USES (FIRST-COME, FIRST-SERVED LIMIT)</label>
+                    <input type="number" id="coupon-max-uses" class="form-control" placeholder="e.g. 10 (Leave blank for unlimited quantity)">
+                </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div class="form-group"><label>VALID FROM</label><input type="datetime-local" id="coupon-start" class="form-control"></div>
-                    <div class="form-group"><label>VALID UNTIL</label><input type="datetime-local" id="coupon-end" class="form-control"></div>
+                    <div class="form-group"><label>VALID UNTIL (DEADLINE)</label><input type="datetime-local" id="coupon-end" class="form-control"></div>
                 </div>
                 <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                     <input type="checkbox" id="coupon-single-use" checked style="width: 18px; height: 18px;">
                     <label style="margin: 0; color: #fff;">Restrict to single-use per customer</label>
                 </div>
-                <button class="btn" onclick="createCoupon()">Publish Discount Coupon</button>
+                <button class="btn" onclick="createCoupon()">Publish Advanced Coupon</button>
+
+                <h3 style="color: #d4af37; font-size: 12px; margin-top: 25px; margin-bottom: 10px; font-family: 'Cinzel', serif;">ACTIVE COUPONS & LIVE USAGE TRACKER</h3>
+                <div id="admin-coupons-list">
+                    <p style="color: #777; font-size: 11px;">Loading coupons...</p>
+                </div>
             </div>
 
             <div class="card">
@@ -376,6 +418,53 @@
             reader.readAsDataURL(file);
         }
 
+        async function saveGeneralSettings() {
+            try {
+                const newCustomerDiscountActive = document.getElementById('setting-new-cust-disc').checked;
+                await db.collection("atelier_settings").doc("general").set({
+                    newCustomerDiscountActive
+                }, { merge: true });
+                alert("General settings saved successfully.");
+            } catch (e) {
+                alert("Error saving settings: " + e.message);
+            }
+        }
+
+        async function addBannerToPool() {
+            try {
+                const title = document.getElementById('banner-title-input').value.trim();
+                const subtitle = document.getElementById('banner-sub-input').value.trim();
+                const image = document.getElementById('banner-img-data').value;
+
+                if (!image) {
+                    alert("Please upload a banner image.");
+                    return;
+                }
+
+                await db.collection("atelier_banners").add({
+                    title,
+                    subtitle,
+                    image,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert("Banner added to rotation pool.");
+                document.getElementById('banner-title-input').value = '';
+                document.getElementById('banner-sub-input').value = '';
+                document.getElementById('banner-img-data').value = '';
+                loadAdminData();
+            } catch (e) {
+                alert("Error adding banner: " + e.message);
+            }
+        }
+
+        async function deleteBanner(id) {
+            if (confirm("Remove this banner from rotation pool?")) {
+                await db.collection("atelier_banners").doc(id).delete();
+                loadAdminData();
+            }
+        }
+
         async function saveSaleCountdown() {
             try {
                 const title = document.getElementById('sale-title-input').value;
@@ -419,17 +508,21 @@
             try {
                 const code = document.getElementById('coupon-code').value.trim().toUpperCase();
                 const discountPercent = Number(document.getElementById('coupon-pct').value);
+                const maxUsesInput = document.getElementById('coupon-max-uses').value.trim();
+                const maxUses = maxUsesInput ? Number(maxUsesInput) : null;
                 const validFrom = document.getElementById('coupon-start').value;
                 const validUntil = document.getElementById('coupon-end').value;
                 const singleUsePerUser = document.getElementById('coupon-single-use').checked;
 
                 if (!code || !discountPercent || !validUntil) {
-                    alert("Please fill in the coupon code, discount percentage, and end date.");
+                    alert("Please fill in the coupon code, discount percentage, and end date/deadline.");
                     return;
                 }
 
                 await db.collection("atelier_coupons").doc(code).set({
                     discountPercent,
+                    maxUses,
+                    currentUses: 0,
                     validFrom: validFrom || "",
                     validUntil,
                     singleUsePerUser,
@@ -439,8 +532,17 @@
                 alert(`Coupon code "${code}" created successfully.`);
                 document.getElementById('coupon-code').value = '';
                 document.getElementById('coupon-pct').value = '';
+                document.getElementById('coupon-max-uses').value = '';
+                loadAdminData();
             } catch (e) {
                 alert("Error creating coupon: " + e.message);
+            }
+        }
+
+        async function deleteCoupon(code) {
+            if (confirm(`Delete coupon "${code}"?`)) {
+                await db.collection("atelier_coupons").doc(code).delete();
+                loadAdminData();
             }
         }
 
@@ -477,6 +579,11 @@
 
         async function loadAdminData() {
             try {
+                const generalDoc = await db.collection("atelier_settings").doc("general").get();
+                if (generalDoc.exists) {
+                    document.getElementById('setting-new-cust-disc').checked = generalDoc.data().newCustomerDiscountActive ?? true;
+                }
+
                 const saleDoc = await db.collection("atelier_settings").doc("saleCountdown").get();
                 if(saleDoc.exists) {
                     const s = saleDoc.data();
@@ -484,6 +591,42 @@
                     if(s.subtitle) document.getElementById('sale-sub-input').value = s.subtitle;
                     if(s.startTime) document.getElementById('sale-start-input').value = s.startTime;
                     if(s.endTime) document.getElementById('sale-end-input').value = s.endTime;
+                }
+
+                const bannersEl = document.getElementById('admin-banner-list');
+                const bannerSnap = await db.collection("atelier_banners").orderBy("createdAt", "desc").get();
+                if (bannerSnap.empty) {
+                    bannersEl.innerHTML = `<p style="color: #777; font-size: 11px;">No rotation banners uploaded yet.</p>`;
+                } else {
+                    bannersEl.innerHTML = bannerSnap.docs.map(doc => {
+                        const b = doc.data();
+                        return `
+                            <div class="list-item">
+                                <span><strong>${b.title || 'Untitled Banner'}</strong></span>
+                                <button class="action-btn" onclick="deleteBanner('${doc.id}')">Remove</button>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                const couponsEl = document.getElementById('admin-coupons-list');
+                const couponSnap = await db.collection("atelier_coupons").get();
+                if (couponSnap.empty) {
+                    couponsEl.innerHTML = `<p style="color: #777; font-size: 11px;">No active coupons.</p>`;
+                } else {
+                    couponsEl.innerHTML = couponSnap.docs.map(doc => {
+                        const c = doc.data();
+                        const usageText = c.maxUses ? `Redemptions: ${c.currentUses || 0} / ${c.maxUses}` : `Redemptions: ${c.currentUses || 0} (Unlimited)`;
+                        return `
+                            <div class="list-item">
+                                <div>
+                                    <strong>${doc.id}</strong> (${c.discountPercent}% OFF)<br>
+                                    <span style="color: #d4af37;">${usageText}</span> | <span style="color: #aaa;">Expires: ${new Date(c.validUntil).toLocaleString()}</span>
+                                </div>
+                                <button class="action-btn" onclick="deleteCoupon('${doc.id}')">Delete</button>
+                            </div>
+                        `;
+                    }).join('');
                 }
 
                 const ordersEl = document.getElementById('admin-orders-list');
@@ -537,7 +680,7 @@
 
         async function deleteProduct(id) {
             if(confirm("Remove this dress?")) {
-                await db.collection("atelier_products").id(id).delete();
+                await db.collection("atelier_products").doc(id).delete();
                 loadAdminData();
             }
         }
