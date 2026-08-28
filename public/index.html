@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alivèra Atelier — Haute Couture & Bespoke Apparel</title>
     
-    <!-- Favicon / Browser Tab Icon Links -->
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
 
-    <!-- Firebase SDKs (Compat Version) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <!-- Razorpay Checkout Script -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400&display=swap');
@@ -27,35 +23,47 @@
         .logo-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; flex-shrink: 0; }
         .brand-title { font-size: 15px; letter-spacing: 2px; color: #d4af37; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
+        .nav-links { display: flex; gap: 8px; align-items: center; }
+        .nav-btn { color: #d4af37; text-decoration: none; font-size: 10px; letter-spacing: 1.5px; border: 1px solid #d4af37; padding: 6px 10px; border-radius: 4px; white-space: nowrap; background: transparent; }
+        .nav-btn:hover, .nav-btn.active-portal { background: #d4af37; color: #0a0a0a; }
+
         .promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 10px; letter-spacing: 1.5px; font-weight: bold; display: none; }
 
-        .hero { text-align: center; padding: 50px 20px; background: linear-gradient(rgba(10,10,10,0.85), rgba(10,10,10,0.85)), url('/logo.png') center/cover no-repeat; border-bottom: 1px solid #222; }
+        .hero { text-align: center; padding: 70px 20px; background-size: cover; background-position: center; border-bottom: 1px solid #222; position: relative; }
+        .hero::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(10,10,10,0.82); z-index: 1; }
+        .hero-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
         .hero h1 { color: #d4af37; font-size: 24px; letter-spacing: 3px; margin-bottom: 10px; }
-        .hero p { color: #aaa; font-size: 12px; letter-spacing: 1.5px; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+        .hero p { color: #aaa; font-size: 12px; letter-spacing: 1.5px; line-height: 1.5; margin-bottom: 5px; }
 
         .container { max-width: 1200px; margin: 25px auto; padding: 0 15px; flex: 1; width: 100%; box-sizing: border-box; }
-        
         .section-title { font-size: 18px; color: #d4af37; letter-spacing: 2px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 25px; text-align: center; }
 
         .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.3s; }
+        .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.3s; position: relative; }
         .product-card:hover { border-color: #d4af37; }
-        .product-img { width: 100%; height: 320px; object-fit: cover; }
+        
+        .product-img-wrap { position: relative; width: 100%; height: 320px; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .card-icon-btn { position: absolute; top: 10px; background: rgba(10,10,10,0.7); border: 1px solid #d4af37; color: #d4af37; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; z-index: 5; }
+        .share-btn { right: 10px; }
+        .wishlist-btn { right: 50px; }
+        .card-icon-btn:hover { background: #d4af37; color: #0a0a0a; }
+
         .product-info { padding: 15px; display: flex; flex-direction: column; flex: 1; }
         .product-name { font-size: 15px; color: #fff; letter-spacing: 1px; margin-bottom: 8px; font-family: 'Cinzel', serif; }
         .product-price { font-size: 13px; color: #d4af37; margin-bottom: 15px; font-weight: bold; }
         
-        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1.5px; text-decoration: none; font-size: 11px; text-align: center; display: block; width: 100%; box-sizing: border-box; transition: background 0.2s; }
+        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1.5px; text-decoration: none; font-size: 11px; text-align: center; display: block; width: 100%; box-sizing: border-box; }
         .btn:active { background: #c59b27; }
         
-        footer { background: #121212; border-top: 1px solid #222; text-align: center; padding: 25px 15px; color: #777; font-size: 10px; letter-spacing: 1px; line-height: 1.8; }
+        footer { background: #121212; border-top: 1px solid #222; text-align: center; padding: 30px 15px; color: #777; font-size: 10px; letter-spacing: 1.5px; line-height: 2.2; }
         footer a { color: #d4af37; text-decoration: none; }
+        .tagline { color: #d4af37; font-style: italic; font-family: 'Cinzel', serif; font-size: 11px; margin-bottom: 8px; }
 
         @media (max-width: 480px) {
             header { padding: 12px 15px; }
             .brand-title { font-size: 13px; letter-spacing: 1.5px; }
-            .hero { padding: 40px 15px; }
-            .hero h1 { font-size: 20px; letter-spacing: 2px; }
             .catalog-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -69,12 +77,17 @@
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
-        <a href="/admin/" style="color: #d4af37; text-decoration: none; font-size: 10px; letter-spacing: 1.5px; border: 1px solid #d4af37; padding: 6px 10px; border-radius: 4px; white-space: nowrap;">PORTAL</a>
+        <div class="nav-links">
+            <a href="/admin/?mode=signin" class="nav-btn">SIGN IN</a>
+            <a href="/admin/?mode=signup" class="nav-btn">SIGN UP</a>
+        </div>
     </header>
 
-    <section class="hero">
-        <h1>BESPOKE HAUTE COUTURE</h1>
-        <p>HANDCRAFTED SILKS & CUSTOM DRAPES TAILORED TO PERFECTION</p>
+    <section id="hero-section" class="hero" style="background-image: url('/logo.png');">
+        <div class="hero-content">
+            <h1 id="hero-title">BESPOKE HAUTE COUTURE</h1>
+            <p id="hero-subtitle">HANDCRAFTED SILKS & CUSTOM DRAPES TAILORED TO PERFECTION</p>
+        </div>
     </section>
 
     <div class="container">
@@ -85,8 +98,11 @@
     </div>
 
     <footer>
-        &copy; 2026 ALIVÈRA ATELIER. ALL RIGHTS RESERVED.<br>
-        <a href="/admin/">CLIENT SIGN IN / PORTAL</a>
+        <div class="tagline">"Beautiful. the way you are..."</div>
+        <div>Email: <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a> | Instagram: <a href="https://instagram.com/aliveraatelier" target="_blank">@aliveraatelier</a></div>
+        <div style="margin-top: 8px;">Customer Care: <a href="mailto:contact@aliveraatelier.in?subject=Bespoke%20Client%20Inquiry">contact@aliveraatelier.in</a></div>
+        <div style="margin-top: 8px;">&copy; 2026 ALIVÈRA ATELIER. ALL RIGHTS RESERVED.</div>
+        <div style="margin-top: 5px;"><a href="/admin/?mode=signin">Sign In</a> | <a href="/admin/?mode=signup">Create Account</a></div>
     </footer>
 
     <script>
@@ -102,6 +118,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
         async function loadStorefront() {
             try {
@@ -113,6 +130,14 @@
                         banner.innerText = data.bannerText;
                         banner.style.display = 'block';
                     }
+                }
+
+                const heroDoc = await db.collection("atelier_settings").doc("hero").get();
+                if (heroDoc.exists) {
+                    const hData = heroDoc.data();
+                    if (hData.title) document.getElementById('hero-title').innerText = hData.title;
+                    if (hData.subtitle) document.getElementById('hero-subtitle').innerText = hData.subtitle;
+                    if (hData.image) document.getElementById('hero-section').style.backgroundImage = `url('${hData.image}')`;
                 }
 
                 const catalogEl = document.getElementById('store-catalog');
@@ -127,17 +152,52 @@
                     const p = doc.data();
                     return `
                         <div class="product-card">
-                            <img src="${p.image}" alt="${p.name}" class="product-img">
+                            <div class="product-img-wrap">
+                                <img src="${p.image}" alt="${p.name}" class="product-img">
+                                <button class="card-icon-btn wishlist-btn" title="Add to Wishlist" onclick="addToWishlist('${doc.id}', '${p.name.replace(/'/g, "\\'")}')">♥</button>
+                                <button class="card-icon-btn share-btn" title="Share Piece" onclick="shareProduct('${p.name.replace(/'/g, "\\'")}')">🔗</button>
+                            </div>
                             <div class="product-info">
                                 <div class="product-name">${p.name}</div>
                                 <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                                <button class="btn" onclick="initiateOrder('${doc.id}', '${p.name}', ${p.price})">ACQUIRE PIECE</button>
+                                <button class="btn" onclick="initiateOrder('${doc.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price})">ACQUIRE PIECE</button>
                             </div>
                         </div>
                     `;
                 }).join('');
             } catch (e) {
                 console.error("Error loading storefront:", e);
+            }
+        }
+
+        function shareProduct(name) {
+            const shareData = { title: name, text: `Explore ${name} at Alivèra Atelier`, url: window.location.href };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Product link copied to clipboard!");
+            }
+        }
+
+        async function addToWishlist(productId, productName) {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please sign in or create an account to save pieces to your wishlist.");
+                window.location.href = "/admin/?mode=signin";
+                return;
+            }
+
+            try {
+                await db.collection("atelier_wishlists").add({
+                    userEmail: user.email,
+                    productId,
+                    productName,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert(`"${productName}" has been added to your wishlist!`);
+            } catch (e) {
+                alert("Error adding to wishlist: " + e.message);
             }
         }
 
@@ -159,7 +219,7 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("Order request registered successfully! Sign into the Client Portal anytime with this email to track your status.");
+                alert("Order request registered successfully! Sign into your account anytime with this email to track your status.");
             } catch (e) {
                 alert("Error placing order: " + e.message);
             }
