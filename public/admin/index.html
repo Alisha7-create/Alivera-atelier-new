@@ -51,6 +51,11 @@
         
         .action-btn { background: #e74c3c; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; letter-spacing: 1px; }
         .approve-btn { background: #2ecc71; color: #0a0a0a; }
+
+        /* CIRCULAR USER PROFILE AVATAR */
+        .profile-header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .user-avatar-circle { width: 70px; height: 70px; border-radius: 50%; border: 2px solid #d4af37; background: #1a1a1a; color: #d4af37; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; font-family: 'Cinzel', serif; margin-bottom: 10px; overflow: hidden; }
+        .user-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
         
         footer { background: #121212; border-top: 1px solid #222; text-align: center; padding: 25px 15px; color: #777; font-size: 10px; letter-spacing: 1.5px; line-height: 2.2; margin-top: auto; }
         footer a { color: #d4af37; text-decoration: none; }
@@ -66,7 +71,6 @@
         </a>
         <div style="display: flex; gap: 12px; align-items: center;">
             <a href="/" style="color: #aaa; text-decoration: none; font-size: 10px; letter-spacing: 1px; white-space: nowrap;">STOREFRONT</a>
-            <button id="logout-btn" style="display:none; background:none; border:none; color:#d4af37; cursor:pointer; font-size:10px; letter-spacing:1px; font-weight:bold; padding:0;" onclick="auth.signOut()">SIGN OUT</button>
         </div>
     </header>
 
@@ -92,60 +96,35 @@
             <button id="auth-btn" class="btn" onclick="handleAuthAction()">Sign In to Account</button>
         </div>
 
-        <!-- CUSTOMER DASHBOARD -->
+        <!-- CUSTOMER DASHBOARD (MY ACCOUNT) -->
         <div id="customer-dashboard">
             <div class="card">
-                <h2>MY WISHLIST</h2>
-                <div id="customer-wishlist">
+                <div class="profile-header">
+                    <div id="user-avatar-display" class="user-avatar-circle">A</div>
+                    <h3 id="user-email-display" style="color: #d4af37; font-size: 13px; margin: 0 0 5px 0;">client@email.com</h3>
+                    <span style="color: #2ecc71; font-size: 10px; letter-spacing: 1px;">MEMBER STATUS: 10% NEW ACCOUNT DISCOUNT ACTIVE</span>
+                </div>
+
+                <h2>MY SAVED WISHLIST</h2>
+                <div id="customer-wishlist" style="margin-bottom: 20px;">
                     <p style="color: #777; font-size: 11px;">Loading your saved pieces...</p>
                 </div>
-            </div>
 
-            <div class="card">
-                <h2>YOUR BESPOKE ORDERS</h2>
-                <div id="customer-orders-list">
+                <h2>YOUR ACQUISITIONS & ORDERS</h2>
+                <div id="customer-orders-list" style="margin-bottom: 20px;">
                     <p style="color: #777; font-size: 11px;">Loading your orders...</p>
                 </div>
-            </div>
 
-            <div class="card">
-                <h2>VIRTUAL MEASUREMENT PROFILE (INCHES)</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group"><label>BUST</label><input type="number" id="m-bust" class="form-control" placeholder="36"></div>
-                    <div class="form-group"><label>WAIST</label><input type="number" id="m-waist" class="form-control" placeholder="28"></div>
-                    <div class="form-group"><label>HIPS</label><input type="number" id="m-hips" class="form-control" placeholder="38"></div>
-                    <div class="form-group"><label>HEIGHT</label><input type="text" id="m-height" class="form-control" placeholder="5'8''"></div>
+                <div style="border-top: 1px solid #222; padding-top: 15px; margin-top: 15px;">
+                    <button class="action-btn" style="background:#e74c3c; width:100%; padding:12px; font-size:11px;" onclick="auth.signOut()">SIGN OUT</button>
                 </div>
-                <button class="btn" onclick="saveMeasurements()">Save Measurements for Tailoring</button>
-            </div>
-
-            <div class="card">
-                <h2>BOOK PRIVATE DESIGN CONSULTATION</h2>
-                <div class="form-group">
-                    <label>PREFERRED DATE & TIME</label>
-                    <input type="datetime-local" id="consult-time" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>CONSULTATION NOTES / CUSTOM VISION</label>
-                    <textarea id="consult-notes" class="form-control" rows="3" placeholder="Describe your dream custom silhouette, fabric preference, or occasion..."></textarea>
-                </div>
-                <button class="btn" onclick="bookConsultation()">Request Consultation</button>
-            </div>
-
-            <div class="card" style="text-align: center;">
-                <h2>CUSTOMER CARE & STYLING SUPPORT</h2>
-                <p style="color: #aaa; font-size: 11px; margin-bottom: 15px;">Need immediate assistance with fabrics, sizing, or tracking? Reach our atelier team directly.</p>
-                <a href="mailto:contact@aliveraatelier.in?subject=Client%20Support%20Inquiry" class="btn" style="text-decoration: none;">Email Customer Care</a>
             </div>
         </div>
 
         <!-- ADMIN DASHBOARD -->
         <div id="admin-dashboard">
-            <div class="card">
-                <h2>MASTER ADMIN: CLIENT CONSULTATIONS</h2>
-                <div id="admin-consult-list">
-                    <p style="color: #777; font-size: 11px;">Checking consultation requests...</p>
-                </div>
+            <div class="card" style="text-align: right; padding: 10px 20px;">
+                <button class="action-btn" style="background:#e74c3c; width:auto; padding:8px 15px;" onclick="auth.signOut()">SIGN OUT</button>
             </div>
 
             <div class="card">
@@ -156,55 +135,54 @@
             </div>
 
             <div class="card">
-                <h2>CONFIGURE STOREFRONT HERO BANNER</h2>
+                <h2>VISUAL SALE COUNTDOWN BANNER CONFIGURATOR</h2>
                 <div class="form-group">
-                    <label>HERO BANNER TITLE</label>
-                    <input type="text" id="hero-title-input" class="form-control" placeholder="Enter title">
-                </div>
-                <div class="form-group">
-                    <label>HERO BANNER SUBTITLE / TAGLINE</label>
-                    <input type="text" id="hero-sub-input" class="form-control" placeholder="Enter subtitle">
-                </div>
-                <div class="form-group">
-                    <label>HERO BACKGROUND IMAGE UPLOAD (Recommended: 1920x1080px)</label>
-                    <input type="file" id="hero-img-file" class="form-control" accept="image/*" onchange="compressAndConvertImage(this, 'hero-img-data', 1200)">
-                    <input type="hidden" id="hero-img-data">
-                </div>
-                <button class="btn" onclick="saveHeroConfig()">Update Hero Banner Instantly</button>
-            </div>
-
-            <div class="card">
-                <h2>SALE COUNTDOWN TIMER (Replaces Hero Banner When Active)</h2>
-                <div class="form-group">
-                    <label>SALE EVENT TITLE</label>
-                    <input type="text" id="sale-title-input" class="form-control" placeholder="e.g. FLASH SPRING SALE — 15% OFF">
+                    <label>SALE TITLE</label>
+                    <input type="text" id="sale-title-input" class="form-control" placeholder="e.g. FLASH SPRING SALE">
                 </div>
                 <div class="form-group">
                     <label>SALE SUBTITLE</label>
                     <input type="text" id="sale-sub-input" class="form-control" placeholder="e.g. EXCLUSIVE DISCOUNTS ENDING SOON">
                 </div>
                 <div class="form-group">
-                    <label>SALE END DATE & TIME</label>
-                    <input type="datetime-local" id="sale-end-input" class="form-control">
+                    <label>BANNER BACKGROUND IMAGE</label>
+                    <input type="file" id="sale-img-file" class="form-control" accept="image/*" onchange="compressAndConvertImage(this, 'sale-img-data', 1200)">
+                    <input type="hidden" id="sale-img-data">
                 </div>
-                <button class="btn" onclick="saveSaleCountdown()">Activate Sale Countdown Banner</button>
-                <button class="btn" style="background:#333; color:#aaa; margin-top:8px;" onclick="clearSaleCountdown()">Disable / Clear Sale Countdown</button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group"><label>START DATE & TIME</label><input type="datetime-local" id="sale-start-input" class="form-control"></div>
+                    <div class="form-group"><label>END DATE & TIME</label><input type="datetime-local" id="sale-end-input" class="form-control"></div>
+                </div>
+                <button class="btn" onclick="saveSaleCountdown()">Activate Visual Sale Banner</button>
+                <button class="btn" style="background:#333; color:#aaa; margin-top:8px;" onclick="clearSaleCountdown()">Disable / Clear Sale Banner</button>
             </div>
 
             <div class="card">
-                <h2>PROMOTIONAL BANNER CONFIGURATOR</h2>
+                <h2>CREATE CODE-BASED DISCOUNT COUPON</h2>
                 <div class="form-group">
-                    <label>PROMO BANNER TEXT (Leave blank to hide)</label>
-                    <input type="text" id="promo-banner-text" class="form-control" placeholder="e.g. FREE WORLDWIDE SHIPPING ON ORDERS OVER ₹20,000">
+                    <label>COUPON CODE</label>
+                    <input type="text" id="coupon-code" class="form-control" placeholder="e.g. ALIVERA20" style="text-transform:uppercase;">
                 </div>
-                <button class="btn" onclick="savePromoConfig()">Save / Clear Promo Banner</button>
+                <div class="form-group">
+                    <label>DISCOUNT PERCENTAGE (%)</label>
+                    <input type="number" id="coupon-pct" class="form-control" placeholder="15">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group"><label>VALID FROM</label><input type="datetime-local" id="coupon-start" class="form-control"></div>
+                    <div class="form-group"><label>VALID UNTIL</label><input type="datetime-local" id="coupon-end" class="form-control"></div>
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <input type="checkbox" id="coupon-single-use" checked style="width: 18px; height: 18px;">
+                    <label style="margin: 0; color: #fff;">Restrict to single-use per customer</label>
+                </div>
+                <button class="btn" onclick="createCoupon()">Publish Discount Coupon</button>
             </div>
 
             <div class="card">
-                <h2>PUBLISH NEW DRESS & SIZE CHART</h2>
+                <h2>PUBLISH NEW DRESS, SIZE CHART & CART OPTIONS</h2>
                 <div class="form-group">
                     <label>DRESS NAME</label>
-                    <input type="text" id="prod-name" class="form-control" placeholder="e.g. Imperial Silk Gown">
+                    <input type="text" id="prod-name" class="form-control" placeholder="e.g. Midnight Orchid Dress">
                 </div>
                 <div class="form-group">
                     <label>PRICE (INR)</label>
@@ -220,7 +198,7 @@
                     <input type="file" id="chart-image-file" class="form-control" accept="image/*" onchange="compressAndConvertImage(this, 'chart-image', 800)">
                     <input type="hidden" id="chart-image">
                 </div>
-                <button class="btn" onclick="publishProduct()">Publish to Storefront Instantly</button>
+                <button class="btn" onclick="publishProduct()">Publish to Storefront</button>
             </div>
 
             <div class="card">
@@ -270,7 +248,7 @@
             document.getElementById('tab-signin').className = isSignUpMode ? '' : 'active';
             document.getElementById('tab-signup').className = isSignUpMode ? 'active' : '';
             document.getElementById('auth-title').innerText = isSignUpMode ? 'CREATE CUSTOMER ACCOUNT' : 'CLIENT SIGN IN';
-            document.getElementById('auth-subtitle').innerText = isSignUpMode ? 'Register to manage your wishlist, custom fittings, and orders.' : 'Access your wishlist, custom dress orders, and virtual measurements.';
+            document.getElementById('auth-subtitle').innerText = isSignUpMode ? 'Register to receive your 10% new member discount, manage wishlists, and track orders.' : 'Access your wishlist, custom dress orders, and member status.';
             document.getElementById('auth-btn').innerText = isSignUpMode ? 'Register Account' : 'Sign In to Account';
         }
 
@@ -285,10 +263,10 @@
             try {
                 if (isSignUpMode) {
                     await auth.createUserWithEmailAndPassword(email, password);
-                    alert("Account created successfully!");
+                    alert("Account created successfully! Your 10% new member discount is now active.");
                 } else {
                     await auth.signInWithEmailAndPassword(email, password);
-                    alert("Signed in successfully!");
+                    alert("Signed in successfully.");
                 }
             } catch (e) {
                 alert("Authentication error: " + e.message);
@@ -299,12 +277,9 @@
             const authGate = document.getElementById('auth-gate');
             const adminDash = document.getElementById('admin-dashboard');
             const custDash = document.getElementById('customer-dashboard');
-            const logoutBtn = document.getElementById('logout-btn');
 
             if (user) {
                 authGate.style.display = 'none';
-                logoutBtn.style.display = 'block';
-
                 if (user.email === ADMIN_EMAIL) {
                     adminDash.style.display = 'block';
                     custDash.style.display = 'none';
@@ -312,60 +287,53 @@
                 } else {
                     adminDash.style.display = 'none';
                     custDash.style.display = 'block';
-                    loadCustomerPortal(user.email);
+                    loadCustomerPortal(user);
                 }
             } else {
                 authGate.style.display = 'block';
                 adminDash.style.display = 'none';
                 custDash.style.display = 'none';
-                logoutBtn.style.display = 'none';
             }
         });
 
-        async function loadCustomerPortal(email) {
+        async function loadCustomerPortal(user) {
             try {
+                const initial = user.email.charAt(0).toUpperCase();
+                document.getElementById('user-avatar-display').innerText = initial;
+                document.getElementById('user-email-display').innerText = user.email;
+
                 const wishlistEl = document.getElementById('customer-wishlist');
-                const wishSnap = await db.collection("atelier_wishlists").where("userEmail", "==", email).get();
+                const wishSnap = await db.collection("atelier_wishlists").where("userEmail", "==", user.email).get();
                 if (wishSnap.empty) {
-                    wishlistEl.innerHTML = `<p style="color: #777; font-size: 11px;">Your wishlist is empty. Tap the heart icon on any piece to save it here.</p>`;
+                    wishlistEl.innerHTML = `<p style="color: #777; font-size: 11px;">Your wishlist is empty.</p>`;
                 } else {
                     wishlistEl.innerHTML = wishSnap.docs.map(doc => {
                         const w = doc.data();
                         return `
                             <div class="list-item">
                                 <span><strong>${w.productName}</strong></span>
-                                <button class="action-btn" onclick="removeWishlistItem('${doc.id}', '${email}')">Remove</button>
+                                <button class="action-btn" onclick="removeWishlistItem('${doc.id}', '${user.email}')">Remove</button>
                             </div>
                         `;
                     }).join('');
                 }
 
                 const ordersEl = document.getElementById('customer-orders-list');
-                const snapshot = await db.collection("atelier_orders").where("clientEmail", "==", email).get();
+                const snapshot = await db.collection("atelier_orders").where("clientEmail", "==", user.email).get();
                 if (snapshot.empty) {
-                    ordersEl.innerHTML = `<p style="color: #777; font-size: 11px;">You haven't placed any order requests yet.</p>`;
+                    ordersEl.innerHTML = `<p style="color: #777; font-size: 11px;">You haven't placed any acquisitions yet.</p>`;
                 } else {
                     ordersEl.innerHTML = snapshot.docs.map(doc => {
                         const o = doc.data();
                         return `
                             <div class="list-item">
                                 <div>
-                                    <strong>${o.itemName}</strong> (${o.selectedSize})<br>
-                                    <span style="color: #aaa;">Status: <strong style="color: #d4af37;">${o.status}</strong></span>
+                                    <strong>Order #${doc.id.slice(0,6)}</strong><br>
+                                    <span style="color: #aaa;">Status: <strong style="color: #d4af37;">${o.status}</strong> | Total: ₹${Number(o.totalAmount).toLocaleString('en-IN')}</span>
                                 </div>
-                                <div style="color: #d4af37; font-weight: bold; margin-top: 5px;">₹${Number(o.itemPrice).toLocaleString('en-IN')}</div>
                             </div>
                         `;
                     }).join('');
-                }
-
-                const mDoc = await db.collection("atelier_measurements").doc(email).get();
-                if (mDoc.exists) {
-                    const m = mDoc.data();
-                    document.getElementById('m-bust').value = m.bust || '';
-                    document.getElementById('m-waist').value = m.waist || '';
-                    document.getElementById('m-hips').value = m.hips || '';
-                    document.getElementById('m-height').value = m.height || '';
                 }
             } catch (e) {
                 console.error("Error loading customer portal:", e);
@@ -374,51 +342,7 @@
 
         async function removeWishlistItem(id, email) {
             await db.collection("atelier_wishlists").doc(id).delete();
-            loadCustomerPortal(email);
-        }
-
-        async function saveMeasurements() {
-            const user = auth.currentUser;
-            if (!user) return;
-
-            try {
-                await db.collection("atelier_measurements").doc(user.email).set({
-                    bust: document.getElementById('m-bust').value,
-                    waist: document.getElementById('m-waist').value,
-                    hips: document.getElementById('m-hips').value,
-                    height: document.getElementById('m-height').value,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                alert("Virtual measurement profile saved successfully!");
-            } catch (e) {
-                alert("Error saving measurements: " + e.message);
-            }
-        }
-
-        async function bookConsultation() {
-            const user = auth.currentUser;
-            const time = document.getElementById('consult-time').value;
-            const notes = document.getElementById('consult-notes').value;
-
-            if (!time) {
-                alert("Please select a preferred date and time for your consultation.");
-                return;
-            }
-
-            try {
-                await db.collection("atelier_consultations").add({
-                    clientEmail: user.email,
-                    preferredTime: time,
-                    notes: notes || "No additional notes",
-                    status: "Requested",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                alert("Design consultation request sent successfully! Our atelier will confirm shortly.");
-                document.getElementById('consult-time').value = '';
-                document.getElementById('consult-notes').value = '';
-            } catch (e) {
-                alert("Error requesting consultation: " + e.message);
-            }
+            loadCustomerPortal(auth.currentUser);
         }
 
         function compressAndConvertImage(inputElement, targetFieldId, maxWidth = 800) {
@@ -452,66 +376,71 @@
             reader.readAsDataURL(file);
         }
 
-        async function saveHeroConfig() {
-            try {
-                const title = document.getElementById('hero-title-input').value;
-                const subtitle = document.getElementById('hero-sub-input').value;
-                const newImage = document.getElementById('hero-img-data').value;
-
-                const existingDoc = await db.collection("atelier_settings").doc("hero").get();
-                const existingImage = existingDoc.exists ? (existingDoc.data().image || '') : '';
-
-                await db.collection("atelier_settings").doc("hero").set({
-                    title: title || "",
-                    subtitle: subtitle || "",
-                    image: newImage || existingImage
-                }, { merge: true });
-
-                alert("Hero banner updated successfully!");
-            } catch (e) {
-                alert("Error saving hero config: " + e.message);
-            }
-        }
-
         async function saveSaleCountdown() {
             try {
                 const title = document.getElementById('sale-title-input').value;
                 const subtitle = document.getElementById('sale-sub-input').value;
+                const startTime = document.getElementById('sale-start-input').value;
                 const endTime = document.getElementById('sale-end-input').value;
+                const image = document.getElementById('sale-img-data').value;
 
                 if (!endTime) {
                     alert("Please select an end date and time for the sale countdown.");
                     return;
                 }
 
+                const existingDoc = await db.collection("atelier_settings").doc("saleCountdown").get();
+                const existingImage = existingDoc.exists ? (existingDoc.data().image || '') : '';
+
                 await db.collection("atelier_settings").doc("saleCountdown").set({
-                    title: title || "LIMITED SALE EVENT",
-                    subtitle: subtitle || "EXCLUSIVE DISCOUNTS ENDING SOON",
-                    endTime: endTime
+                    title: title || "",
+                    subtitle: subtitle || "",
+                    startTime: startTime || "",
+                    endTime: endTime,
+                    image: image || existingImage
                 }, { merge: true });
 
-                alert("Sale countdown banner activated! It will now replace the hero banner on the storefront.");
+                alert("Visual sale countdown banner activated.");
             } catch (e) {
-                alert("Error activating countdown: " + e.message);
+                alert("Error saving sale countdown: " + e.message);
             }
         }
 
         async function clearSaleCountdown() {
             try {
                 await db.collection("atelier_settings").doc("saleCountdown").set({ endTime: "" }, { merge: true });
-                alert("Sale countdown disabled. Normal hero banner will display.");
+                alert("Visual sale banner disabled.");
             } catch (e) {
-                alert("Error clearing sale countdown: " + e.message);
+                alert("Error clearing sale banner: " + e.message);
             }
         }
 
-        async function savePromoConfig() {
+        async function createCoupon() {
             try {
-                const bannerText = document.getElementById('promo-banner-text').value;
-                await db.collection("atelier_settings").doc("promo").set({ bannerText }, { merge: true });
-                alert("Promotional banner setting saved successfully!");
+                const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+                const discountPercent = Number(document.getElementById('coupon-pct').value);
+                const validFrom = document.getElementById('coupon-start').value;
+                const validUntil = document.getElementById('coupon-end').value;
+                const singleUsePerUser = document.getElementById('coupon-single-use').checked;
+
+                if (!code || !discountPercent || !validUntil) {
+                    alert("Please fill in the coupon code, discount percentage, and end date.");
+                    return;
+                }
+
+                await db.collection("atelier_coupons").doc(code).set({
+                    discountPercent,
+                    validFrom: validFrom || "",
+                    validUntil,
+                    singleUsePerUser,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert(`Coupon code "${code}" created successfully.`);
+                document.getElementById('coupon-code').value = '';
+                document.getElementById('coupon-pct').value = '';
             } catch (e) {
-                alert("Error saving promo config: " + e.message);
+                alert("Error creating coupon: " + e.message);
             }
         }
 
@@ -523,7 +452,7 @@
                 const sizeChart = document.getElementById('chart-image').value;
 
                 if(!name || !price || !image) { 
-                    alert("Please provide a dress name, price, and select a dress image."); 
+                    alert("Please provide a dress name, price, and dress image."); 
                     return; 
                 }
 
@@ -535,13 +464,11 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("Dress successfully published to storefront!");
+                alert("Dress published successfully.");
                 document.getElementById('prod-name').value = '';
                 document.getElementById('prod-price').value = '';
                 document.getElementById('prod-image').value = '';
                 document.getElementById('chart-image').value = '';
-                document.getElementById('prod-image-file').value = '';
-                document.getElementById('chart-image-file').value = '';
                 loadAdminData();
             } catch (e) {
                 alert("Publishing error: " + e.message);
@@ -550,44 +477,13 @@
 
         async function loadAdminData() {
             try {
-                const heroDoc = await db.collection("atelier_settings").doc("hero").get();
-                if(heroDoc.exists) {
-                    const h = heroDoc.data();
-                    document.getElementById('hero-title-input').value = h.title || '';
-                    document.getElementById('hero-sub-input').value = h.subtitle || '';
-                }
-
-                const promoDoc = await db.collection("atelier_settings").doc("promo").get();
-                if(promoDoc.exists) {
-                    const d = promoDoc.data();
-                    document.getElementById('promo-banner-text').value = d.bannerText || '';
-                }
-
                 const saleDoc = await db.collection("atelier_settings").doc("saleCountdown").get();
                 if(saleDoc.exists) {
                     const s = saleDoc.data();
                     if(s.title) document.getElementById('sale-title-input').value = s.title;
                     if(s.subtitle) document.getElementById('sale-sub-input').value = s.subtitle;
+                    if(s.startTime) document.getElementById('sale-start-input').value = s.startTime;
                     if(s.endTime) document.getElementById('sale-end-input').value = s.endTime;
-                }
-
-                const consultEl = document.getElementById('admin-consult-list');
-                const consultSnap = await db.collection("atelier_consultations").orderBy("createdAt", "desc").get();
-                if(consultSnap.empty) {
-                    consultEl.innerHTML = `<p style="color: #777; font-size: 11px;">No consultation requests.</p>`;
-                } else {
-                    consultEl.innerHTML = consultSnap.docs.map(doc => {
-                        const c = doc.data();
-                        return `
-                            <div class="list-item">
-                                <div>
-                                    <strong>Consultation: ${c.clientEmail}</strong><br>
-                                    <span style="color: #aaa;">Time: ${c.preferredTime} | Notes: ${c.notes}</span>
-                                </div>
-                                <a href="mailto:${c.clientEmail}?subject=Alivèra%20Atelier%20Design%20Consultation" class="action-btn approve-btn" style="text-decoration:none;">Contact Client</a>
-                            </div>
-                        `;
-                    }).join('');
                 }
 
                 const ordersEl = document.getElementById('admin-orders-list');
@@ -602,7 +498,7 @@
                             <div class="list-item">
                                 <div>
                                     <strong>Order #${id.slice(0,6)}</strong> — ${o.clientEmail}<br>
-                                    <span style="color: #aaa;">Piece: ${o.itemName} (${o.selectedSize}) | Status: <strong>${o.status}</strong></span>
+                                    <span style="color: #aaa;">Total: ₹${Number(o.totalAmount).toLocaleString('en-IN')} | Status: <strong>${o.status}</strong></span>
                                 </div>
                                 <div style="display: flex; gap: 6px; margin-top: 5px;">
                                     <button class="action-btn approve-btn" onclick="updateOrderStatus('${id}', 'Confirmed & Dispatched')">Confirm</button>
@@ -641,7 +537,7 @@
 
         async function deleteProduct(id) {
             if(confirm("Remove this dress?")) {
-                await db.collection("atelier_products").doc(id).delete();
+                await db.collection("atelier_products").id(id).delete();
                 loadAdminData();
             }
         }
