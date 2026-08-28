@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier | Luxury Custom Apparel</title>
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -13,12 +14,10 @@
 </head>
 <body class="bg-black text-stone-100 antialiased selection:bg-amber-400 selection:text-black">
 
-    <!-- Promotional Discount Banner -->
     <div class="bg-amber-500/10 border-b border-amber-500/20 text-amber-300 text-xs tracking-widest py-2 text-center uppercase font-medium">
         ✨ Introductory Offer: Enjoy <span class="font-bold">10% OFF</span> your first custom order across all collections ✨
     </div>
 
-    <!-- Navigation Bar -->
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-stone-800">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="#" class="font-serif text-2xl tracking-[0.25em] font-bold text-amber-100">ALIVÉRA ATELIER</a>
@@ -26,10 +25,12 @@
             <nav class="hidden md:flex space-x-8 text-xs uppercase tracking-[0.2em] text-stone-400">
                 <a href="#collection" class="hover:text-amber-300 transition">Collection</a>
                 <a href="#bespoke" class="hover:text-amber-300 transition">Bespoke Design</a>
-                <a href="#about" class="hover:text-amber-300 transition">Atelier</a>
             </nav>
 
             <div class="flex items-center space-x-6">
+                <button onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition" id="auth-nav-btn">
+                    Sign In
+                </button>
                 <button onclick="openCartModal()" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-2">
                     <span>Bag</span>
                     <span id="cart-badge" class="bg-amber-400 text-black text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
@@ -38,7 +39,6 @@
         </div>
     </header>
 
-    <!-- Hero Banner Section -->
     <section class="relative bg-black text-stone-100 py-36 px-6 overflow-hidden border-b border-stone-900">
         <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:24px_24px]"></div>
         <div class="max-w-4xl mx-auto text-center relative z-10">
@@ -53,7 +53,6 @@
         </div>
     </section>
 
-    <!-- Collection Section -->
     <main id="collection" class="max-w-7xl mx-auto px-6 py-28">
         <div class="text-center mb-16">
             <h2 class="font-serif text-3xl font-light tracking-wide mb-3 text-amber-100">The Signature Collection</h2>
@@ -61,7 +60,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            <!-- Product Card: Midnight Orchid -->
             <div class="bg-stone-950 border border-stone-800 p-8 flex flex-col justify-between shadow-xl">
                 <div>
                     <div class="aspect-[4/5] bg-stone-900 mb-6 flex items-center justify-center overflow-hidden border border-stone-800">
@@ -87,7 +85,6 @@
                 </div>
             </div>
 
-            <!-- Product Card: Botanical Wrap -->
             <div class="bg-stone-950 border border-stone-800 p-8 flex flex-col justify-between shadow-xl">
                 <div>
                     <div class="aspect-[4/5] bg-stone-900 mb-6 flex items-center justify-center overflow-hidden border border-stone-800">
@@ -115,7 +112,37 @@
         </div>
     </main>
 
-    <!-- Shopping Bag Slide-Over / Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
+        <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
+            <h3 id="auth-modal-title" class="font-serif text-2xl font-medium text-amber-100 mb-6">Sign In</h3>
+            
+            <div class="space-y-4">
+                <div id="name-field-container" class="hidden">
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">Full Name</label>
+                    <input type="text" id="auth-name" placeholder="Enter your name" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">Email Address</label>
+                    <input type="email" id="auth-email" placeholder="hello@aliveraatelier.in" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">Password</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
+                </div>
+
+                <button onclick="handleAuthSubmit()" id="auth-submit-btn" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition mt-2">
+                    Sign In
+                </button>
+
+                <div class="text-center pt-4 border-t border-stone-800 text-xs">
+                    <span id="auth-toggle-text" class="text-stone-400">Don't have an account?</span>
+                    <button onclick="toggleAuthMode()" class="text-amber-300 ml-1 underline uppercase tracking-wider font-medium" id="auth-toggle-btn">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end">
         <div class="bg-stone-950 border-l border-stone-800 w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto text-stone-100">
             <div class="flex items-center justify-between pb-6 border-b border-stone-800">
@@ -123,12 +150,9 @@
                 <button onclick="closeCartModal()" class="text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
             </div>
 
-            <!-- Cart Items Container -->
             <div id="cart-items" class="flex-grow py-6 space-y-4 overflow-y-auto">
-                <!-- Dynamically populated items go here -->
-            </div>
+                </div>
 
-            <!-- Shipping & Checkout Form -->
             <div id="checkout-section" class="border-t border-stone-800 pt-6 mt-auto">
                 <h4 class="text-xs uppercase tracking-[0.2em] font-semibold mb-4 text-amber-400">Shipping Details</h4>
                 <div class="space-y-3 mb-6">
@@ -163,46 +187,101 @@
         </div>
     </div>
 
-    <!-- Footer Details -->
-    <footer class="bg-black text-stone-400 py-16 px-6 border-t border-stone-900">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div>
-                <h4 class="font-serif text-amber-100 text-lg tracking-widest mb-4">ALIVÉRA ATELIER</h4>
-                <p class="text-xs leading-relaxed text-stone-400 font-light">
-                    Bespoke luxury tailoring and custom convertible apparel, meticulously designed with botanical grace and precision engineering.
-                </p>
+    <footer class="bg-black text-stone-400 py-16 px-6 border-t border-stone-900 text-center">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h4 class="font-serif text-amber-100 text-xl tracking-[0.25em] font-bold">ALIVÉRA ATELIER</h4>
+            <p class="text-xs uppercase tracking-[0.3em] text-amber-400 font-light">Beautiful. The way you are...</p>
+            <div class="flex justify-center space-x-6 text-xs uppercase tracking-widest text-stone-400">
+                <a href="https://instagram.com/alievraatelier" target="_blank" class="hover:text-amber-300 transition">Instagram: @alievraatelier</a>
+                <span>•</span>
+                <a href="mailto:contact@aliveraatelier.in" class="hover:text-amber-300 transition">contact@aliveraatelier.in</a>
             </div>
-            <div>
-                <h5 class="text-xs uppercase tracking-[0.2em] text-amber-300 font-medium mb-4">Client Care</h5>
-                <ul class="space-y-2 text-xs">
-                    <li><a href="#" class="hover:text-stone-100 transition">Order Tracking & Shipments</a></li>
-                    <li><a href="#" class="hover:text-stone-100 transition">Custom Sizing Guide</a></li>
-                    <li><a href="#" class="hover:text-stone-100 transition">Care Instructions</a></li>
-                </ul>
+            <div class="pt-8 border-t border-stone-900 text-xs text-stone-600">
+                &copy; 2026 Alivèra Atelier. All rights reserved.
             </div>
-            <div>
-                <h5 class="text-xs uppercase tracking-[0.2em] text-amber-300 font-medium mb-4">Atelier Services</h5>
-                <ul class="space-y-2 text-xs">
-                    <li><a href="#" class="hover:text-stone-100 transition">Bespoke Consultations</a></li>
-                    <li><a href="#" class="hover:text-stone-100 transition">Packaging & Gift Wrapping</a></li>
-                    <li><a href="#" class="hover:text-stone-100 transition">Private Viewings</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 class="text-xs uppercase tracking-[0.2em] text-amber-300 font-medium mb-4">Inquiries</h5>
-                <p class="text-xs text-stone-400 font-light mb-2">For custom commissions and client support:</p>
-                <p class="text-xs text-amber-200 font-medium">concierge@aliveraatelier.in</p>
-            </div>
-        </div>
-        <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-stone-900 text-center text-xs text-stone-600">
-            &copy; 2026 Alivèra Atelier. All rights reserved.
         </div>
     </footer>
 
-    <!-- Storefront JavaScript Integration -->
     <script>
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
         const appliedDiscountPercent = 10;
+        let isSignUpMode = false;
+        let currentUser = JSON.parse(localStorage.getItem('alivera_user')) || null;
+
+        function updateAuthUI() {
+            const authBtn = document.getElementById('auth-nav-btn');
+            if (currentUser) {
+                authBtn.innerText = currentUser.name.split(' ')[0];
+                if (currentUser.email === 'hello@aliveraatelier.in') {
+                    authBtn.innerHTML += ` <span class="bg-amber-400 text-black text-[9px] px-1 py-0.5 ml-1 uppercase">Admin</span>`;
+                }
+            } else {
+                authBtn.innerText = "Sign In";
+            }
+        }
+
+        function openAuthModal() {
+            document.getElementById('auth-modal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            const title = document.getElementById('auth-modal-title');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const toggleText = document.getElementById('auth-toggle-text');
+            const toggleBtn = document.getElementById('auth-toggle-btn');
+            const nameContainer = document.getElementById('name-field-container');
+
+            if (isSignUpMode) {
+                title.innerText = "Create Account";
+                submitBtn.innerText = "Sign Up";
+                toggleText.innerText = "Already have an account?";
+                toggleBtn.innerText = "Sign In";
+                nameContainer.classList.remove('hidden');
+            } else {
+                title.innerText = "Sign In";
+                submitBtn.innerText = "Sign In";
+                toggleText.innerText = "Don't have an account?";
+                toggleBtn.innerText = "Sign Up";
+                nameContainer.classList.add('hidden');
+            }
+        }
+
+        function handleAuthSubmit() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
+            const nameInput = document.getElementById('auth-name').value.trim();
+
+            if (!email || !password || (isSignUpMode && !nameInput)) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+
+            let name = nameInput;
+            if (!isSignUpMode) {
+                if (email === 'hello@aliveraatelier.in') {
+                    name = "Admin Master";
+                } else {
+                    name = email.split('@')[0];
+                }
+            }
+
+            currentUser = { name, email };
+            localStorage.setItem('alivera_user', JSON.stringify(currentUser));
+            updateAuthUI();
+            closeAuthModal();
+
+            if (email === 'hello@aliveraatelier.in') {
+                alert("Welcome back, Admin! Redirecting to fulfillment portal...");
+                window.location.href = 'admin/index.html';
+            } else {
+                alert(`Welcome to Alivèra Atelier, ${name}!`);
+            }
+        }
 
         function updateCartUI() {
             const badge = document.getElementById('cart-badge');
@@ -278,6 +357,7 @@
             closeCartModal();
         }
 
+        updateAuthUI();
         updateCartUI();
     </script>
 </body>
