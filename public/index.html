@@ -2,159 +2,284 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alivèra Atelier</title>
-    
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <link rel="apple-touch-icon" href="/favicon.png">
-
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alivèra Atelier | Luxury Custom Apparel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400&display=swap');
-
-        body { font-family: 'Lato', sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
-        h1, h2, h3, .brand-title { font-family: 'Cinzel', serif; }
-
-        header { background: #121212; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 1000; box-sizing: border-box; width: 100%; }
-        .logo-area { display: flex; align-items: center; gap: 12px; text-decoration: none; min-width: 0; }
-        .logo-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; flex-shrink: 0; }
-        .brand-title { font-size: 15px; letter-spacing: 2px; color: #d4af37; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .nav-links { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .nav-btn { color: #d4af37; text-decoration: none; font-size: 10px; letter-spacing: 1.5px; border: 1px solid #d4af37; padding: 6px 10px; border-radius: 4px; white-space: nowrap; background: transparent; cursor: pointer; }
-        .nav-btn:hover { background: #d4af37; color: #0a0a0a; }
-
-        .user-avatar-nav { width: 34px; height: 34px; border-radius: 50%; border: 1px solid #d4af37; background: #222; color: #d4af37; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; text-decoration: none; overflow: hidden; }
-
-        .promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 10px; letter-spacing: 1.5px; font-weight: bold; display: none; }
-
-        .hero { text-align: center; padding: 160px 20px; background-size: cover; background-repeat: no-repeat; background-position: center; background-color: #0a0a0a; border-bottom: 1px solid #222; position: relative; }
-        .hero::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(10,10,10,0.65); z-index: 1; }
-        .hero-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
-        .hero h1 { color: #d4af37; font-size: 22px; letter-spacing: 3px; margin-bottom: 10px; }
-        .hero p { color: #aaa; font-size: 11px; letter-spacing: 1.5px; line-height: 1.5; margin-bottom: 5px; }
-
-        .container { max-width: 1200px; margin: 25px auto; padding: 0 15px; flex: 1; width: 100%; box-sizing: border-box; }
-        .section-title { font-size: 18px; color: #d4af37; letter-spacing: 2px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 25px; text-align: center; font-family: 'Cinzel', serif; }
-
-        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.3s; position: relative; }
-        .product-card:hover { border-color: #d4af37; }
-        
-        .product-img-wrap { position: relative; width: 100%; height: 320px; cursor: pointer; }
-        .product-img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .card-icon-btn { position: absolute; top: 10px; background: rgba(10,10,10,0.7); border: 1px solid #d4af37; color: #d4af37; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; z-index: 5; }
-        .share-btn { right: 10px; }
-        .wishlist-btn { right: 50px; }
-        .card-icon-btn:hover { background: #d4af37; color: #0a0a0a; }
-
-        .product-info { padding: 15px; display: flex; flex-direction: column; flex: 1; }
-        .product-name { font-size: 15px; color: #fff; letter-spacing: 1px; margin-bottom: 8px; font-family: 'Cinzel', serif; }
-        .product-price { font-size: 13px; color: #d4af37; margin-bottom: 15px; font-weight: bold; }
-        
-        .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
-        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1.5px; text-decoration: none; font-size: 10px; text-align: center; display: block; width: 100%; box-sizing: border-box; }
-        .btn-outline { background: transparent; color: #d4af37; border: 1px solid #d4af37; }
-        .btn:active { background: #c59b27; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; overflow-y: auto; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 25px; border-radius: 8px; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-sizing: border-box; text-align: left; }
-        .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #d4af37; font-size: 18px; cursor: pointer; }
-        
-        footer { background: #121212; border-top: 1px solid #222; text-align: center; padding: 30px 15px; color: #777; font-size: 10px; letter-spacing: 1.5px; line-height: 2.2; margin-top: auto; }
-        footer a { color: #d4af37; text-decoration: none; }
-        .tagline { color: #d4af37; font-style: italic; font-family: 'Cinzel', serif; font-size: 11px; margin-bottom: 8px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
     </style>
 </head>
-<body>
+<body class="bg-stone-50 text-stone-900 antialiased">
 
-    <div id="promo-banner" class="promo-banner"></div>
+    <!-- Promotional Discount Banner -->
+    <div class="bg-stone-900 text-stone-200 text-xs tracking-widest py-2 text-center uppercase font-medium">
+        ✨ Introductory Offer: Enjoy <span class="text-amber-300 font-semibold">10% OFF</span> your first custom order across all collections ✨
+    </div>
 
-    <header>
-        <a href="/" class="logo-area">
-            <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-            <div class="brand-title">ALIVÈRA ATELIER</div>
-        </a>
-        <div class="nav-links">
-            <a href="/wishlist.html" class="nav-btn">WISHLIST</a>
-            <a href="/tracking.html" class="nav-btn">TRACK ORDER</a>
-            <button class="nav-btn" onclick="openCartModal()">CART (<span id="cart-count">0</span>)</button>
-            <div id="nav-auth-area" style="display:inline-flex; gap:6px; align-items:center;">
-                <a href="/admin/?mode=signin" class="nav-btn">SIGN IN</a>
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-stone-50/90 backdrop-blur-md border-b border-stone-200">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="font-serif text-2xl tracking-widest font-bold">ALIVÉRA ATELIER</a>
+            
+            <nav class="hidden md:flex space-x-8 text-sm uppercase tracking-widest text-stone-600">
+                <a href="#collection" class="hover:text-stone-900 transition">Collection</a>
+                <a href="#bespoke" class="hover:text-stone-900 transition">Bespoke Design</a>
+                <a href="#about" class="hover:text-stone-900 transition">Atelier</a>
+            </nav>
+
+            <div class="flex items-center space-x-6">
+                <button onclick="openCartModal()" class="relative text-sm uppercase tracking-wider font-medium hover:text-stone-600 transition flex items-center gap-2">
+                    <span>Bag</span>
+                    <span id="cart-badge" class="bg-stone-900 text-stone-50 text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <section id="hero-section" class="hero">
-        <div class="hero-content">
-            <h1 id="hero-title">Bespoke Elegance</h1>
-            <p id="hero-subtitle">Handcrafted custom apparel designed for distinction.</p>
+    <!-- Hero Banner Section -->
+    <section class="relative bg-stone-900 text-stone-100 py-32 px-6 overflow-hidden">
+        <div class="absolute inset-0 opacity-30 bg-[radial-gradient(#d6d3d1_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <span class="text-xs tracking-[0.3em] uppercase text-amber-300 block mb-4">Fall / Winter Bespoke</span>
+            <h1 class="font-serif text-4xl md:text-6xl font-light tracking-wide mb-6 leading-tight">Artisanal Elegance, Crafted Exclusively For You</h1>
+            <p class="text-stone-300 text-base md:text-lg max-w-2xl mx-auto font-light mb-10 leading-relaxed">
+                Explore our signature convertible pieces and bespoke silhouettes designed with uncompromising detail and botanical precision.
+            </p>
+            <a href="#collection" class="inline-block bg-stone-100 text-stone-900 px-8 py-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-200 transition">
+                Explore Collection
+            </a>
         </div>
     </section>
 
-    <div class="container">
-        <div class="section-title">THE ATELIER COLLECTION</div>
-        <div id="store-catalog" class="catalog-grid">
-            <p style="color: #777; font-size: 12px; text-align: center; grid-column: 1/-1;">Loading curated pieces...</p>
+    <!-- Collection Section -->
+    <main id="collection" class="max-w-7xl mx-auto px-6 py-24">
+        <div class="text-center mb-16">
+            <h2 class="font-serif text-3xl font-light tracking-wide mb-3">The Signature Collection</h2>
+            <p class="text-stone-500 text-sm tracking-wider uppercase">Hand-tailored upon request</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+            <!-- Product Card: Midnight Orchid -->
+            <div class="bg-white border border-stone-200 p-8 flex flex-col justify-between shadow-sm">
+                <div>
+                    <div class="aspect-[4/5] bg-stone-100 mb-6 flex items-center justify-center overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1000&auto=format&fit=crop" alt="Midnight Orchid Dress" class="object-cover w-full h-full hover:scale-105 transition duration-500">
+                    </div>
+                    <span class="text-xs uppercase tracking-widest text-stone-400 block mb-1">Convertible Two-Piece</span>
+                    <h3 class="font-serif text-2xl font-medium mb-2">The Midnight Orchid Dress</h3>
+                    <p class="text-stone-600 text-sm mb-6 font-light">Sleek black fitted base dress accompanied by a detachable transparent lavender high-low wrap skirt.</p>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-lg font-medium">₹12,499</span>
+                        <select id="size-midnight-orchid" class="border border-stone-300 px-3 py-2 text-xs uppercase tracking-wider bg-white">
+                            <option value="XS">Size: XS</option>
+                            <option value="S">Size: S</option>
+                            <option value="M" selected>Size: M</option>
+                            <option value="L">Size: L</option>
+                        </select>
+                    </div>
+                    <button onclick="addToCart('Midnight Orchid Dress', 12499, 'SKU-MO-01')" class="w-full bg-stone-900 text-stone-50 py-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition">
+                        Add to Bag
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product Card: Botanical Wrap -->
+            <div class="bg-white border border-stone-200 p-8 flex flex-col justify-between shadow-sm">
+                <div>
+                    <div class="aspect-[4/5] bg-stone-100 mb-6 flex items-center justify-center overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000&auto=format&fit=crop" alt="Botanical Silk Ensemble" class="object-cover w-full h-full hover:scale-105 transition duration-500">
+                    </div>
+                    <span class="text-xs uppercase tracking-widest text-stone-400 block mb-1">Bespoke Evening Wear</span>
+                    <h3 class="font-serif text-2xl font-medium mb-2">Botanical Silk Ensemble</h3>
+                    <p class="text-stone-600 text-sm mb-6 font-light">Custom botanical-themed drapery crafted for effortless movement and timeless sophistication.</p>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-lg font-medium">₹14,800</span>
+                        <select id="size-botanical-silk" class="border border-stone-300 px-3 py-2 text-xs uppercase tracking-wider bg-white">
+                            <option value="XS">Size: XS</option>
+                            <option value="S">Size: S</option>
+                            <option value="M" selected>Size: M</option>
+                            <option value="L">Size: L</option>
+                        </select>
+                    </div>
+                    <button onclick="addToCart('Botanical Silk Ensemble', 14800, 'SKU-BSE-02')" class="w-full bg-stone-900 text-stone-50 py-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition">
+                        Add to Bag
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Shopping Bag Slide-Over / Modal -->
+    <div id="cart-modal" class="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm hidden flex justify-end">
+        <div class="bg-white w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto">
+            <div class="flex items-center justify-between pb-6 border-b border-stone-200">
+                <h3 class="font-serif text-xl font-medium">Your Shopping Bag</h3>
+                <button onclick="closeCartModal()" class="text-stone-400 hover:text-stone-900 text-sm uppercase tracking-widest">Close</button>
+            </div>
+
+            <!-- Cart Items Container -->
+            <div id="cart-items" class="flex-grow py-6 space-y-4 overflow-y-auto">
+                <!-- Dynamically populated items go here -->
+            </div>
+
+            <!-- Shipping & Checkout Form -->
+            <div id="checkout-section" class="border-t border-stone-200 pt-6 mt-auto">
+                <h4 class="text-xs uppercase tracking-widest font-semibold mb-4 text-stone-500">Shipping Details</h4>
+                <div class="space-y-3 mb-6">
+                    <input type="text" id="ship-name" placeholder="Full Name" class="w-full border border-stone-300 p-3 text-xs uppercase">
+                    <input type="text" id="ship-phone" placeholder="Phone Number" class="w-full border border-stone-300 p-3 text-xs uppercase">
+                    <input type="text" id="ship-address" placeholder="Street Address" class="w-full border border-stone-300 p-3 text-xs uppercase">
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" id="ship-city" placeholder="City" class="border border-stone-300 p-3 text-xs uppercase">
+                        <input type="text" id="ship-pincode" placeholder="Pincode" class="border border-stone-300 p-3 text-xs uppercase">
+                    </div>
+                </div>
+
+                <div class="space-y-2 mb-6 text-sm">
+                    <div class="flex justify-between text-stone-600">
+                        <span>Subtotal</span>
+                        <span id="cart-subtotal">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-emerald-700">
+                        <span>Introductory Discount (10%)</span>
+                        <span id="cart-discount">-₹0</span>
+                    </div>
+                    <div class="flex justify-between font-medium text-base pt-2 border-t border-stone-200">
+                        <span>Total</span>
+                        <span id="cart-total">₹0</span>
+                    </div>
+                </div>
+
+                <button onclick="checkoutOrder()" class="w-full bg-stone-900 text-stone-50 py-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition">
+                    Proceed to Secure Checkout
+                </button>
+            </div>
         </div>
     </div>
 
-    <div id="product-modal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeProductModal()">&times;</button>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; align-items:start;">
-                <div>
-                    <img id="modal-product-img" src="" alt="Piece" style="width: 100%; height: 320px; object-fit: cover; border-radius: 4px; border: 1px solid #333;">
-                    <div id="modal-stock-count" style="font-size:10px; color:#d4af37; margin-top:8px; text-transform:uppercase; letter-spacing:1px;"></div>
-                </div>
-                <div>
-                    <h3 id="modal-product-name" style="color:#d4af37; font-size: 16px; margin-bottom: 5px; font-family:'Cinzel', serif;"></h3>
-                    <div id="modal-product-price" style="color:#fff; font-size: 14px; font-weight:bold; margin-bottom: 12px;"></div>
-                    
-                    <div style="margin-bottom: 12px;">
-                        <label style="font-size: 9px; color: #aaa; letter-spacing: 1px; display:block; margin-bottom: 4px;">SELECT SIZE</label>
-                        <select id="modal-size-select" style="width: 100%; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 11px;">
-                            <option value="Custom">Custom Measurements</option>
-                            <option value="XS">XS</option>
-                            <option value="S">S</option>
-                            <option value="M" selected>M</option>
-                            <option value="L">L</option>
-                            <option value="XL">XL</option>
-                        </select>
-                    </div>
-
-                    <div id="modal-size-chart-wrap" style="margin-bottom: 12px; display:none;">
-                        <label style="font-size: 9px; color: #d4af37; letter-spacing: 1px; display:block; margin-bottom: 4px;">ATELIER SIZE GUIDE</label>
-                        <img id="modal-size-chart-img" src="" alt="Size Chart" style="width: 100%; max-height: 80px; object-fit: contain; border: 1px solid #222; border-radius: 4px;">
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <button class="btn btn-outline" onclick="addCurrentToCart(); playSparkleSound();">ADD TO BAG</button>
-                        <button class="btn" onclick="buyCurrentNow(); playSparkleSound();">BUY NOW</button>
-                    </div>
-                </div>
-            </div>
-
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-
-            <div style="margin-bottom:20px;">
-                <h4 style="color: #d4af37; font-size: 11px; letter-spacing:1px; margin-bottom:8px; font-family:'Cinzel',serif;">QUESTIONS ASKED</h4>
-                <div id="modal-questions-list" style="font-size: 11px; color: #bbb; margin-bottom:8px; max-height:90px; overflow-y:auto;">
-                    <p style="color: #666; font-size:10px;">No questions asked yet.</p>
-                </div>
-                <div style="display: flex; gap: 6px;">
-                    <input type="text" id="user-question-input" placeholder="Ask about fabric, fit, or customization..." style="flex:1; padding:6px; background:#0a0a0a; border:1px solid #333; color:#fff; border-radius:4px; font-size:11px;">
-                    <button class="btn" style="width: auto; padding: 6px 12px; font-size:9px;" onclick="submitProductQuestion()">ASK</button>
-                </div>
-            </div>
-
+    <!-- Footer Details -->
+    <footer class="bg-stone-900 text-stone-400 py-16 px-6 border-t border-stone-800">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
             <div>
-                <h4 style="color: #d4af37; font-size: 11px; letter-spacing:1px; margin-bottom:8px; font-family:'Cinzel',serif;">REVIEWS & RATINGS</h4>
-                <div id="modal-reviews-list" style="font-size: 11px; color: #bbb; margin-bottom:12px; max-height:110px; overflow-y:auto;">
-                    <p style="color: #666; font-size:10px;">No reviews yet.</p>
-                </div>
-                <div style="background:#0a0a0a; padding:10px; border:1px solid #222
+                <h4 class="font-serif text-stone-100 text-lg tracking-widest mb-4">ALIVÉRA ATELIER</h4>
+                <p class="text-xs leading-relaxed text-stone-400 font-light">
+                    Bespoke luxury tailoring and custom convertible apparel, meticulously designed with botanical grace and precision engineering.
+                </p>
+            </div>
+            <div>
+                <h5 class="text-xs uppercase tracking-[0.2em] text-stone-200 font-medium mb-4">Client Care</h5>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" class="hover:text-stone-100 transition">Order Tracking & Shipments</a></li>
+                    <li><a href="#" class="hover:text-stone-100 transition">Custom Sizing Guide</a></li>
+                    <li><a href="#" class="hover:text-stone-100 transition">Care Instructions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-xs uppercase tracking-[0.2em] text-stone-200 font-medium mb-4">Atelier Services</h5>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" class="hover:text-stone-100 transition">Bespoke Consultations</a></li>
+                    <li><a href="#" class="hover:text-stone-100 transition">Packaging & Gift Wrapping</a></li>
+                    <li><a href="#" class="hover:text-stone-100 transition">Private Viewings</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-xs uppercase tracking-[0.2em] text-stone-200 font-medium mb-4">Inquiries</h5>
+                <p class="text-xs text-stone-400 font-light mb-2">For custom commissions and client support:</p>
+                <p class="text-xs text-stone-200 font-medium">concierge@aliveraatelier.in</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-stone-800/60 text-center text-xs text-stone-500">
+            &copy; 2026 Alivèra Atelier. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Storefront JavaScript Integration -->
+    <script>
+        let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
+        const appliedDiscountPercent = 10;
+
+        function updateCartUI() {
+            const badge = document.getElementById('cart-badge');
+            const itemsContainer = document.getElementById('cart-items');
+            
+            badge.innerText = cart.length;
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `<p class="text-stone-400 text-xs text-center py-12 uppercase tracking-wider">Your shopping bag is empty.</p>`;
+            } else {
+                itemsContainer.innerHTML = cart.map((item, index) => `
+                    <div class="flex justify-between items-center bg-stone-50 p-4 border border-stone-200">
+                        <div>
+                            <h5 class="text-sm font-medium">${item.name}</h5>
+                            <span class="text-xs text-stone-500 uppercase">Size: ${item.size}</span>
+                            <p class="text-xs font-medium mt-1">₹${item.price}</p>
+                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-stone-400 hover:text-red-600 text-xs uppercase tracking-wider">Remove</button>
+                    </div>
+                `).join('');
+            }
+
+            let subtotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
+            let discountAmount = Math.round((subtotal * appliedDiscountPercent) / 100);
+            let finalTotal = subtotal - discountAmount;
+
+            document.getElementById('cart-subtotal').innerText = `₹${subtotal}`;
+            document.getElementById('cart-discount').innerText = `-₹${discountAmount}`;
+            document.getElementById('cart-total').innerText = `₹${finalTotal}`;
+        }
+
+        function addToCart(name, price, sku) {
+            let sizeSelectId = sku === 'SKU-MO-01' ? 'size-midnight-orchid' : 'size-botanical-silk';
+            let size = document.getElementById(sizeSelectId).value;
+            cart.push({ name, price, sku, size, units: 1 });
+            saveCartToStorage();
+            updateCartUI();
+            openCartModal();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCartToStorage();
+            updateCartUI();
+        }
+
+        function saveCartToStorage() {
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+        }
+
+        function openCartModal() {
+            document.getElementById('cart-modal').classList.remove('hidden');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.add('hidden');
+        }
+
+        function checkoutOrder() {
+            if (cart.length === 0) { alert("Your bag is empty."); return; }
+            const name = document.getElementById('ship-name').value.trim();
+            const phone = document.getElementById('ship-phone').value.trim();
+            const address = document.getElementById('ship-address').value.trim();
+            const city = document.getElementById('ship-city').value.trim();
+            const pincode = document.getElementById('ship-pincode').value.trim();
+
+            if (!name || !phone || !address || !city || !pincode) { alert("Please fill shipping details."); return; }
+
+            alert(`Order successfully placed! Thank you, ${name}. Your items are being prepared for fulfillment.`);
+            cart = [];
+            saveCartToStorage();
+            updateCartUI();
+            closeCartModal();
+        }
+
+        // Initialize UI on load
+        updateCartUI();
+    </script>
+</body>
+</html>
