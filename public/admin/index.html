@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier | Admin Portal</title>
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -13,7 +14,6 @@
 </head>
 <body class="bg-stone-100 text-stone-900 antialiased">
 
-    <!-- Admin Navigation -->
     <header class="bg-stone-900 text-stone-100 py-4 px-6 border-b border-stone-800">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -24,43 +24,60 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-6 py-12">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="font-serif text-3xl font-light">Order Fulfillment Manager</h1>
-                <p class="text-xs text-stone-500 uppercase tracking-wider mt-1">Manage incoming bespoke client orders & Shiprocket sync</p>
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-8">
+        
+        <div class="bg-white border border-stone-200 shadow-sm p-6">
+            <h2 class="font-serif text-xl font-medium mb-1">Storefront Hero Banner Manager</h2>
+            <p class="text-xs text-stone-500 uppercase tracking-wider mb-4">Required Storefront Dimensions: 1897px × 412px</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div class="md:col-span-2">
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Banner Image URL</label>
+                    <input type="text" id="admin-banner-url" placeholder="Paste image link (1897x412 optimized)" class="w-full bg-stone-50 border border-stone-300 p-3 text-xs text-stone-900 outline-none focus:border-stone-900">
+                </div>
+                <div>
+                    <button onclick="updateHeroBanner()" class="w-full bg-stone-900 text-stone-50 py-3 text-xs uppercase tracking-[0.2em] hover:bg-stone-800 transition">
+                        Update Live Banner
+                    </button>
+                </div>
             </div>
-            <button onclick="loadAdminOrders()" class="bg-stone-900 text-stone-50 px-5 py-3 text-xs uppercase tracking-[0.2em] hover:bg-stone-800 transition">
-                Refresh Orders
-            </button>
         </div>
 
-        <!-- Orders Table -->
-        <div class="bg-white border border-stone-200 shadow-sm overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead>
-                        <tr class="bg-stone-50 border-b border-stone-200 uppercase tracking-widest text-stone-500">
-                            <th class="p-4">Order ID</th>
-                            <th class="p-4">Client Name</th>
-                            <th class="p-4">Items / Size</th>
-                            <th class="p-4">Total (₹)</th>
-                            <th class="p-4">Status</th>
-                            <th class="p-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-orders-table" class="divide-y divide-stone-200">
-                        <tr>
-                            <td colspan="6" class="p-8 text-center text-stone-400 uppercase tracking-wider">Loading orders from database...</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div>
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h1 class="font-serif text-3xl font-light">Order Fulfillment Manager</h1>
+                    <p class="text-xs text-stone-500 uppercase tracking-wider mt-1">Manage incoming bespoke client orders & Shiprocket sync</p>
+                </div>
+                <button onclick="loadAdminOrders()" class="bg-stone-900 text-stone-50 px-5 py-3 text-xs uppercase tracking-[0.2em] hover:bg-stone-800 transition">
+                    Refresh Orders
+                </button>
+            </div>
+
+            <div class="bg-white border border-stone-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-stone-50 border-b border-stone-200 uppercase tracking-widest text-stone-500">
+                                <th class="p-4">Order ID</th>
+                                <th class="p-4">Client Name</th>
+                                <th class="p-4">Items / Size</th>
+                                <th class="p-4">Total (₹)</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-table" class="divide-y divide-stone-200">
+                            <tr>
+                                <td colspan="6" class="p-8 text-center text-stone-400 uppercase tracking-wider">Loading orders from database...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script>
@@ -71,6 +88,19 @@
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
+
+        // Preload current banner URL if stored
+        const currentBanner = localStorage.getItem('alivera_hero_banner');
+        if (currentBanner) {
+            document.getElementById('admin-banner-url').value = currentBanner;
+        }
+
+        function updateHeroBanner() {
+            const url = document.getElementById('admin-banner-url').value.trim();
+            if (!url) { alert("Please enter a valid image URL."); return; }
+            localStorage.setItem('alivera_hero_banner', url);
+            alert("Hero banner successfully updated (1897x412)!");
+        }
 
         async function loadAdminOrders() {
             const tableBody = document.getElementById('admin-orders-table');
