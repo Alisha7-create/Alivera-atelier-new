@@ -159,14 +159,14 @@
                 <h2>CONFIGURE STOREFRONT HERO BANNER</h2>
                 <div class="form-group">
                     <label>HERO BANNER TITLE</label>
-                    <input type="text" id="hero-title-input" class="form-control" placeholder="BESPOKE HAUTE COUTURE">
+                    <input type="text" id="hero-title-input" class="form-control" placeholder="Enter title">
                 </div>
                 <div class="form-group">
                     <label>HERO BANNER SUBTITLE / TAGLINE</label>
-                    <input type="text" id="hero-sub-input" class="form-control" placeholder="HANDCRAFTED SILKS & CUSTOM DRAPES">
+                    <input type="text" id="hero-sub-input" class="form-control" placeholder="Enter subtitle">
                 </div>
                 <div class="form-group">
-                    <label>HERO BACKGROUND IMAGE UPLOAD</label>
+                    <label>HERO BACKGROUND IMAGE UPLOAD (Recommended: 1920x1080px)</label>
                     <input type="file" id="hero-img-file" class="form-control" accept="image/*" onchange="compressAndConvertImage(this, 'hero-img-data', 1200)">
                     <input type="hidden" id="hero-img-data">
                 </div>
@@ -174,10 +174,28 @@
             </div>
 
             <div class="card">
+                <h2>SALE COUNTDOWN TIMER (Replaces Hero Banner When Active)</h2>
+                <div class="form-group">
+                    <label>SALE EVENT TITLE</label>
+                    <input type="text" id="sale-title-input" class="form-control" placeholder="e.g. FLASH SPRING SALE — 15% OFF">
+                </div>
+                <div class="form-group">
+                    <label>SALE SUBTITLE</label>
+                    <input type="text" id="sale-sub-input" class="form-control" placeholder="e.g. EXCLUSIVE DISCOUNTS ENDING SOON">
+                </div>
+                <div class="form-group">
+                    <label>SALE END DATE & TIME</label>
+                    <input type="datetime-local" id="sale-end-input" class="form-control">
+                </div>
+                <button class="btn" onclick="saveSaleCountdown()">Activate Sale Countdown Banner</button>
+                <button class="btn" style="background:#333; color:#aaa; margin-top:8px;" onclick="clearSaleCountdown()">Disable / Clear Sale Countdown</button>
+            </div>
+
+            <div class="card">
                 <h2>PROMOTIONAL BANNER CONFIGURATOR</h2>
                 <div class="form-group">
                     <label>PROMO BANNER TEXT (Leave blank to hide)</label>
-                    <input type="text" id="promo-banner-text" class="form-control" placeholder="e.g. LUXURY SPRING SALE — 10% OFF FIRST ORDER">
+                    <input type="text" id="promo-banner-text" class="form-control" placeholder="e.g. FREE WORLDWIDE SHIPPING ON ORDERS OVER ₹20,000">
                 </div>
                 <button class="btn" onclick="savePromoConfig()">Save / Clear Promo Banner</button>
             </div>
@@ -306,7 +324,6 @@
 
         async function loadCustomerPortal(email) {
             try {
-                // Load Wishlist
                 const wishlistEl = document.getElementById('customer-wishlist');
                 const wishSnap = await db.collection("atelier_wishlists").where("userEmail", "==", email).get();
                 if (wishSnap.empty) {
@@ -323,7 +340,6 @@
                     }).join('');
                 }
 
-                // Load Orders
                 const ordersEl = document.getElementById('customer-orders-list');
                 const snapshot = await db.collection("atelier_orders").where("clientEmail", "==", email).get();
                 if (snapshot.empty) {
@@ -343,7 +359,6 @@
                     }).join('');
                 }
 
-                // Load Measurements
                 const mDoc = await db.collection("atelier_measurements").doc(email).get();
                 if (mDoc.exists) {
                     const m = mDoc.data();
@@ -447,14 +462,46 @@
                 const existingImage = existingDoc.exists ? (existingDoc.data().image || '') : '';
 
                 await db.collection("atelier_settings").doc("hero").set({
-                    title: title || "BESPOKE HAUTE COUTURE",
-                    subtitle: subtitle || "HANDCRAFTED SILKS & CUSTOM DRAPES TAILORED TO PERFECTION",
+                    title: title || "",
+                    subtitle: subtitle || "",
                     image: newImage || existingImage
                 }, { merge: true });
 
                 alert("Hero banner updated successfully!");
             } catch (e) {
                 alert("Error saving hero config: " + e.message);
+            }
+        }
+
+        async function saveSaleCountdown() {
+            try {
+                const title = document.getElementById('sale-title-input').value;
+                const subtitle = document.getElementById('sale-sub-input').value;
+                const endTime = document.getElementById('sale-end-input').value;
+
+                if (!endTime) {
+                    alert("Please select an end date and time for the sale countdown.");
+                    return;
+                }
+
+                await db.collection("atelier_settings").doc("saleCountdown").set({
+                    title: title || "LIMITED SALE EVENT",
+                    subtitle: subtitle || "EXCLUSIVE DISCOUNTS ENDING SOON",
+                    endTime: endTime
+                }, { merge: true });
+
+                alert("Sale countdown banner activated! It will now replace the hero banner on the storefront.");
+            } catch (e) {
+                alert("Error activating countdown: " + e.message);
+            }
+        }
+
+        async function clearSaleCountdown() {
+            try {
+                await db.collection("atelier_settings").doc("saleCountdown").set({ endTime: "" }, { merge: true });
+                alert("Sale countdown disabled. Normal hero banner will display.");
+            } catch (e) {
+                alert("Error clearing sale countdown: " + e.message);
             }
         }
 
@@ -516,7 +563,14 @@
                     document.getElementById('promo-banner-text').value = d.bannerText || '';
                 }
 
-                // Load Consultations
+                const saleDoc = await db.collection("atelier_settings").doc("saleCountdown").get();
+                if(saleDoc.exists) {
+                    const s = saleDoc.data();
+                    if(s.title) document.getElementById('sale-title-input').value = s.title;
+                    if(s.subtitle) document.getElementById('sale-sub-input').value = s.subtitle;
+                    if(s.endTime) document.getElementById('sale-end-input').value = s.endTime;
+                }
+
                 const consultEl = document.getElementById('admin-consult-list');
                 const consultSnap = await db.collection("atelier_consultations").orderBy("createdAt", "desc").get();
                 if(consultSnap.empty) {
