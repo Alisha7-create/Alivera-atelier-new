@@ -11,103 +11,103 @@
         .font-serif { font-family: 'Playfair Display', serif; }
     </style>
 </head>
-<body class="bg-stone-50 text-stone-900 antialiased">
+<body class="bg-black text-stone-100 antialiased selection:bg-amber-400 selection:text-black">
 
     <!-- Promotional Discount Banner -->
-    <div class="bg-stone-900 text-stone-200 text-xs tracking-widest py-2 text-center uppercase font-medium">
-        ✨ Introductory Offer: Enjoy <span class="text-amber-300 font-semibold">10% OFF</span> your first custom order across all collections ✨
+    <div class="bg-amber-500/10 border-b border-amber-500/20 text-amber-300 text-xs tracking-widest py-2 text-center uppercase font-medium">
+        ✨ Introductory Offer: Enjoy <span class="font-bold">10% OFF</span> your first custom order across all collections ✨
     </div>
 
     <!-- Navigation Bar -->
-    <header class="sticky top-0 z-40 bg-stone-50/90 backdrop-blur-md border-b border-stone-200">
+    <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-stone-800">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <a href="#" class="font-serif text-2xl tracking-widest font-bold">ALIVÉRA ATELIER</a>
+            <a href="#" class="font-serif text-2xl tracking-[0.25em] font-bold text-amber-100">ALIVÉRA ATELIER</a>
             
-            <nav class="hidden md:flex space-x-8 text-sm uppercase tracking-widest text-stone-600">
-                <a href="#collection" class="hover:text-stone-900 transition">Collection</a>
-                <a href="#bespoke" class="hover:text-stone-900 transition">Bespoke Design</a>
-                <a href="#about" class="hover:text-stone-900 transition">Atelier</a>
+            <nav class="hidden md:flex space-x-8 text-xs uppercase tracking-[0.2em] text-stone-400">
+                <a href="#collection" class="hover:text-amber-300 transition">Collection</a>
+                <a href="#bespoke" class="hover:text-amber-300 transition">Bespoke Design</a>
+                <a href="#about" class="hover:text-amber-300 transition">Atelier</a>
             </nav>
 
             <div class="flex items-center space-x-6">
-                <button onclick="openCartModal()" class="relative text-sm uppercase tracking-wider font-medium hover:text-stone-600 transition flex items-center gap-2">
+                <button onclick="openCartModal()" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-2">
                     <span>Bag</span>
-                    <span id="cart-badge" class="bg-stone-900 text-stone-50 text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                    <span id="cart-badge" class="bg-amber-400 text-black text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
                 </button>
             </div>
         </div>
     </header>
 
     <!-- Hero Banner Section -->
-    <section class="relative bg-stone-900 text-stone-100 py-32 px-6 overflow-hidden">
-        <div class="absolute inset-0 opacity-30 bg-[radial-gradient(#d6d3d1_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    <section class="relative bg-black text-stone-100 py-36 px-6 overflow-hidden border-b border-stone-900">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:24px_24px]"></div>
         <div class="max-w-4xl mx-auto text-center relative z-10">
-            <span class="text-xs tracking-[0.3em] uppercase text-amber-300 block mb-4">Fall / Winter Bespoke</span>
-            <h1 class="font-serif text-4xl md:text-6xl font-light tracking-wide mb-6 leading-tight">Artisanal Elegance, Crafted Exclusively For You</h1>
-            <p class="text-stone-300 text-base md:text-lg max-w-2xl mx-auto font-light mb-10 leading-relaxed">
+            <span class="text-xs tracking-[0.3em] uppercase text-amber-400 block mb-4 font-medium">Fall / Winter Bespoke</span>
+            <h1 class="font-serif text-4xl md:text-6xl font-light tracking-wide mb-6 leading-tight text-amber-50">Artisanal Elegance, Crafted Exclusively For You</h1>
+            <p class="text-stone-400 text-base md:text-lg max-w-2xl mx-auto font-light mb-10 leading-relaxed">
                 Explore our signature convertible pieces and bespoke silhouettes designed with uncompromising detail and botanical precision.
             </p>
-            <a href="#collection" class="inline-block bg-stone-100 text-stone-900 px-8 py-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-200 transition">
+            <a href="#collection" class="inline-block bg-amber-400 text-black px-8 py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">
                 Explore Collection
             </a>
         </div>
     </section>
 
     <!-- Collection Section -->
-    <main id="collection" class="max-w-7xl mx-auto px-6 py-24">
+    <main id="collection" class="max-w-7xl mx-auto px-6 py-28">
         <div class="text-center mb-16">
-            <h2 class="font-serif text-3xl font-light tracking-wide mb-3">The Signature Collection</h2>
-            <p class="text-stone-500 text-sm tracking-wider uppercase">Hand-tailored upon request</p>
+            <h2 class="font-serif text-3xl font-light tracking-wide mb-3 text-amber-100">The Signature Collection</h2>
+            <p class="text-stone-500 text-xs tracking-[0.2em] uppercase">Hand-tailored upon request</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
             <!-- Product Card: Midnight Orchid -->
-            <div class="bg-white border border-stone-200 p-8 flex flex-col justify-between shadow-sm">
+            <div class="bg-stone-950 border border-stone-800 p-8 flex flex-col justify-between shadow-xl">
                 <div>
-                    <div class="aspect-[4/5] bg-stone-100 mb-6 flex items-center justify-center overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1000&auto=format&fit=crop" alt="Midnight Orchid Dress" class="object-cover w-full h-full hover:scale-105 transition duration-500">
+                    <div class="aspect-[4/5] bg-stone-900 mb-6 flex items-center justify-center overflow-hidden border border-stone-800">
+                        <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1000&auto=format&fit=crop" alt="Midnight Orchid Dress" class="object-cover w-full h-full hover:scale-105 transition duration-500 opacity-90">
                     </div>
-                    <span class="text-xs uppercase tracking-widest text-stone-400 block mb-1">Convertible Two-Piece</span>
-                    <h3 class="font-serif text-2xl font-medium mb-2">The Midnight Orchid Dress</h3>
-                    <p class="text-stone-600 text-sm mb-6 font-light">Sleek black fitted base dress accompanied by a detachable transparent lavender high-low wrap skirt.</p>
+                    <span class="text-[10px] uppercase tracking-[0.2em] text-amber-400/80 block mb-1">Convertible Two-Piece</span>
+                    <h3 class="font-serif text-2xl font-medium mb-2 text-stone-100">The Midnight Orchid Dress</h3>
+                    <p class="text-stone-400 text-sm mb-6 font-light">Sleek black fitted base dress accompanied by a detachable transparent lavender high-low wrap skirt.</p>
                 </div>
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <span class="text-lg font-medium">₹12,499</span>
-                        <select id="size-midnight-orchid" class="border border-stone-300 px-3 py-2 text-xs uppercase tracking-wider bg-white">
+                        <span class="text-lg font-serif text-amber-200">₹12,499</span>
+                        <select id="size-midnight-orchid" class="bg-stone-900 border border-stone-700 text-stone-200 px-3 py-2 text-xs uppercase tracking-wider">
                             <option value="XS">Size: XS</option>
                             <option value="S">Size: S</option>
                             <option value="M" selected>Size: M</option>
                             <option value="L">Size: L</option>
                         </select>
                     </div>
-                    <button onclick="addToCart('Midnight Orchid Dress', 12499, 'SKU-MO-01')" class="w-full bg-stone-900 text-stone-50 py-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition">
+                    <button onclick="addToCart('Midnight Orchid Dress', 12499, 'SKU-MO-01')" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">
                         Add to Bag
                     </button>
                 </div>
             </div>
 
             <!-- Product Card: Botanical Wrap -->
-            <div class="bg-white border border-stone-200 p-8 flex flex-col justify-between shadow-sm">
+            <div class="bg-stone-950 border border-stone-800 p-8 flex flex-col justify-between shadow-xl">
                 <div>
-                    <div class="aspect-[4/5] bg-stone-100 mb-6 flex items-center justify-center overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000&auto=format&fit=crop" alt="Botanical Silk Ensemble" class="object-cover w-full h-full hover:scale-105 transition duration-500">
+                    <div class="aspect-[4/5] bg-stone-900 mb-6 flex items-center justify-center overflow-hidden border border-stone-800">
+                        <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1000&auto=format&fit=crop" alt="Botanical Silk Ensemble" class="object-cover w-full h-full hover:scale-105 transition duration-500 opacity-90">
                     </div>
-                    <span class="text-xs uppercase tracking-widest text-stone-400 block mb-1">Bespoke Evening Wear</span>
-                    <h3 class="font-serif text-2xl font-medium mb-2">Botanical Silk Ensemble</h3>
-                    <p class="text-stone-600 text-sm mb-6 font-light">Custom botanical-themed drapery crafted for effortless movement and timeless sophistication.</p>
+                    <span class="text-[10px] uppercase tracking-[0.2em] text-amber-400/80 block mb-1">Bespoke Evening Wear</span>
+                    <h3 class="font-serif text-2xl font-medium mb-2 text-stone-100">Botanical Silk Ensemble</h3>
+                    <p class="text-stone-400 text-sm mb-6 font-light">Custom botanical-themed drapery crafted for effortless movement and timeless sophistication.</p>
                 </div>
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <span class="text-lg font-medium">₹14,800</span>
-                        <select id="size-botanical-silk" class="border border-stone-300 px-3 py-2 text-xs uppercase tracking-wider bg-white">
+                        <span class="text-lg font-serif text-amber-200">₹14,800</span>
+                        <select id="size-botanical-silk" class="bg-stone-900 border border-stone-700 text-stone-200 px-3 py-2 text-xs uppercase tracking-wider">
                             <option value="XS">Size: XS</option>
                             <option value="S">Size: S</option>
                             <option value="M" selected>Size: M</option>
                             <option value="L">Size: L</option>
                         </select>
                     </div>
-                    <button onclick="addToCart('Botanical Silk Ensemble', 14800, 'SKU-BSE-02')" class="w-full bg-stone-900 text-stone-50 py-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition">
+                    <button onclick="addToCart('Botanical Silk Ensemble', 14800, 'SKU-BSE-02')" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">
                         Add to Bag
                     </button>
                 </div>
@@ -116,11 +116,11 @@
     </main>
 
     <!-- Shopping Bag Slide-Over / Modal -->
-    <div id="cart-modal" class="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm hidden flex justify-end">
-        <div class="bg-white w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto">
-            <div class="flex items-center justify-between pb-6 border-b border-stone-200">
-                <h3 class="font-serif text-xl font-medium">Your Shopping Bag</h3>
-                <button onclick="closeCartModal()" class="text-stone-400 hover:text-stone-900 text-sm uppercase tracking-widest">Close</button>
+    <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end">
+        <div class="bg-stone-950 border-l border-stone-800 w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto text-stone-100">
+            <div class="flex items-center justify-between pb-6 border-b border-stone-800">
+                <h3 class="font-serif text-xl font-medium text-amber-100">Your Shopping Bag</h3>
+                <button onclick="closeCartModal()" class="text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
             </div>
 
             <!-- Cart Items Container -->
@@ -129,34 +129,34 @@
             </div>
 
             <!-- Shipping & Checkout Form -->
-            <div id="checkout-section" class="border-t border-stone-200 pt-6 mt-auto">
-                <h4 class="text-xs uppercase tracking-widest font-semibold mb-4 text-stone-500">Shipping Details</h4>
+            <div id="checkout-section" class="border-t border-stone-800 pt-6 mt-auto">
+                <h4 class="text-xs uppercase tracking-[0.2em] font-semibold mb-4 text-amber-400">Shipping Details</h4>
                 <div class="space-y-3 mb-6">
-                    <input type="text" id="ship-name" placeholder="Full Name" class="w-full border border-stone-300 p-3 text-xs uppercase">
-                    <input type="text" id="ship-phone" placeholder="Phone Number" class="w-full border border-stone-300 p-3 text-xs uppercase">
-                    <input type="text" id="ship-address" placeholder="Street Address" class="w-full border border-stone-300 p-3 text-xs uppercase">
+                    <input type="text" id="ship-name" placeholder="Full Name" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
+                    <input type="text" id="ship-phone" placeholder="Phone Number" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
+                    <input type="text" id="ship-address" placeholder="Street Address" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
                     <div class="grid grid-cols-2 gap-3">
-                        <input type="text" id="ship-city" placeholder="City" class="border border-stone-300 p-3 text-xs uppercase">
-                        <input type="text" id="ship-pincode" placeholder="Pincode" class="border border-stone-300 p-3 text-xs uppercase">
+                        <input type="text" id="ship-city" placeholder="City" class="bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
+                        <input type="text" id="ship-pincode" placeholder="Pincode" class="bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
                     </div>
                 </div>
 
                 <div class="space-y-2 mb-6 text-sm">
-                    <div class="flex justify-between text-stone-600">
+                    <div class="flex justify-between text-stone-400">
                         <span>Subtotal</span>
                         <span id="cart-subtotal">₹0</span>
                     </div>
-                    <div class="flex justify-between text-emerald-700">
+                    <div class="flex justify-between text-amber-400">
                         <span>Introductory Discount (10%)</span>
                         <span id="cart-discount">-₹0</span>
                     </div>
-                    <div class="flex justify-between font-medium text-base pt-2 border-t border-stone-200">
+                    <div class="flex justify-between font-medium text-base pt-2 border-t border-stone-800 text-stone-100">
                         <span>Total</span>
-                        <span id="cart-total">₹0</span>
+                        <span id="cart-total" class="text-amber-200">₹0</span>
                     </div>
                 </div>
 
-                <button onclick="checkoutOrder()" class="w-full bg-stone-900 text-stone-50 py-4 text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition">
+                <button onclick="checkoutOrder()" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">
                     Proceed to Secure Checkout
                 </button>
             </div>
@@ -164,16 +164,16 @@
     </div>
 
     <!-- Footer Details -->
-    <footer class="bg-stone-900 text-stone-400 py-16 px-6 border-t border-stone-800">
+    <footer class="bg-black text-stone-400 py-16 px-6 border-t border-stone-900">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
             <div>
-                <h4 class="font-serif text-stone-100 text-lg tracking-widest mb-4">ALIVÉRA ATELIER</h4>
+                <h4 class="font-serif text-amber-100 text-lg tracking-widest mb-4">ALIVÉRA ATELIER</h4>
                 <p class="text-xs leading-relaxed text-stone-400 font-light">
                     Bespoke luxury tailoring and custom convertible apparel, meticulously designed with botanical grace and precision engineering.
                 </p>
             </div>
             <div>
-                <h5 class="text-xs uppercase tracking-[0.2em] text-stone-200 font-medium mb-4">Client Care</h5>
+                <h5 class="text-xs uppercase tracking-[0.2em] text-amber-300 font-medium mb-4">Client Care</h5>
                 <ul class="space-y-2 text-xs">
                     <li><a href="#" class="hover:text-stone-100 transition">Order Tracking & Shipments</a></li>
                     <li><a href="#" class="hover:text-stone-100 transition">Custom Sizing Guide</a></li>
@@ -181,7 +181,7 @@
                 </ul>
             </div>
             <div>
-                <h5 class="text-xs uppercase tracking-[0.2em] text-stone-200 font-medium mb-4">Atelier Services</h5>
+                <h5 class="text-xs uppercase tracking-[0.2em] text-amber-300 font-medium mb-4">Atelier Services</h5>
                 <ul class="space-y-2 text-xs">
                     <li><a href="#" class="hover:text-stone-100 transition">Bespoke Consultations</a></li>
                     <li><a href="#" class="hover:text-stone-100 transition">Packaging & Gift Wrapping</a></li>
@@ -189,12 +189,12 @@
                 </ul>
             </div>
             <div>
-                <h5 class="text-xs uppercase tracking-[0.2em] text-stone-200 font-medium mb-4">Inquiries</h5>
+                <h5 class="text-xs uppercase tracking-[0.2em] text-amber-300 font-medium mb-4">Inquiries</h5>
                 <p class="text-xs text-stone-400 font-light mb-2">For custom commissions and client support:</p>
-                <p class="text-xs text-stone-200 font-medium">concierge@aliveraatelier.in</p>
+                <p class="text-xs text-amber-200 font-medium">concierge@aliveraatelier.in</p>
             </div>
         </div>
-        <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-stone-800/60 text-center text-xs text-stone-500">
+        <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-stone-900 text-center text-xs text-stone-600">
             &copy; 2026 Alivèra Atelier. All rights reserved.
         </div>
     </footer>
@@ -211,16 +211,16 @@
             badge.innerText = cart.length;
 
             if (cart.length === 0) {
-                itemsContainer.innerHTML = `<p class="text-stone-400 text-xs text-center py-12 uppercase tracking-wider">Your shopping bag is empty.</p>`;
+                itemsContainer.innerHTML = `<p class="text-stone-500 text-xs text-center py-12 uppercase tracking-wider">Your shopping bag is empty.</p>`;
             } else {
                 itemsContainer.innerHTML = cart.map((item, index) => `
-                    <div class="flex justify-between items-center bg-stone-50 p-4 border border-stone-200">
+                    <div class="flex justify-between items-center bg-stone-900 p-4 border border-stone-800">
                         <div>
-                            <h5 class="text-sm font-medium">${item.name}</h5>
-                            <span class="text-xs text-stone-500 uppercase">Size: ${item.size}</span>
-                            <p class="text-xs font-medium mt-1">₹${item.price}</p>
+                            <h5 class="text-sm font-medium text-stone-200">${item.name}</h5>
+                            <span class="text-xs text-stone-400 uppercase">Size: ${item.size}</span>
+                            <p class="text-xs font-medium mt-1 text-amber-300">₹${item.price}</p>
                         </div>
-                        <button onclick="removeFromCart(${index})" class="text-stone-400 hover:text-red-600 text-xs uppercase tracking-wider">Remove</button>
+                        <button onclick="removeFromCart(${index})" class="text-stone-500 hover:text-red-400 text-xs uppercase tracking-wider">Remove</button>
                     </div>
                 `).join('');
             }
@@ -278,7 +278,6 @@
             closeCartModal();
         }
 
-        // Initialize UI on load
         updateCartUI();
     </script>
 </body>
