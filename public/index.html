@@ -23,34 +23,22 @@
         .logo-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; flex-shrink: 0; }
         .brand-title { font-size: 15px; letter-spacing: 2px; color: #d4af37; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .nav-links { display: flex; gap: 12px; align-items: center; }
-        .nav-btn { color: #d4af37; text-decoration: none; font-size: 10px; letter-spacing: 1.5px; border: 1px solid #d4af37; padding: 6px 10px; border-radius: 4px; white-space: nowrap; background: transparent; }
+        .nav-links { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .nav-btn { color: #d4af37; text-decoration: none; font-size: 10px; letter-spacing: 1.5px; border: 1px solid #d4af37; padding: 6px 10px; border-radius: 4px; white-space: nowrap; background: transparent; cursor: pointer; }
         .nav-btn:hover { background: #d4af37; color: #0a0a0a; }
 
         .user-avatar-nav { width: 34px; height: 34px; border-radius: 50%; border: 1px solid #d4af37; background: #222; color: #d4af37; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; text-decoration: none; overflow: hidden; }
-        .user-avatar-nav img { width: 100%; height: 100%; object-fit: cover; }
 
         .promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 10px; letter-spacing: 1.5px; font-weight: bold; display: none; }
 
-        /* HERO & SALE BANNER (Fixed Size / Fit Display) */
         .hero { text-align: center; padding: 160px 20px; background-size: cover; background-repeat: no-repeat; background-position: center; background-color: #0a0a0a; border-bottom: 1px solid #222; position: relative; }
         .hero::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(10,10,10,0.65); z-index: 1; }
         .hero-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
         .hero h1 { color: #d4af37; font-size: 22px; letter-spacing: 3px; margin-bottom: 10px; }
         .hero p { color: #aaa; font-size: 11px; letter-spacing: 1.5px; line-height: 1.5; margin-bottom: 5px; }
 
-        .sale-countdown-banner { text-align: center; padding: 160px 20px; background-size: cover; background-repeat: no-repeat; background-position: center; background-color: #0a0a0a; border-bottom: 2px solid #d4af37; position: relative; display: none; }
-        .sale-countdown-banner::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(10,10,10,0.7); z-index: 1; }
-        .sale-banner-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
-        .sale-banner-content h2 { color: #d4af37; font-size: 22px; letter-spacing: 3px; margin-bottom: 8px; font-family: 'Cinzel', serif; }
-        .sale-banner-content p { color: #ddd; font-size: 12px; letter-spacing: 1.5px; margin-bottom: 25px; }
-        .countdown-timers { display: flex; justify-content: center; gap: 15px; }
-        .timer-box { background: rgba(10, 10, 10, 0.85); border: 1px solid #d4af37; padding: 12px 18px; border-radius: 4px; min-width: 55px; }
-        .timer-num { font-size: 20px; font-weight: bold; color: #d4af37; font-family: 'Cinzel', serif; }
-        .timer-label { font-size: 8px; color: #aaa; letter-spacing: 1px; margin-top: 4px; }
-
         .container { max-width: 1200px; margin: 25px auto; padding: 0 15px; flex: 1; width: 100%; box-sizing: border-box; }
-        .section-title { font-size: 18px; color: #d4af37; letter-spacing: 2px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 25px; text-align: center; }
+        .section-title { font-size: 18px; color: #d4af37; letter-spacing: 2px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 25px; text-align: center; font-family: 'Cinzel', serif; }
 
         .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
         .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.3s; position: relative; }
@@ -73,21 +61,13 @@
         .btn-outline { background: transparent; color: #d4af37; border: 1px solid #d4af37; }
         .btn:active { background: #c59b27; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
-        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 25px; border-radius: 8px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-sizing: border-box; text-align: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; overflow-y: auto; }
+        .modal-content { background: #121212; border: 1px solid #d4af37; padding: 25px; border-radius: 8px; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-sizing: border-box; text-align: left; }
         .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #d4af37; font-size: 18px; cursor: pointer; }
-        .modal-img { width: 100%; height: 350px; object-fit: cover; border-radius: 4px; margin-bottom: 15px; border: 1px solid #333; }
         
-        footer { background: #121212; border-top: 1px solid #222; text-align: center; padding: 30px 15px; color: #777; font-size: 10px; letter-spacing: 1.5px; line-height: 2.2; }
+        footer { background: #121212; border-top: 1px solid #222; text-align: center; padding: 30px 15px; color: #777; font-size: 10px; letter-spacing: 1.5px; line-height: 2.2; margin-top: auto; }
         footer a { color: #d4af37; text-decoration: none; }
         .tagline { color: #d4af37; font-style: italic; font-family: 'Cinzel', serif; font-size: 11px; margin-bottom: 8px; }
-
-        @media (max-width: 480px) {
-            header { padding: 12px 15px; }
-            .brand-title { font-size: 13px; letter-spacing: 1.5px; }
-            .catalog-grid { grid-template-columns: 1fr; }
-            .hero, .sale-countdown-banner { padding: 120px 15px; }
-        }
     </style>
 </head>
 <body>
@@ -99,512 +79,82 @@
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
-        <div id="nav-auth-area" class="nav-links">
-            <a href="/admin/?mode=signin" class="nav-btn">SIGN IN</a>
-            <a href="/admin/?mode=signup" class="nav-btn">SIGN UP</a>
+        <div class="nav-links">
+            <a href="/wishlist.html" class="nav-btn">WISHLIST</a>
+            <a href="/tracking.html" class="nav-btn">TRACK ORDER</a>
+            <button class="nav-btn" onclick="openCartModal()">CART (<span id="cart-count">0</span>)</button>
+            <div id="nav-auth-area" style="display:inline-flex; gap:6px; align-items:center;">
+                <a href="/admin/?mode=signin" class="nav-btn">SIGN IN</a>
+            </div>
         </div>
     </header>
 
-    <!-- HERO BANNER -->
     <section id="hero-section" class="hero">
         <div class="hero-content">
-            <h1 id="hero-title"></h1>
-            <p id="hero-subtitle"></p>
+            <h1 id="hero-title">Bespoke Elegance</h1>
+            <p id="hero-subtitle">Handcrafted custom apparel designed for distinction.</p>
         </div>
     </section>
 
-    <!-- VISUAL SALE COUNTDOWN BANNER -->
-    <div id="sale-countdown-banner" class="sale-countdown-banner">
-        <div class="sale-banner-content">
-            <h2 id="sale-title"></h2>
-            <p id="sale-subtitle"></p>
-            <div class="countdown-timers">
-                <div class="timer-box"><div id="c-days" class="timer-num">00</div><div class="timer-label">DAYS</div></div>
-                <div class="timer-box"><div id="c-hours" class="timer-num">00</div><div class="timer-label">HOURS</div></div>
-                <div class="timer-box"><div id="c-mins" class="timer-num">00</div><div class="timer-label">MINS</div></div>
-                <div class="timer-box"><div id="c-secs" class="timer-num">00</div><div class="timer-label">SECS</div></div>
-            </div>
-        </div>
-    </div>
-
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 25px;">
-            <div class="section-title" style="border:none; margin:0; padding:0;">THE ATELIER COLLECTION</div>
-            <button class="btn" style="width: auto; padding: 8px 15px;" onclick="openCartModal()">CART (<span id="cart-count">0</span>)</button>
-        </div>
+        <div class="section-title">THE ATELIER COLLECTION</div>
         <div id="store-catalog" class="catalog-grid">
             <p style="color: #777; font-size: 12px; text-align: center; grid-column: 1/-1;">Loading curated pieces...</p>
         </div>
     </div>
 
-    <!-- PRODUCT DETAIL MODAL -->
     <div id="product-modal" class="modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeProductModal()">&times;</button>
-            <img id="modal-product-img" src="" alt="Piece" class="modal-img">
-            <h3 id="modal-product-name" style="color:#d4af37; font-size: 16px; margin-bottom: 5px;"></h3>
-            <div id="modal-product-price" style="color:#fff; font-size: 14px; font-weight:bold; margin-bottom: 15px;"></div>
-            
-            <div style="margin-bottom: 15px; text-align: left;">
-                <label style="font-size: 10px; color: #aaa; letter-spacing: 1px; display:block; margin-bottom: 5px;">SELECT SIZE</label>
-                <select id="modal-size-select" style="width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px;">
-                    <option value="Custom">Custom Measurements</option>
-                    <option value="XS">XS</option>
-                    <option value="S">S</option>
-                    <option value="M" selected>M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                </select>
-            </div>
-
-            <div id="modal-size-chart-wrap" style="margin-bottom: 15px; display:none;">
-                <label style="font-size: 10px; color: #d4af37; letter-spacing: 1px; display:block; margin-bottom: 5px;">ATELIER SIZE GUIDE</label>
-                <img id="modal-size-chart-img" src="" alt="Size Chart" style="width: 100%; max-height: 200px; object-fit: contain; border: 1px solid #222; border-radius: 4px;">
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button class="btn btn-outline" onclick="addCurrentToCart()">ADD TO CART</button>
-                <button class="btn" onclick="buyCurrentNow()">BUY NOW</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- CART & CHECKOUT MODAL -->
-    <div id="cart-modal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <button class="close-modal" onclick="closeCartModal()">&times;</button>
-            <h3 style="color:#d4af37; font-size: 16px; letter-spacing: 2px; margin-bottom: 15px;">YOUR SHOPPING BAG</h3>
-            <div id="cart-items-container" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px; text-align: left;">
-                <p style="color: #777; font-size: 11px; text-align: center;">Your bag is empty.</p>
-            </div>
-
-            <div style="text-align: left; margin-bottom: 15px;">
-                <label style="font-size: 10px; color: #aaa; letter-spacing: 1px; display:block; margin-bottom: 5px;">PROMO / DISCOUNT CODE</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="promo-code-input" placeholder="Enter coupon code" style="flex:1; padding:10px; background:#0a0a0a; border:1px solid #333; color:#fff; border-radius:4px; font-size:12px; text-transform:uppercase;">
-                    <button class="btn" style="width: auto; padding: 10px 15px;" onclick="applyPromoCode()">APPLY</button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; align-items:start;">
+                <div>
+                    <img id="modal-product-img" src="" alt="Piece" style="width: 100%; height: 320px; object-fit: cover; border-radius: 4px; border: 1px solid #333;">
+                    <div id="modal-stock-count" style="font-size:10px; color:#d4af37; margin-top:8px; text-transform:uppercase; letter-spacing:1px;"></div>
                 </div>
-                <div id="discount-msg" style="font-size: 10px; color: #2ecc71; margin-top: 5px;"></div>
-            </div>
-
-            <div style="text-align: left; margin-bottom: 15px; border-top: 1px solid #222; padding-top: 10px;">
-                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;"><span>Subtotal:</span> <span id="cart-subtotal">₹0</span></div>
-                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #2ecc71; margin-bottom: 5px;"><span>Discount:</span> <span id="cart-discount-val">-₹0</span></div>
-                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #d4af37;"><span>Total:</span> <span id="cart-total">₹0</span></div>
-            </div>
-
-            <div style="text-align: left; background: #0a0a0a; padding: 15px; border-radius: 4px; border: 1px solid #222; margin-bottom: 15px;">
-                <h4 style="color: #d4af37; font-size: 12px; margin-top: 0; margin-bottom: 10px; font-family: 'Cinzel', serif;">SHIPPING DETAILS</h4>
-                <div class="form-group" style="margin-bottom: 10px;"><label style="font-size: 9px; color: #aaa;">FULL NAME</label><input type="text" id="ship-name" style="width:100%; padding:8px; background:#121212; border:1px solid #333; color:#fff; border-radius:4px; font-size:11px;" placeholder="Full Name"></div>
-                <div class="form-group" style="margin-bottom: 10px;"><label style="font-size: 9px; color: #aaa;">PHONE NUMBER</label><input type="tel" id="ship-phone" style="width:100%; padding:8px; background:#121212; border:1px solid #333; color:#fff; border-radius:4px; font-size:11px;" placeholder="+91 XXXXX XXXXX"></div>
-                <div class="form-group" style="margin-bottom: 10px;"><label style="font-size: 9px; color: #aaa;">STREET ADDRESS</label><textarea id="ship-address" rows="2" style="width:100%; padding:8px; background:#121212; border:1px solid #333; color:#fff; border-radius:4px; font-size:11px;" placeholder="House/Flat no, Street, Landmark"></textarea></div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div><label style="font-size: 9px; color: #aaa;">CITY</label><input type="text" id="ship-city" style="width:100%; padding:8px; background:#121212; border:1px solid #333; color:#fff; border-radius:4px; font-size:11px;" placeholder="City"></div>
-                    <div><label style="font-size: 9px; color: #aaa;">PINCODE</label><input type="text" id="ship-pincode" style="width:100%; padding:8px; background:#121212; border:1px solid #333; color:#fff; border-radius:4px; font-size:11px;" placeholder="Pincode"></div>
-                </div>
-            </div>
-
-            <button class="btn" onclick="checkoutOrder()">PROCEED TO SECURE ACQUISITION</button>
-        </div>
-    </div>
-
-    <footer>
-        <div class="tagline">"Beautiful. the way you are..."</div>
-        <div>Email: <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a> | Instagram: <a href="https://instagram.com/aliveraatelier" target="_blank">@aliveraatelier</a></div>
-        <div style="margin-top: 8px;">Customer Care: <a href="mailto:contact@aliveraatelier.in?subject=Bespoke%20Client%20Inquiry">contact@aliveraatelier.in</a></div>
-        <div style="margin-top: 8px;">&copy; 2026 ALIVÈRA ATELIER. ALL RIGHTS RESERVED.</div>
-    </footer>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc",
-            authDomain: "alivera-atelier.firebaseapp.com",
-            projectId: "alivera-atelier",
-            storageBucket: "alivera-atelier.firebasestorage.app",
-            messagingSenderId: "952987801898",
-            appId: "1:952987801898:web:af49cb363c53584de1a653",
-            measurementId: "G-YQETZYQ3PT"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        let cart = [];
-        let activeProductModalData = null;
-        let appliedDiscountPercent = 0;
-        let appliedCouponCode = "";
-
-        async function loadStorefront() {
-            try {
-                const promoDoc = await db.collection("atelier_settings").doc("promo").get();
-                if (promoDoc.exists) {
-                    const data = promoDoc.data();
-                    if (data.bannerText) {
-                        const banner = document.getElementById('promo-banner');
-                        banner.innerText = data.bannerText;
-                        banner.style.display = 'block';
-                    }
-                }
-
-                const saleDoc = await db.collection("atelier_settings").doc("saleCountdown").get();
-                const heroSection = document.getElementById('hero-section');
-                const saleBanner = document.getElementById('sale-countdown-banner');
-
-                let saleActive = false;
-                if (saleDoc.exists) {
-                    const sData = saleDoc.data();
-                    const now = Date.now();
-                    const startTime = sData.startTime ? new Date(sData.startTime).getTime() : 0;
-                    const endTime = sData.endTime ? new Date(sData.endTime).getTime() : 0;
-
-                    if (endTime && now >= startTime && now <= endTime) {
-                        saleActive = true;
-                        document.getElementById('sale-title').innerText = sData.title || "";
-                        document.getElementById('sale-subtitle').innerText = sData.subtitle || "";
-                        if (sData.image) saleBanner.style.backgroundImage = `url('${sData.image}')`;
-                        saleBanner.style.display = 'block';
-                        heroSection.style.display = 'none';
-                        startCountdown(endTime);
-                    }
-                }
-
-                if (!saleActive) {
-                    saleBanner.style.display = 'none';
-                    heroSection.style.display = 'block';
+                <div>
+                    <h3 id="modal-product-name" style="color:#d4af37; font-size: 16px; margin-bottom: 5px; font-family:'Cinzel', serif;"></h3>
+                    <div id="modal-product-price" style="color:#fff; font-size: 14px; font-weight:bold; margin-bottom: 12px;"></div>
                     
-                    // RANDOM ROTATION BANNER POOL SELECTION
-                    const bannersSnap = await db.collection("atelier_banners").get();
-                    if (!bannersSnap.empty) {
-                        const banners = bannersSnap.docs.map(doc => doc.data());
-                        const randomBanner = banners[Math.floor(Math.random() * banners.length)];
-                        if (randomBanner.title) document.getElementById('hero-title').innerText = randomBanner.title;
-                        if (randomBanner.subtitle) document.getElementById('hero-subtitle').innerText = randomBanner.subtitle;
-                        if (randomBanner.image) heroSection.style.backgroundImage = `url('${randomBanner.image}')`;
-                    } else {
-                        const heroDoc = await db.collection("atelier_settings").doc("hero").get();
-                        if (heroDoc.exists) {
-                            const hData = heroDoc.data();
-                            if (hData.title) document.getElementById('hero-title').innerText = hData.title;
-                            if (hData.subtitle) document.getElementById('hero-subtitle').innerText = hData.subtitle;
-                            if (hData.image) heroSection.style.backgroundImage = `url('${hData.image}')`;
-                        }
-                    }
-                }
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 9px; color: #aaa; letter-spacing: 1px; display:block; margin-bottom: 4px;">SELECT SIZE</label>
+                        <select id="modal-size-select" style="width: 100%; padding: 8px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 11px;">
+                            <option value="Custom">Custom Measurements</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M" selected>M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                    </div>
 
-                const catalogEl = document.getElementById('store-catalog');
-                const snapshot = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
-                
-                if (snapshot.empty) {
-                    catalogEl.innerHTML = `<p style="color: #777; font-size: 12px; text-align: center; grid-column: 1/-1;">New collection arriving shortly.</p>`;
-                    return;
-                }
+                    <div id="modal-size-chart-wrap" style="margin-bottom: 12px; display:none;">
+                        <label style="font-size: 9px; color: #d4af37; letter-spacing: 1px; display:block; margin-bottom: 4px;">ATELIER SIZE GUIDE</label>
+                        <img id="modal-size-chart-img" src="" alt="Size Chart" style="width: 100%; max-height: 80px; object-fit: contain; border: 1px solid #222; border-radius: 4px;">
+                    </div>
 
-                catalogEl.innerHTML = snapshot.docs.map(doc => {
-                    const p = doc.data();
-                    return `
-                        <div class="product-card">
-                            <div class="product-img-wrap" onclick="openProductModal('${doc.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}', '${p.sizeChart || ''}')">
-                                <img src="${p.image}" alt="${p.name}" class="product-img">
-                                <button class="card-icon-btn wishlist-btn" title="Add to Wishlist" onclick="event.stopPropagation(); addToWishlist('${doc.id}', '${p.name.replace(/'/g, "\\'")}')">♥</button>
-                                <button class="card-icon-btn share-btn" title="Share Piece" onclick="event.stopPropagation(); shareProduct('${p.name.replace(/'/g, "\\'")}')">🔗</button>
-                            </div>
-                            <div class="product-info">
-                                <div class="product-name">${p.name}</div>
-                                <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                                <div class="action-row">
-                                    <button class="btn btn-outline" onclick="quickAddToCart('${doc.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price})">ADD TO BAG</button>
-                                    <button class="btn" onclick="openProductModal('${doc.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.image}', '${p.sizeChart || ''}')">VIEW PIECE</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (e) {
-                console.error("Error loading storefront:", e);
-            }
-        }
-
-        auth.onAuthStateChanged(user => {
-            const navAuth = document.getElementById('nav-auth-area');
-            if (user) {
-                const initial = user.email ? user.email.charAt(0).toUpperCase() : 'A';
-                navAuth.innerHTML = `<a href="/admin/" class="user-avatar-nav" title="My Account">${initial}</a>`;
-            } else {
-                navAuth.innerHTML = `
-                    <a href="/admin/?mode=signin" class="nav-btn">SIGN IN</a>
-                    <a href="/admin/?mode=signup" class="nav-btn">SIGN UP</a>
-                `;
-            }
-        });
-
-        function startCountdown(endTime) {
-            setInterval(() => {
-                const now = Date.now();
-                const distance = endTime - now;
-                if (distance < 0) return;
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const secs = Math.floor((distance % (1000 * 60)) / 1000);
-
-                document.getElementById('c-days').innerText = String(days).padStart(2, '0');
-                document.getElementById('c-hours').innerText = String(hours).padStart(2, '0');
-                document.getElementById('c-mins').innerText = String(mins).padStart(2, '0');
-                document.getElementById('c-secs').innerText = String(secs).padStart(2, '0');
-            }, 1000);
-        }
-
-        function openProductModal(id, name, price, image, sizeChart) {
-            activeProductModalData = { id, name, price, image };
-            document.getElementById('modal-product-img').src = image;
-            document.getElementById('modal-product-name').innerText = name;
-            document.getElementById('modal-product-price').innerText = `₹${Number(price).toLocaleString('en-IN')}`;
-            
-            const chartWrap = document.getElementById('modal-size-chart-wrap');
-            if (sizeChart) {
-                document.getElementById('modal-size-chart-img').src = sizeChart;
-                chartWrap.style.display = 'block';
-            } else {
-                chartWrap.style.display = 'none';
-            }
-            document.getElementById('product-modal').style.display = 'flex';
-        }
-
-        function closeProductModal() {
-            document.getElementById('product-modal').style.display = 'none';
-        }
-
-        function quickAddToCart(id, name, price) {
-            cart.push({ id, name, price, size: 'M' });
-            updateCartUI();
-            alert(`"${name}" added to your bag.`);
-        }
-
-        function addCurrentToCart() {
-            if (!activeProductModalData) return;
-            const size = document.getElementById('modal-size-select').value;
-            cart.push({ ...activeProductModalData, size });
-            updateCartUI();
-            closeProductModal();
-            alert(`"${activeProductModalData.name}" (${size}) added to your bag.`);
-        }
-
-        function buyCurrentNow() {
-            addCurrentToCart();
-            openCartModal();
-        }
-
-        function updateCartUI() {
-            document.getElementById('cart-count').innerText = cart.length;
-            const container = document.getElementById('cart-items-container');
-            if (cart.length === 0) {
-                container.innerHTML = `<p style="color: #777; font-size: 11px; text-align: center;">Your bag is empty.</p>`;
-                document.getElementById('cart-subtotal').innerText = '₹0';
-                document.getElementById('cart-total').innerText = '₹0';
-                return;
-            }
-
-            container.innerHTML = cart.map((item, index) => `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 11px; background: #0a0a0a; padding: 8px; border-radius: 4px; border: 1px solid #222;">
-                    <div><strong>${item.name}</strong> (${item.size})<br><span style="color:#d4af37;">₹${Number(item.price).toLocaleString('en-IN')}</span></div>
-                    <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#e74c3c; cursor:pointer; font-size:10px;">Remove</button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <button class="btn btn-outline" onclick="addCurrentToCart(); playSparkleSound();">ADD TO BAG</button>
+                        <button class="btn" onclick="buyCurrentNow(); playSparkleSound();">BUY NOW</button>
+                    </div>
                 </div>
-            `).join('');
+            </div>
 
-            calculateTotals();
-        }
+            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
+            <div style="margin-bottom:20px;">
+                <h4 style="color: #d4af37; font-size: 11px; letter-spacing:1px; margin-bottom:8px; font-family:'Cinzel',serif;">QUESTIONS ASKED</h4>
+                <div id="modal-questions-list" style="font-size: 11px; color: #bbb; margin-bottom:8px; max-height:90px; overflow-y:auto;">
+                    <p style="color: #666; font-size:10px;">No questions asked yet.</p>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <input type="text" id="user-question-input" placeholder="Ask about fabric, fit, or customization..." style="flex:1; padding:6px; background:#0a0a0a; border:1px solid #333; color:#fff; border-radius:4px; font-size:11px;">
+                    <button class="btn" style="width: auto; padding: 6px 12px; font-size:9px;" onclick="submitProductQuestion()">ASK</button>
+                </div>
+            </div>
 
-        function openCartModal() {
-            document.getElementById('cart-modal').style.display = 'flex';
-            updateCartUI();
-        }
-
-        function closeCartModal() {
-            document.getElementById('cart-modal').style.display = 'none';
-        }
-
-        async function applyPromoCode() {
-            const codeInput = document.getElementById('promo-code-input').value.trim().toUpperCase();
-            const msgEl = document.getElementById('discount-msg');
-            if (!codeInput) return;
-
-            const user = auth.currentUser;
-
-            try {
-                const couponDoc = await db.collection("atelier_coupons").doc(codeInput).get();
-                if (couponDoc.exists) {
-                    const cData = couponDoc.data();
-                    const now = Date.now();
-                    const validFrom = cData.validFrom ? new Date(cData.validFrom).getTime() : 0;
-                    const validUntil = cData.validUntil ? new Date(cData.validUntil).getTime() : Number.MAX_SAFE_INTEGER;
-
-                    // Check time limits
-                    if (now < validFrom || now > validUntil) {
-                        msgEl.style.color = '#e74c3c';
-                        msgEl.innerText = "This coupon code has expired or is not active yet.";
-                        return;
-                    }
-
-                    // Check quantity limit (First come, first served)
-                    if (cData.maxUses && cData.currentUses >= cData.maxUses) {
-                        msgEl.style.color = '#e74c3c';
-                        msgEl.innerText = "This limited discount has fully reached its usage limit.";
-                        return;
-                    }
-
-                    if (cData.singleUsePerUser && user) {
-                        const usedCheck = await db.collection("atelier_coupon_usages")
-                            .where("userEmail", "==", user.email)
-                            .where("couponCode", "==", codeInput)
-                            .get();
-                        if (!usedCheck.empty) {
-                            msgEl.style.color = '#e74c3c';
-                            msgEl.innerText = "You have already used this promo code once.";
-                            return;
-                        }
-                    }
-
-                    appliedDiscountPercent = cData.discountPercent || 0;
-                    appliedCouponCode = codeInput;
-                    msgEl.style.color = '#2ecc71';
-                    msgEl.innerText = `Promo code applied successfully! (${appliedDiscountPercent}% OFF)`;
-                    calculateTotals();
-                    return;
-                }
-
-                msgEl.style.color = '#e74c3c';
-                msgEl.innerText = "Invalid promo code.";
-            } catch (e) {
-                console.error("Error applying coupon:", e);
-            }
-        }
-
-        async function calculateTotals() {
-            let subtotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
-            
-            let totalDiscountPercent = appliedDiscountPercent;
-            if (auth.currentUser && totalDiscountPercent === 0) {
-                const settingsDoc = await db.collection("atelier_settings").doc("general").get();
-                const newCustomerDiscountActive = settingsDoc.exists ? (settingsDoc.data().newCustomerDiscountActive ?? true) : true;
-                
-                if (newCustomerDiscountActive) {
-                    totalDiscountPercent = 10;
-                }
-            }
-
-            let discountAmount = Math.round((subtotal * totalDiscountPercent) / 100);
-            let finalTotal = subtotal - discountAmount;
-
-            document.getElementById('cart-subtotal').innerText = `₹${subtotal.toLocaleString('en-IN')}`;
-            document.getElementById('cart-discount-val').innerText = `-₹${discountAmount.toLocaleString('en-IN')} (${totalDiscountPercent}%)`;
-            document.getElementById('cart-total').innerText = `₹${finalTotal.toLocaleString('en-IN')}`;
-        }
-
-        async function checkoutOrder() {
-            if (cart.length === 0) {
-                alert("Your bag is empty.");
-                return;
-            }
-
-            const name = document.getElementById('ship-name').value.trim();
-            const phone = document.getElementById('ship-phone').value.trim();
-            const address = document.getElementById('ship-address').value.trim();
-            const city = document.getElementById('ship-city').value.trim();
-            const pincode = document.getElementById('ship-pincode').value.trim();
-
-            if (!name || !phone || !address || !city || !pincode) {
-                alert("Please complete all shipping details (Name, Phone, Address, City, Pincode).");
-                return;
-            }
-
-            const user = auth.currentUser;
-            const clientEmail = user ? user.email : prompt("Enter your email address for order updates:");
-            if (!clientEmail) return;
-
-            try {
-                let subtotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
-                const settingsDoc = await db.collection("atelier_settings").doc("general").get();
-                const newCustomerDiscountActive = settingsDoc.exists ? (settingsDoc.data().newCustomerDiscountActive ?? true) : true;
-                
-                let discountPct = appliedDiscountPercent > 0 ? appliedDiscountPercent : (user && newCustomerDiscountActive ? 10 : 0);
-                let discountAmt = Math.round((subtotal * discountPct) / 100);
-                let finalTotal = subtotal - discountAmt;
-
-                await db.collection("atelier_orders").add({
-                    clientEmail: clientEmail.trim(),
-                    items: cart,
-                    shippingAddress: { name, phone, address, city, pincode },
-                    subtotal,
-                    discountApplied: `${discountPct}%`,
-                    totalAmount: finalTotal,
-                    couponUsed: appliedCouponCode || (discountPct === 10 ? "New Customer Member Discount" : "None"),
-                    status: "Pending Payment/Confirmation",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                if (appliedCouponCode) {
-                    if (user) {
-                        await db.collection("atelier_coupon_usages").add({
-                            userEmail: user.email,
-                            couponCode: appliedCouponCode,
-                            usedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    }
-                    const couponRef = db.collection("atelier_coupons").doc(appliedCouponCode);
-                    const cDoc = await couponRef.get();
-                    if (cDoc.exists && cDoc.data().maxUses) {
-                        const current = cDoc.data().currentUses || 0;
-                        await couponRef.update({ currentUses: current + 1 });
-                    }
-                }
-
-                alert("Order placed successfully! Track your acquisition status in your Account portal.");
-                cart = [];
-                closeCartModal();
-                updateCartUI();
-            } catch (e) {
-                alert("Error placing order: " + e.message);
-            }
-        }
-
-        async function addToWishlist(productId, productName) {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("Please sign in to save pieces to your wishlist.");
-                window.location.href = "/admin/?mode=signin";
-                return;
-            }
-
-            try {
-                await db.collection("atelier_wishlists").add({
-                    userEmail: user.email,
-                    productId,
-                    productName,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                alert(`"${productName}" added to your wishlist.`);
-            } catch (e) {
-                alert("Error adding to wishlist: " + e.message);
-            }
-        }
-
-        function shareProduct(name) {
-            const shareData = { title: name, text: `Explore ${name} at Alivèra Atelier`, url: window.location.href };
-            if (navigator.share) {
-                navigator.share(shareData).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                alert("Product link copied to clipboard.");
-            }
-        }
-
-        loadStorefront();
-    </script>
-</body>
-</html>
+            <div>
+                <h4 style="color: #d4af37; font-size: 11px; letter-spacing:1px; margin-bottom:8px; font-family:'Cinzel',serif;">REVIEWS & RATINGS</h4>
+                <div id="modal-reviews-list" style="font-size: 11px; color: #bbb; margin-bottom:12px; max-height:110px; overflow-y:auto;">
+                    <p style="color: #666; font-size:10px;">No reviews yet.</p>
+                </div>
+                <div style="background:#0a0a0a; padding:10px; border:1px solid #222
