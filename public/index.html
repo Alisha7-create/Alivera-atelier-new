@@ -59,7 +59,7 @@
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
-        <a href="/admin/" style="color: #d4af37; text-decoration: none; font-size: 11px; letter-spacing: 2px; border: 1px solid #d4af37; padding: 8px 15px; border-radius: 4px;">ADMIN PORTAL</a>
+        <a href="/admin/" style="color: #d4af37; text-decoration: none; font-size: 11px; letter-spacing: 2px; border: 1px solid #d4af37; padding: 8px 15px; border-radius: 4px;">CLIENT PORTAL</a>
     </header>
 
     <section class="hero">
@@ -75,7 +75,7 @@
     </div>
 
     <footer>
-        &copy; 2026 ALIVÈRA ATELIER. ALL RIGHTS RESERVED. | <a href="/admin/">ADMIN ACCESS</a>
+        &copy; 2026 ALIVÈRA ATELIER. ALL RIGHTS RESERVED. | <a href="/admin/">CLIENT SIGN IN / PORTAL</a>
     </footer>
 
     <script>
@@ -148,7 +148,7 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("Order request registered successfully! Our atelier coordinator will reach out to finalize your fitting details.");
+                alert("Order request registered successfully! You can sign into the Client Portal anytime with this email to track your fitting status.");
             } catch (e) {
                 alert("Error placing order: " + e.message);
             }
