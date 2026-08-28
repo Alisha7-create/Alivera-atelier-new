@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alivèra Atelier — Haute Couture & Bespoke Apparel</title>
+    
+    <!-- Favicon / Browser Tab Icon Links -->
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
 
@@ -17,37 +19,45 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400&display=swap');
 
-        body { font-family: 'Lato', sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        body { font-family: 'Lato', sans-serif; background: #0a0a0a; color: #f5f5f5; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
         h1, h2, h3, .brand-title { font-family: 'Cinzel', serif; }
 
-        header { background: #121212; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 1000; }
-        .logo-area { display: flex; align-items: center; gap: 15px; text-decoration: none; }
-        .logo-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; }
-        .brand-title { font-size: 18px; letter-spacing: 3px; color: #d4af37; font-weight: bold; }
+        header { background: #121212; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #d4af37; position: sticky; top: 0; z-index: 1000; box-sizing: border-box; width: 100%; }
+        .logo-area { display: flex; align-items: center; gap: 12px; text-decoration: none; min-width: 0; }
+        .logo-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid #d4af37; flex-shrink: 0; }
+        .brand-title { font-size: 15px; letter-spacing: 2px; color: #d4af37; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 11px; letter-spacing: 2px; font-weight: bold; display: none; }
+        .promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 10px; letter-spacing: 1.5px; font-weight: bold; display: none; }
 
-        .hero { text-align: center; padding: 80px 20px; background: linear-gradient(rgba(10,10,10,0.8), rgba(10,10,10,0.8)), url('/logo.png') center/cover no-repeat; border-bottom: 1px solid #222; }
-        .hero h1 { color: #d4af37; font-size: 32px; letter-spacing: 5px; margin-bottom: 15px; }
-        .hero p { color: #aaa; font-size: 14px; letter-spacing: 2px; max-width: 600px; margin: 0 auto; }
+        .hero { text-align: center; padding: 50px 20px; background: linear-gradient(rgba(10,10,10,0.85), rgba(10,10,10,0.85)), url('/logo.png') center/cover no-repeat; border-bottom: 1px solid #222; }
+        .hero h1 { color: #d4af37; font-size: 24px; letter-spacing: 3px; margin-bottom: 10px; }
+        .hero p { color: #aaa; font-size: 12px; letter-spacing: 1.5px; max-width: 600px; margin: 0 auto; line-height: 1.5; }
 
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
+        .container { max-width: 1200px; margin: 25px auto; padding: 0 15px; flex: 1; width: 100%; box-sizing: border-box; }
         
-        .section-title { font-size: 20px; color: #d4af37; letter-spacing: 3px; border-bottom: 1px solid #222; padding-bottom: 15px; margin-bottom: 30px; text-align: center; }
+        .section-title { font-size: 18px; color: #d4af37; letter-spacing: 2px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 25px; text-align: center; }
 
-        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
         .product-card { background: #121212; border: 1px solid #222; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.3s; }
         .product-card:hover { border-color: #d4af37; }
-        .product-img { width: 100%; height: 360px; object-fit: cover; }
-        .product-info { padding: 20px; display: flex; flex-direction: column; flex: 1; }
-        .product-name { font-size: 16px; color: #fff; letter-spacing: 1.5px; margin-bottom: 10px; font-family: 'Cinzel', serif; }
-        .product-price { font-size: 14px; color: #d4af37; margin-bottom: 20px; font-weight: bold; }
+        .product-img { width: 100%; height: 320px; object-fit: cover; }
+        .product-info { padding: 15px; display: flex; flex-direction: column; flex: 1; }
+        .product-name { font-size: 15px; color: #fff; letter-spacing: 1px; margin-bottom: 8px; font-family: 'Cinzel', serif; }
+        .product-price { font-size: 13px; color: #d4af37; margin-bottom: 15px; font-weight: bold; }
         
         .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1.5px; text-decoration: none; font-size: 11px; text-align: center; display: block; width: 100%; box-sizing: border-box; transition: background 0.2s; }
-        .btn:hover { background: #c59b27; }
+        .btn:active { background: #c59b27; }
         
-        footer { background: #121212; border-top: 1px solid #222; text-align: center; padding: 30px; color: #777; font-size: 11px; letter-spacing: 1.5px; }
+        footer { background: #121212; border-top: 1px solid #222; text-align: center; padding: 25px 15px; color: #777; font-size: 10px; letter-spacing: 1px; line-height: 1.8; }
         footer a { color: #d4af37; text-decoration: none; }
+
+        @media (max-width: 480px) {
+            header { padding: 12px 15px; }
+            .brand-title { font-size: 13px; letter-spacing: 1.5px; }
+            .hero { padding: 40px 15px; }
+            .hero h1 { font-size: 20px; letter-spacing: 2px; }
+            .catalog-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -59,7 +69,7 @@
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
             <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
-        <a href="/admin/" style="color: #d4af37; text-decoration: none; font-size: 11px; letter-spacing: 2px; border: 1px solid #d4af37; padding: 8px 15px; border-radius: 4px;">CLIENT PORTAL</a>
+        <a href="/admin/" style="color: #d4af37; text-decoration: none; font-size: 10px; letter-spacing: 1.5px; border: 1px solid #d4af37; padding: 6px 10px; border-radius: 4px; white-space: nowrap;">PORTAL</a>
     </header>
 
     <section class="hero">
@@ -70,12 +80,13 @@
     <div class="container">
         <div class="section-title">THE ATELIER COLLECTION</div>
         <div id="store-catalog" class="catalog-grid">
-            <p style="color: #777; font-size: 13px; text-align: center; grid-column: 1/-1;">Loading curated pieces...</p>
+            <p style="color: #777; font-size: 12px; text-align: center; grid-column: 1/-1;">Loading curated pieces...</p>
         </div>
     </div>
 
     <footer>
-        &copy; 2026 ALIVÈRA ATELIER. ALL RIGHTS RESERVED. | <a href="/admin/">CLIENT SIGN IN / PORTAL</a>
+        &copy; 2026 ALIVÈRA ATELIER. ALL RIGHTS RESERVED.<br>
+        <a href="/admin/">CLIENT SIGN IN / PORTAL</a>
     </footer>
 
     <script>
@@ -108,7 +119,7 @@
                 const snapshot = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
                 
                 if (snapshot.empty) {
-                    catalogEl.innerHTML = `<p style="color: #777; font-size: 13px; text-align: center; grid-column: 1/-1;">New collection arriving shortly.</p>`;
+                    catalogEl.innerHTML = `<p style="color: #777; font-size: 12px; text-align: center; grid-column: 1/-1;">New collection arriving shortly.</p>`;
                     return;
                 }
 
@@ -148,7 +159,7 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("Order request registered successfully! You can sign into the Client Portal anytime with this email to track your fitting status.");
+                alert("Order request registered successfully! Sign into the Client Portal anytime with this email to track your status.");
             } catch (e) {
                 alert("Error placing order: " + e.message);
             }
