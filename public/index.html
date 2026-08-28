@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alivèra Atelier — Haute Couture & Bespoke Apparel</title>
+    <title>Alivèra Atelier</title>
     
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
@@ -25,15 +25,25 @@
         
         .nav-links { display: flex; gap: 8px; align-items: center; }
         .nav-btn { color: #d4af37; text-decoration: none; font-size: 10px; letter-spacing: 1.5px; border: 1px solid #d4af37; padding: 6px 10px; border-radius: 4px; white-space: nowrap; background: transparent; }
-        .nav-btn:hover, .nav-btn.active-portal { background: #d4af37; color: #0a0a0a; }
+        .nav-btn:hover { background: #d4af37; color: #0a0a0a; }
 
         .promo-banner { background: #d4af37; color: #0a0a0a; text-align: center; padding: 10px; font-size: 10px; letter-spacing: 1.5px; font-weight: bold; display: none; }
 
+        /* HERO & COUNTDOWN STYLES */
         .hero { text-align: center; padding: 70px 20px; background-size: cover; background-position: center; border-bottom: 1px solid #222; position: relative; }
-        .hero::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(10,10,10,0.82); z-index: 1; }
+        .hero::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(10,10,10,0.85); z-index: 1; }
         .hero-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
-        .hero h1 { color: #d4af37; font-size: 24px; letter-spacing: 3px; margin-bottom: 10px; }
-        .hero p { color: #aaa; font-size: 12px; letter-spacing: 1.5px; line-height: 1.5; margin-bottom: 5px; }
+        .hero h1 { color: #d4af37; font-size: 22px; letter-spacing: 3px; margin-bottom: 10px; }
+        .hero p { color: #aaa; font-size: 11px; letter-spacing: 1.5px; line-height: 1.5; margin-bottom: 5px; }
+
+        /* COUNTDOWN BANNER (Replaces hero when active) */
+        .sale-countdown-banner { background: linear-gradient(135deg, #1a1500, #121212); border-bottom: 2px solid #d4af37; text-align: center; padding: 50px 20px; display: none; }
+        .sale-countdown-banner h2 { color: #d4af37; font-size: 20px; letter-spacing: 3px; margin-bottom: 8px; }
+        .sale-countdown-banner p { color: #ccc; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 20px; }
+        .countdown-timers { display: flex; justify-content: center; gap: 15px; }
+        .timer-box { background: rgba(212, 175, 55, 0.1); border: 1px solid #d4af37; padding: 10px 15px; border-radius: 4px; min-width: 50px; }
+        .timer-num { font-size: 18px; font-weight: bold; color: #d4af37; font-family: 'Cinzel', serif; }
+        .timer-label { font-size: 8px; color: #aaa; letter-spacing: 1px; margin-top: 4px; }
 
         .container { max-width: 1200px; margin: 25px auto; padding: 0 15px; flex: 1; width: 100%; box-sizing: border-box; }
         .section-title { font-size: 18px; color: #d4af37; letter-spacing: 2px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 25px; text-align: center; }
@@ -83,12 +93,25 @@
         </div>
     </header>
 
-    <section id="hero-section" class="hero" style="background-image: url('/logo.png');">
+    <!-- USUAL HERO BANNER -->
+    <section id="hero-section" class="hero">
         <div class="hero-content">
-            <h1 id="hero-title">BESPOKE HAUTE COUTURE</h1>
-            <p id="hero-subtitle">HANDCRAFTED SILKS & CUSTOM DRAPES TAILORED TO PERFECTION</p>
+            <h1 id="hero-title"></h1>
+            <p id="hero-subtitle"></p>
         </div>
     </section>
+
+    <!-- SALE COUNTDOWN BANNER (Replaces hero when active) -->
+    <div id="sale-countdown-banner" class="sale-countdown-banner">
+        <h2 id="sale-title">LIMITED SALE EVENT</h2>
+        <p id="sale-subtitle">EXCLUSIVE DISCOUNTS ENDING SOON</p>
+        <div class="countdown-timers">
+            <div class="timer-box"><div id="c-days" class="timer-num">00</div><div class="timer-label">DAYS</div></div>
+            <div class="timer-box"><div id="c-hours" class="timer-num">00</div><div class="timer-label">HOURS</div></div>
+            <div class="timer-box"><div id="c-mins" class="timer-num">00</div><div class="timer-label">MINS</div></div>
+            <div class="timer-box"><div id="c-secs" class="timer-num">00</div><div class="timer-label">SECS</div></div>
+        </div>
+    </div>
 
     <div class="container">
         <div class="section-title">THE ATELIER COLLECTION</div>
@@ -122,6 +145,7 @@
 
         async function loadStorefront() {
             try {
+                // Promo banner check
                 const promoDoc = await db.collection("atelier_settings").doc("promo").get();
                 if (promoDoc.exists) {
                     const data = promoDoc.data();
@@ -132,14 +156,37 @@
                     }
                 }
 
-                const heroDoc = await db.collection("atelier_settings").doc("hero").get();
-                if (heroDoc.exists) {
-                    const hData = heroDoc.data();
-                    if (hData.title) document.getElementById('hero-title').innerText = hData.title;
-                    if (hData.subtitle) document.getElementById('hero-subtitle').innerText = hData.subtitle;
-                    if (hData.image) document.getElementById('hero-section').style.backgroundImage = `url('${hData.image}')`;
+                // Check Sale Countdown vs Normal Hero Banner
+                const saleDoc = await db.collection("atelier_settings").doc("saleCountdown").get();
+                const heroSection = document.getElementById('hero-section');
+                const saleBanner = document.getElementById('sale-countdown-banner');
+
+                let saleActive = false;
+                if (saleDoc.exists) {
+                    const sData = saleDoc.data();
+                    if (sData.endTime && new Date(sData.endTime).getTime() > Date.now()) {
+                        saleActive = true;
+                        document.getElementById('sale-title').innerText = sData.title || "LIMITED SALE EVENT";
+                        document.getElementById('sale-subtitle').innerText = sData.subtitle || "EXCLUSIVE DISCOUNTS ENDING SOON";
+                        saleBanner.style.display = 'block';
+                        heroSection.style.display = 'none';
+                        startCountdown(new Date(sData.endTime).getTime());
+                    }
                 }
 
+                if (!saleActive) {
+                    saleBanner.style.display = 'none';
+                    heroSection.style.display = 'block';
+                    const heroDoc = await db.collection("atelier_settings").doc("hero").get();
+                    if (heroDoc.exists) {
+                        const hData = heroDoc.data();
+                        if (hData.title) document.getElementById('hero-title').innerText = hData.title;
+                        if (hData.subtitle) document.getElementById('hero-subtitle').innerText = hData.subtitle;
+                        if (hData.image) heroSection.style.backgroundImage = `url('${hData.image}')`;
+                    }
+                }
+
+                // Load Catalog
                 const catalogEl = document.getElementById('store-catalog');
                 const snapshot = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
                 
@@ -168,6 +215,27 @@
             } catch (e) {
                 console.error("Error loading storefront:", e);
             }
+        }
+
+        function startCountdown(endTime) {
+            setInterval(() => {
+                const now = Date.now();
+                const distance = endTime - now;
+                if (distance < 0) {
+                    document.getElementById('sale-countdown-banner').style.display = 'none';
+                    document.getElementById('hero-section').style.display = 'block';
+                    return;
+                }
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('c-days').innerText = String(days).padStart(2, '0');
+                document.getElementById('c-hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('c-mins').innerText = String(mins).padStart(2, '0');
+                document.getElementById('c-secs').innerText = String(secs).padStart(2, '0');
+            }, 1000);
         }
 
         function shareProduct(name) {
