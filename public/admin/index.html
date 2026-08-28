@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier — Admin Master Portal</title>
+    <title>Alivèra Atelier — Portal & Master Admin</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
 
@@ -21,22 +21,26 @@
         
         .container { max-width: 900px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
         
-        #auth-gate { text-align: center; padding: 40px 20px; background: #121212; border: 1px solid #222; border-radius: 8px; margin-top: 40px; max-width: 400px; margin-left: auto; margin-right: auto; }
-        #auth-gate h2 { color: #d4af37; letter-spacing: 2px; margin-bottom: 15px; font-size: 16px; }
+        #auth-gate { text-align: center; padding: 40px 20px; background: #121212; border: 1px solid #222; border-radius: 8px; margin-top: 40px; max-width: 420px; margin-left: auto; margin-right: auto; }
+        #auth-gate h2 { color: #d4af37; letter-spacing: 2px; margin-bottom: 10px; font-size: 16px; }
         #auth-gate p { color: #aaa; font-size: 11px; margin-bottom: 20px; }
 
-        #admin-dashboard { display: none; }
+        .auth-toggle { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; font-size: 11px; letter-spacing: 1px; }
+        .auth-toggle span { cursor: pointer; color: #777; padding-bottom: 4px; border-bottom: 1px solid transparent; }
+        .auth-toggle span.active { color: #d4af37; border-bottom-color: #d4af37; font-weight: bold; }
+
+        #admin-dashboard, #customer-dashboard { display: none; }
         .card { background: #121212; border: 1px solid #222; border-radius: 8px; padding: 25px; margin-bottom: 30px; }
         .card h2 { color: #d4af37; font-size: 16px; letter-spacing: 2px; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
         
-        .form-group { margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-size: 10px; color: #aaa; letter-spacing: 1.5px; margin-bottom: 5px; }
         .form-control { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 12px; box-sizing: border-box; }
         
-        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; width: 100%; display: block; box-sizing: border-box; margin-top: 10px; }
+        .btn { background: #d4af37; color: #0a0a0a; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; letter-spacing: 1px; text-decoration: none; font-size: 12px; width: 100%; display: block; box-sizing: border-box; margin-top: 15px; }
         .btn:hover { background: #c59b27; }
 
-        .list-item { display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 12px; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 12px; text-align: left; }
         .action-btn { background: #e74c3c; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 10px; }
         .approve-btn { background: #2ecc71; color: #0a0a0a; }
     </style>
@@ -46,34 +50,50 @@
     <header>
         <a href="/" class="logo-area">
             <img src="/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-            <div class="brand-title">ALIVÈRA ATELIER — MASTER ADMIN</div>
+            <div class="brand-title">ALIVÈRA ATELIER</div>
         </a>
         <div style="display: flex; gap: 20px; align-items: center;">
             <a href="/" style="color: #aaa; text-decoration: none; font-size: 11px; letter-spacing: 1px;">VIEW STOREFRONT</a>
-            <button id="logout-btn" style="display:none; background:none; border:none; color:#aaa; cursor:pointer; font-size:11px; letter-spacing:1px;" onclick="auth.signOut()">SIGN OUT</button>
+            <button id="logout-btn" style="display:none; background:none; border:none; color:#d4af37; cursor:pointer; font-size:11px; letter-spacing:1px; font-weight:bold;" onclick="auth.signOut()">SIGN OUT</button>
         </div>
     </header>
 
     <div class="container">
-        <!-- AUTH GATE -->
+        <!-- AUTH GATE (Sign In / Sign Up) -->
         <div id="auth-gate">
-            <h2>MASTER ADMIN LOGIN</h2>
-            <p>Enter your hello@aliveraatelier.in credentials.</p>
-            <div class="form-group" style="text-align: left;">
-                <label>ADMIN EMAIL</label>
-                <input type="email" id="admin-email" class="form-control" value="hello@aliveraatelier.in">
+            <div class="auth-toggle">
+                <span id="tab-signin" class="active" onclick="switchAuthMode('signin')">SIGN IN</span>
+                <span id="tab-signup" onclick="switchAuthMode('signup')">CREATE ACCOUNT</span>
             </div>
-            <div class="form-group" style="text-align: left;">
+            
+            <h2 id="auth-title">CLIENT SIGN IN</h2>
+            <p id="auth-subtitle">Access your custom dress orders and profile.</p>
+            
+            <div class="form-group">
+                <label>EMAIL ADDRESS</label>
+                <input type="email" id="user-email" class="form-control" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
                 <label>PASSWORD</label>
-                <input type="password" id="admin-password" class="form-control" placeholder="••••••••">
+                <input type="password" id="user-password" class="form-control" placeholder="••••••••">
             </div>
-            <button class="btn" onclick="loginAdmin()">Sign In as Admin</button>
+            <button id="auth-btn" class="btn" onclick="handleAuthAction()">Sign In to Account</button>
         </div>
 
-        <!-- ADMIN DASHBOARD -->
+        <!-- CUSTOMER DASHBOARD (For Regular Users) -->
+        <div id="customer-dashboard">
+            <div class="card">
+                <h2>YOUR BESPOKE ORDERS</h2>
+                <div id="customer-orders-list">
+                    <p style="color: #777; font-size: 12px;">Loading your orders...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN DASHBOARD (Only for hello@aliveraatelier.in) -->
         <div id="admin-dashboard">
             <div class="card">
-                <h2>LIVE CLIENT ORDERS & STATUS CONTROL</h2>
+                <h2>MASTER ADMIN: LIVE CLIENT ORDERS</h2>
                 <div id="admin-orders-list">
                     <p style="color: #777; font-size: 12px;">Checking for incoming orders...</p>
                 </div>
@@ -140,33 +160,93 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
+        let isSignUpMode = false;
 
-        async function loginAdmin() {
-            const email = document.getElementById('admin-email').value.trim();
-            const password = document.getElementById('admin-password').value.trim();
+        function switchAuthMode(mode) {
+            isSignUpMode = (mode === 'signup');
+            document.getElementById('tab-signin').className = isSignUpMode ? '' : 'active';
+            document.getElementById('tab-signup').className = isSignUpMode ? 'active' : '';
+            document.getElementById('auth-title').innerText = isSignUpMode ? 'CREATE CUSTOMER ACCOUNT' : 'CLIENT SIGN IN';
+            document.getElementById('auth-subtitle').innerText = isSignUpMode ? 'Register to manage your custom fittings and orders.' : 'Access your custom dress orders and profile.';
+            document.getElementById('auth-btn').innerText = isSignUpMode ? 'Register Account' : 'Sign In to Account';
+        }
+
+        async function handleAuthAction() {
+            const email = document.getElementById('user-email').value.trim();
+            const password = document.getElementById('user-password').value.trim();
+            if (!email || !password) {
+                alert("Please fill in both email and password.");
+                return;
+            }
+
             try {
-                const res = await auth.signInWithEmailAndPassword(email, password);
-                if (res.user.email !== ADMIN_EMAIL) {
-                    alert("Unauthorized admin account.");
-                    await auth.signOut();
+                if (isSignUpMode) {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                    alert("Account created successfully!");
                 } else {
-                    alert("Admin access granted.");
+                    await auth.signInWithEmailAndPassword(email, password);
+                    alert("Signed in successfully!");
                 }
-            } catch(e) { alert("Login error: " + e.message); }
+            } catch (e) {
+                alert("Authentication error: " + e.message);
+            }
         }
 
         auth.onAuthStateChanged(user => {
-            if (user && user.email === ADMIN_EMAIL) {
-                document.getElementById('auth-gate').style.display = 'none';
-                document.getElementById('admin-dashboard').style.display = 'block';
-                document.getElementById('logout-btn').style.display = 'block';
-                loadAdminData();
+            const authGate = document.getElementById('auth-gate');
+            const adminDash = document.getElementById('admin-dashboard');
+            const custDash = document.getElementById('customer-dashboard');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if (user) {
+                authGate.style.display = 'none';
+                logoutBtn.style.display = 'block';
+
+                if (user.email === ADMIN_EMAIL) {
+                    // Unlock Master Admin View
+                    adminDash.style.display = 'block';
+                    custDash.style.display = 'none';
+                    loadAdminData();
+                } else {
+                    // Unlock Regular Customer Portal
+                    adminDash.style.display = 'none';
+                    custDash.style.display = 'block';
+                    loadCustomerOrders(user.email);
+                }
             } else {
-                document.getElementById('auth-gate').style.display = 'block';
-                document.getElementById('admin-dashboard').style.display = 'none';
-                document.getElementById('logout-btn').style.display = 'none';
+                authGate.style.display = 'block';
+                adminDash.style.display = 'none';
+                custDash.style.display = 'none';
+                logoutBtn.style.display = 'none';
             }
         });
+
+        async function loadCustomerOrders(email) {
+            try {
+                const ordersEl = document.getElementById('customer-orders-list');
+                const snapshot = await db.collection("atelier_orders").where("clientEmail", "==", email).get();
+                
+                if (snapshot.empty) {
+                    ordersEl.innerHTML = `<p style="color: #777; font-size: 12px;">You haven't placed any order requests yet.</p>`;
+                    return;
+                }
+
+                ordersEl.innerHTML = snapshot.docs.map(doc => {
+                    const o = doc.data();
+                    return `
+                        <div class="list-item">
+                            <div>
+                                <strong>${o.itemName}</strong> (${o.selectedSize})<br>
+                                <span style="color: #aaa;">Status: <strong style="color: #d4af37;">${o.status}</strong></span>
+                            </div>
+                            <div style="color: #d4af37; font-weight: bold;">₹${Number(o.itemPrice).toLocaleString('en-IN')}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error("Error loading customer orders:", e);
+            }
+        }
 
         function compressAndConvertImage(inputElement, targetFieldId, maxWidth = 800) {
             const file = inputElement.files[0];
@@ -193,7 +273,6 @@
 
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
                     document.getElementById(targetFieldId).value = dataUrl;
-                    console.log("Image compressed successfully.");
                 };
                 img.src = event.target.result;
             };
