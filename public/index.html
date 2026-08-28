@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Haute Couture & Bespoke Apparel</title>
-    <link rel="icon" type="image/ico" href="/favicon.ico">
-    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
 
     <!-- Firebase SDKs (Compat Version) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -94,7 +94,6 @@
 
         async function loadStorefront() {
             try {
-                // Load Promo Banner
                 const promoDoc = await db.collection("atelier_settings").doc("promo").get();
                 if (promoDoc.exists) {
                     const data = promoDoc.data();
@@ -105,7 +104,6 @@
                     }
                 }
 
-                // Load Products
                 const catalogEl = document.getElementById('store-catalog');
                 const snapshot = await db.collection("atelier_products").orderBy("createdAt", "desc").get();
                 
@@ -140,7 +138,6 @@
             if (!selectedSize) return;
 
             try {
-                // Save Order to Firestore
                 await db.collection("atelier_orders").add({
                     productId: id,
                     itemName: name,
