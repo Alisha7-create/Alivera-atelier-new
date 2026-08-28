@@ -7,7 +7,6 @@
     <link rel="icon" type="image/ico" href="/favicon.ico">
     <link rel="icon" type="image/png" href="/logo.png">
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
@@ -21,12 +20,10 @@
         
         .container { max-width: 900px; margin: 40px auto; padding: 0 20px; flex: 1; width: 100%; box-sizing: border-box; }
         
-        /* Auth Gate */
         #auth-gate { text-align: center; padding: 40px 20px; background: #121212; border: 1px solid #222; border-radius: 8px; margin-top: 40px; max-width: 400px; margin-left: auto; margin-right: auto; }
         #auth-gate h2 { color: #d4af37; letter-spacing: 2px; margin-bottom: 15px; font-size: 16px; }
         #auth-gate p { color: #aaa; font-size: 11px; margin-bottom: 20px; }
 
-        /* Admin Content Dashboard */
         #admin-dashboard { display: none; }
         .card { background: #121212; border: 1px solid #222; border-radius: 8px; padding: 25px; margin-bottom: 30px; }
         .card h2 { color: #d4af37; font-size: 16px; letter-spacing: 2px; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
@@ -57,7 +54,6 @@
     </header>
 
     <div class="container">
-        <!-- AUTH GATE -->
         <div id="auth-gate">
             <h2>MASTER ADMIN LOGIN</h2>
             <p>Enter your hello@aliveraatelier.in credentials.</p>
@@ -72,19 +68,14 @@
             <button class="btn" onclick="loginAdmin()">Sign In as Admin</button>
         </div>
 
-        <!-- ADMIN DASHBOARD -->
         <div id="admin-dashboard">
-            
-            <!-- Live Orders & Email Dispatcher -->
             <div class="card">
                 <h2>LIVE CLIENT ORDERS & STATUS CONTROL</h2>
-                <p style="color: #aaa; font-size: 11px; margin-bottom: 15px;">Confirmations/Declinations automatically send email notifications via hello@aliveraatelier.in.</p>
                 <div id="admin-orders-list">
                     <p style="color: #777; font-size: 12px;">Checking for incoming orders...</p>
                 </div>
             </div>
 
-            <!-- Publish Product & Size Chart -->
             <div class="card">
                 <h2>PUBLISH NEW DRESS & SIZE CHART</h2>
                 <div class="form-group">
@@ -108,7 +99,6 @@
                 <button class="btn" onclick="publishProduct()">Publish to Storefront Instantly</button>
             </div>
 
-            <!-- Advanced Promo & Countdown Config -->
             <div class="card">
                 <h2>PROMOTIONAL BANNER & DISCOUNT CONFIGURATOR</h2>
                 <div class="form-group">
@@ -120,45 +110,9 @@
                     <label>BANNER DISPLAY TEXT</label>
                     <input type="text" id="promo-banner-text" class="form-control" placeholder="e.g. LUXURY SPRING SALE IS LIVE — 10% OFF">
                 </div>
-                <div class="form-group">
-                    <label>DISCOUNT TYPE</label>
-                    <select id="promo-type" class="form-control" onchange="togglePromoTypeFields()">
-                        <option value="none">No Active Promotion</option>
-                        <option value="people">People Capacity Cap (e.g., First 10 People)</option>
-                        <option value="time">Date & Time Range (e.g., Start Date to End Date)</option>
-                    </select>
-                </div>
-
-                <div id="people-promo-fields" style="display:none;">
-                    <div class="form-group">
-                        <label>MAXIMUM NUMBER OF PEOPLE ALLOWED</label>
-                        <input type="number" id="promo-max-people" class="form-control" placeholder="10">
-                    </div>
-                    <div class="form-group">
-                        <label>LIVE USAGE COUNT: <span id="promo-used-count" style="color: #d4af37;">0</span> / <span id="promo-max-display">0</span></label>
-                    </div>
-                </div>
-
-                <div id="time-promo-fields" style="display:none;">
-                    <div class="form-group">
-                        <label>START DATE & TIME</label>
-                        <input type="datetime-local" id="promo-start-time" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>END DATE & TIME</label>
-                        <input type="datetime-local" id="promo-end-time" class="form-control">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>SALE AWARENESS COUNTDOWN TARGET (Sharp 12 AM Launch)</label>
-                    <input type="datetime-local" id="promo-countdown-target" class="form-control">
-                </div>
-
                 <button class="btn" onclick="savePromoConfig()">Save Promotion Rules & Banner</button>
             </div>
 
-            <!-- Manage Catalog -->
             <div class="card">
                 <h2>ACTIVE CATALOGUE</h2>
                 <div id="admin-product-list">
@@ -175,7 +129,8 @@
             projectId: "alivera-atelier",
             storageBucket: "alivera-atelier.firebasestorage.app",
             messagingSenderId: "952987801898",
-            appId: "1:952987801898:web:af49cb363c53584de1a653"
+            appId: "1:952987801898:web:af49cb363c53584de1a653",
+            measurementId: "G-YQETZYQ3PT"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -210,7 +165,6 @@
             }
         });
 
-        // Image compression helper to keep document size well under Firestore 1MB limit
         function compressAndConvertImage(inputElement, targetFieldId, maxWidth = 800) {
             const file = inputElement.files[0];
             if (!file) return;
@@ -234,42 +188,26 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Compress to JPEG with 85% quality
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
                     document.getElementById(targetFieldId).value = dataUrl;
-                    console.log(`Image compressed successfully. Size: ${Math.round(dataUrl.length / 1024)} KB`);
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        function togglePromoTypeFields() {
-            const val = document.getElementById('promo-type').value;
-            document.getElementById('people-promo-fields').style.display = val === 'people' ? 'block' : 'none';
-            document.getElementById('time-promo-fields').style.display = val === 'time' ? 'block' : 'none';
-        }
-
         async function savePromoConfig() {
             try {
                 const bannerText = document.getElementById('promo-banner-text').value;
                 const bannerImage = document.getElementById('promo-banner-image').value;
-                const type = document.getElementById('promo-type').value;
-                const maxPeople = Number(document.getElementById('promo-max-people').value) || 0;
-                const startTime = document.getElementById('promo-start-time').value;
-                const endTime = document.getElementById('promo-end-time').value;
-                const countdownTarget = document.getElementById('promo-countdown-target').value;
-
                 const existingDoc = await db.collection("atelier_settings").doc("promo").get();
                 const existingImage = existingDoc.exists ? (existingDoc.data().bannerImage || '') : '';
 
                 await db.collection("atelier_settings").doc("promo").set({
                     bannerText,
-                    bannerImage: bannerImage || existingImage,
-                    type, maxPeople, startTime, endTime, countdownTarget,
-                    usedCount: window.currentUsedCount || 0
+                    bannerImage: bannerImage || existingImage
                 }, { merge: true });
-                alert("Promotional configuration & banner image saved successfully!");
+                alert("Promotional configuration saved successfully!");
             } catch (e) {
                 alert("Error saving promo config: " + e.message);
             }
@@ -305,7 +243,6 @@
                 loadAdminData();
             } catch (e) {
                 alert("Publishing error: " + e.message);
-                console.error(e);
             }
         }
 
@@ -316,15 +253,6 @@
                     const d = promoDoc.data();
                     document.getElementById('promo-banner-text').value = d.bannerText || '';
                     document.getElementById('promo-banner-image').value = d.bannerImage || '';
-                    document.getElementById('promo-type').value = d.type || 'none';
-                    document.getElementById('promo-max-people').value = d.maxPeople || '';
-                    document.getElementById('promo-start-time').value = d.startTime || '';
-                    document.getElementById('promo-end-time').value = d.endTime || '';
-                    document.getElementById('promo-countdown-target').value = d.countdownTarget || '';
-                    window.currentUsedCount = d.usedCount || 0;
-                    document.getElementById('promo-used-count').innerText = window.currentUsedCount;
-                    document.getElementById('promo-max-display').innerText = d.maxPeople || 0;
-                    togglePromoTypeFields();
                 }
 
                 const ordersEl = document.getElementById('admin-orders-list');
@@ -339,8 +267,7 @@
                             <div class="list-item">
                                 <div>
                                     <strong>Order #${id.slice(0,6)}</strong> — ${o.clientEmail}<br>
-                                    <span style="color: #aaa;">Piece: ${o.itemName} (${o.selectedSize}) | Status: <strong>${o.status}</strong></span><br>
-                                    <span style="font-size: 10px; color: #888;">Ship to: ${o.shipping.address}, ${o.shipping.city} - ${o.shipping.pincode}</span>
+                                    <span style="color: #aaa;">Piece: ${o.itemName} (${o.selectedSize}) | Status: <strong>${o.status}</strong></span>
                                 </div>
                                 <div style="display: flex; gap: 5px;">
                                     <button class="action-btn approve-btn" onclick="updateOrderStatus('${id}', 'Confirmed & Dispatched')">Confirm</button>
