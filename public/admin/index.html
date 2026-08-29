@@ -3,63 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier | Admin Portal</title>
+    <title>Studio Admin Control Center — Alivèra Atelier</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #030303; color: #f5f5f4; }
         .font-serif { font-family: 'Playfair Display', serif; }
+        .gold-gradient { background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gold-border { border-color: rgba(191, 149, 63, 0.3); }
+        .gold-bg { background-color: #bf953f; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
-<body class="bg-stone-100 text-stone-900 antialiased">
+<body class="antialiased p-6 md:p-12">
 
-    <div id="admin-gate" class="fixed inset-0 z-50 bg-stone-950 flex items-center justify-center p-6">
-        <div class="bg-white border border-stone-200 p-8 max-w-md w-full shadow-xl space-y-6">
-            <h2 class="font-serif text-2xl font-medium text-center">Studio Admin Portal</h2>
-            <p class="text-xs text-stone-500 uppercase tracking-wider text-center">Sign in with your administrator credentials.</p>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] uppercase tracking-widest text-stone-600 mb-1">Admin Email</label>
-                    <input type="email" id="admin-email" value="hello@aliveraatelier.in" class="w-full bg-stone-50 border border-stone-300 p-3 text-xs outline-none focus:border-black">
-                </div>
-                <div>
-                    <label class="block text-[10px] uppercase tracking-widest text-stone-600 mb-1">Password</label>
-                    <input type="password" id="admin-password" placeholder="••••••••" class="w-full bg-stone-50 border border-stone-300 p-3 text-xs outline-none focus:border-black">
-                </div>
-                <button type="button" id="btn-admin-login" class="w-full bg-stone-900 text-white py-3.5 text-xs uppercase tracking-widest font-semibold hover:bg-stone-800 transition">
-                    Sign In to Studio
-                </button>
+    <div class="max-w-6xl mx-auto space-y-8">
+        <!-- TOP BAR -->
+        <div class="flex justify-between items-center pb-6 border-b gold-border">
+            <div>
+                <span class="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold">Restricted Access</span>
+                <h1 class="font-serif text-3xl gold-gradient mt-1">Studio Admin Dashboard</h1>
             </div>
-
-            <div class="text-center pt-2">
-                <a href="../index.html" class="text-xs text-stone-400 underline uppercase tracking-widest">Return to Storefront</a>
+            <div class="flex items-center gap-4">
+                <a href="../index.html" class="text-xs uppercase tracking-widest text-stone-400 hover:text-amber-300">View Storefront →</a>
+                <button type="button" onclick="auth.signOut().then(() => window.location.href='../index.html')" class="text-xs uppercase tracking-widest text-red-400">Sign Out</button>
             </div>
         </div>
-    </div>
 
-    <div id="admin-dashboard-content" class="hidden">
-        <header class="bg-stone-900 text-stone-100 py-4 px-6 border-b border-stone-800">
-            <div class="max-w-7xl mx-auto flex items-center justify-between">
-                <span class="font-serif text-xl tracking-widest font-bold">ALIVÉRA ATELIER — SECURE ADMIN</span>
-                <button type="button" id="btn-admin-signout" class="text-xs uppercase tracking-widest text-red-400 hover:text-red-300">Sign Out</button>
-            </div>
-        </header>
+        <!-- AUTH GATE -->
+        <div id="admin-auth-gate" class="bg-stone-950 border gold-border p-8 max-w-md mx-auto text-center space-y-4">
+            <h3 class="font-serif text-xl text-amber-200">Admin Authentication Required</h3>
+            <p class="text-xs text-stone-400">Please sign in using <strong class="text-amber-400">hello@aliveraatelier.in</strong></p>
+            <input type="email" id="adm-email" value="hello@aliveraatelier.in" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+            <input type="password" id="adm-pass" placeholder="Password" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+            <button type="button" onclick="adminLogin()" class="w-full gold-bg text-black py-3 text-xs uppercase font-semibold">Access Dashboard</button>
+        </div>
 
-        <main class="max-w-7xl mx-auto px-6 py-12 space-y-12">
-            <div class="bg-white border border-stone-200 p-8 shadow-sm">
-                <h2 class="font-serif text-2xl font-medium mb-4">Publish Dress Live to Storefront</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <input type="text" id="dress-name" placeholder="Dress Name" class="bg-stone-50 border border-stone-300 p-3 text-xs outline-none">
-                    <input type="number" id="dress-price" placeholder="Price (₹)" class="bg-stone-50 border border-stone-300 p-3 text-xs outline-none">
-                    <input type="text" id="dress-image" placeholder="Image URL Link" class="bg-stone-50 border border-stone-300 p-3 text-xs outline-none">
+        <!-- DASHBOARD CONTENT -->
+        <div id="admin-main-content" class="hidden space-y-8">
+            <!-- Publish Dress -->
+            <div class="bg-stone-950 border gold-border p-6 shadow-xl">
+                <h3 class="font-serif text-xl text-amber-200 mb-4">Publish Dress Live</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="d-name" placeholder="Dress Name" class="bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    <input type="number" id="d-price" placeholder="Price (₹)" class="bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    <input type="text" id="d-img" placeholder="Dress Image URL" class="bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    <input type="text" id="d-chart" placeholder="Size Chart Image URL" class="bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                 </div>
-                <button type="button" id="btn-upload-dress" class="mt-6 bg-stone-900 text-white px-8 py-3 text-xs uppercase tracking-widest hover:bg-stone-800">Publish Live</button>
+                <button type="button" onclick="publishDress()" class="mt-4 gold-bg text-black px-6 py-3 text-xs uppercase font-semibold">Publish Live</button>
             </div>
-        </main>
+
+            <!-- Live Customer Orders -->
+            <div class="bg-stone-950 border gold-border p-6 shadow-xl">
+                <h3 class="font-serif text-xl text-amber-200 mb-4">Live Customer Orders</h3>
+                <div id="admin-orders-list" class="space-y-4">
+                    <p class="text-xs text-stone-500 uppercase">Loading orders...</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -70,73 +73,70 @@
             projectId: "alivera-atelier",
             storageBucket: "alivera-atelier.firebasestorage.app",
             messagingSenderId: "952987801898",
-            appId: "1:952987801898:web:af49cb363c53584de1a653",
-            measurementId: "G-YQETZYQ3PT"
+            appId: "1:952987801898:web:af49cb363c53584de1a653"
         };
-
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
-
-        const ADMIN_EMAILS = ["hello@aliveraatelier.in"];
+        const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
         auth.onAuthStateChanged(user => {
-            if (user && ADMIN_EMAILS.includes(user.email)) {
-                document.getElementById('admin-gate').classList.add('hidden');
-                document.getElementById('admin-dashboard-content').classList.remove('hidden');
+            if (user && user.email === ADMIN_EMAIL) {
+                document.getElementById('admin-auth-gate').classList.add('hidden');
+                document.getElementById('admin-main-content').classList.remove('hidden');
+                loadOrders();
             } else {
-                document.getElementById('admin-gate').classList.remove('hidden');
-                document.getElementById('admin-dashboard-content').classList.add('hidden');
+                document.getElementById('admin-auth-gate').classList.remove('hidden');
+                document.getElementById('admin-main-content').classList.add('hidden');
             }
         });
 
         async function adminLogin() {
-            const email = document.getElementById('admin-email').value.trim();
-            const password = document.getElementById('admin-password').value.trim();
-            
-            if (!email || !password) {
-                alert("Please enter both email and password.");
-                return;
-            }
-
             try {
-                const res = await auth.signInWithEmailAndPassword(email, password);
-                if (!ADMIN_EMAILS.includes(res.user.email)) {
-                    alert("Access Denied: Not an authorized administrator account.");
-                    await auth.signOut();
-                }
-            } catch (err) { 
-                alert("Admin sign-in failed: " + err.message); 
-            }
+                await auth.signInWithEmailAndPassword(document.getElementById('adm-email').value, document.getElementById('adm-pass').value);
+            } catch(e) { alert(e.message); }
         }
 
-        async function uploadDress() {
-            const name = document.getElementById('dress-name').value.trim();
-            const price = document.getElementById('dress-price').value.trim();
-            const imageUrl = document.getElementById('dress-image').value.trim();
-            if (!name || !price || !imageUrl) { alert("Fill all fields."); return; }
-            await db.collection("atelier_dresses").add({ name, price: Number(price), imageUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        async function publishDress() {
+            const name = document.getElementById('d-name').value;
+            const price = Number(document.getElementById('d-price').value);
+            const imageUrl = document.getElementById('d-img').value;
+            const sizeChartUrl = document.getElementById('d-chart').value;
+            if(!name || !price || !imageUrl) { alert("Fill required fields"); return; }
+            await db.collection("atelier_dresses").add({ name, price, imageUrl, sizeChartUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
             alert("Dress published live!");
-            document.getElementById('dress-name').value = '';
-            document.getElementById('dress-price').value = '';
-            document.getElementById('dress-image').value = '';
+            document.getElementById('d-name').value = ''; document.getElementById('d-price').value = ''; document.getElementById('d-img').value = ''; document.getElementById('d-chart').value = '';
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const bindClick = (id, fn) => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener('click', fn);
-            };
+        async function loadOrders() {
+            const container = document.getElementById('admin-orders-list');
+            const snap = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
+            if(snap.empty) { container.innerHTML = `<p class="text-xs text-stone-500">No orders received.</p>`; return; }
+            container.innerHTML = snap.docs.map(doc => {
+                const o = doc.data();
+                return `
+                    <div class="bg-stone-900 border gold-border p-4 text-xs space-y-2">
+                        <div class="flex justify-between font-semibold text-amber-200">
+                            <span>Client: ${o.clientName} (${o.clientEmail})</span>
+                            <span>Status: ${o.status}</span>
+                        </div>
+                        <p class="text-stone-300">Phone: ${o.phone} | Address: ${o.address}</p>
+                        <p class="text-stone-400">Items: ${o.items.map(i => i.name).join(', ')}</p>
+                        <div class="flex gap-4 pt-2">
+                            <button onclick="updateStatus('${doc.id}', 'Accepted')" class="gold-bg text-black px-4 py-1.5 font-bold uppercase">Accept</button>
+                            <button onclick="updateStatus('${doc.id}', 'Declined')" class="bg-red-950 text-red-400 border border-red-900 px-4 py-1.5 font-bold uppercase">Decline</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
-            bindClick('btn-admin-login', adminLogin);
-            bindClick('btn-admin-signout', () => auth.signOut());
-            bindClick('btn-upload-dress', uploadDress);
-        });
-
-        window.adminLogin = adminLogin;
-        window.uploadDress = uploadDress;
+        async function updateStatus(id, status) {
+            await db.collection("atelier_orders").doc(id).update({ status });
+            alert(`Order marked as ${status}`);
+            loadOrders();
+        }
     </script>
 </body>
 </html>
