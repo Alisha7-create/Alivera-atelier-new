@@ -41,29 +41,31 @@
 
         <div id="admin-main-content" class="hidden space-y-8">
             
-            <!-- Cinematic Banner Manager & Sale Timer -->
+            <!-- Cinematic Banner Manager & Promotion Type -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
-                <h3 class="font-serif text-xl text-amber-200">Cinematic Banner Manager (1897 x 412) & Sale Timer Schedule</h3>
+                <h3 class="font-serif text-xl text-amber-200">Cinematic Banner Manager (1897 x 412) & Promotion Rules</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Banner Image (1897x412)</label>
                         <input type="file" id="banner-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
                     </div>
                     <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale / Drop Type</label>
-                        <select id="promo-type" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Promotion / Drop Type</label>
+                        <select id="promo-type" onchange="toggleTimeInputs()" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                            <option value="regular">Regular Daily Banner (No Timer / Permanent Banner)</option>
                             <option value="countdown">Scheduled Drop (Timer Starts → Sale Live → Auto-Replaces Banner)</option>
                             <option value="fcfs">First-Come-First-Serve (Timer / Order Cap Limit)</option>
-                            <option value="regular">Regular Daily Banner (Manual Override)</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale Start Date & Time</label>
-                        <input type="datetime-local" id="sale-start" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale End Date & Time</label>
-                        <input type="datetime-local" id="sale-end" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
+                    <div id="time-inputs-container" class="contents">
+                        <div>
+                            <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale Start Date & Time</label>
+                            <input type="datetime-local" id="sale-start" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale End Date & Time</label>
+                            <input type="datetime-local" id="sale-end" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
+                        </div>
                     </div>
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">Max Orders Cap (Optional for FCFS)</label>
@@ -72,7 +74,7 @@
                 </div>
                 <div class="flex gap-4">
                     <button type="button" onclick="saveBannerPromotion()" class="gold-bg text-black px-6 py-3 text-[10px] uppercase font-semibold">Deploy Banner & Rules</button>
-                    <button type="button" onclick="endSaleNow()" class="bg-red-950 text-red-400 border border-red-900 px-6 py-3 text-[10px] uppercase font-semibold">End / Cancel Sale Now</button>
+                    <button type="button" onclick="endSaleNow()" class="bg-red-950 text-red-400 border border-red-900 px-6 py-3 text-[10px] uppercase font-semibold">End / Clear Banner</button>
                 </div>
             </div>
 
@@ -142,6 +144,16 @@
             } catch(e) { alert(e.message); }
         }
 
+        function toggleTimeInputs() {
+            const promoType = document.getElementById('promo-type').value;
+            const container = document.getElementById('time-inputs-container');
+            if (promoType === 'regular') {
+                container.style.display = 'none';
+            } else {
+                container.style.display = 'contents';
+            }
+        }
+
         function convertFileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -158,8 +170,8 @@
             const endDateStr = document.getElementById('sale-end').value;
             const saleCap = document.getElementById('sale-cap').value;
 
-            if (!startDateStr || !endDateStr) {
-                alert("Please provide both start and end date/time for the scheduled sale.");
+            if (saleType !== 'regular' && (!startDateStr || !endDateStr)) {
+                alert("Please provide both start and end date/time for scheduled or FCFS sales.");
                 return;
             }
 
@@ -169,27 +181,30 @@
                 bannerImageUrl = await convertFileToBase64(file);
             }
 
-            const saleStartTimestamp = new Date(startDateStr).getTime();
-            const saleEndTimestamp = new Date(endDateStr).getTime();
-
             const payload = {
                 saleType,
-                saleStartTimestamp,
-                saleEndTimestamp,
                 saleCap: saleCap || "",
                 saleActive: true,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
+            if (saleType !== 'regular') {
+                payload.saleStartTimestamp = new Date(startDateStr).getTime();
+                payload.saleEndTimestamp = new Date(endDateStr).getTime();
+            } else {
+                payload.saleStartTimestamp = null;
+                payload.saleEndTimestamp = null;
+            }
+
             if (bannerImageUrl) payload.bannerImageUrl = bannerImageUrl;
 
             await db.collection("atelier_settings").doc("promotion_config").set(payload, { merge: true });
-            alert("Banner and scheduled sale timer deployed successfully!");
+            alert("Banner and promotion rules deployed successfully!");
         }
 
         async function endSaleNow() {
             await db.collection("atelier_settings").doc("promotion_config").update({ saleActive: false });
-            alert("Sale ended/cancelled successfully!");
+            alert("Promotion ended/banner cleared successfully!");
         }
 
         async function publishDress() {
