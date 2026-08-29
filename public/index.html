@@ -69,7 +69,6 @@
         </div>
     </main>
 
-    <!-- Size Chart Modal -->
     <div id="sizechart-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-stone-950 border gold-border w-full max-w-xl p-6 relative text-stone-100">
             <button type="button" onclick="closeSizeChartModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
@@ -78,7 +77,6 @@
         </div>
     </div>
 
-    <!-- Wishlist Modal -->
     <div id="wishlist-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
         <div class="bg-stone-950 border-l gold-border w-full max-w-md h-full flex flex-col p-6 overflow-y-auto text-stone-100">
             <div class="flex justify-between pb-6 border-b border-stone-900"><h3 class="font-serif text-xl text-amber-200">Your Wishlist</h3><button onclick="closeWishlistModal()" class="text-xs">Close</button></div>
@@ -86,7 +84,6 @@
         </div>
     </div>
 
-    <!-- Customer Account & Profile Dashboard Modal -->
     <div id="account-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-stone-950 border gold-border w-full max-w-2xl p-8 relative text-stone-100 my-8 shadow-2xl space-y-6">
             <button type="button" onclick="closeAccountModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
@@ -119,7 +116,6 @@
         </div>
     </div>
 
-    <!-- Secure Checkout Modal (Bag & Buy Now) -->
     <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-stone-950 border gold-border w-full max-w-2xl p-8 shadow-2xl relative text-stone-100 my-8">
             <button type="button" onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
@@ -136,14 +132,16 @@
                         <input type="text" id="chk-pincode" placeholder="6-digit Pincode" onblur="checkPincode()" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                         <span id="pin-status" class="text-[10px] mt-1 block"></span>
                     </div>
-                    <select class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none"><option>Razorpay Secure Gateway / COD</option></select>
+                    <select id="chk-payment-method" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                        <option value="Online Payment">Online Payment (UPI, GPay, Cards, NetBanking)</option>
+                        <option value="Cash on Delivery">Cash on Delivery (COD)</option>
+                    </select>
                 </div>
-                <button type="button" onclick="submitOrder()" class="w-full gold-bg text-black py-4 text-xs uppercase tracking-widest font-semibold gold-hover mt-4">Confirm & Pay (24h Cancellation Window)</button>
+                <button type="button" onclick="submitOrder()" class="w-full gold-bg text-black py-4 text-xs uppercase tracking-widest font-semibold gold-hover mt-4">Confirm & Book Order (24h Cancellation Window)</button>
             </div>
         </div>
     </div>
 
-    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex items-center justify-center p-4">
         <div class="bg-stone-950 border gold-border w-full max-w-md p-8 relative text-stone-100 space-y-4">
             <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 text-xs">Close</button>
@@ -160,7 +158,6 @@
         </div>
     </div>
 
-    <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
         <div class="bg-stone-950 border-l gold-border w-full max-w-md h-full flex flex-col p-6 overflow-y-auto text-stone-100">
             <div class="flex justify-between pb-6 border-b border-stone-900"><h3 class="font-serif text-xl text-amber-200">Shopping Bag</h3><button onclick="closeCartModal()" class="text-xs">Close</button></div>
@@ -483,16 +480,17 @@
             const phone = document.getElementById('chk-phone').value.trim();
             const address = document.getElementById('chk-address').value.trim();
             const pincode = document.getElementById('chk-pincode').value.trim();
+            const paymentMethod = document.getElementById('chk-payment-method').value;
 
             if(!name || !phone || !address || !pincode || checkoutItemsPayload.length === 0) { alert("Please complete your shipping details."); return; }
 
             await db.collection("atelier_orders").add({
                 clientName: name, clientEmail: currentUser ? currentUser.email : 'guest@aliveraatelier.in',
-                phone, address: `${address} - Pincode: ${pincode}`, items: checkoutItemsPayload, status: 'Pending Review',
+                phone, address: `${address} - Pincode: ${pincode}`, paymentMethod, items: checkoutItemsPayload, status: 'Pending Review',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            alert("Order placed successfully! 24-hour cancellation window applies.");
+            alert(`Order placed successfully via ${paymentMethod}! 24-hour cancellation window applies.`);
             checkoutItemsPayload = [];
             closeCheckoutModal();
         }
@@ -531,6 +529,7 @@
                 return `
                     <div class="bg-stone-900 border gold-border p-3 text-xs space-y-1">
                         <div class="flex justify-between text-amber-200"><span>Status: ${o.status}</span><span>₹${o.items ? o.items.reduce((s,i)=>s+i.price,0) : 0}</span></div>
+                        <p class="text-stone-400">Payment: ${o.paymentMethod || 'Online Payment'}</p>
                         <p class="text-stone-400">Items: ${o.items ? o.items.map(i=>`${i.name} (${i.size})`).join(', ') : ''}</p>
                     </div>
                 `;
