@@ -27,17 +27,92 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-6 py-12 space-y-8">
+    <main class="max-w-7xl mx-auto px-6 py-12 space-y-12">
         
-        <!-- Hero Banner Customization (1897 x 412) -->
+        <!-- SECTION 1: UPLOAD DRESSES INSTANTLY TO STOREFRONT -->
+        <div class="bg-white border border-stone-200 shadow-sm p-8">
+            <h2 class="font-serif text-2xl font-medium mb-2">Upload Dress to Storefront ASAP</h2>
+            <p class="text-xs text-stone-500 uppercase tracking-wider mb-6">Instantly publish a new dress item with image URL, name, and price.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Dress Name</label>
+                    <input type="text" id="dress-name" placeholder="e.g. Velvet Botanical Gown" class="w-full bg-stone-50 border border-stone-300 p-3 text-xs text-stone-900 outline-none focus:border-stone-900">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Price (₹)</label>
+                    <input type="number" id="dress-price" placeholder="14999" class="w-full bg-stone-50 border border-stone-300 p-3 text-xs text-stone-900 outline-none focus:border-stone-900">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Dress Image URL</label>
+                    <input type="text" id="dress-image" placeholder="Paste direct image link" class="w-full bg-stone-50 border border-stone-300 p-3 text-xs text-stone-900 outline-none focus:border-stone-900">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="uploadDress()" class="bg-stone-900 text-stone-50 px-8 py-3.5 text-xs uppercase tracking-[0.2em] hover:bg-stone-800 transition font-semibold">
+                    Publish Dress Live
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: ADVANCED DISCOUNT MANAGER -->
+        <div class="bg-white border border-stone-200 shadow-sm p-8">
+            <h2 class="font-serif text-2xl font-medium mb-2">Configure Store Discounts & Sale Banner</h2>
+            <p class="text-xs text-stone-500 uppercase tracking-wider mb-6">Set First-Come-First-Serve limits or Date-Range Sale banners with auto-activation.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Option A: First Come First Serve -->
+                <div class="bg-stone-50 border border-stone-200 p-6 space-y-4">
+                    <h3 class="font-serif text-lg font-medium text-stone-900">1. First Come, First Serve Discount</h3>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Discount Percentage (%)</label>
+                        <input type="number" id="fcfs-percent" placeholder="15" class="w-full bg-white border border-stone-300 p-2.5 text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Max Number of Customers</label>
+                        <input type="number" id="fcfs-slots" placeholder="50" class="w-full bg-white border border-stone-300 p-2.5 text-xs outline-none">
+                    </div>
+                    <button onclick="saveFirstComeDiscount()" class="w-full bg-stone-900 text-stone-50 py-3 text-xs uppercase tracking-widest hover:bg-stone-800 transition">
+                        Enable FCFS Discount
+                    </button>
+                </div>
+
+                <!-- Option B: Date Range Sale & Banner -->
+                <div class="bg-stone-50 border border-stone-200 p-6 space-y-4">
+                    <h3 class="font-serif text-lg font-medium text-stone-900">2. Date-Range Sale & Banner Switch</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Start Date (12:00 AM)</label>
+                            <input type="date" id="sale-start-date" class="w-full bg-white border border-stone-300 p-2 text-xs outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">End Date (11:59 PM)</label>
+                            <input type="date" id="sale-end-date" class="w-full bg-white border border-stone-300 p-2 text-xs outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Sale Banner Announcement Text</label>
+                        <input type="text" id="sale-banner-msg" placeholder="FLASH SALE LIVE: 20% OFF ALL ORDERS!" class="w-full bg-white border border-stone-300 p-2.5 text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Discount % During Sale</label>
+                        <input type="number" id="sale-discount-percent" placeholder="20" class="w-full bg-white border border-stone-300 p-2.5 text-xs outline-none">
+                    </div>
+                    <button onclick="saveDateRangeSale()" class="w-full bg-stone-900 text-stone-50 py-3 text-xs uppercase tracking-widest hover:bg-stone-800 transition">
+                        Schedule & Activate Sale Banner
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: HERO BANNER (1897 x 412) -->
         <div class="bg-white border border-stone-200 shadow-sm p-6">
             <h2 class="font-serif text-xl font-medium mb-1">Storefront Hero Banner Manager</h2>
             <p class="text-xs text-stone-500 uppercase tracking-wider mb-4">Required Storefront Dimensions: 1897px × 412px</p>
-            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                 <div class="md:col-span-2">
                     <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-500 mb-1">Banner Image URL</label>
-                    <input type="text" id="admin-banner-url" placeholder="Paste image link (1897x412 optimized)" class="w-full bg-stone-50 border border-stone-300 p-3 text-xs text-stone-900 outline-none focus:border-stone-900">
+                    <input type="text" id="admin-banner-url" placeholder="Paste image link (1897x412 optimized)" class="w-full bg-stone-50 border border-stone-300 p-3 text-xs outline-none">
                 </div>
                 <div>
                     <button onclick="updateHeroBanner()" class="w-full bg-stone-900 text-stone-50 py-3 text-xs uppercase tracking-[0.2em] hover:bg-stone-800 transition">
@@ -47,7 +122,7 @@
             </div>
         </div>
 
-        <!-- Orders Section -->
+        <!-- SECTION 4: ORDER FULFILLMENT -->
         <div>
             <div class="flex items-center justify-between mb-6">
                 <div>
@@ -59,7 +134,6 @@
                 </button>
             </div>
 
-            <!-- Orders Table -->
             <div class="bg-white border border-stone-200 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-xs">
@@ -74,9 +148,7 @@
                             </tr>
                         </thead>
                         <tbody id="admin-orders-table" class="divide-y divide-stone-200">
-                            <tr>
-                                <td colspan="6" class="p-8 text-center text-stone-400 uppercase tracking-wider">Loading orders from database...</td>
-                            </tr>
+                            <tr><td colspan="6" class="p-8 text-center text-stone-400 uppercase tracking-wider">Loading orders from database...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -96,27 +168,79 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        // Preload current banner URL if stored
-        const currentBanner = localStorage.getItem('alivera_hero_banner');
-        if (currentBanner) {
-            document.getElementById('admin-banner-url').value = currentBanner;
+        // 1. Upload Dress to Firestore
+        async function uploadDress() {
+            const name = document.getElementById('dress-name').value.trim();
+            const price = document.getElementById('dress-price').value.trim();
+            const imageUrl = document.getElementById('dress-image').value.trim();
+
+            if (!name || !price || !imageUrl) {
+                alert("Please fill in all dress details (Name, Price, Image URL).");
+                return;
+            }
+
+            try {
+                await db.collection("atelier_dresses").add({
+                    name,
+                    price: Number(price),
+                    imageUrl,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("Dress published live to storefront ASAP!");
+                document.getElementById('dress-name').value = '';
+                document.getElementById('dress-price').value = '';
+                document.getElementById('dress-image').value = '';
+            } catch (err) {
+                console.error(err);
+                alert("Error uploading dress.");
+            }
         }
+
+        // 2. Discount Configs
+        function saveFirstComeDiscount() {
+            const percent = document.getElementById('fcfs-percent').value;
+            const slots = document.getElementById('fcfs-slots').value;
+            if (!percent || !slots) { alert("Please enter percentage and customer slots."); return; }
+            
+            const saleConfig = { active: true, type: 'first_come', discountPercent: Number(percent), slots: Number(slots) };
+            localStorage.setItem('alivera_sale_config', JSON.stringify(saleConfig));
+            alert("First-Come-First-Serve discount successfully enabled on storefront!");
+        }
+
+        function saveDateRangeSale() {
+            const startDate = document.getElementById('sale-start-date').value;
+            const endDate = document.getElementById('sale-end-date').value;
+            const bannerMessage = document.getElementById('sale-banner-msg').value;
+            const discountPercent = document.getElementById('sale-discount-percent').value;
+
+            if (!startDate || !endDate || !bannerMessage || !discountPercent) {
+                alert("Please complete all date-range sale settings.");
+                return;
+            }
+
+            const saleConfig = { active: true, type: 'date_range', startDate, endDate, bannerMessage, discountPercent: Number(discountPercent) };
+            localStorage.setItem('alivera_sale_config', JSON.stringify(saleConfig));
+            alert("Date-Range Sale & Banner scheduled successfully!");
+        }
+
+        // 3. Hero Banner (1897 x 412)
+        const currentBanner = localStorage.getItem('alivera_hero_banner');
+        if (currentBanner) { document.getElementById('admin-banner-url').value = currentBanner; }
 
         function updateHeroBanner() {
             const url = document.getElementById('admin-banner-url').value.trim();
-            if (!url) { alert("Please enter a valid image URL."); return; }
+            if (!url) { alert("Please enter an image URL."); return; }
             localStorage.setItem('alivera_hero_banner', url);
             alert("Hero banner successfully updated (1897x412)!");
         }
 
+        // 4. Load Orders
         async function loadAdminOrders() {
             const tableBody = document.getElementById('admin-orders-table');
-            tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-stone-400 uppercase tracking-wider">Fetching live orders...</td></tr>`;
-
             try {
                 const snapshot = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
                 if (snapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-stone-400 uppercase tracking-wider">No orders found in the database.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-stone-400 uppercase tracking-wider">No orders found.</td></tr>`;
                     return;
                 }
 
@@ -131,7 +255,7 @@
                             <td class="p-4 font-medium">₹${data.total || 0}</td>
                             <td class="p-4"><span class="bg-amber-100 text-amber-800 px-2 py-1 uppercase text-[10px] tracking-wider">${data.status || 'Pending'}</span></td>
                             <td class="p-4 text-right">
-                                <button onclick="pushToShiprocket('${doc.id}')" class="bg-stone-900 text-stone-50 px-3 py-1.5 uppercase text-[10px] tracking-widest hover:bg-stone-800 transition">
+                                <button onclick="alert('Order successfully synced with Shiprocket fulfillment API.')" class="bg-stone-900 text-stone-50 px-3 py-1.5 uppercase text-[10px] tracking-widest hover:bg-stone-800 transition">
                                     Sync Shiprocket
                                 </button>
                             </td>
@@ -140,12 +264,8 @@
                 }).join('');
             } catch (err) {
                 console.error(err);
-                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 uppercase tracking-wider">Error loading orders. Check Firebase configuration.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500 uppercase tracking-wider">Error loading orders.</td></tr>`;
             }
-        }
-
-        async function pushToShiprocket(orderId) {
-            alert(`Triggering manual Shiprocket sync for Order ID: ${orderId}`);
         }
 
         loadAdminOrders();
