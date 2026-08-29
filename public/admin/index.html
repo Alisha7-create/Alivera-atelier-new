@@ -43,16 +43,28 @@
 
         <!-- DASHBOARD CONTENT -->
         <div id="admin-main-content" class="hidden space-y-8">
-            <!-- Publish Dress -->
+            <!-- Publish Dress with Real Photo Uploads -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl">
-                <h3 class="font-serif text-xl text-amber-200 mb-4">Publish Dress Live</h3>
+                <h3 class="font-serif text-xl text-amber-200 mb-4">Publish Dress Live (Upload Photos)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="d-name" placeholder="Dress Name" class="bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    <input type="number" id="d-price" placeholder="Price (₹)" class="bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    <input type="text" id="d-img" placeholder="Dress Image URL" class="bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    <input type="text" id="d-chart" placeholder="Size Chart Image URL" class="bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Dress Name</label>
+                        <input type="text" id="d-name" placeholder="e.g. Midnight Orchid" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Price (₹)</label>
+                        <input type="number" id="d-price" placeholder="e.g. 4500" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Dress Photo</label>
+                        <input type="file" id="d-img-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Size Chart Photo (Optional)</label>
+                        <input type="file" id="d-chart-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
+                    </div>
                 </div>
-                <button type="button" onclick="publishDress()" class="mt-4 gold-bg text-black px-6 py-3 text-xs uppercase font-semibold">Publish Live</button>
+                <button type="button" onclick="publishDressWithImages()" class="mt-6 gold-bg text-black px-6 py-3 text-xs uppercase font-semibold">Publish Live</button>
             </div>
 
             <!-- Live Customer Orders -->
@@ -98,15 +110,51 @@
             } catch(e) { alert(e.message); }
         }
 
-        async function publishDress() {
-            const name = document.getElementById('d-name').value;
+        // Helper to convert uploaded photo file into a safe Base64 string so it stores directly in Firestore without complex storage setup
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function publishDressWithImages() {
+            const name = document.getElementById('d-name').value.trim();
             const price = Number(document.getElementById('d-price').value);
-            const imageUrl = document.getElementById('d-img').value;
-            const sizeChartUrl = document.getElementById('d-chart').value;
-            if(!name || !price || !imageUrl) { alert("Fill required fields"); return; }
-            await db.collection("atelier_dresses").add({ name, price, imageUrl, sizeChartUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            alert("Dress published live!");
-            document.getElementById('d-name').value = ''; document.getElementById('d-price').value = ''; document.getElementById('d-img').value = ''; document.getElementById('d-chart').value = '';
+            const imgFile = document.getElementById('d-img-file').files[0];
+            const chartFile = document.getElementById('d-chart-file').files[0];
+
+            if(!name || !price || !imgFile) { 
+                alert("Please provide a Dress Name, Price, and upload a Dress Photo."); 
+                return; 
+            }
+
+            try {
+                alert("Uploading photo(s)... Please wait.");
+                const imageUrl = await convertFileToBase64(imgFile);
+                let sizeChartUrl = "";
+                if (chartFile) {
+                    sizeChartUrl = await convertFileToBase64(chartFile);
+                }
+
+                await db.collection("atelier_dresses").add({ 
+                    name, 
+                    price, 
+                    imageUrl, 
+                    sizeChartUrl, 
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+                });
+
+                alert("Dress published live with photo successfully!");
+                document.getElementById('d-name').value = ''; 
+                document.getElementById('d-price').value = ''; 
+                document.getElementById('d-img-file').value = ''; 
+                document.getElementById('d-chart-file').value = '';
+            } catch (err) {
+                alert("Error publishing dress: " + err.message);
+            }
         }
 
         async function loadOrders() {
@@ -118,11 +166,11 @@
                 return `
                     <div class="bg-stone-900 border gold-border p-4 text-xs space-y-2">
                         <div class="flex justify-between font-semibold text-amber-200">
-                            <span>Client: ${o.clientName} (${o.clientEmail})</span>
-                            <span>Status: ${o.status}</span>
+                            <span>Client: ${o.clientName || 'Guest'} (${o.clientEmail || 'N/A'})</span>
+                            <span>Status: ${o.status || 'Pending'}</span>
                         </div>
-                        <p class="text-stone-300">Phone: ${o.phone} | Address: ${o.address}</p>
-                        <p class="text-stone-400">Items: ${o.items.map(i => i.name).join(', ')}</p>
+                        <p class="text-stone-300">Phone: ${o.phone || 'N/A'} | Address: ${o.address || 'N/A'}</p>
+                        <p class="text-stone-400">Items: ${o.items ? o.items.map(i => `${i.name} (${i.size})`).join(', ') : 'No items'}</p>
                         <div class="flex gap-4 pt-2">
                             <button onclick="updateStatus('${doc.id}', 'Accepted')" class="gold-bg text-black px-4 py-1.5 font-bold uppercase">Accept</button>
                             <button onclick="updateStatus('${doc.id}', 'Declined')" class="bg-red-950 text-red-400 border border-red-900 px-4 py-1.5 font-bold uppercase">Decline</button>
