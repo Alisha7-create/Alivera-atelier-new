@@ -10,19 +10,16 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .font-serif { font-family: 'Playfair Display', serif; }
     </style>
-    <!-- Firebase SDKs Loaded in Head to Guarantee Global Availability -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
 <body class="bg-black text-stone-100 antialiased selection:bg-amber-400 selection:text-black">
 
-    <!-- Dynamic Promo Banner -->
     <div class="bg-amber-500/15 border-b border-amber-500/20 text-amber-300 text-xs tracking-widest py-2.5 text-center uppercase font-medium">
         <span>✨ Introductory Offer: Enjoy 10% OFF your first custom order ✨</span>
     </div>
 
-    <!-- Navigation Bar -->
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-stone-800">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="#" class="font-serif text-2xl tracking-[0.25em] font-bold text-amber-100">ALIVÉRA ATELIER</a>
@@ -45,18 +42,15 @@
         </div>
     </header>
 
-    <!-- Collection Grid -->
     <main id="collection" class="max-w-7xl mx-auto px-6 py-28">
         <div class="text-center mb-16">
             <h2 class="font-serif text-3xl font-light tracking-wide mb-3 text-amber-100">The Signature Collection</h2>
             <p class="text-stone-500 text-xs tracking-[0.2em] uppercase">Hand-tailored from XS to 3XL or Crafted to Your Exact Measurements</p>
         </div>
         <div id="storefront-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
-            <!-- Dynamic items loaded here -->
-        </div>
+            </div>
     </main>
 
-    <!-- Custom Measurement Modal -->
     <div id="custom-measurement-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <h3 class="font-serif text-2xl font-medium text-amber-100 mb-2">Bespoke Measurements</h3>
@@ -99,7 +93,6 @@
         </div>
     </div>
 
-    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <button type="button" id="btn-close-auth" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
@@ -124,7 +117,6 @@
         </div>
     </div>
 
-    <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end">
         <div class="bg-stone-950 border-l border-stone-800 w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto text-stone-100">
             <div class="flex items-center justify-between pb-6 border-b border-stone-800">
@@ -139,7 +131,6 @@
         </div>
     </div>
 
-    <!-- Main Logic Script -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc",
@@ -157,7 +148,6 @@
         const auth = firebase.auth();
 
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
-        db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
         let currentUser = null;
@@ -296,7 +286,6 @@
         function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); updateCartUI(); }
         function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
 
-        // Bulletproof Event Listeners Binding
         document.addEventListener('DOMContentLoaded', () => {
             const bindClick = (id, fn) => {
                 const el = document.getElementById(id);
@@ -316,7 +305,6 @@
             updateCartUI();
         });
 
-        // Global Window Attachments for inline HTML event calls
         window.openAuthModal = openAuthModal;
         window.closeAuthModal = closeAuthModal;
         window.openCartModal = openCartModal;
