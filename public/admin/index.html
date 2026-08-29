@@ -20,7 +20,6 @@
 <body class="antialiased p-6 md:p-12">
 
     <div class="max-w-6xl mx-auto space-y-8">
-        <!-- TOP BAR -->
         <div class="flex justify-between items-center pb-6 border-b gold-border">
             <div>
                 <span class="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold">Restricted Access</span>
@@ -32,7 +31,6 @@
             </div>
         </div>
 
-        <!-- AUTH GATE -->
         <div id="admin-auth-gate" class="bg-stone-950 border gold-border p-8 max-w-md mx-auto text-center space-y-4">
             <h3 class="font-serif text-xl text-amber-200">Admin Authentication Required</h3>
             <p class="text-xs text-stone-400">Sign in using <strong class="text-amber-400">hello@aliveraatelier.in</strong></p>
@@ -41,12 +39,10 @@
             <button type="button" onclick="adminLogin()" class="w-full gold-bg text-black py-3 text-xs uppercase font-semibold">Access Dashboard</button>
         </div>
 
-        <!-- DASHBOARD CONTENT -->
         <div id="admin-main-content" class="hidden space-y-8">
             
-            <!-- CINEMATIC 1897x412 BANNER & PROMOTION MANAGER -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
-                <h3 class="font-serif text-xl text-amber-200">Cinematic Banner Manager (1897 x 412) & Sale Timer</h3>
+                <h3 class="font-serif text-xl text-amber-200">Cinematic Banner Manager (1897 x 412) & Sale Timer Schedule</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Banner Image (1897x412)</label>
@@ -55,8 +51,8 @@
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale / Drop Type</label>
                         <select id="promo-type" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                            <option value="countdown">Scheduled Countdown Drop (Timer → Sale Live)</option>
-                            <option value="fcfs">First-Come-First-Serve (Order Cap / Manual Stop)</option>
+                            <option value="countdown">Scheduled Drop (Timer Starts → Sale Live → Auto-Replaces Banner)</option>
+                            <option value="fcfs">First-Come-First-Serve (Timer / Order Cap Limit)</option>
                             <option value="regular">Regular Daily Banner (Manual Override)</option>
                         </select>
                     </div>
@@ -65,7 +61,11 @@
                         <input type="datetime-local" id="sale-start" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
                     </div>
                     <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Max Orders Cap (For First-Come-First-Serve)</label>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale End Date & Time</label>
+                        <input type="datetime-local" id="sale-end" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Max Orders Cap (Optional for FCFS)</label>
                         <input type="number" id="sale-cap" placeholder="e.g. 50" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
                     </div>
                 </div>
@@ -75,7 +75,6 @@
                 </div>
             </div>
 
-            <!-- PUBLISH DRESS LIVE -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl">
                 <h3 class="font-serif text-xl text-amber-200 mb-4">Publish Dress Live (Upload Photos)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -95,7 +94,6 @@
                 <button type="button" onclick="publishDress()" class="mt-6 gold-bg text-black px-6 py-3 text-xs uppercase font-semibold">Publish Dress Live</button>
             </div>
 
-            <!-- LIVE ORDERS -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl">
                 <h3 class="font-serif text-xl text-amber-200 mb-4">Live Customer Orders</h3>
                 <div id="admin-orders-list" class="space-y-4">
@@ -150,22 +148,28 @@
             const file = document.getElementById('banner-file').files[0];
             const saleType = document.getElementById('promo-type').value;
             const startDateStr = document.getElementById('sale-start').value;
+            const endDateStr = document.getElementById('sale-end').value;
             const saleCap = document.getElementById('sale-cap').value;
+
+            if (!startDateStr || !endDateStr) {
+                alert("Please provide both start and end date/time for the scheduled sale.");
+                return;
+            }
 
             let bannerImageUrl = "";
             if (file) {
-                alert("Uploading 1897x412 banner photo...");
+                alert("Uploading banner photo...");
                 bannerImageUrl = await convertFileToBase64(file);
             }
 
-            const saleStartTimestamp = startDateStr ? new Date(startDateStr).getTime() : new Date().getTime();
-            const saleEndTimestamp = saleStartTimestamp + (7 * 24 * 60 * 60 * 1000); // 7 day default window
+            const saleStartTimestamp = new Date(startDateStr).getTime();
+            const saleEndTimestamp = new Date(endDateStr).getTime();
 
             const payload = {
                 saleType,
                 saleStartTimestamp,
                 saleEndTimestamp,
-                saleCap: saleCap || 100,
+                saleCap: saleCap || "",
                 saleActive: true,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
@@ -173,12 +177,12 @@
             if (bannerImageUrl) payload.bannerImageUrl = bannerImageUrl;
 
             await db.collection("atelier_settings").doc("promotion_config").set(payload, { merge: true });
-            alert("Banner and sale rules deployed successfully!");
+            alert("Banner and scheduled sale timer deployed successfully!");
         }
 
         async function endSaleNow() {
             await db.collection("atelier_settings").doc("promotion_config").update({ saleActive: false });
-            alert("Sale ended/cancelled successfully! Banner state updated.");
+            alert("Sale ended/cancelled successfully!");
         }
 
         async function publishDress() {
@@ -204,7 +208,7 @@
         async function loadOrders() {
             const container = document.getElementById('admin-orders-list');
             const snap = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
-            if(snap.empty) { container.innerHTML = `<p class="text-xs text-stone-500">No orders received.</p>`; return; }
+            if(snap.empty) { container.innerHTML = `<p class="text-xs text-stone-500">No orders received yet.</p>`; return; }
             container.innerHTML = snap.docs.map(doc => {
                 const o = doc.data();
                 return `
