@@ -25,7 +25,8 @@
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="index.html" class="font-serif text-2xl tracking-[0.25em] font-bold gold-gradient">ALIVÉRA ATELIER</a>
             <div class="flex items-center space-x-6">
-                <a href="admin/index.html" class="text-[10px] uppercase tracking-widest text-stone-500 hover:text-amber-400 transition hidden md:inline-block">Admin Portal</a>
+                <!-- Admin Portal Link: Hidden by default, appears only when hello@aliveraatelier.in signs in -->
+                <a id="nav-admin-link" href="admin/index.html" class="text-[10px] uppercase tracking-widest text-amber-400 hover:text-amber-300 transition hidden font-semibold">Admin Portal</a>
                 <div id="nav-profile-container">
                     <button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>
                 </div>
@@ -55,6 +56,15 @@
         </div>
         <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8"></div>
     </main>
+
+    <!-- Size Chart Modal -->
+    <div id="sizechart-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-stone-950 border gold-border w-full max-w-xl p-6 relative text-stone-100">
+            <button type="button" onclick="closeSizeChartModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
+            <h3 class="font-serif text-xl gold-gradient mb-4">Measurement & Size Chart</h3>
+            <div id="sizechart-content" class="w-full max-h-[70vh] overflow-y-auto flex items-center justify-center bg-stone-900 border gold-border p-2"></div>
+        </div>
+    </div>
 
     <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-stone-950 border gold-border w-full max-w-2xl p-8 shadow-2xl relative text-stone-100 my-8">
@@ -112,11 +122,27 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
         const auth = firebase.auth();
+        const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
         let currentUser = null;
 
-        auth.onAuthStateChanged(user => { currentUser = user; });
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            const adminLink = document.getElementById('nav-admin-link');
+            const profileContainer = document.getElementById('nav-profile-container');
+
+            if (user && user.email === ADMIN_EMAIL) {
+                adminLink.classList.remove('hidden');
+                profileContainer.innerHTML = `<span class="text-[11px] text-amber-300 uppercase tracking-widest font-medium">Atelier Admin</span>`;
+            } else if (user) {
+                adminLink.classList.add('hidden');
+                profileContainer.innerHTML = `<button type="button" onclick="auth.signOut()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign Out</button>`;
+            } else {
+                adminLink.classList.add('hidden');
+                profileContainer.innerHTML = `<button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>`;
+            }
+        });
 
         async function loginUser() {
             try {
@@ -136,15 +162,47 @@
                         <div>
                             <div class="aspect-[3/4] bg-stone-900 mb-3 overflow-hidden border gold-border"><img src="${item.imageUrl}" class="w-full h-full object-cover"></div>
                             <h4 class="font-serif text-sm text-amber-200 mb-1">${item.name}</h4>
-                            <p class="text-xs text-stone-400 mb-3">₹${item.price}</p>
+                            <p class="text-xs text-stone-400 mb-2">₹${item.price}</p>
+                            ${item.sizeChartUrl ? `<button type="button" onclick="openSizeChart('${item.sizeChartUrl}')" class="text-[10px] text-amber-400 underline uppercase tracking-wider mb-3 block">View Size Chart</button>` : ''}
                         </div>
-                        <select id="size-${doc.id}" class="w-full bg-stone-900 border gold-border text-stone-200 p-2 text-[11px] uppercase outline-none mb-2">
-                            <option value="S">S</option><option value="M" selected>M</option><option value="L">L</option><option value="CUSTOM">Custom Measurements</option>
-                        </select>
-                        <button type="button" onclick="addToCart('${item.name}', ${item.price}, '${doc.id}')" class="w-full gold-bg text-black py-2.5 text-[10px] uppercase font-semibold gold-hover">Add to Bag</button>
+                        <div>
+                            <select id="size-${doc.id}" class="w-full bg-stone-900 border gold-border text-stone-200 p-2 text-[11px] uppercase outline-none mb-2">
+                                <option value="S">S</option><option value="M" selected>M</option><option value="L">L</option><option value="CUSTOM">Custom Measurements</option>
+                            </select>
+                            <button type="button" onclick="addToCart('${item.name}', ${item.price}, '${doc.id}')" class="w-full gold-bg text-black py-2.5 text-[10px] uppercase font-semibold gold-hover mb-2">Add to Bag</button>
+                            <button type="button" onclick="shareProduct('${item.name}', ${item.price})" class="w-full bg-stone-900 border gold-border text-stone-300 py-2 text-[10px] uppercase tracking-widest hover:text-amber-300 transition">Share Design</button>
+                        </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        function shareProduct(name, price) {
+            const shareData = {
+                title: `${name} — Alivèra Atelier`,
+                text: `Explore ${name} crafted by Alivèra Atelier for ₹${price}.`,
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                alert("Product link copied to clipboard to share via any app!");
+            }
+        }
+
+        function openSizeChart(url) {
+            const container = document.getElementById('sizechart-content');
+            if (url.startsWith('data:application/pdf')) {
+                container.innerHTML = `<embed src="${url}" type="application/pdf" width="100%" height="450px" />`;
+            } else {
+                container.innerHTML = `<img src="${url}" class="max-w-full h-auto object-contain">`;
+            }
+            document.getElementById('sizechart-modal').classList.remove('hidden');
+        }
+
+        function closeSizeChartModal() {
+            document.getElementById('sizechart-modal').classList.add('hidden');
         }
 
         db.collection("atelier_settings").doc("promotion_config").onSnapshot(doc => {
@@ -162,7 +220,13 @@
             const statusEl = document.getElementById('banner-status-display');
             if (timerInterval) clearInterval(timerInterval);
 
-            if (!isActive || !startMs || !endMs) {
+            if (!isActive) {
+                statusEl.innerText = "";
+                return;
+            }
+
+            // Regular promotion doesn't need a time period
+            if (saleType === 'regular') {
                 statusEl.innerText = "";
                 return;
             }
