@@ -35,7 +35,7 @@
         <!-- AUTH GATE -->
         <div id="admin-auth-gate" class="bg-stone-950 border gold-border p-8 max-w-md mx-auto text-center space-y-4">
             <h3 class="font-serif text-xl text-amber-200">Admin Authentication Required</h3>
-            <p class="text-xs text-stone-400">Please sign in using <strong class="text-amber-400">hello@aliveraatelier.in</strong></p>
+            <p class="text-xs text-stone-400">Sign in using <strong class="text-amber-400">hello@aliveraatelier.in</strong></p>
             <input type="email" id="adm-email" value="hello@aliveraatelier.in" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
             <input type="password" id="adm-pass" placeholder="Password" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
             <button type="button" onclick="adminLogin()" class="w-full gold-bg text-black py-3 text-xs uppercase font-semibold">Access Dashboard</button>
@@ -43,7 +43,39 @@
 
         <!-- DASHBOARD CONTENT -->
         <div id="admin-main-content" class="hidden space-y-8">
-            <!-- Publish Dress with Real Photo Uploads -->
+            
+            <!-- CINEMATIC 1897x412 BANNER & PROMOTION MANAGER -->
+            <div class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
+                <h3 class="font-serif text-xl text-amber-200">Cinematic Banner Manager (1897 x 412) & Sale Timer</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Banner Image (1897x412)</label>
+                        <input type="file" id="banner-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale / Drop Type</label>
+                        <select id="promo-type" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                            <option value="countdown">Scheduled Countdown Drop (Timer → Sale Live)</option>
+                            <option value="fcfs">First-Come-First-Serve (Order Cap / Manual Stop)</option>
+                            <option value="regular">Regular Daily Banner (Manual Override)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale Start Date & Time (12:00 AM)</label>
+                        <input type="datetime-local" id="sale-start" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Max Orders Cap (For First-Come-First-Serve)</label>
+                        <input type="number" id="sale-cap" placeholder="e.g. 50" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <button type="button" onclick="saveBannerPromotion()" class="gold-bg text-black px-6 py-3 text-[10px] uppercase font-semibold">Deploy Banner & Rules</button>
+                    <button type="button" onclick="endSaleNow()" class="bg-red-950 text-red-400 border border-red-900 px-6 py-3 text-[10px] uppercase font-semibold">End / Cancel Sale Now</button>
+                </div>
+            </div>
+
+            <!-- PUBLISH DRESS LIVE -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl">
                 <h3 class="font-serif text-xl text-amber-200 mb-4">Publish Dress Live (Upload Photos)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -59,15 +91,11 @@
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Dress Photo</label>
                         <input type="file" id="d-img-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
                     </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Size Chart Photo (Optional)</label>
-                        <input type="file" id="d-chart-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
-                    </div>
                 </div>
-                <button type="button" onclick="publishDressWithImages()" class="mt-6 gold-bg text-black px-6 py-3 text-xs uppercase font-semibold">Publish Live</button>
+                <button type="button" onclick="publishDress()" class="mt-6 gold-bg text-black px-6 py-3 text-xs uppercase font-semibold">Publish Dress Live</button>
             </div>
 
-            <!-- Live Customer Orders -->
+            <!-- LIVE ORDERS -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl">
                 <h3 class="font-serif text-xl text-amber-200 mb-4">Live Customer Orders</h3>
                 <div id="admin-orders-list" class="space-y-4">
@@ -90,7 +118,6 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
         const auth = firebase.auth();
-
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
         auth.onAuthStateChanged(user => {
@@ -110,7 +137,6 @@
             } catch(e) { alert(e.message); }
         }
 
-        // Helper to convert uploaded photo file into a safe Base64 string so it stores directly in Firestore without complex storage setup
         function convertFileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -120,41 +146,59 @@
             });
         }
 
-        async function publishDressWithImages() {
+        async function saveBannerPromotion() {
+            const file = document.getElementById('banner-file').files[0];
+            const saleType = document.getElementById('promo-type').value;
+            const startDateStr = document.getElementById('sale-start').value;
+            const saleCap = document.getElementById('sale-cap').value;
+
+            let bannerImageUrl = "";
+            if (file) {
+                alert("Uploading 1897x412 banner photo...");
+                bannerImageUrl = await convertFileToBase64(file);
+            }
+
+            const saleStartTimestamp = startDateStr ? new Date(startDateStr).getTime() : new Date().getTime();
+            const saleEndTimestamp = saleStartTimestamp + (7 * 24 * 60 * 60 * 1000); // 7 day default window
+
+            const payload = {
+                saleType,
+                saleStartTimestamp,
+                saleEndTimestamp,
+                saleCap: saleCap || 100,
+                saleActive: true,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (bannerImageUrl) payload.bannerImageUrl = bannerImageUrl;
+
+            await db.collection("atelier_settings").doc("promotion_config").set(payload, { merge: true });
+            alert("Banner and sale rules deployed successfully!");
+        }
+
+        async function endSaleNow() {
+            await db.collection("atelier_settings").doc("promotion_config").update({ saleActive: false });
+            alert("Sale ended/cancelled successfully! Banner state updated.");
+        }
+
+        async function publishDress() {
             const name = document.getElementById('d-name').value.trim();
             const price = Number(document.getElementById('d-price').value);
             const imgFile = document.getElementById('d-img-file').files[0];
-            const chartFile = document.getElementById('d-chart-file').files[0];
 
-            if(!name || !price || !imgFile) { 
-                alert("Please provide a Dress Name, Price, and upload a Dress Photo."); 
-                return; 
-            }
+            if(!name || !price || !imgFile) { alert("Please provide Dress Name, Price, and Photo."); return; }
 
-            try {
-                alert("Uploading photo(s)... Please wait.");
-                const imageUrl = await convertFileToBase64(imgFile);
-                let sizeChartUrl = "";
-                if (chartFile) {
-                    sizeChartUrl = await convertFileToBase64(chartFile);
-                }
+            alert("Uploading dress photo...");
+            const imageUrl = await convertFileToBase64(imgFile);
 
-                await db.collection("atelier_dresses").add({ 
-                    name, 
-                    price, 
-                    imageUrl, 
-                    sizeChartUrl, 
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp() 
-                });
+            await db.collection("atelier_dresses").add({
+                name, price, imageUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-                alert("Dress published live with photo successfully!");
-                document.getElementById('d-name').value = ''; 
-                document.getElementById('d-price').value = ''; 
-                document.getElementById('d-img-file').value = ''; 
-                document.getElementById('d-chart-file').value = '';
-            } catch (err) {
-                alert("Error publishing dress: " + err.message);
-            }
+            alert("Dress published live successfully!");
+            document.getElementById('d-name').value = '';
+            document.getElementById('d-price').value = '';
+            document.getElementById('d-img-file').value = '';
         }
 
         async function loadOrders() {
