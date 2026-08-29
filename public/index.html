@@ -13,10 +13,12 @@
 </head>
 <body class="bg-black text-stone-100 antialiased selection:bg-amber-400 selection:text-black">
 
+    <!-- Dynamic Promo Banner -->
     <div class="bg-amber-500/15 border-b border-amber-500/20 text-amber-300 text-xs tracking-widest py-2.5 text-center uppercase font-medium">
         <span>✨ Introductory Offer: Enjoy 10% OFF your first custom order ✨</span>
     </div>
 
+    <!-- Navigation Bar -->
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-stone-800">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="#" class="font-serif text-2xl tracking-[0.25em] font-bold text-amber-100">ALIVÉRA ATELIER</a>
@@ -27,11 +29,11 @@
 
             <div class="flex items-center space-x-6">
                 <div id="auth-container">
-                    <button onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">
+                    <button id="nav-signin-btn" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">
                         Sign In
                     </button>
                 </div>
-                <button onclick="openCartModal()" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-2">
+                <button id="nav-bag-btn" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-2">
                     <span>Bag</span>
                     <span id="cart-badge" class="bg-amber-400 text-black text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
                 </button>
@@ -39,15 +41,18 @@
         </div>
     </header>
 
+    <!-- Collection Grid -->
     <main id="collection" class="max-w-7xl mx-auto px-6 py-28">
         <div class="text-center mb-16">
             <h2 class="font-serif text-3xl font-light tracking-wide mb-3 text-amber-100">The Signature Collection</h2>
             <p class="text-stone-500 text-xs tracking-[0.2em] uppercase">Hand-tailored from XS to 3XL or Crafted to Your Exact Measurements</p>
         </div>
         <div id="storefront-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
-            </div>
+            <!-- Dynamic items loaded here -->
+        </div>
     </main>
 
+    <!-- Custom Measurement Modal -->
     <div id="custom-measurement-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <h3 class="font-serif text-2xl font-medium text-amber-100 mb-2">Bespoke Measurements</h3>
@@ -83,20 +88,21 @@
                     <textarea id="meas-notes" placeholder="Any specific fit preferences..." class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-200 outline-none focus:border-amber-400 h-20 resize-none"></textarea>
                 </div>
                 <div class="flex gap-4 pt-2">
-                    <button onclick="closeCustomModal()" class="w-1/2 bg-stone-900 text-stone-300 py-3 text-xs uppercase tracking-widest hover:bg-stone-800 transition">Cancel</button>
-                    <button onclick="saveCustomMeasurementsAndAddToCart()" class="w-1/2 bg-amber-400 text-black py-3 text-xs uppercase tracking-widest font-semibold hover:bg-amber-300 transition">Confirm & Add</button>
+                    <button id="custom-cancel-btn" class="w-1/2 bg-stone-900 text-stone-300 py-3 text-xs uppercase tracking-widest hover:bg-stone-800 transition">Cancel</button>
+                    <button id="custom-confirm-btn" class="w-1/2 bg-amber-400 text-black py-3 text-xs uppercase tracking-widest font-semibold hover:bg-amber-300 transition">Confirm & Add</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
+            <button id="auth-close-btn" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
             <h3 class="font-serif text-2xl font-medium text-amber-100 mb-6">Sign In</h3>
             
             <div class="space-y-4">
-                <button onclick="signInWithGoogle()" class="w-full bg-white text-black py-3.5 text-xs uppercase tracking-[0.15em] font-semibold hover:bg-stone-200 transition flex items-center justify-center gap-3">
+                <button id="google-signin-btn" class="w-full bg-white text-black py-3.5 text-xs uppercase tracking-[0.15em] font-semibold hover:bg-stone-200 transition flex items-center justify-center gap-3">
                     Continue with Google
                 </button>
                 <div>
@@ -107,27 +113,29 @@
                     <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">Password</label>
                     <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 outline-none focus:border-amber-400">
                 </div>
-                <button onclick="handleAuthSubmit()" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition mt-2">
+                <button id="auth-submit-btn" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition mt-2">
                     Sign In
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end">
         <div class="bg-stone-950 border-l border-stone-800 w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto text-stone-100">
             <div class="flex items-center justify-between pb-6 border-b border-stone-800">
                 <h3 class="font-serif text-xl font-medium text-amber-100">Shopping Bag</h3>
-                <button onclick="closeCartModal()" class="text-stone-400 text-xs uppercase tracking-widest">Close</button>
+                <button id="cart-close-btn" class="text-stone-400 text-xs uppercase tracking-widest">Close</button>
             </div>
             <div id="cart-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
             <div class="border-t border-stone-800 pt-6 mt-auto">
                 <div class="flex justify-between font-medium text-base mb-6 text-stone-100"><span>Total</span><span id="cart-total" class="text-amber-200">₹0</span></div>
-                <button onclick="alert('Order placed successfully!')" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">Place Order</button>
+                <button id="place-order-btn" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">Place Order</button>
             </div>
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -147,12 +155,10 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // 1. Force Local Persistence for Auth
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
             console.error("Auth persistence error:", error);
         });
 
-        // 2. Enable Modern Persistent Cache for Firestore
         db.settings({ localCache: firebase.firestore.persistentLocalCache({tabManager: firebase.firestore.persistentMultipleTabManager()}) });
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
@@ -168,7 +174,12 @@
             if(!container) return;
             container.innerHTML = currentUser ? 
                 `<span class="text-xs text-amber-300 uppercase tracking-widest font-semibold">${currentUser.name}</span>` : 
-                `<button onclick="openAuthModal()" class="text-xs uppercase tracking-widest text-stone-300 hover:text-amber-300">Sign In</button>`;
+                `<button id="nav-signin-btn" class="text-xs uppercase tracking-widest text-stone-300 hover:text-amber-300">Sign In</button>`;
+            
+            const btn = document.getElementById('nav-signin-btn');
+            if(btn && !currentUser) {
+                btn.addEventListener('click', openAuthModal);
+            }
         }
 
         async function signInWithGoogle() {
@@ -201,10 +212,152 @@
                             <div>
                                 <div class="flex items-center justify-between mb-6">
                                     <span class="text-lg font-serif text-amber-200">₹${item.price}</span>
-                                    <select id="size-${doc.id}" onchange="handleSizeChange('${doc.id}', '${item.name}',${item.price})" class="bg-stone-900 border border-stone-700 text-stone-200 px-3 py-2 text-xs uppercase tracking-wider">
+                                    <select id="size-${doc.id}" class="size-selector bg-stone-900 border border-stone-700 text-stone-200 px-3 py-2 text-xs uppercase tracking-wider" data-id="${doc.id}" data-name="${item.name}" data-price="${item.price}">
                                         <option value="XS">XS</option>
                                         <option value="S">S</option>
                                         <option value="M" selected>M</option>
                                         <option value="L">L</option>
                                         <option value="XL">XL</option>
-                                        <option value="2XL
+                                        <option value="2XL">2XL</option>
+                                        <option value="3XL">3XL</option>
+                                        <option value="CUSTOM" class="text-amber-400 font-bold">✨ Custom Measurements</option>
+                                    </select>
+                                </div>
+                                <button class="add-cart-btn w-full bg-amber-400 text-black py-3 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition" data-id="${doc.id}" data-name="${item.name}" data-price="${item.price}">Add to Bag</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Attach event listeners dynamically to rendered product elements
+                document.querySelectorAll('.size-selector').forEach(sel => {
+                    sel.addEventListener('change', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const name = e.target.getAttribute('data-name');
+                        const price = e.target.getAttribute('data-price');
+                        if (e.target.value === 'CUSTOM') {
+                            document.getElementById('pending-product-id').value = id;
+                            document.getElementById('pending-product-name').value = name;
+                            document.getElementById('pending-product-price').value = price;
+                            document.getElementById('custom-measurement-modal').classList.remove('hidden');
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.add-cart-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const name = e.target.getAttribute('data-name');
+                        const price = Number(e.target.getAttribute('data-price'));
+                        const sizeSelect = document.getElementById(`size-${id}`);
+                        const size = sizeSelect ? sizeSelect.value : 'M';
+                        if (size === 'CUSTOM') return;
+                        cart.push({ name, price, size, measurements: null });
+                        localStorage.setItem('alivera_cart', JSON.stringify(cart));
+                        updateCartUI();
+                        alert("Added to bag!");
+                    });
+                });
+
+            } catch (err) { console.error(err); }
+        }
+
+        function closeCustomModal() { document.getElementById('custom-measurement-modal').classList.add('hidden'); }
+
+        function saveCustomMeasurementsAndAddToCart() {
+            const name = document.getElementById('pending-product-name').value;
+            const price = Number(document.getElementById('pending-product-price').value);
+            const measurements = {
+                bust: document.getElementById('meas-bust').value,
+                waist: document.getElementById('meas-waist').value,
+                hips: document.getElementById('meas-hips').value,
+                height: document.getElementById('meas-height').value,
+                notes: document.getElementById('meas-notes').value
+            };
+            if (!measurements.bust || !measurements.waist) { alert("Please provide at least your Bust and Waist."); return; }
+
+            cart.push({ name, price, size: 'CUSTOM', measurements });
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            updateCartUI();
+            closeCustomModal();
+            alert("Custom tailored dress added to bag!");
+        }
+
+        function updateCartUI() {
+            const badge = document.getElementById('cart-badge');
+            if(badge) badge.innerText = cart.length;
+            const container = document.getElementById('cart-items');
+            if(!container) return;
+            let total = 0;
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-stone-500 text-xs text-center uppercase tracking-widest py-12">Your bag is empty.</p>`;
+                document.getElementById('cart-total').innerText = '₹0';
+                return;
+            }
+            container.innerHTML = cart.map((item, idx) => {
+                total += item.price;
+                const sizeDisplay = item.size === 'CUSTOM' ? `Custom (Bust: ${item.measurements.bust}&quot;, Waist: ${item.measurements.waist}&quot;)` : `Size: ${item.size}`;
+                return `
+                    <div class="bg-stone-900 p-4 border border-stone-800 flex justify-between items-center text-xs">
+                        <div>
+                            <h4 class="font-serif text-sm font-medium text-amber-200">${item.name}</h4>
+                            <p class="text-stone-400 mt-0.5">${sizeDisplay}</p>
+                            <p class="text-stone-200 font-semibold mt-1">₹${item.price}</p>
+                        </div>
+                        <button class="remove-item-btn text-red-400 uppercase text-[10px]" data-index="${idx}">Remove</button>
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.remove-item-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = Number(e.target.getAttribute('data-index'));
+                    cart.splice(idx, 1);
+                    localStorage.setItem('alivera_cart', JSON.stringify(cart));
+                    updateCartUI();
+                });
+            });
+
+            document.getElementById('cart-total').innerText = `₹${total}`;
+        }
+
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+        function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); updateCartUI(); }
+        function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
+
+        // Event Listeners for Static Buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            const signinBtn = document.getElementById('nav-signin-btn');
+            if(signinBtn) signinBtn.addEventListener('click', openAuthModal);
+
+            const bagBtn = document.getElementById('nav-bag-btn');
+            if(bagBtn) bagBtn.addEventListener('click', openCartModal);
+
+            const authClose = document.getElementById('auth-close-btn');
+            if(authClose) authClose.addEventListener('click', closeAuthModal);
+
+            const cartClose = document.getElementById('cart-close-btn');
+            if(cartClose) cartClose.addEventListener('click', closeCartModal);
+
+            const googleBtn = document.getElementById('google-signin-btn');
+            if(googleBtn) googleBtn.addEventListener('click', signInWithGoogle);
+
+            const authSubmit = document.getElementById('auth-submit-btn');
+            if(authSubmit) authSubmit.addEventListener('click', handleAuthSubmit);
+
+            const customCancel = document.getElementById('custom-cancel-btn');
+            if(customCancel) customCancel.addEventListener('click', closeCustomModal);
+
+            const customConfirm = document.getElementById('custom-confirm-btn');
+            if(customConfirm) customConfirm.addEventListener('click', saveCustomMeasurementsAndAddToCart);
+
+            const placeOrder = document.getElementById('place-order-btn');
+            if(placeOrder) placeOrder.addEventListener('click', () => alert('Order placed successfully!'));
+
+            loadStorefrontProducts();
+            updateCartUI();
+        });
+    </script>
+</body>
+</html>
