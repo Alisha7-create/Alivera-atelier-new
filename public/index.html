@@ -13,12 +13,10 @@
 </head>
 <body class="bg-black text-stone-100 antialiased selection:bg-amber-400 selection:text-black">
 
-    <!-- Dynamic Promo Banner -->
     <div class="bg-amber-500/15 border-b border-amber-500/20 text-amber-300 text-xs tracking-widest py-2.5 text-center uppercase font-medium">
         <span>✨ Introductory Offer: Enjoy 10% OFF your first custom order ✨</span>
     </div>
 
-    <!-- Navigation Bar -->
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-stone-800">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="#" class="font-serif text-2xl tracking-[0.25em] font-bold text-amber-100">ALIVÉRA ATELIER</a>
@@ -41,18 +39,15 @@
         </div>
     </header>
 
-    <!-- Collection Grid -->
     <main id="collection" class="max-w-7xl mx-auto px-6 py-28">
         <div class="text-center mb-16">
             <h2 class="font-serif text-3xl font-light tracking-wide mb-3 text-amber-100">The Signature Collection</h2>
             <p class="text-stone-500 text-xs tracking-[0.2em] uppercase">Hand-tailored from XS to 3XL or Crafted to Your Exact Measurements</p>
         </div>
         <div id="storefront-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
-            <!-- Dynamic items loaded here -->
-        </div>
+            </div>
     </main>
 
-    <!-- Custom Measurement Modal -->
     <div id="custom-measurement-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <h3 class="font-serif text-2xl font-medium text-amber-100 mb-2">Bespoke Measurements</h3>
@@ -95,7 +90,6 @@
         </div>
     </div>
 
-    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
@@ -120,7 +114,6 @@
         </div>
     </div>
 
-    <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end">
         <div class="bg-stone-950 border-l border-stone-800 w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto text-stone-100">
             <div class="flex items-center justify-between pb-6 border-b border-stone-800">
@@ -135,7 +128,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -160,14 +152,8 @@
             console.error("Auth persistence error:", error);
         });
 
-        // 2. Enable Permanent Offline Caching for Firestore
-        db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
-            if (err.code == 'failed-precondition') {
-                console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
-            } else if (err.code == 'unimplemented') {
-                console.warn("The current browser does not support persistence.");
-            }
-        });
+        // 2. Enable Modern Persistent Cache for Firestore (Suppressing old warning)
+        db.settings({ localCache: firebase.firestore.persistentLocalCache({tabManager: firebase.firestore.persistentMultipleTabManager()}) });
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
         let currentUser = null;
@@ -184,126 +170,4 @@
                 `<button onclick="openAuthModal()" class="text-xs uppercase tracking-widest text-stone-300 hover:text-amber-300">Sign In</button>`;
         }
 
-        async function signInWithGoogle() {
-            try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); closeAuthModal(); } catch (e) { alert("Sign-in failed"); }
-        }
-
-        async function handleAuthSubmit() {
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value.trim();
-            try { await auth.signInWithEmailAndPassword(email, password); closeAuthModal(); } catch (e) { alert("Error: " + e.message); }
-        }
-
-        async function loadStorefrontProducts() {
-            const grid = document.getElementById('storefront-products-grid');
-            try {
-                const snapshot = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
-                if (snapshot.empty) { grid.innerHTML = `<p class="text-stone-500 text-xs col-span-3 text-center uppercase tracking-widest">No dresses published yet.</p>`; return; }
-                
-                grid.innerHTML = snapshot.docs.map(doc => {
-                    const item = doc.data();
-                    return `
-                        <div class="bg-stone-950 border border-stone-800 p-8 flex flex-col justify-between shadow-xl">
-                            <div>
-                                <div class="aspect-[4/5] bg-stone-900 mb-6 overflow-hidden border border-stone-800">
-                                    <img src="${item.imageUrl}" class="object-cover w-full h-full opacity-90">
-                                </div>
-                                <h3 class="font-serif text-2xl font-medium mb-2 text-stone-100">${item.name}</h3>
-                            </div>
-                            <div>
-                                <div class="flex items-center justify-between mb-6">
-                                    <span class="text-lg font-serif text-amber-200">₹${item.price}</span>
-                                    <select id="size-${doc.id}" onchange="handleSizeChange('${doc.id}', '${item.name}', ${item.price})" class="bg-stone-900 border border-stone-700 text-stone-200 px-3 py-2 text-xs uppercase tracking-wider">
-                                        <option value="XS">XS</option>
-                                        <option value="S">S</option>
-                                        <option value="M" selected>M</option>
-                                        <option value="L">L</option>
-                                        <option value="XL">XL</option>
-                                        <option value="2XL">2XL</option>
-                                        <option value="3XL">3XL</option>
-                                        <option value="CUSTOM" class="text-amber-400 font-bold">✨ Custom Measurements</option>
-                                    </select>
-                                </div>
-                                <button onclick="handleAddToCart('${item.name}', ${item.price}, '${doc.id}')" class="w-full bg-amber-400 text-black py-3 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">Add to Bag</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (err) { console.error(err); }
-        }
-
-        function handleSizeChange(id, name, price) {
-            if (document.getElementById(`size-${id}`).value === 'CUSTOM') {
-                document.getElementById('pending-product-id').value = id;
-                document.getElementById('pending-product-name').value = name;
-                document.getElementById('pending-product-price').value = price;
-                document.getElementById('custom-measurement-modal').classList.remove('hidden');
-            }
-        }
-
-        function closeCustomModal() { document.getElementById('custom-measurement-modal').classList.add('hidden'); }
-
-        function saveCustomMeasurementsAndAddToCart() {
-            const name = document.getElementById('pending-product-name').value;
-            const price = Number(document.getElementById('pending-product-price').value);
-            const measurements = {
-                bust: document.getElementById('meas-bust').value,
-                waist: document.getElementById('meas-waist').value,
-                hips: document.getElementById('meas-hips').value,
-                height: document.getElementById('meas-height').value,
-                notes: document.getElementById('meas-notes').value
-            };
-            if (!measurements.bust || !measurements.waist) { alert("Please provide at least your Bust and Waist."); return; }
-
-            cart.push({ name, price, size: 'CUSTOM', measurements });
-            localStorage.setItem('alivera_cart', JSON.stringify(cart));
-            updateCartUI();
-            closeCustomModal();
-            alert("Custom tailored dress added to bag!");
-        }
-
-        function handleAddToCart(name, price, id) {
-            const size = document.getElementById(`size-${id}`).value;
-            if (size === 'CUSTOM') return;
-            cart.push({ name, price, size, measurements: null });
-            localStorage.setItem('alivera_cart', JSON.stringify(cart));
-            updateCartUI();
-            alert("Added to bag!");
-        }
-
-        function updateCartUI() {
-            document.getElementById('cart-badge').innerText = cart.length;
-            const container = document.getElementById('cart-items');
-            let total = 0;
-            if (cart.length === 0) {
-                container.innerHTML = `<p class="text-stone-500 text-xs text-center uppercase tracking-widest py-12">Your bag is empty.</p>`;
-                document.getElementById('cart-total').innerText = '₹0';
-                return;
-            }
-            container.innerHTML = cart.map((item, idx) => {
-                total += item.price;
-                const sizeDisplay = item.size === 'CUSTOM' ? `Custom (Bust: ${item.measurements.bust}&quot;, Waist: ${item.measurements.waist}&quot;)` : `Size: ${item.size}`;
-                return `
-                    <div class="bg-stone-900 p-4 border border-stone-800 flex justify-between items-center text-xs">
-                        <div>
-                            <h4 class="font-serif text-sm font-medium text-amber-200">${item.name}</h4>
-                            <p class="text-stone-400 mt-0.5">${sizeDisplay}</p>
-                            <p class="text-stone-200 font-semibold mt-1">₹${item.price}</p>
-                        </div>
-                        <button onclick="cart.splice(${idx},1);localStorage.setItem('alivera_cart',JSON.stringify(cart));updateCartUI();" class="text-red-400 uppercase text-[10px]">Remove</button>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('cart-total').innerText = `₹${total}`;
-        }
-
-        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
-        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
-        function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); updateCartUI(); }
-        function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
-
-        loadStorefrontProducts();
-        updateCartUI();
-    </script>
-</body>
-</html>
+        async function
