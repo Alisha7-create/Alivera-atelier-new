@@ -152,7 +152,7 @@
             console.error("Auth persistence error:", error);
         });
 
-        // 2. Enable Modern Persistent Cache for Firestore (Suppressing old warning)
+        // 2. Enable Modern Persistent Cache for Firestore
         db.settings({ localCache: firebase.firestore.persistentLocalCache({tabManager: firebase.firestore.persistentMultipleTabManager()}) });
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
@@ -165,9 +165,46 @@
 
         function updateAuthUI() {
             const container = document.getElementById('auth-container');
+            if(!container) return;
             container.innerHTML = currentUser ? 
                 `<span class="text-xs text-amber-300 uppercase tracking-widest font-semibold">${currentUser.name}</span>` : 
                 `<button onclick="openAuthModal()" class="text-xs uppercase tracking-widest text-stone-300 hover:text-amber-300">Sign In</button>`;
         }
 
-        async function
+        async function signInWithGoogle() {
+            try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); closeAuthModal(); } catch (e) { alert("Sign-in failed"); }
+        }
+
+        async function handleAuthSubmit() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
+            try { await auth.signInWithEmailAndPassword(email, password); closeAuthModal(); } catch (e) { alert("Error: " + e.message); }
+        }
+
+        async function loadStorefrontProducts() {
+            const grid = document.getElementById('storefront-products-grid');
+            if(!grid) return;
+            try {
+                const snapshot = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
+                if (snapshot.empty) { grid.innerHTML = `<p class="text-stone-500 text-xs col-span-3 text-center uppercase tracking-widest">No dresses published yet.</p>`; return; }
+                
+                grid.innerHTML = snapshot.docs.map(doc => {
+                    const item = doc.data();
+                    return `
+                        <div class="bg-stone-950 border border-stone-800 p-8 flex flex-col justify-between shadow-xl">
+                            <div>
+                                <div class="aspect-[4/5] bg-stone-900 mb-6 overflow-hidden border border-stone-800">
+                                    <img src="${item.imageUrl}" class="object-cover w-full h-full opacity-90">
+                                </div>
+                                <h3 class="font-serif text-2xl font-medium mb-2 text-stone-100">${item.name}</h3>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <span class="text-lg font-serif text-amber-200">₹${item.price}</span>
+                                    <select id="size-${doc.id}" onchange="handleSizeChange('${doc.id}', '${item.name}',${item.price})" class="bg-stone-900 border border-stone-700 text-stone-200 px-3 py-2 text-xs uppercase tracking-wider">
+                                        <option value="XS">XS</option>
+                                        <option value="S">S</option>
+                                        <option value="M" selected>M</option>
+                                        <option value="L">L</option>
+                                        <option value="XL">XL</option>
+                                        <option value="2XL
