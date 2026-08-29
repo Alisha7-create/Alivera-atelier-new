@@ -46,7 +46,7 @@
 
     <section class="max-w-7xl mx-auto px-6 py-8">
         <div class="relative w-full aspect-[1897/412] bg-stone-900 border gold-border overflow-hidden flex items-center justify-center shadow-2xl">
-            <img id="hero-banner-img" src="" class="absolute inset-0 w-full h-full object-cover opacity-60">
+            <img id="hero-banner-img" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1897&q=80" class="absolute inset-0 w-full h-full object-cover opacity-60">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
             <div class="relative z-10 text-center px-6">
                 <div id="banner-status-display" class="font-serif text-2xl md:text-4xl font-light gold-gradient tracking-widest uppercase"></div>
@@ -58,7 +58,7 @@
         <div>
             <div class="text-center mb-12">
                 <h2 class="font-serif text-3xl font-light tracking-wide mb-2 gold-gradient">Bespoke Collection</h2>
-                <p class="text-stone-400 text-xs tracking-[0.2em] uppercase">Hand-tailored from XS to 3XL or Crafted to Your Exact Measurements</p>
+                <p class="text-stone-400 text-xs tracking-[0.2em] uppercase">Hand-tailored from XS to XXL or Crafted to Your Exact Measurements</p>
             </div>
             <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8"></div>
         </div>
@@ -143,7 +143,7 @@
         </div>
     </div>
 
-    <!-- Auth Modal (Sign In / Create Account via Google or Email) -->
+    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex items-center justify-center p-4">
         <div class="bg-stone-950 border gold-border w-full max-w-md p-8 relative text-stone-100 space-y-4">
             <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 text-xs">Close</button>
@@ -187,7 +187,6 @@
         const auth = firebase.auth();
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
-        // Persistent Cart & Wishlist across sessions
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
         let wishlist = JSON.parse(localStorage.getItem('alivera_wishlist')) || [];
         let recentlyViewed = JSON.parse(localStorage.getItem('alivera_recent')) || [];
@@ -237,9 +236,7 @@
             if(!email || !password) { alert("Please provide email and password."); return; }
             try {
                 const cred = await auth.createUserWithEmailAndPassword(email, password);
-                if(name) {
-                    await cred.user.updateProfile({ displayName: name });
-                }
+                if(name) { await cred.user.updateProfile({ displayName: name }); }
                 closeAuthModal();
                 alert("Account created successfully!");
             } catch(e) { alert(e.message); }
@@ -261,27 +258,34 @@
             
             grid.innerHTML = snap.docs.map(doc => {
                 const item = doc.data();
-                allDressesMap[doc.id] = { id: doc.id, ...item };
-                const isWishlisted = wishlist.some(w => w.id === doc.id);
+                const dressId = doc.id;
+                allDressesMap[dressId] = { id: dressId, ...item };
+                const isWishlisted = wishlist.some(w => w.id === dressId);
 
                 return `
                     <div class="bg-stone-950 border gold-border p-4 flex flex-col justify-between shadow-lg relative">
-                        <button type="button" onclick="toggleWishlist('${doc.id}')" class="absolute top-6 right-6 z-10 bg-black/70 p-2 rounded-full border gold-border text-xs ${isWishlisted ? 'text-amber-400' : 'text-stone-400'} hover:text-amber-300">
+                        <button type="button" onclick="toggleWishlist('${dressId}')" class="absolute top-6 right-6 z-10 bg-black/70 p-2 rounded-full border gold-border text-xs ${isWishlisted ? 'text-amber-400 font-bold' : 'text-stone-400'} hover:text-amber-300">
                             ♥
                         </button>
-                        <div onclick="viewProduct('${doc.id}')" class="cursor-pointer">
+                        <div onclick="viewProduct('${dressId}')" class="cursor-pointer">
                             <div class="aspect-[3/4] bg-stone-900 mb-3 overflow-hidden border gold-border"><img src="${item.imageUrl}" class="w-full h-full object-cover"></div>
                             <h4 class="font-serif text-sm text-amber-200 mb-1">${item.name}</h4>
                             <p class="text-xs text-stone-400 mb-2">₹${item.price}</p>
                             ${item.sizeChartUrl ? `<button type="button" onclick="event.stopPropagation(); openSizeChart('${item.sizeChartUrl}')" class="text-[10px] text-amber-400 underline uppercase tracking-wider mb-3 block">View Size Chart</button>` : ''}
                         </div>
                         <div class="space-y-2">
-                            <select id="size-${doc.id}" class="w-full bg-stone-900 border gold-border text-stone-200 p-2 text-[11px] uppercase outline-none">
-                                <option value="S">S</option><option value="M" selected>M</option><option value="L">L</option><option value="CUSTOM">Custom Measurements</option>
+                            <select id="size-${dressId}" class="w-full bg-stone-900 border gold-border text-stone-200 p-2 text-[11px] uppercase outline-none">
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M" selected>M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                                <option value="CUSTOM">Custom Measurements</option>
                             </select>
                             <div class="grid grid-cols-2 gap-2">
-                                <button type="button" onclick="addToCart('${doc.id}')" class="bg-stone-900 border gold-border text-stone-200 py-2 text-[9px] uppercase tracking-wider font-semibold hover:text-amber-300 transition">Add to Bag</button>
-                                <button type="button" onclick="buyNow('${doc.id}')" class="gold-bg text-black py-2 text-[9px] uppercase tracking-wider font-bold">Buy Now</button>
+                                <button type="button" onclick="addToCart('${dressId}')" class="bg-stone-900 border gold-border text-stone-200 py-2 text-[9px] uppercase tracking-wider font-semibold hover:text-amber-300 transition">Add to Bag</button>
+                                <button type="button" onclick="buyNow('${dressId}')" class="gold-bg text-black py-2 text-[9px] uppercase tracking-wider font-bold">Buy Now</button>
                             </div>
                             <button type="button" onclick="shareProduct('${item.name}', ${item.price})" class="w-full bg-stone-900/50 border gold-border text-stone-300 py-1.5 text-[9px] uppercase tracking-widest hover:text-amber-300 transition">Share Dress</button>
                         </div>
@@ -320,6 +324,7 @@
 
         function toggleWishlist(id) {
             const item = allDressesMap[id];
+            if (!item) return;
             const idx = wishlist.findIndex(w => w.id === id);
             if(idx > -1) {
                 wishlist.splice(idx, 1);
@@ -359,7 +364,7 @@
                 navigator.share(shareData).catch(() => {});
             } else {
                 navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-                alert("Dress link copied to clipboard to share via any communication app!");
+                alert("Dress link copied to clipboard!");
             }
         }
 
@@ -376,10 +381,11 @@
         function closeSizeChartModal() { document.getElementById('sizechart-modal').classList.add('hidden'); }
 
         db.collection("atelier_settings").doc("promotion_config").onSnapshot(doc => {
+            const bannerImg = document.getElementById('hero-banner-img');
             if (doc.exists) {
                 const data = doc.data();
                 if (data.bannerImageUrl) {
-                    document.getElementById('hero-banner-img').src = data.bannerImageUrl;
+                    bannerImg.src = data.bannerImageUrl;
                 }
                 manageBannerStates(data.saleStartTimestamp, data.saleEndTimestamp, data.saleActive, data.saleType, data.saleCap);
             }
