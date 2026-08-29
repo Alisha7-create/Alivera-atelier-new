@@ -188,8 +188,8 @@
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
-        let wishlist = JSON.parse(localStorage.getItem('alivera_wishlist')) || [];
-        let recentlyViewed = JSON.parse(localStorage.getItem('alivera_recent')) || [];
+        let wishlistIds = JSON.parse(localStorage.getItem('alivera_wishlist_ids')) || [];
+        let recentlyViewedIds = JSON.parse(localStorage.getItem('alivera_recent_ids')) || [];
         let currentUser = null;
         let checkoutItemsPayload = [];
         let allDressesMap = {};
@@ -260,7 +260,7 @@
                 const item = doc.data();
                 const dressId = doc.id;
                 allDressesMap[dressId] = { id: dressId, ...item };
-                const isWishlisted = wishlist.some(w => w.id === dressId);
+                const isWishlisted = wishlistIds.includes(dressId);
 
                 return `
                     <div class="bg-stone-950 border gold-border p-4 flex flex-col justify-between shadow-lg relative">
@@ -293,15 +293,16 @@
                 `;
             }).join('');
             renderRecentlyViewed();
+            updateWishlistUI();
         }
 
         function viewProduct(id) {
             const item = allDressesMap[id];
             if(!item) return;
-            if(!recentlyViewed.some(r => r.id === id)) {
-                recentlyViewed.unshift(item);
-                if(recentlyViewed.length > 4) recentlyViewed.pop();
-                localStorage.setItem('alivera_recent', JSON.stringify(recentlyViewed));
+            if(!recentlyViewedIds.includes(id)) {
+                recentlyViewedIds.unshift(id);
+                if(recentlyViewedIds.length > 4) recentlyViewedIds.pop();
+                localStorage.setItem('alivera_recent_ids', JSON.stringify(recentlyViewedIds));
             }
             renderRecentlyViewed();
         }
@@ -309,9 +310,10 @@
         function renderRecentlyViewed() {
             const sec = document.getElementById('recently-viewed-section');
             const grid = document.getElementById('recently-viewed-grid');
-            if(recentlyViewed.length === 0) { sec.classList.add('hidden'); return; }
+            const validRecent = recentlyViewedIds.map(id => allDressesMap[id]).filter(Boolean);
+            if(validRecent.length === 0) { sec.classList.add('hidden'); return; }
             sec.classList.remove('hidden');
-            grid.innerHTML = recentlyViewed.map(item => `
+            grid.innerHTML = validRecent.map(item => `
                 <div class="bg-stone-950 border gold-border p-3 flex gap-3 items-center">
                     <img src="${item.imageUrl}" class="w-14 h-16 object-cover border gold-border">
                     <div>
@@ -323,24 +325,23 @@
         }
 
         function toggleWishlist(id) {
-            const item = allDressesMap[id];
-            if (!item) return;
-            const idx = wishlist.findIndex(w => w.id === id);
+            const idx = wishlistIds.indexOf(id);
             if(idx > -1) {
-                wishlist.splice(idx, 1);
+                wishlistIds.splice(idx, 1);
             } else {
-                wishlist.push(item);
+                wishlistIds.push(id);
             }
-            localStorage.setItem('alivera_wishlist', JSON.stringify(wishlist));
+            localStorage.setItem('alivera_wishlist_ids', JSON.stringify(wishlistIds));
             updateWishlistUI();
             loadStorefront();
         }
 
         function updateWishlistUI() {
-            document.getElementById('wishlist-badge').innerText = wishlist.length;
+            document.getElementById('wishlist-badge').innerText = wishlistIds.length;
             const container = document.getElementById('wishlist-items');
-            if(wishlist.length === 0) { container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your wishlist is empty</p>`; return; }
-            container.innerHTML = wishlist.map((item, idx) => `
+            const validWishlist = wishlistIds.map(id => allDressesMap[id]).filter(Boolean);
+            if(validWishlist.length === 0) { container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your wishlist is empty</p>`; return; }
+            container.innerHTML = validWishlist.map(item => `
                 <div class="bg-stone-900 p-3 border gold-border flex items-center justify-between text-xs">
                     <div class="flex items-center gap-3">
                         <img src="${item.imageUrl}" class="w-10 h-12 object-cover">
@@ -349,7 +350,7 @@
                             <p class="text-stone-400 text-[10px]">₹${item.price}</p>
                         </div>
                     </div>
-                    <button onclick="wishlist.splice(${idx},1);localStorage.setItem('alivera_wishlist',JSON.stringify(wishlist));updateWishlistUI();loadStorefront();" class="text-red-400 text-[10px]">Remove</button>
+                    <button onclick="toggleWishlist('${item.id}')" class="text-red-400 text-[10px]">Remove</button>
                 </div>
             `).join('');
         }
@@ -462,7 +463,7 @@
             document.getElementById('cart-badge').innerText = cart.length;
             const container = document.getElementById('cart-items');
             let total = 0;
-            if (cart.length === 0) { container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your bag is empty</p>`; document.getElementById('cart-total').innerText = '₹0'; return; }
+            if (cart.length === 0) { container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your bag is empty</p>`; document.getElementById('cart-cart-total')?.innerText = '₹0'; return; }
             container.innerHTML = cart.map((item, idx) => {
                 total += item.price;
                 return `<div class="bg-stone-900 p-3 border gold-border flex justify-between items-center text-xs"><div><span class="font-medium text-amber-200">${item.name}</span><p class="text-stone-400 text-[10px]">Size: ${item.size} • ₹${item.price}</p></div><button onclick="cart.splice(${idx},1);localStorage.setItem('alivera_cart',JSON.stringify(cart));updateCartUI();" class="text-red-400">Remove</button></div>`;
