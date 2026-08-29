@@ -10,25 +10,31 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .font-serif { font-family: 'Playfair Display', serif; }
     </style>
+    <!-- Firebase SDKs Loaded in Head -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
 <body class="bg-stone-100 text-stone-900 antialiased">
 
+    <!-- ADMIN LOGIN GATE -->
     <div id="admin-gate" class="fixed inset-0 z-50 bg-stone-950 flex items-center justify-center p-6">
         <div class="bg-white border border-stone-200 p-8 max-w-md w-full shadow-xl text-center space-y-6">
             <h2 class="font-serif text-2xl font-medium">Admin Authorization Required</h2>
             <p class="text-xs text-stone-500 uppercase tracking-wider">Please sign in with your authorized admin account to access studio controls.</p>
-            <button onclick="adminLogin()" class="w-full bg-stone-900 text-white py-3.5 text-xs uppercase tracking-widest font-semibold hover:bg-stone-800 transition">
+            <button type="button" id="btn-admin-login" class="w-full bg-stone-900 text-white py-3.5 text-xs uppercase tracking-widest font-semibold hover:bg-stone-800 transition">
                 Sign In With Google Admin
             </button>
             <div><a href="../index.html" class="text-xs text-stone-400 underline uppercase tracking-widest">Return to Storefront</a></div>
         </div>
     </div>
 
+    <!-- Protected Admin Dashboard Content -->
     <div id="admin-dashboard-content" class="hidden">
         <header class="bg-stone-900 text-stone-100 py-4 px-6 border-b border-stone-800">
             <div class="max-w-7xl mx-auto flex items-center justify-between">
                 <span class="font-serif text-xl tracking-widest font-bold">ALIVÉRA ATELIER — SECURE ADMIN</span>
-                <button onclick="auth.signOut()" class="text-xs uppercase tracking-widest text-red-400 hover:text-red-300">Sign Out</button>
+                <button type="button" id="btn-admin-signout" class="text-xs uppercase tracking-widest text-red-400 hover:text-red-300">Sign Out</button>
             </div>
         </header>
 
@@ -40,14 +46,12 @@
                     <input type="number" id="dress-price" placeholder="Price (₹)" class="bg-stone-50 border border-stone-300 p-3 text-xs outline-none">
                     <input type="text" id="dress-image" placeholder="Image URL Link" class="bg-stone-50 border border-stone-300 p-3 text-xs outline-none">
                 </div>
-                <button onclick="uploadDress()" class="mt-6 bg-stone-900 text-white px-8 py-3 text-xs uppercase tracking-widest hover:bg-stone-800">Publish Live</button>
+                <button type="button" id="btn-upload-dress" class="mt-6 bg-stone-900 text-white px-8 py-3 text-xs uppercase tracking-widest hover:bg-stone-800">Publish Live</button>
             </div>
         </main>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <!-- Admin Logic Script -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc",
@@ -64,15 +68,8 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // 1. Force Local Auth Persistence
-        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
-            console.error("Auth persistence error:", error);
-        });
-
-        // 2. Enable Stable Offline Caching for Firestore (Compat format)
-        db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
-            console.warn("Persistence note:", err.code);
-        });
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+        db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
         const ADMIN_EMAILS = ["contact@aliveraatelier.in"];
 
@@ -96,8 +93,6 @@
             } catch (err) { alert("Admin sign-in failed: " + err.message); }
         }
 
-        window.adminLogin = adminLogin;
-
         async function uploadDress() {
             const name = document.getElementById('dress-name').value.trim();
             const price = document.getElementById('dress-price').value.trim();
@@ -110,6 +105,18 @@
             document.getElementById('dress-image').value = '';
         }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            const bindClick = (id, fn) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('click', fn);
+            };
+
+            bindClick('btn-admin-login', adminLogin);
+            bindClick('btn-admin-signout', () => auth.signOut());
+            bindClick('btn-upload-dress', uploadDress);
+        });
+
+        window.adminLogin = adminLogin;
         window.uploadDress = uploadDress;
     </script>
 </body>
