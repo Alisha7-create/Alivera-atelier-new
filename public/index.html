@@ -13,10 +13,12 @@
 </head>
 <body class="bg-black text-stone-100 antialiased selection:bg-amber-400 selection:text-black">
 
+    <!-- Dynamic Promo Banner -->
     <div class="bg-amber-500/15 border-b border-amber-500/20 text-amber-300 text-xs tracking-widest py-2.5 text-center uppercase font-medium">
         <span>✨ Introductory Offer: Enjoy 10% OFF your first custom order ✨</span>
     </div>
 
+    <!-- Navigation Bar -->
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-stone-800">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="#" class="font-serif text-2xl tracking-[0.25em] font-bold text-amber-100">ALIVÉRA ATELIER</a>
@@ -39,15 +41,18 @@
         </div>
     </header>
 
+    <!-- Collection Grid -->
     <main id="collection" class="max-w-7xl mx-auto px-6 py-28">
         <div class="text-center mb-16">
             <h2 class="font-serif text-3xl font-light tracking-wide mb-3 text-amber-100">The Signature Collection</h2>
             <p class="text-stone-500 text-xs tracking-[0.2em] uppercase">Hand-tailored from XS to 3XL or Crafted to Your Exact Measurements</p>
         </div>
         <div id="storefront-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
-            </div>
+            <!-- Dynamic items loaded here -->
+        </div>
     </main>
 
+    <!-- Custom Measurement Modal -->
     <div id="custom-measurement-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <h3 class="font-serif text-2xl font-medium text-amber-100 mb-2">Bespoke Measurements</h3>
@@ -90,6 +95,7 @@
         </div>
     </div>
 
+    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
@@ -114,6 +120,7 @@
         </div>
     </div>
 
+    <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end">
         <div class="bg-stone-950 border-l border-stone-800 w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto text-stone-100">
             <div class="flex items-center justify-between pb-6 border-b border-stone-800">
@@ -128,26 +135,37 @@
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script>
-        const firebaseConfig = { apiKey: "your-key", authDomain: "your-domain", projectId: "your-project" };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc",
+            authDomain: "alivera-atelier.firebaseapp.com",
+            databaseURL: "https://alivera-atelier-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "alivera-atelier",
+            storageBucket: "alivera-atelier.firebasestorage.app",
+            messagingSenderId: "952987801898",
+            appId: "1:952987801898:web:af49cb363c53584de1a653",
+            measurementId: "G-YQETZYQ3PT"
+        };
+        
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // 1. Force Local Persistence for Auth (Never forgets login state)
+        // 1. Force Local Persistence for Auth
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
             console.error("Auth persistence error:", error);
         });
 
-        // 2. Enable Permanent Offline Caching for Firestore Database
+        // 2. Enable Permanent Offline Caching for Firestore
         db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
             if (err.code == 'failed-precondition') {
                 console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
             } else if (err.code == 'unimplemented') {
-                console.warn("The current browser does not support all of the features required for persistence");
+                console.warn("The current browser does not support persistence.");
             }
         });
 
