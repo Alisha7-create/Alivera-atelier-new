@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier | Luxury Custom Apparel</title>
+    <title>Alivèra Atelier | Luxury Custom Apparel & Studio Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -20,6 +20,51 @@
         <span>✨ Introductory Offer: Enjoy 10% OFF your first custom order ✨</span>
     </div>
 
+    <!-- ADMIN DASHBOARD PANEL (Hidden unless logged in as admin) -->
+    <div id="admin-dashboard-panel" class="hidden bg-stone-900 border-b border-amber-500/30 text-stone-100 p-8">
+        <div class="max-w-7xl mx-auto space-y-8">
+            <div class="flex items-center justify-between pb-6 border-b border-stone-800">
+                <div>
+                    <span class="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold">Studio Control Center</span>
+                    <h2 class="font-serif text-2xl font-medium mt-1">Admin Dashboard</h2>
+                </div>
+                <button type="button" onclick="auth.signOut()" class="text-xs uppercase tracking-widest text-red-400 hover:text-red-300 transition">Sign Out Admin</button>
+            </div>
+
+            <!-- Publish Dress Form -->
+            <div class="bg-stone-950 border border-stone-800 p-6">
+                <h3 class="font-serif text-xl font-medium mb-1 text-amber-100">Publish Dress Live to Storefront</h3>
+                <p class="text-xs text-stone-400 uppercase tracking-wider mb-6">Add new custom designs instantly to the public catalog.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Dress Name</label>
+                        <input type="text" id="dress-name" placeholder="e.g. Midnight Orchid" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-100 outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Price (₹)</label>
+                        <input type="number" id="dress-price" placeholder="e.g. 14500" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-100 outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Image URL</label>
+                        <input type="text" id="dress-image" placeholder="https://..." class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-100 outline-none focus:border-amber-400">
+                    </div>
+                </div>
+                <button type="button" id="btn-upload-dress" class="mt-6 bg-amber-400 text-black px-8 py-3 text-xs uppercase tracking-widest font-semibold hover:bg-amber-300 transition">Publish Live</button>
+            </div>
+
+            <!-- Manage Live Catalog -->
+            <div class="bg-stone-950 border border-stone-800 p-6">
+                <h3 class="font-serif text-xl font-medium mb-1 text-amber-100">Manage Live Catalog</h3>
+                <p class="text-xs text-stone-400 uppercase tracking-wider mb-6">Active dresses currently displayed on your storefront.</p>
+                <div id="admin-products-list" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PUBLIC STOREFRONT HEADER -->
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-stone-800">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="#" class="font-serif text-2xl tracking-[0.25em] font-bold text-amber-100">ALIVÉRA ATELIER</a>
@@ -48,9 +93,11 @@
             <p class="text-stone-500 text-xs tracking-[0.2em] uppercase">Hand-tailored from XS to 3XL or Crafted to Your Exact Measurements</p>
         </div>
         <div id="storefront-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
-            </div>
+            <!-- Dynamic items loaded here -->
+        </div>
     </main>
 
+    <!-- Custom Measurement Modal -->
     <div id="custom-measurement-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <h3 class="font-serif text-2xl font-medium text-amber-100 mb-2">Bespoke Measurements</h3>
@@ -93,18 +140,16 @@
         </div>
     </div>
 
+    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <button type="button" id="btn-close-auth" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
             <h3 class="font-serif text-2xl font-medium text-amber-100 mb-6">Sign In</h3>
             
             <div class="space-y-4">
-                <button type="button" id="btn-google-signin" class="w-full bg-white text-black py-3.5 text-xs uppercase tracking-[0.15em] font-semibold hover:bg-stone-200 transition flex items-center justify-center gap-3">
-                    Continue with Google
-                </button>
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">Email Address</label>
-                    <input type="email" id="auth-email" placeholder="name@example.com" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-200 outline-none focus:border-amber-400">
+                    <input type="email" id="auth-email" value="hello@aliveraatelier.in" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-200 outline-none focus:border-amber-400">
                 </div>
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">Password</label>
@@ -117,6 +162,7 @@
         </div>
     </div>
 
+    <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end">
         <div class="bg-stone-950 border-l border-stone-800 w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto text-stone-100">
             <div class="flex items-center justify-between pb-6 border-b border-stone-800">
@@ -149,12 +195,21 @@
 
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 
+        const ADMIN_EMAILS = ["hello@aliveraatelier.in"];
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
         let currentUser = null;
 
         auth.onAuthStateChanged((user) => {
             currentUser = user ? { name: user.displayName || user.email.split('@')[0], email: user.email } : null;
             updateAuthUI();
+
+            const adminPanel = document.getElementById('admin-dashboard-panel');
+            if (user && ADMIN_EMAILS.includes(user.email)) {
+                adminPanel.classList.remove('hidden');
+                loadAdminProducts();
+            } else {
+                adminPanel.classList.add('hidden');
+            }
         });
 
         function updateAuthUI() {
@@ -165,14 +220,71 @@
                 `<button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-widest text-stone-300 hover:text-amber-300">Sign In</button>`;
         }
 
-        async function signInWithGoogle() {
-            try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); closeAuthModal(); } catch (e) { alert("Sign-in failed: " + e.message); }
-        }
-
         async function handleAuthSubmit() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-            try { await auth.signInWithEmailAndPassword(email, password); closeAuthModal(); } catch (e) { alert("Error: " + e.message); }
+            try { 
+                await auth.signInWithEmailAndPassword(email, password); 
+                closeAuthModal(); 
+            } catch (e) { 
+                alert("Error: " + e.message); 
+            }
+        }
+
+        async function uploadDress() {
+            const name = document.getElementById('dress-name').value.trim();
+            const price = document.getElementById('dress-price').value.trim();
+            const imageUrl = document.getElementById('dress-image').value.trim();
+            if (!name || !price || !imageUrl) { alert("Please fill all fields."); return; }
+            
+            await db.collection("atelier_dresses").add({
+                name,
+                price: Number(price),
+                imageUrl,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            alert("Dress published live to storefront!");
+            document.getElementById('dress-name').value = '';
+            document.getElementById('dress-price').value = '';
+            document.getElementById('dress-image').value = '';
+            loadAdminProducts();
+            loadStorefrontProducts();
+        }
+
+        async function loadAdminProducts() {
+            const container = document.getElementById('admin-products-list');
+            if(!container) return;
+            try {
+                const snapshot = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
+                if (snapshot.empty) {
+                    container.innerHTML = `<p class="text-stone-400 text-xs col-span-3 uppercase tracking-wider">No dresses currently published.</p>`;
+                    return;
+                }
+                container.innerHTML = snapshot.docs.map(doc => {
+                    const item = doc.data();
+                    return `
+                        <div class="border border-stone-800 bg-stone-900 p-4 flex flex-col justify-between">
+                            <div>
+                                <div class="aspect-[4/5] bg-stone-950 mb-3 overflow-hidden border border-stone-800">
+                                    <img src="${item.imageUrl}" class="w-full h-full object-cover">
+                                </div>
+                                <h4 class="font-serif text-sm font-medium text-amber-200">${item.name}</h4>
+                                <p class="text-xs text-stone-400 mt-1">₹${item.price}</p>
+                            </div>
+                            <button type="button" onclick="deleteDress('${doc.id}')" class="mt-4 bg-red-950/40 text-red-400 border border-red-900/50 py-2 text-[10px] uppercase tracking-widest font-semibold hover:bg-red-900/40 transition">Remove Live</button>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function deleteDress(id) {
+            if (confirm("Are you sure you want to remove this dress from the live storefront?")) {
+                await db.collection("atelier_dresses").doc(id).delete();
+                loadAdminProducts();
+                loadStorefrontProducts();
+            }
         }
 
         async function loadStorefrontProducts() {
@@ -296,10 +408,10 @@
             bindClick('btn-close-auth', closeAuthModal);
             bindClick('btn-open-cart', openCartModal);
             bindClick('btn-close-cart', closeCartModal);
-            bindClick('btn-google-signin', signInWithGoogle);
             bindClick('btn-auth-submit', handleAuthSubmit);
             bindClick('btn-close-custom', closeCustomModal);
             bindClick('btn-save-custom', saveCustomMeasurementsAndAddToCart);
+            bindClick('btn-upload-dress', uploadDress);
 
             loadStorefrontProducts();
             updateCartUI();
@@ -309,12 +421,12 @@
         window.closeAuthModal = closeAuthModal;
         window.openCartModal = openCartModal;
         window.closeCartModal = closeCartModal;
-        window.signInWithGoogle = signInWithGoogle;
         window.handleAuthSubmit = handleAuthSubmit;
         window.handleSizeChange = handleSizeChange;
         window.closeCustomModal = closeCustomModal;
         window.saveCustomMeasurementsAndAddToCart = saveCustomMeasurementsAndAddToCart;
         window.handleAddToCart = handleAddToCart;
+        window.deleteDress = deleteDress;
     </script>
 </body>
 </html>
