@@ -41,6 +41,7 @@
 
         <div id="admin-main-content" class="hidden space-y-8">
             
+            <!-- Cinematic Banner Manager & Sale Timer -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
                 <h3 class="font-serif text-xl text-amber-200">Cinematic Banner Manager (1897 x 412) & Sale Timer Schedule</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -57,7 +58,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale Start Date & Time (12:00 AM)</label>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale Start Date & Time</label>
                         <input type="datetime-local" id="sale-start" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
                     </div>
                     <div>
@@ -75,8 +76,9 @@
                 </div>
             </div>
 
+            <!-- Publish Dress Live & Size Chart Management -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl">
-                <h3 class="font-serif text-xl text-amber-200 mb-4">Publish Dress Live (Upload Photos)</h3>
+                <h3 class="font-serif text-xl text-amber-200 mb-4">Publish Dress Live & Attach Size Chart</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">Dress Name</label>
@@ -90,10 +92,15 @@
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Dress Photo</label>
                         <input type="file" id="d-img-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
                     </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Custom Size Chart (Image or PDF)</label>
+                        <input type="file" id="d-sizechart-file" accept="image/*,application/pdf" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
+                    </div>
                 </div>
                 <button type="button" onclick="publishDress()" class="mt-6 gold-bg text-black px-6 py-3 text-xs uppercase font-semibold">Publish Dress Live</button>
             </div>
 
+            <!-- Live Customer Orders -->
             <div class="bg-stone-950 border gold-border p-6 shadow-xl">
                 <h3 class="font-serif text-xl text-amber-200 mb-4">Live Customer Orders</h3>
                 <div id="admin-orders-list" class="space-y-4">
@@ -189,20 +196,34 @@
             const name = document.getElementById('d-name').value.trim();
             const price = Number(document.getElementById('d-price').value);
             const imgFile = document.getElementById('d-img-file').files[0];
+            const sizeChartFile = document.getElementById('d-sizechart-file').files[0];
 
-            if(!name || !price || !imgFile) { alert("Please provide Dress Name, Price, and Photo."); return; }
+            if(!name || !price || !imgFile) { 
+                alert("Please provide Dress Name, Price, and Dress Photo."); 
+                return; 
+            }
 
-            alert("Uploading dress photo...");
+            alert("Uploading assets...");
             const imageUrl = await convertFileToBase64(imgFile);
+            
+            let sizeChartUrl = "";
+            if (sizeChartFile) {
+                sizeChartUrl = await convertFileToBase64(sizeChartFile);
+            }
 
             await db.collection("atelier_dresses").add({
-                name, price, imageUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                name, 
+                price, 
+                imageUrl, 
+                sizeChartUrl,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            alert("Dress published live successfully!");
+            alert("Dress published live with size chart successfully!");
             document.getElementById('d-name').value = '';
             document.getElementById('d-price').value = '';
             document.getElementById('d-img-file').value = '';
+            document.getElementById('d-sizechart-file').value = '';
         }
 
         async function loadOrders() {
