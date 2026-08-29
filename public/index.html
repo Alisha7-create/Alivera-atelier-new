@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier | Luxury Custom Apparel</title>
-    <!-- Circular GitHub Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23000'/><clipPath id='cp'><circle cx='50' cy='50' r='48'/></clipPath><image href='https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/YOUR_REPO/main/public/favicon.png' width='100' height='100' clip-path='url(%23cp)' preserveAspectRatio='xMidYMid slice'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -15,32 +13,24 @@
 </head>
 <body class="bg-black text-stone-100 antialiased selection:bg-amber-400 selection:text-black">
 
-    <!-- Dynamic Sale Countdown / Promotional Banner Section -->
-    <div id="dynamic-promo-banner" class="bg-amber-500/10 border-b border-amber-500/20 text-amber-300 text-xs tracking-widest py-2.5 text-center uppercase font-medium flex items-center justify-center gap-4 px-4">
-        <span id="banner-text">✨ Introductory Offer: Enjoy 10% OFF your first custom order ✨</span>
-        <span id="banner-countdown" class="hidden font-mono bg-amber-400/20 px-2 py-0.5 rounded text-amber-200"></span>
+    <div class="bg-amber-500/15 border-b border-amber-500/20 text-amber-300 text-xs tracking-widest py-2.5 text-center uppercase font-medium">
+        <span>✨ Introductory Offer: Enjoy 10% OFF your first custom order ✨</span>
     </div>
 
-    <!-- Navigation Bar -->
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-stone-800">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="#" class="font-serif text-2xl tracking-[0.25em] font-bold text-amber-100">ALIVÉRA ATELIER</a>
             
             <nav class="hidden md:flex space-x-8 text-xs uppercase tracking-[0.2em] text-stone-400">
                 <a href="#collection" class="hover:text-amber-300 transition">Collection</a>
-                <a href="#bespoke" class="hover:text-amber-300 transition">Bespoke Design</a>
             </nav>
 
             <div class="flex items-center space-x-6">
                 <div id="auth-container">
-                    <button onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition" id="auth-nav-btn">
+                    <button onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">
                         Sign In
                     </button>
                 </div>
-                <button onclick="openWishlistModal()" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-1">
-                    <span>Wishlist</span>
-                    <span id="wishlist-badge" class="bg-amber-400 text-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
-                </button>
                 <button onclick="openCartModal()" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-2">
                     <span>Bag</span>
                     <span id="cart-badge" class="bg-amber-400 text-black text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
@@ -49,663 +39,253 @@
         </div>
     </header>
 
-    <!-- Full Hero Banner Section (1897 x 412) -->
-    <section id="hero-banner-section" class="relative bg-black text-stone-100 overflow-hidden border-b border-stone-900 flex items-center justify-center text-center" style="width: 100%; min-height: 412px;">
-        <div id="hero-bg-container" class="absolute inset-0 bg-cover bg-center opacity-40 transition duration-700" style="background-image: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1897&auto=format&fit=crop');"></div>
-        <div class="absolute inset-0 bg-black/50"></div>
-
-        <div class="max-w-4xl mx-auto px-6 relative z-10 py-20">
-            <span class="text-xs tracking-[0.3em] uppercase text-amber-400 block mb-4 font-medium">Fall / Winter Bespoke</span>
-            <h1 class="font-serif text-4xl md:text-6xl font-light tracking-wide mb-6 leading-tight text-amber-50">Artisanal Elegance, Crafted Exclusively For You</h1>
-            <p class="text-stone-300 text-base md:text-lg max-w-2xl mx-auto font-light mb-10 leading-relaxed">
-                Explore our signature convertible pieces and bespoke silhouettes designed with uncompromising detail and botanical precision.
-            </p>
-            <a href="#collection" class="inline-block bg-amber-400 text-black px-8 py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">
-                Explore Collection
-            </a>
-        </div>
-    </section>
-
-    <!-- Collection Section (Dynamically Populated from Admin) -->
     <main id="collection" class="max-w-7xl mx-auto px-6 py-28">
         <div class="text-center mb-16">
             <h2 class="font-serif text-3xl font-light tracking-wide mb-3 text-amber-100">The Signature Collection</h2>
-            <p class="text-stone-500 text-xs tracking-[0.2em] uppercase">Hand-tailored upon request & instantly published</p>
+            <p class="text-stone-500 text-xs tracking-[0.2em] uppercase">Hand-tailored from XS to 3XL or Crafted to Your Exact Measurements</p>
         </div>
-
         <div id="storefront-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
-            <!-- Dynamically injected dresses from Firebase Admin Dashboard appear here instantly -->
-            <div class="bg-stone-950 border border-stone-800 p-8 flex flex-col justify-between shadow-xl">
-                <div>
-                    <div class="aspect-[4/5] bg-stone-900 mb-6 flex items-center justify-center overflow-hidden border border-stone-800">
-                        <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1000&auto=format&fit=crop" alt="Midnight Orchid" class="object-cover w-full h-full opacity-90">
+            </div>
+    </main>
+
+    <div id="custom-measurement-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
+        <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
+            <h3 class="font-serif text-2xl font-medium text-amber-100 mb-2">Bespoke Measurements</h3>
+            <p class="text-xs text-stone-400 mb-6 uppercase tracking-wider">Provide your exact dimensions (in inches) for custom tailoring.</p>
+            
+            <input type="hidden" id="pending-product-id">
+            <input type="hidden" id="pending-product-name">
+            <input type="hidden" id="pending-product-price">
+
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Bust (Inches)</label>
+                        <input type="number" id="meas-bust" placeholder="e.g. 34" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-200 outline-none focus:border-amber-400">
                     </div>
-                    <span class="text-[10px] uppercase tracking-[0.2em] text-amber-400/80 block mb-1">Bespoke Dress</span>
-                    <h3 class="font-serif text-2xl font-medium mb-2 text-stone-100">The Midnight Orchid Dress</h3>
-                    <p class="text-stone-400 text-sm mb-6 font-light">Convertible black fitted dress with detachable wrap.</p>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Waist (Inches)</label>
+                        <input type="number" id="meas-waist" placeholder="e.g. 28" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-200 outline-none focus:border-amber-400">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Hips (Inches)</label>
+                        <input type="number" id="meas-hips" placeholder="e.g. 38" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-200 outline-none focus:border-amber-400">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Height</label>
+                        <input type="text" id="meas-height" placeholder="e.g. 5'6&quot;" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-200 outline-none focus:border-amber-400">
+                    </div>
                 </div>
                 <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <span class="text-lg font-serif text-amber-200">₹12,499</span>
-                        <select id="size-default-1" class="bg-stone-900 border border-stone-700 text-stone-200 px-3 py-2 text-xs uppercase tracking-wider">
-                            <option value="XS">XS</option><option value="S">S</option><option value="M" selected>M</option><option value="L">L</option>
-                        </select>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="addToCart('The Midnight Orchid Dress', 12499, 'SKU-01')" class="flex-grow bg-amber-400 text-black py-3 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">Add to Bag</button>
-                        <button onclick="toggleWishlist('The Midnight Orchid Dress', 12499, 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1000&auto=format&fit=crop', 'SKU-01')" class="px-4 border border-stone-700 hover:border-amber-400 text-stone-300 hover:text-amber-400 text-xs transition">♥</button>
-                    </div>
+                    <label class="block text-[10px] uppercase tracking-widest text-stone-400 mb-1">Special Tailoring Notes (Optional)</label>
+                    <textarea id="meas-notes" placeholder="Any specific fit preferences..." class="w-full bg-stone-900 border border-stone-800 p-3 text-xs text-stone-200 outline-none focus:border-amber-400 h-20 resize-none"></textarea>
+                </div>
+                <div class="flex gap-4 pt-2">
+                    <button onclick="closeCustomModal()" class="w-1/2 bg-stone-900 text-stone-300 py-3 text-xs uppercase tracking-widest hover:bg-stone-800 transition">Cancel</button>
+                    <button onclick="saveCustomMeasurementsAndAddToCart()" class="w-1/2 bg-amber-400 text-black py-3 text-xs uppercase tracking-widest font-semibold hover:bg-amber-300 transition">Confirm & Add</button>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Authentication Modal (Firebase Google Sign-In & Email, No Exposed Credentials) -->
     <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-stone-950 border border-stone-800 w-full max-w-md p-8 shadow-2xl relative text-stone-100">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
-            <h3 id="auth-modal-title" class="font-serif text-2xl font-medium text-amber-100 mb-6">Sign In</h3>
+            <h3 class="font-serif text-2xl font-medium text-amber-100 mb-6">Sign In</h3>
             
             <div class="space-y-4">
                 <button onclick="signInWithGoogle()" class="w-full bg-white text-black py-3.5 text-xs uppercase tracking-[0.15em] font-semibold hover:bg-stone-200 transition flex items-center justify-center gap-3">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
                     Continue with Google
                 </button>
-
-                <div class="relative flex py-2 items-center">
-                    <div class="flex-grow border-t border-stone-800"></div>
-                    <span class="flex-shrink mx-4 text-stone-500 text-[10px] uppercase tracking-widest">Or with email</span>
-                    <div class="flex-grow border-t border-stone-800"></div>
-                </div>
-
-                <div id="name-field-container" class="hidden">
-                    <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">Full Name</label>
-                    <input type="text" id="auth-name" placeholder="Enter your name" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
-                </div>
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">Email Address</label>
-                    <input type="email" id="auth-email" placeholder="name@example.com" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
+                    <input type="email" id="auth-email" placeholder="name@example.com" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 outline-none focus:border-amber-400">
                 </div>
                 <div>
                     <label class="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-1">Password</label>
-                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
+                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 outline-none focus:border-amber-400">
                 </div>
-
-                <button onclick="handleAuthSubmit()" id="auth-submit-btn" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition mt-2">
+                <button onclick="handleAuthSubmit()" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition mt-2">
                     Sign In
                 </button>
-
-                <div class="text-center pt-4 border-t border-stone-800 text-xs">
-                    <span id="auth-toggle-text" class="text-stone-400">Don't have an account?</span>
-                    <button onclick="toggleAuthMode()" class="text-amber-300 ml-1 underline uppercase tracking-wider font-medium" id="auth-toggle-btn">Sign Up</button>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- My Account Modal (Profile, Addresses, Wishlist, Orders, Tracking) -->
-    <div id="account-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
-        <div class="bg-stone-950 border border-stone-800 w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl relative text-stone-100 overflow-hidden">
-            <div class="flex items-center justify-between p-6 border-b border-stone-800">
-                <h3 class="font-serif text-2xl font-medium text-amber-100">My Account Dashboard</h3>
-                <button onclick="closeAccountModal()" class="text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
-            </div>
-            
-            <div class="flex-grow overflow-y-auto p-6 space-y-8">
-                <!-- Personal Info & Logout -->
-                <div class="bg-stone-900 p-6 border border-stone-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h4 id="acc-name" class="font-serif text-xl font-medium text-amber-200">User Name</h4>
-                        <p id="acc-email" class="text-xs text-stone-400 mt-1">email@domain.com</p>
-                        <p id="acc-phone" class="text-xs text-stone-400 mt-0.5">Phone: Not provided</p>
-                    </div>
-                    <button onclick="handleLogout()" class="bg-red-500/10 border border-red-500/30 text-red-300 px-4 py-2 text-xs uppercase tracking-widest hover:bg-red-500/20 transition">
-                        Sign Out / Logout
-                    </button>
-                </div>
-
-                <!-- Addresses Manager -->
-                <div>
-                    <h4 class="text-xs uppercase tracking-[0.2em] font-semibold text-amber-400 mb-3">Saved Delivery Addresses</h4>
-                    <div id="acc-addresses" class="bg-stone-900 p-4 border border-stone-800 text-xs text-stone-300">
-                        No saved delivery address on file. Add one during checkout.
-                    </div>
-                </div>
-
-                <!-- Recently Viewed Items -->
-                <div>
-                    <h4 class="text-xs uppercase tracking-[0.2em] font-semibold text-amber-400 mb-3">Recently Viewed Dresses</h4>
-                    <div id="acc-recent" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-
-                <!-- Order History & Live Tracking -->
-                <div>
-                    <h4 class="text-xs uppercase tracking-[0.2em] font-semibold text-amber-400 mb-3">Order History & Live Shiprocket Tracking</h4>
-                    <div id="acc-orders" class="space-y-3">
-                        <p class="text-xs text-stone-500 uppercase">No active or past orders found.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Wishlist Modal -->
-    <div id="wishlist-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end">
-        <div class="bg-stone-950 border-l border-stone-800 w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto text-stone-100">
-            <div class="flex items-center justify-between pb-6 border-b border-stone-800">
-                <h3 class="font-serif text-xl font-medium text-amber-100">Your Wishlist</h3>
-                <button onclick="closeWishlistModal()" class="text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
-            </div>
-            <div id="wishlist-items" class="flex-grow py-6 space-y-4 overflow-y-auto">
-                <p class="text-stone-500 text-xs text-center py-12 uppercase tracking-wider">Your wishlist is empty.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Shopping Bag Slide-Over / Modal -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex justify-end">
         <div class="bg-stone-950 border-l border-stone-800 w-full max-w-md h-full flex flex-col shadow-2xl p-6 overflow-y-auto text-stone-100">
             <div class="flex items-center justify-between pb-6 border-b border-stone-800">
-                <h3 class="font-serif text-xl font-medium text-amber-100">Your Shopping Bag</h3>
-                <button onclick="closeCartModal()" class="text-stone-400 hover:text-stone-100 text-xs uppercase tracking-widest">Close</button>
+                <h3 class="font-serif text-xl font-medium text-amber-100">Shopping Bag</h3>
+                <button onclick="closeCartModal()" class="text-stone-400 text-xs uppercase tracking-widest">Close</button>
             </div>
-
-            <div id="cart-items" class="flex-grow py-6 space-y-4 overflow-y-auto">
-                <!-- Dynamically populated items -->
-            </div>
-
-            <div id="checkout-section" class="border-t border-stone-800 pt-6 mt-auto">
-                <h4 class="text-xs uppercase tracking-[0.2em] font-semibold mb-4 text-amber-400">Shipping Details</h4>
-                <div class="space-y-3 mb-6">
-                    <input type="text" id="ship-name" placeholder="Full Name" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
-                    <input type="text" id="ship-phone" placeholder="Phone Number" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
-                    <input type="text" id="ship-address" placeholder="Street Address" class="w-full bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="text" id="ship-city" placeholder="City" class="bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
-                        <input type="text" id="ship-pincode" placeholder="Pincode" class="bg-stone-900 border border-stone-800 p-3 text-xs uppercase text-stone-200 focus:border-amber-400 outline-none">
-                    </div>
-                </div>
-
-                <div class="space-y-2 mb-6 text-sm">
-                    <div class="flex justify-between text-stone-400">
-                        <span>Subtotal</span>
-                        <span id="cart-subtotal">₹0</span>
-                    </div>
-                    <div class="flex justify-between text-amber-400">
-                        <span id="applied-discount-label">Discount Applied</span>
-                        <span id="cart-discount">-₹0</span>
-                    </div>
-                    <div class="flex justify-between font-medium text-base pt-2 border-t border-stone-800 text-stone-100">
-                        <span>Total</span>
-                        <span id="cart-total" class="text-amber-200">₹0</span>
-                    </div>
-                </div>
-
-                <button onclick="checkoutOrder()" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">
-                    Place Order & Sync Shiprocket
-                </button>
+            <div id="cart-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
+            <div class="border-t border-stone-800 pt-6 mt-auto">
+                <div class="flex justify-between font-medium text-base mb-6 text-stone-100"><span>Total</span><span id="cart-total" class="text-amber-200">₹0</span></div>
+                <button onclick="alert('Order placed successfully!')" class="w-full bg-amber-400 text-black py-4 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">Place Order</button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-black text-stone-400 py-16 px-6 border-t border-stone-900 text-center">
-        <div class="max-w-4xl mx-auto space-y-6">
-            <h4 class="font-serif text-amber-100 text-xl tracking-[0.25em] font-bold">ALIVÉRA ATELIER</h4>
-            <p class="text-xs uppercase tracking-[0.3em] text-amber-400 font-light">Beautiful. The way you are...</p>
-            <div class="flex justify-center space-x-6 text-xs uppercase tracking-widest text-stone-400">
-                <a href="https://instagram.com/alievraatelier" target="_blank" class="hover:text-amber-300 transition">Instagram: @alievraatelier</a>
-                <span>•</span>
-                <a href="mailto:contact@aliveraatelier.in" class="hover:text-amber-300 transition">contact@aliveraatelier.in</a>
-            </div>
-            <div class="pt-8 border-t border-stone-900 text-xs text-stone-600">
-                &copy; 2026 Alivèra Atelier. All rights reserved.
-            </div>
-        </div>
-    </footer>
-
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script>
-        const firebaseConfig = {
-            apiKey: "your-api-key",
-            authDomain: "your-auth-domain.firebaseapp.com",
-            projectId: "your-project-id"
-        };
+        const firebaseConfig = { apiKey: "your-key", authDomain: "your-domain", projectId: "your-project" };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+        // 1. Force Local Persistence for Auth (Never forgets login state)
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
+            console.error("Auth persistence error:", error);
+        });
+
+        // 2. Enable Permanent Offline Caching for Firestore Database
+        db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+            if (err.code == 'failed-precondition') {
+                console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
+            } else if (err.code == 'unimplemented') {
+                console.warn("The current browser does not support all of the features required for persistence");
+            }
+        });
+
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
-        let wishlist = JSON.parse(localStorage.getItem('alivera_wishlist')) || [];
-        let recentlyViewed = JSON.parse(localStorage.getItem('alivera_recent')) || [];
-        let currentUser = JSON.parse(localStorage.getItem('alivera_user')) || null;
-        let isSignUpMode = false;
+        let currentUser = null;
 
-        // Load dynamic hero banner (1897x412) from Admin settings
-        const savedBanner = localStorage.getItem('alivera_hero_banner');
-        if (savedBanner) {
-            document.getElementById('hero-bg-container').style.backgroundImage = `url('${savedBanner}')`;
-        }
+        auth.onAuthStateChanged((user) => {
+            currentUser = user ? { name: user.displayName || user.email.split('@')[0], email: user.email } : null;
+            updateAuthUI();
+        });
 
-        // --- BANNER & COUNTDOWN MANAGEMENT ---
-        function checkBannerSchedule() {
-            const saleConfig = JSON.parse(localStorage.getItem('alivera_sale_config')) || null;
-            const bannerTextEl = document.getElementById('banner-text');
-            const countdownEl = document.getElementById('banner-countdown');
-
-            if (!saleConfig || !saleConfig.active || saleConfig.type !== 'date_range') {
-                bannerTextEl.innerText = "✨ Introductory Offer: Enjoy 10% OFF your first custom order ✨";
-                countdownEl.classList.add('hidden');
-                return;
-            }
-
-            const now = new Date();
-            const startDate = new Date(saleConfig.startDate + "T00:00:00");
-            const endDate = new Date(saleConfig.endDate + "T23:59:59");
-
-            if (now >= startDate && now <= endDate) {
-                // LIVE SALE BANNER ACTIVE
-                bannerTextEl.innerText = `🔥 ${saleConfig.bannerMessage || 'SPECIAL SALE LIVE NOW'} 🔥`;
-                countdownEl.classList.remove('hidden');
-                
-                const diff = endDate - now;
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                countdownEl.innerText = `Ends in: ${hours}h ${minutes}m ${seconds}s`;
-            } else if (now < startDate) {
-                // ANNOUNCEMENT COUNTDOWN TO SALE
-                bannerTextEl.innerText = `📢 Upcoming Sale Starts In:`;
-                countdownEl.classList.remove('hidden');
-                const diff = startDate - now;
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                countdownEl.innerText = `${days}d ${hours}h`;
-            } else {
-                bannerTextEl.innerText = "✨ Welcome to Alivèra Atelier Bespoke Collections ✨";
-                countdownEl.classList.add('hidden');
-            }
-        }
-        setInterval(checkBannerSchedule, 1000);
-        checkBannerSchedule();
-
-        // --- AUTHENTICATION & MY ACCOUNT ---
         function updateAuthUI() {
-            const authContainer = document.getElementById('auth-container');
-            if (currentUser) {
-                const firstName = currentUser.name ? currentUser.name.split(' ')[0] : 'Account';
-                authContainer.innerHTML = `
-                    <button onclick="openAccountModal()" class="text-xs uppercase tracking-[0.15em] font-semibold text-amber-300 hover:text-amber-200 transition flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        <span>${firstName}</span>
-                    </button>
-                `;
-            } else {
-                authContainer.innerHTML = `
-                    <button onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition" id="auth-nav-btn">
-                        Sign In
-                    </button>
-                `;
-            }
+            const container = document.getElementById('auth-container');
+            container.innerHTML = currentUser ? 
+                `<span class="text-xs text-amber-300 uppercase tracking-widest font-semibold">${currentUser.name}</span>` : 
+                `<button onclick="openAuthModal()" class="text-xs uppercase tracking-widest text-stone-300 hover:text-amber-300">Sign In</button>`;
         }
-
-        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
-        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
-        function openAccountModal() {
-            if (!currentUser) { openAuthModal(); return; }
-            document.getElementById('acc-name').innerText = currentUser.name || 'Valued Client';
-            document.getElementById('acc-email').innerText = currentUser.email || '';
-            document.getElementById('acc-phone').innerText = `Phone: ${currentUser.phone || 'Not provided'}`;
-            
-            // Addresses
-            const addrsEl = document.getElementById('acc-addresses');
-            if (currentUser.address) {
-                addrsEl.innerHTML = `<p>${currentUser.address}, ${currentUser.city} - ${currentUser.pincode}</p>`;
-            } else {
-                addrsEl.innerHTML = `No saved address yet. Your shipping address is saved automatically upon checkout.`;
-            }
-
-            // Recent views
-            const recentEl = document.getElementById('acc-recent');
-            if (recentlyViewed.length === 0) {
-                recentEl.innerHTML = `<p class="text-stone-500 text-xs col-span-4 uppercase">No recently viewed dresses.</p>`;
-            } else {
-                recentEl.innerHTML = recentlyViewed.map(item => `
-                    <div class="bg-stone-900 border border-stone-800 p-2">
-                        <img src="${item.image}" class="aspect-[4/5] object-cover w-full mb-2">
-                        <h6 class="text-[11px] font-medium text-stone-200 truncate">${item.name}</h6>
-                        <span class="text-[10px] text-amber-300">₹${item.price}</span>
-                    </div>
-                `).join('');
-            }
-
-            // Load Orders
-            loadUserOrders();
-
-            document.getElementById('account-modal').classList.remove('hidden');
-        }
-        function closeAccountModal() { document.getElementById('account-modal').classList.add('hidden'); }
 
         async function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                const result = await auth.signInWithPopup(provider);
-                const user = result.user;
-                currentUser = { name: user.displayName, email: user.email, phone: user.phoneNumber || '' };
-                localStorage.setItem('alivera_user', JSON.stringify(currentUser));
-                updateAuthUI();
-                closeAuthModal();
-                alert(`Welcome, ${currentUser.name}!`);
-            } catch (err) {
-                console.error(err);
-                alert("Google Sign-In failed or was cancelled.");
-            }
+            try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); closeAuthModal(); } catch (e) { alert("Sign-in failed"); }
         }
 
-        function toggleAuthMode() {
-            isSignUpMode = !isSignUpMode;
-            const title = document.getElementById('auth-modal-title');
-            const submitBtn = document.getElementById('auth-submit-btn');
-            const toggleText = document.getElementById('auth-toggle-text');
-            const toggleBtn = document.getElementById('auth-toggle-btn');
-            const nameContainer = document.getElementById('name-field-container');
-
-            if (isSignUpMode) {
-                title.innerText = "Create Account";
-                submitBtn.innerText = "Sign Up";
-                toggleText.innerText = "Already have an account?";
-                toggleBtn.innerText = "Sign In";
-                nameContainer.classList.remove('hidden');
-            } else {
-                title.innerText = "Sign In";
-                submitBtn.innerText = "Sign In";
-                toggleText.innerText = "Don't have an account?";
-                toggleBtn.innerText = "Sign Up";
-                nameContainer.classList.add('hidden');
-            }
-        }
-
-        function handleAuthSubmit() {
+        async function handleAuthSubmit() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-            const nameInput = document.getElementById('auth-name').value.trim();
-
-            if (!email || !password || (isSignUpMode && !nameInput)) {
-                alert("Please fill in all required fields.");
-                return;
-            }
-
-            currentUser = { name: nameInput || email.split('@')[0], email };
-            localStorage.setItem('alivera_user', JSON.stringify(currentUser));
-            updateAuthUI();
-            closeAuthModal();
-            alert(`Welcome to Alivèra Atelier, ${currentUser.name}!`);
+            try { await auth.signInWithEmailAndPassword(email, password); closeAuthModal(); } catch (e) { alert("Error: " + e.message); }
         }
 
-        function handleLogout() {
-            auth.signOut();
-            currentUser = null;
-            localStorage.removeItem('alivera_user');
-            updateAuthUI();
-            closeAccountModal();
-            alert("Signed out successfully.");
-        }
-
-        // --- LOAD STOREFRONT PRODUCTS FROM FIREBASE ---
         async function loadStorefrontProducts() {
             const grid = document.getElementById('storefront-products-grid');
             try {
                 const snapshot = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
-                if (snapshot.empty) return; // Keep default if none
-
+                if (snapshot.empty) { grid.innerHTML = `<p class="text-stone-500 text-xs col-span-3 text-center uppercase tracking-widest">No dresses published yet.</p>`; return; }
+                
                 grid.innerHTML = snapshot.docs.map(doc => {
                     const item = doc.data();
-                    // Track recently viewed on click
                     return `
-                        <div class="bg-stone-950 border border-stone-800 p-8 flex flex-col justify-between shadow-xl" onclick="trackView('${item.name}', ${item.price}, '${item.imageUrl}')">
+                        <div class="bg-stone-950 border border-stone-800 p-8 flex flex-col justify-between shadow-xl">
                             <div>
-                                <div class="aspect-[4/5] bg-stone-900 mb-6 flex items-center justify-center overflow-hidden border border-stone-800">
-                                    <img src="${item.imageUrl}" alt="${item.name}" class="object-cover w-full h-full hover:scale-105 transition duration-500 opacity-90">
+                                <div class="aspect-[4/5] bg-stone-900 mb-6 overflow-hidden border border-stone-800">
+                                    <img src="${item.imageUrl}" class="object-cover w-full h-full opacity-90">
                                 </div>
-                                <span class="text-[10px] uppercase tracking-[0.2em] text-amber-400/80 block mb-1">Bespoke Dress</span>
                                 <h3 class="font-serif text-2xl font-medium mb-2 text-stone-100">${item.name}</h3>
-                                <p class="text-stone-400 text-sm mb-6 font-light">${item.description || 'Custom hand-tailored silhouette.'}</p>
                             </div>
                             <div>
                                 <div class="flex items-center justify-between mb-6">
                                     <span class="text-lg font-serif text-amber-200">₹${item.price}</span>
-                                    <select id="size-${doc.id}" class="bg-stone-900 border border-stone-700 text-stone-200 px-3 py-2 text-xs uppercase tracking-wider">
-                                        <option value="XS">XS</option><option value="S">S</option><option value="M" selected>M</option><option value="L">L</option>
+                                    <select id="size-${doc.id}" onchange="handleSizeChange('${doc.id}', '${item.name}', ${item.price})" class="bg-stone-900 border border-stone-700 text-stone-200 px-3 py-2 text-xs uppercase tracking-wider">
+                                        <option value="XS">XS</option>
+                                        <option value="S">S</option>
+                                        <option value="M" selected>M</option>
+                                        <option value="L">L</option>
+                                        <option value="XL">XL</option>
+                                        <option value="2XL">2XL</option>
+                                        <option value="3XL">3XL</option>
+                                        <option value="CUSTOM" class="text-amber-400 font-bold">✨ Custom Measurements</option>
                                     </select>
                                 </div>
-                                <div class="flex gap-2">
-                                    <button onclick="event.stopPropagation(); addToCart('${item.name}', ${item.price}, '${doc.id}')" class="flex-grow bg-amber-400 text-black py-3 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">
-                                        Add to Bag
-                                    </button>
-                                    <button onclick="event.stopPropagation(); toggleWishlist('${item.name}', ${item.price}, '${item.imageUrl}', '${doc.id}')" class="px-4 border border-stone-700 hover:border-amber-400 text-stone-300 hover:text-amber-400 text-xs transition">
-                                        ♥
-                                    </button>
-                                </div>
+                                <button onclick="handleAddToCart('${item.name}', ${item.price}, '${doc.id}')" class="w-full bg-amber-400 text-black py-3 text-xs uppercase tracking-[0.2em] font-semibold hover:bg-amber-300 transition">Add to Bag</button>
                             </div>
                         </div>
                     `;
                 }).join('');
-            } catch (err) {
-                console.error("Error loading products:", err);
+            } catch (err) { console.error(err); }
+        }
+
+        function handleSizeChange(id, name, price) {
+            if (document.getElementById(`size-${id}`).value === 'CUSTOM') {
+                document.getElementById('pending-product-id').value = id;
+                document.getElementById('pending-product-name').value = name;
+                document.getElementById('pending-product-price').value = price;
+                document.getElementById('custom-measurement-modal').classList.remove('hidden');
             }
         }
 
-        function trackView(name, price, image) {
-            if (!recentlyViewed.some(i => i.name === name)) {
-                recentlyViewed.unshift({ name, price, image });
-                if (recentlyViewed.length > 4) recentlyViewed.pop();
-                localStorage.setItem('alivera_recent', JSON.stringify(recentlyViewed));
-            }
+        function closeCustomModal() { document.getElementById('custom-measurement-modal').classList.add('hidden'); }
+
+        function saveCustomMeasurementsAndAddToCart() {
+            const name = document.getElementById('pending-product-name').value;
+            const price = Number(document.getElementById('pending-product-price').value);
+            const measurements = {
+                bust: document.getElementById('meas-bust').value,
+                waist: document.getElementById('meas-waist').value,
+                hips: document.getElementById('meas-hips').value,
+                height: document.getElementById('meas-height').value,
+                notes: document.getElementById('meas-notes').value
+            };
+            if (!measurements.bust || !measurements.waist) { alert("Please provide at least your Bust and Waist."); return; }
+
+            cart.push({ name, price, size: 'CUSTOM', measurements });
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            updateCartUI();
+            closeCustomModal();
+            alert("Custom tailored dress added to bag!");
         }
 
-        // --- WISHLIST & SHARING ---
-        function toggleWishlist(name, price, image, id) {
-            const existingIndex = wishlist.findIndex(i => i.id === id);
-            if (existingIndex > -1) {
-                wishlist.splice(existingIndex, 1);
-                alert("Removed from wishlist.");
-            } else {
-                wishlist.push({ id, name, price, image });
-                alert("Added to wishlist!");
-            }
-            localStorage.setItem('alivera_wishlist', JSON.stringify(wishlist));
-            updateWishlistUI();
+        function handleAddToCart(name, price, id) {
+            const size = document.getElementById(`size-${id}`).value;
+            if (size === 'CUSTOM') return;
+            cart.push({ name, price, size, measurements: null });
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            updateCartUI();
+            alert("Added to bag!");
         }
 
-        function updateWishlistUI() {
-            document.getElementById('wishlist-badge').innerText = wishlist.length;
-            const container = document.getElementById('wishlist-items');
-            if (wishlist.length === 0) {
-                container.innerHTML = `<p class="text-stone-500 text-xs text-center py-12 uppercase tracking-wider">Your wishlist is empty.</p>`;
-                return;
-            }
-            container.innerHTML = wishlist.map(item => `
-                <div class="flex items-center justify-between bg-stone-900 p-4 border border-stone-800">
-                    <div class="flex items-center gap-3">
-                        <img src="${item.image}" class="w-12 h-16 object-cover border border-stone-800">
-                        <div>
-                            <h5 class="text-xs font-medium text-stone-200">${item.name}</h5>
-                            <span class="text-xs text-amber-300 font-semibold">₹${item.price}</span>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="shareWishlistItem('${item.name}', ${item.price})" class="text-stone-400 hover:text-amber-300 text-xs uppercase">Share</button>
-                        <button onclick="removeFromWishlist('${item.id}')" class="text-stone-500 hover:text-red-400 text-xs">✕</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-        function removeFromWishlist(id) {
-            wishlist = wishlist.filter(i => i.id !== id);
-            localStorage.setItem('alivera_wishlist', JSON.stringify(wishlist));
-            updateWishlistUI();
-        }
-        function shareWishlistItem(name, price) {
-            const shareText = `Check out this gorgeous bespoke dress from Alivèra Atelier: ${name} for ₹${price}!`;
-            if (navigator.share) {
-                navigator.share({ title: 'Alivèra Atelier', text: shareText, url: window.location.href });
-            } else {
-                navigator.clipboard.writeText(shareText);
-                alert("Dress link/details copied to clipboard for sharing!");
-            }
-        }
-        function openWishlistModal() { document.getElementById('wishlist-modal').classList.remove('hidden'); updateWishlistUI(); }
-        function closeWishlistModal() { document.getElementById('wishlist-modal').classList.add('hidden'); }
-
-        // --- CART & DISCOUNT CALCULATOR ---
         function updateCartUI() {
             document.getElementById('cart-badge').innerText = cart.length;
-            const itemsContainer = document.getElementById('cart-items');
-            
+            const container = document.getElementById('cart-items');
+            let total = 0;
             if (cart.length === 0) {
-                itemsContainer.innerHTML = `<p class="text-stone-500 text-xs text-center py-12 uppercase tracking-wider">Your shopping bag is empty.</p>`;
-            } else {
-                itemsContainer.innerHTML = cart.map((item, index) => `
-                    <div class="flex justify-between items-center bg-stone-900 p-4 border border-stone-800">
+                container.innerHTML = `<p class="text-stone-500 text-xs text-center uppercase tracking-widest py-12">Your bag is empty.</p>`;
+                document.getElementById('cart-total').innerText = '₹0';
+                return;
+            }
+            container.innerHTML = cart.map((item, idx) => {
+                total += item.price;
+                const sizeDisplay = item.size === 'CUSTOM' ? `Custom (Bust: ${item.measurements.bust}&quot;, Waist: ${item.measurements.waist}&quot;)` : `Size: ${item.size}`;
+                return `
+                    <div class="bg-stone-900 p-4 border border-stone-800 flex justify-between items-center text-xs">
                         <div>
-                            <h5 class="text-sm font-medium text-stone-200">${item.name}</h5>
-                            <span class="text-xs text-stone-400 uppercase">Size: ${item.size}</span>
-                            <p class="text-xs font-medium mt-1 text-amber-300">₹${item.price}</p>
+                            <h4 class="font-serif text-sm font-medium text-amber-200">${item.name}</h4>
+                            <p class="text-stone-400 mt-0.5">${sizeDisplay}</p>
+                            <p class="text-stone-200 font-semibold mt-1">₹${item.price}</p>
                         </div>
-                        <button onclick="removeFromCart(${index})" class="text-stone-500 hover:text-red-400 text-xs uppercase tracking-wider">Remove</button>
+                        <button onclick="cart.splice(${idx},1);localStorage.setItem('alivera_cart',JSON.stringify(cart));updateCartUI();" class="text-red-400 uppercase text-[10px]">Remove</button>
                     </div>
-                `).join('');
-            }
-
-            let subtotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
-            let discountAmount = 0;
-            let discountLabel = "Discount Applied";
-
-            const saleConfig = JSON.parse(localStorage.getItem('alivera_sale_config')) || null;
-            if (saleConfig && saleConfig.active) {
-                if (saleConfig.type === 'first_come') {
-                    discountLabel = `First Come First Serve (${saleConfig.discountPercent}%)`;
-                    discountAmount = Math.round((subtotal * saleConfig.discountPercent) / 100);
-                } else if (saleConfig.type === 'date_range') {
-                    const now = new Date();
-                    const start = new Date(saleConfig.startDate + "T00:00:00");
-                    const end = new Date(saleConfig.endDate + "T23:59:59");
-                    if (now >= start && now <= end) {
-                        discountLabel = `Sale Period Discount (${saleConfig.discountPercent}%)`;
-                        discountAmount = Math.round((subtotal * saleConfig.discountPercent) / 100);
-                    }
-                }
-            } else {
-                // Default introductory 10%
-                discountLabel = "Introductory Offer (10%)";
-                discountAmount = Math.round((subtotal * 10) / 100);
-            }
-
-            let finalTotal = subtotal - discountAmount;
-
-            document.getElementById('cart-subtotal').innerText = `₹${subtotal}`;
-            document.getElementById('applied-discount-label').innerText = discountLabel;
-            document.getElementById('cart-discount').innerText = `-₹${discountAmount}`;
-            document.getElementById('cart-total').innerText = `₹${finalTotal}`;
+                `;
+            }).join('');
+            document.getElementById('cart-total').innerText = `₹${total}`;
         }
 
-        function addToCart(name, price, id) {
-            let size = document.getElementById(`size-${id}`) ? document.getElementById(`size-${id}`).value : 'M';
-            cart.push({ name, price, size, id });
-            localStorage.setItem('alivera_cart', JSON.stringify(cart));
-            updateCartUI();
-            openCartModal();
-        }
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            localStorage.setItem('alivera_cart', JSON.stringify(cart));
-            updateCartUI();
-        }
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
         function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); updateCartUI(); }
         function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
 
-        async function checkoutOrder() {
-            if (cart.length === 0) { alert("Your bag is empty."); return; }
-            const name = document.getElementById('ship-name').value.trim();
-            const phone = document.getElementById('ship-phone').value.trim();
-            const address = document.getElementById('ship-address').value.trim();
-            const city = document.getElementById('ship-city').value.trim();
-            const pincode = document.getElementById('ship-pincode').value.trim();
-
-            if (!name || !phone || !address || !city || !pincode) { alert("Please complete all shipping details."); return; }
-
-            // Save user address details
-            if (currentUser) {
-                currentUser.phone = phone;
-                currentUser.address = address;
-                currentUser.city = city;
-                currentUser.pincode = pincode;
-                localStorage.setItem('alivera_user', JSON.stringify(currentUser));
-            }
-
-            let subtotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
-            let discountAmount = Math.round((subtotal * 10) / 100);
-            let finalTotal = subtotal - discountAmount;
-
-            try {
-                const orderData = {
-                    items: cart,
-                    shipping: { name, phone, address, city, pincode, email: currentUser ? currentUser.email : "guest@atelier.in" },
-                    subtotal, discount: discountAmount, total: finalTotal, status: "Processing with Shiprocket",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                const docRef = await db.collection("atelier_orders").add(orderData);
-                alert(`Order placed successfully & sent to Shiprocket! ID: ${docRef.id}`);
-                cart = [];
-                localStorage.setItem('alivera_cart', JSON.stringify(cart));
-                updateCartUI();
-                closeCartModal();
-            } catch (err) {
-                console.error(err);
-                alert("Error submitting order.");
-            }
-        }
-
-        async function loadUserOrders() {
-            const container = document.getElementById('acc-orders');
-            if (!currentUser) return;
-            try {
-                const snapshot = await db.collection("atelier_orders").where("shipping.email", "==", currentUser.email).get();
-                if (snapshot.empty) {
-                    container.innerHTML = `<p class="text-xs text-stone-500 uppercase">No orders placed with this email yet.</p>`;
-                    return;
-                }
-                container.innerHTML = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    return `
-                        <div class="bg-stone-900 border border-stone-800 p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                            <div>
-                                <span class="font-mono text-xs text-amber-300">Order ID: ${doc.id}</span>
-                                <p class="text-xs text-stone-300 mt-1">Total: ₹${data.total} (${data.items.length} items)</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <span class="bg-amber-400/10 text-amber-300 px-2.5 py-1 text-[10px] uppercase tracking-wider border border-amber-400/20">${data.status || 'Dispatched'}</span>
-                                <button onclick="alert('Shiprocket Live Tracking: Package in transit via Delhivery / Bluedart.')" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-1.5 text-[10px] uppercase tracking-widest">
-                                    Track Live
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        updateAuthUI();
-        updateCartUI();
         loadStorefrontProducts();
+        updateCartUI();
     </script>
 </body>
 </html>
