@@ -80,7 +80,6 @@
 
         auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 
-        // Updated Admin Whitelist Array
         const ADMIN_EMAILS = ["hello@aliveraatelier.in"];
 
         auth.onAuthStateChanged(user => {
