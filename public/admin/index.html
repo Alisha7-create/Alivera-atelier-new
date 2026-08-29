@@ -69,8 +69,10 @@
             console.error("Auth persistence error:", error);
         });
 
-        // 2. Enable Modern Persistent Cache for Firestore
-        db.settings({ localCache: firebase.firestore.persistentLocalCache({tabManager: firebase.firestore.persistentMultipleTabManager()}) });
+        // 2. Enable Stable Offline Caching for Firestore (Compat format)
+        db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
+            console.warn("Persistence note:", err.code);
+        });
 
         const ADMIN_EMAILS = ["contact@aliveraatelier.in"];
 
@@ -91,8 +93,10 @@
                     alert("Access Denied: Not an authorized administrator.");
                     await auth.signOut();
                 }
-            } catch (err) { console.error(err); }
+            } catch (err) { alert("Admin sign-in failed: " + err.message); }
         }
+
+        window.adminLogin = adminLogin;
 
         async function uploadDress() {
             const name = document.getElementById('dress-name').value.trim();
@@ -105,6 +109,8 @@
             document.getElementById('dress-price').value = '';
             document.getElementById('dress-image').value = '';
         }
+
+        window.uploadDress = uploadDress;
     </script>
 </body>
 </html>
