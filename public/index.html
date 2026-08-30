@@ -313,3 +313,319 @@
                         <button type="button" onclick="toggleWishlist('${dressId}')" class="absolute top-6 right-6 z-10 bg-black/70 p-2 rounded-full border gold-border text-xs ${isWishlisted ? 'text-amber-400 font-bold' : 'text-stone-400'} hover:text-amber-300">
                             ♥
                         </button>
+                        <div onclick="viewProduct('${dressId}')" class="cursor-pointer">
+                            <div class="aspect-[3/4] bg-stone-900 mb-3 overflow-hidden border gold-border"><img src="${item.imageUrl}" class="w-full h-full object-cover"></div>
+                            <h4 class="font-serif text-sm text-amber-200 mb-1">${item.name}</h4>
+                            <p class="text-xs text-stone-400 mb-2">₹${item.price}</p>
+                            ${item.sizeChartUrl ? `<button type="button" onclick="event.stopPropagation(); openSizeChart('${item.sizeChartUrl}')" class="text-[10px] text-amber-400 underline uppercase tracking-wider mb-3 block">View Size Chart</button>` : ''}
+                        </div>
+                        <div class="space-y-2">
+                            <select id="size-${dressId}" class="w-full bg-stone-900 border gold-border text-stone-200 p-2 text-[11px] uppercase outline-none">
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M" selected>M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                                <option value="CUSTOM">Custom Measurements</option>
+                            </select>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="addToCart('${dressId}')" class="bg-stone-900 border gold-border text-stone-200 py-2 text-[9px] uppercase tracking-wider font-semibold hover:text-amber-300 transition">Add to Bag</button>
+                                <button type="button" onclick="buyNow('${dressId}')" class="gold-bg text-black py-2 text-[9px] uppercase tracking-wider font-bold">Buy Now</button>
+                            </div>
+                            <button type="button" onclick="shareProduct('${item.name}', ${item.price})" class="w-full bg-stone-900/50 border gold-border text-stone-300 py-1.5 text-[9px] uppercase tracking-widest hover:text-amber-300 transition">Share Dress</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            renderRecentlyViewed();
+            updateWishlistUI();
+        }
+
+        function viewProduct(id) {
+            const item = allDressesMap[id];
+            if(!item) return;
+            if(!recentlyViewedIds.includes(id)) {
+                recentlyViewedIds.unshift(id);
+                if(recentlyViewedIds.length > 4) recentlyViewedIds.pop();
+                localStorage.setItem('alivera_recent_ids', JSON.stringify(recentlyViewedIds));
+            }
+            renderRecentlyViewed();
+        }
+
+        function renderRecentlyViewed() {
+            const sec = document.getElementById('recently-viewed-section');
+            const grid = document.getElementById('recently-viewed-grid');
+            const validRecent = recentlyViewedIds.map(id => allDressesMap[id]).filter(Boolean);
+            if(validRecent.length === 0) { sec.classList.add('hidden'); return; }
+            sec.classList.remove('hidden');
+            grid.innerHTML = validRecent.map(item => `
+                <div class="bg-stone-950 border gold-border p-3 flex gap-3 items-center">
+                    <img src="${item.imageUrl}" class="w-14 h-16 object-cover border gold-border">
+                    <div>
+                        <h5 class="font-serif text-xs text-amber-200">${item.name}</h5>
+                        <p class="text-[10px] text-stone-400">₹${item.price}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleWishlist(id) {
+            const idx = wishlistIds.indexOf(id);
+            if(idx > -1) {
+                wishlistIds.splice(idx, 1);
+            } else {
+                wishlistIds.push(id);
+            }
+            localStorage.setItem('alivera_wishlist_ids', JSON.stringify(wishlistIds));
+            updateWishlistUI();
+            loadStorefront();
+        }
+
+        function updateWishlistUI() {
+            document.getElementById('wishlist-badge').innerText = wishlistIds.length;
+            const container = document.getElementById('wishlist-items');
+            const validWishlist = wishlistIds.map(id => allDressesMap[id]).filter(Boolean);
+            if(validWishlist.length === 0) { container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your wishlist is empty</p>`; return; }
+            container.innerHTML = validWishlist.map(item => `
+                <div class="bg-stone-900 p-3 border gold-border flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-3">
+                        <img src="${item.imageUrl}" class="w-10 h-12 object-cover">
+                        <div>
+                            <span class="font-medium text-amber-200">${item.name}</span>
+                            <p class="text-stone-400 text-[10px]">₹${item.price}</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleWishlist('${item.id}')" class="text-red-400 text-[10px]">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function shareProduct(name, price) {
+            const shareData = {
+                title: `${name} — Alivèra Atelier`,
+                text: `Explore ${name} crafted by Alivèra Atelier for ₹${price}.`,
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                alert("Dress link copied to clipboard!");
+            }
+        }
+
+        function openSizeChart(url) {
+            const container = document.getElementById('sizechart-content');
+            if (url.startsWith('data:application/pdf')) {
+                container.innerHTML = `<embed src="${url}" type="application/pdf" width="100%" height="450px" />`;
+            } else {
+                container.innerHTML = `<img src="${url}" class="max-w-full h-auto object-contain">`;
+            }
+            document.getElementById('sizechart-modal').classList.remove('hidden');
+        }
+
+        function closeSizeChartModal() { document.getElementById('sizechart-modal').classList.add('hidden'); }
+
+        db.collection("atelier_settings").doc("promotion_config").onSnapshot(doc => {
+            const bannerImg = document.getElementById('hero-banner-img');
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.bannerImageUrl) {
+                    bannerImg.src = data.bannerImageUrl;
+                }
+                manageBannerStates(data.saleStartTimestamp, data.saleEndTimestamp, data.saleActive, data.saleType, data.saleCap);
+            }
+        });
+
+        let timerInterval = null;
+        function manageBannerStates(startMs, endMs, isActive, saleType, saleCap) {
+            const statusEl = document.getElementById('banner-status-display');
+            if (timerInterval) clearInterval(timerInterval);
+
+            if (!isActive || saleType === 'regular') {
+                statusEl.innerText = "";
+                return;
+            }
+
+            timerInterval = setInterval(async () => {
+                const now = new Date().getTime();
+                if (now > endMs || !isActive) { statusEl.innerText = ""; clearInterval(timerInterval); return; }
+                if (saleType === 'fcfs' && saleCap) {
+                    const ordersSnap = await db.collection("atelier_orders").get();
+                    if (ordersSnap.size >= Number(saleCap)) { statusEl.innerText = "SOLD OUT"; clearInterval(timerInterval); return; }
+                }
+                if (now >= startMs && now <= endMs) {
+                    statusEl.innerText = "SALE LIVE";
+                } else if (now < startMs) {
+                    const distance = startMs - now;
+                    const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((distance % (1000 * 60)) / 1000);
+                    statusEl.innerText = `Starts in: ${d}d ${h}h ${m}m ${s}s`;
+                }
+            }, 1000);
+        }
+
+        function addToCart(id) {
+            const item = allDressesMap[id];
+            const size = document.getElementById(`size-${id}`).value;
+            cart.push({ ...item, size });
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            updateCartUI();
+            alert("Added to your shopping bag!");
+        }
+
+        function buyNow(id) {
+            const item = allDressesMap[id];
+            const size = document.getElementById(`size-${id}`).value;
+            checkoutItemsPayload = [{ ...item, size }];
+            openCheckoutModalWithItems();
+        }
+
+        function proceedCartCheckout() {
+            if(cart.length === 0) { alert("Your bag is empty."); return; }
+            checkoutItemsPayload = [...cart];
+            closeCartModal();
+            openCheckoutModalWithItems();
+        }
+
+        function openCheckoutModalWithItems() {
+            let total = 0;
+            const summaryBox = document.getElementById('checkout-summary-box');
+            summaryBox.innerHTML = checkoutItemsPayload.map(i => {
+                total += i.price;
+                return `<div class="flex justify-between py-1"><span>${i.name} (${i.size})</span><span class="text-amber-300">₹${i.price}</span></div>`;
+            }).join('') + `<div class="border-t border-stone-800 mt-2 pt-2 flex justify-between font-bold"><span>Total Amount</span><span class="text-amber-300">₹${total}</span></div>`;
+            
+            if(currentUser) {
+                document.getElementById('chk-name').value = currentUser.displayName || '';
+            }
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-badge').innerText = cart.length;
+            const container = document.getElementById('cart-items');
+            let total = 0;
+            if (cart.length === 0) { container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your bag is empty</p>`; document.getElementById('cart-total').innerText = '₹0'; return; }
+            container.innerHTML = cart.map((item, idx) => {
+                total += item.price;
+                return `<div class="bg-stone-900 p-3 border gold-border flex justify-between items-center text-xs"><div><span class="font-medium text-amber-200">${item.name}</span><p class="text-stone-400 text-[10px]">Size: ${item.size} • ₹${item.price}</p></div><button onclick="cart.splice(${idx},1);localStorage.setItem('alivera_cart',JSON.stringify(cart));updateCartUI();" class="text-red-400">Remove</button></div>`;
+            }).join('');
+            document.getElementById('cart-total').innerText = `₹${total}`;
+        }
+
+        function checkPincode() {
+            const pin = document.getElementById('chk-pincode').value;
+            const st = document.getElementById('pin-status');
+            if(pin.length === 6) { st.innerText = "✓ Delivery available"; st.className = "text-[10px] text-emerald-400 mt-1 block"; }
+            else { st.innerText = "Enter valid 6-digit pincode"; st.className = "text-[10px] text-amber-400 mt-1 block"; }
+        }
+
+        async function submitOrder() {
+            const name = document.getElementById('chk-name').value.trim();
+            const phone = document.getElementById('chk-phone').value.trim();
+            const house = document.getElementById('chk-house').value.trim();
+            const landmark = document.getElementById('chk-landmark').value.trim();
+            const city = document.getElementById('chk-city').value.trim();
+            const state = document.getElementById('chk-state').value.trim();
+            const pincode = document.getElementById('chk-pincode').value.trim();
+            const paymentMethod = document.getElementById('chk-payment-method').value;
+
+            if(!name || !phone || !house || !landmark || !city || !state || !pincode || checkoutItemsPayload.length === 0) { 
+                alert("Please complete all fields in your delivery address."); 
+                return; 
+            }
+
+            const fullAddress = `House: ${house}, Landmark: ${landmark}, City: ${city}, State: ${state} - Pincode: ${pincode}`;
+
+            await db.collection("atelier_orders").add({
+                clientName: name, 
+                clientEmail: currentUser ? currentUser.email : 'guest@aliveraatelier.in',
+                phone, 
+                address: fullAddress, 
+                paymentMethod, 
+                items: checkoutItemsPayload, 
+                status: 'Pending Review',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            alert(`Order placed successfully via ${paymentMethod}! 24-hour cancellation window applies.`);
+            checkoutItemsPayload = [];
+            closeCheckoutModal();
+        }
+
+        async function openAccountModal() {
+            if(!currentUser) { openAuthModal(); return; }
+            document.getElementById('acc-name').innerText = currentUser.displayName || 'Atelier Client';
+            document.getElementById('acc-email').innerText = currentUser.email;
+            document.getElementById('acc-pic').src = currentUser.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
+            document.getElementById('edit-name').value = currentUser.displayName || '';
+            document.getElementById('edit-pic').value = currentUser.photoURL || '';
+            
+            document.getElementById('account-modal').classList.remove('hidden');
+            loadCustomerOrders();
+        }
+
+        async function updateProfileDetails() {
+            const name = document.getElementById('edit-name').value.trim();
+            const pic = document.getElementById('edit-pic').value.trim();
+            const phone = document.getElementById('edit-phone').value.trim();
+            
+            if(!name) { alert("Please enter your name."); return; }
+
+            try {
+                await currentUser.updateProfile({ 
+                    displayName: name, 
+                    photoURL: pic || currentUser.photoURL 
+                });
+                if(phone) {
+                    document.getElementById('acc-phone').innerText = `Phone: ${phone}`;
+                }
+                alert("Client profile updated successfully!");
+                openAccountModal();
+            } catch(e) { alert(e.message); }
+        }
+
+        async function logoutCustomer() {
+            try {
+                await auth.signOut();
+                closeAccountModal();
+                alert("You have successfully signed out.");
+            } catch(e) {
+                alert(e.message);
+            }
+        }
+
+        async function loadCustomerOrders() {
+            if(!currentUser) return;
+            const container = document.getElementById('acc-orders-list');
+            const snap = await db.collection("atelier_orders").where("clientEmail", "==", currentUser.email).get();
+            if(snap.empty) { container.innerHTML = `<p class="text-xs text-stone-500">No orders placed yet.</p>`; return; }
+            container.innerHTML = snap.docs.map(doc => {
+                const o = doc.data();
+                return `
+                    <div class="bg-stone-900 border gold-border p-3 text-xs space-y-1">
+                        <div class="flex justify-between text-amber-200"><span>Status: ${o.status}</span><span>₹${o.items ? o.items.reduce((s,i)=>s+i.price,0) : 0}</span></div>
+                        <p class="text-stone-400">Payment: ${o.paymentMethod || 'Online Payment'}</p>
+                        <p class="text-stone-400">Items: ${o.items ? o.items.map(i=>`${i.name} (${i.size})`).join(', ') : ''}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function closeAccountModal() { document.getElementById('account-modal').classList.add('hidden'); }
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+        function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); updateCartUI(); }
+        function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
+        function openWishlistModal() { document.getElementById('wishlist-modal').classList.remove('hidden'); }
+        function closeWishlistModal() { document.getElementById('wishlist-modal').classList.add('hidden'); }
+        function closeCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
+
+        document.addEventListener('DOMContentLoaded', loadStorefront);
+    </script>
+</body>
+</html>
