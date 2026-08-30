@@ -173,7 +173,7 @@
                     </div>
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">6-digit Pincode *</label>
-                        <input type="text" id="chk-pincode" placeholder="Pincode" onblur="checkPincode()" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                        <input type="text" id="chk-pincode" placeholder="Pincode" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                         <span id="pin-status" class="text-[10px] mt-1 block"></span>
                     </div>
                 </div>
@@ -509,123 +509,145 @@
             document.getElementById('cart-badge').innerText = cart.length;
             const container = document.getElementById('cart-items');
             let total = 0;
-            if (cart.length === 0) { container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your bag is empty</p>`; document.getElementById('cart-total').innerText = '₹0'; return; }
+            if(cart.length === 0) {
+                container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your shopping bag is empty</p>`;
+                document.getElementById('cart-total').innerText = '₹0';
+                return;
+            }
             container.innerHTML = cart.map((item, idx) => {
                 total += item.price;
-                return `<div class="bg-stone-900 p-3 border gold-border flex justify-between items-center text-xs"><div><span class="font-medium text-amber-200">${item.name}</span><p class="text-stone-400 text-[10px]">Size: ${item.size} • ₹${item.price}</p></div><button onclick="cart.splice(${idx},1);localStorage.setItem('alivera_cart',JSON.stringify(cart));updateCartUI();" class="text-red-400">Remove</button></div>`;
+                return `
+                    <div class="bg-stone-900 p-3 border gold-border flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-3">
+                            <img src="${item.imageUrl}" class="w-10 h-12 object-cover">
+                            <div>
+                                <span class="font-medium text-amber-200">${item.name}</span>
+                                <p class="text-stone-400 text-[10px]">Size: ${item.size} | ₹${item.price}</p>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${idx})" class="text-red-400 text-[10px]">Remove</button>
+                    </div>
+                `;
             }).join('');
             document.getElementById('cart-total').innerText = `₹${total}`;
         }
 
-        function checkPincode() {
-            const pin = document.getElementById('chk-pincode').value;
-            const st = document.getElementById('pin-status');
-            if(pin.length === 6) { st.innerText = "✓ Delivery available"; st.className = "text-[10px] text-emerald-400 mt-1 block"; }
-            else { st.innerText = "Enter valid 6-digit pincode"; st.className = "text-[10px] text-amber-400 mt-1 block"; }
+        function removeFromCart(idx) {
+            cart.splice(idx, 1);
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            updateCartUI();
         }
 
         async function submitOrder() {
-            const name = document.getElementById('chk-name').value.trim();
-            const phone = document.getElementById('chk-phone').value.trim();
-            const house = document.getElementById('chk-house').value.trim();
-            const landmark = document.getElementById('chk-landmark').value.trim();
-            const city = document.getElementById('chk-city').value.trim();
-            const state = document.getElementById('chk-state').value.trim();
-            const pincode = document.getElementById('chk-pincode').value.trim();
+            const name = document.getElementById('chk-name').value;
+            const phone = document.getElementById('chk-phone').value;
+            const house = document.getElementById('chk-house').value;
+            const landmark = document.getElementById('chk-landmark').value;
+            const city = document.getElementById('chk-city').value;
+            const state = document.getElementById('chk-state').value;
+            const pincode = document.getElementById('chk-pincode').value;
             const paymentMethod = document.getElementById('chk-payment-method').value;
 
-            if(!name || !phone || !house || !landmark || !city || !state || !pincode || checkoutItemsPayload.length === 0) { 
-                alert("Please complete all fields in your delivery address."); 
-                return; 
+            if(!name || !phone || !house || !city || !state || !pincode) {
+                alert("Please fill in all required shipping fields.");
+                return;
             }
 
-            const fullAddress = `House: ${house}, Landmark: ${landmark}, City: ${city}, State: ${state} - Pincode: ${pincode}`;
+            let total = checkoutItemsPayload.reduce((sum, i) => sum + i.price, 0);
 
-            await db.collection("atelier_orders").add({
-                clientName: name, 
-                clientEmail: currentUser ? currentUser.email : 'guest@aliveraatelier.in',
-                phone, 
-                address: fullAddress, 
-                paymentMethod, 
-                items: checkoutItemsPayload, 
-                status: 'Pending Review',
+            const orderData = {
+                clientName: name,
+                clientPhone: phone,
+                clientEmail: currentUser ? currentUser.email : "guest@atelier.com",
+                shippingAddress: `${house}, ${landmark}, ${city}, ${state} - ${pincode}`,
+                items: checkoutItemsPayload,
+                totalAmount: total,
+                paymentMethod: paymentMethod,
+                status: "Pending Production",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            alert(`Order placed successfully via ${paymentMethod}! 24-hour cancellation window applies.`);
-            checkoutItemsPayload = [];
-            closeCheckoutModal();
-        }
-
-        async function openAccountModal() {
-            if(!currentUser) { openAuthModal(); return; }
-            document.getElementById('acc-name').innerText = currentUser.displayName || 'Atelier Client';
-            document.getElementById('acc-email').innerText = currentUser.email;
-            document.getElementById('acc-pic').src = currentUser.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
-            document.getElementById('edit-name').value = currentUser.displayName || '';
-            document.getElementById('edit-pic').value = currentUser.photoURL || '';
-            
-            document.getElementById('account-modal').classList.remove('hidden');
-            loadCustomerOrders();
-        }
-
-        async function updateProfileDetails() {
-            const name = document.getElementById('edit-name').value.trim();
-            const pic = document.getElementById('edit-pic').value.trim();
-            const phone = document.getElementById('edit-phone').value.trim();
-            
-            if(!name) { alert("Please enter your name."); return; }
+            };
 
             try {
-                await currentUser.updateProfile({ 
-                    displayName: name, 
-                    photoURL: pic || currentUser.photoURL 
-                });
-                if(phone) {
-                    document.getElementById('acc-phone').innerText = `Phone: ${phone}`;
-                }
-                alert("Client profile updated successfully!");
-                openAccountModal();
-            } catch(e) { alert(e.message); }
-        }
-
-        async function logoutCustomer() {
-            try {
-                await auth.signOut();
-                closeAccountModal();
-                alert("You have successfully signed out.");
+                await db.collection("atelier_orders").add(orderData);
+                alert("Order successfully placed! You can view it in your client account.");
+                cart = [];
+                localStorage.setItem('alivera_cart', JSON.stringify(cart));
+                updateCartUI();
+                closeCheckoutModal();
+                if(currentUser) loadCustomerOrders();
             } catch(e) {
-                alert(e.message);
+                alert("Error placing order: " + e.message);
             }
         }
 
         async function loadCustomerOrders() {
             if(!currentUser) return;
-            const container = document.getElementById('acc-orders-list');
-            const snap = await db.collection("atelier_orders").where("clientEmail", "==", currentUser.email).get();
-            if(snap.empty) { container.innerHTML = `<p class="text-xs text-stone-500">No orders placed yet.</p>`; return; }
-            container.innerHTML = snap.docs.map(doc => {
-                const o = doc.data();
-                return `
-                    <div class="bg-stone-900 border gold-border p-3 text-xs space-y-1">
-                        <div class="flex justify-between text-amber-200"><span>Status: ${o.status}</span><span>₹${o.items ? o.items.reduce((s,i)=>s+i.price,0) : 0}</span></div>
-                        <p class="text-stone-400">Payment: ${o.paymentMethod || 'Online Payment'}</p>
-                        <p class="text-stone-400">Items: ${o.items ? o.items.map(i=>`${i.name} (${i.size})`).join(', ') : ''}</p>
-                    </div>
-                `;
-            }).join('');
+            const listEl = document.getElementById('acc-orders-list');
+            try {
+                const snap = await db.collection("atelier_orders").where("clientEmail", "==", currentUser.email).get();
+                if(snap.empty) {
+                    listEl.innerHTML = `<p class="text-xs text-stone-500">No orders placed yet.</p>`;
+                    return;
+                }
+                listEl.innerHTML = snap.docs.map(doc => {
+                    const o = doc.data();
+                    const date = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleDateString() : 'Recent';
+                    return `
+                        <div class="bg-stone-900 p-3 border gold-border text-xs space-y-1">
+                            <div class="flex justify-between text-amber-200">
+                                <span>Order ID: ${doc.id.slice(0,6)}...</span>
+                                <span>₹${o.totalAmount}</span>
+                            </div>
+                            <p class="text-stone-400 text-[10px]">Status: <span class="text-amber-400">${o.status}</span> | Date: ${date}</p>
+                            <p class="text-stone-500 text-[10px]">Payment: ${o.paymentMethod}</p>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                listEl.innerHTML = `<p class="text-xs text-red-400">Could not load orders.</p>`;
+            }
+        }
+
+        function openAccountModal() {
+            if(!currentUser) { openAuthModal(); return; }
+            document.getElementById('acc-name').innerText = currentUser.displayName || 'Client';
+            document.getElementById('acc-email').innerText = currentUser.email;
+            document.getElementById('acc-pic').src = currentUser.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
+            document.getElementById('edit-name').value = currentUser.displayName || '';
+            document.getElementById('edit-pic').value = currentUser.photoURL || '';
+            document.getElementById('account-modal').classList.remove('hidden');
         }
 
         function closeAccountModal() { document.getElementById('account-modal').classList.add('hidden'); }
         function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
         function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
-        function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); updateCartUI(); }
+        function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); }
         function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
         function openWishlistModal() { document.getElementById('wishlist-modal').classList.remove('hidden'); }
         function closeWishlistModal() { document.getElementById('wishlist-modal').classList.add('hidden'); }
         function closeCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
 
-        document.addEventListener('DOMContentLoaded', loadStorefront);
+        async function updateProfileDetails() {
+            if(!currentUser) return;
+            const name = document.getElementById('edit-name').value;
+            const photoURL = document.getElementById('edit-pic').value;
+            try {
+                await currentUser.updateProfile({ displayName: name, photoURL: photoURL });
+                alert("Profile updated successfully!");
+                closeAccountModal();
+                window.location.reload();
+            } catch(e) {
+                alert("Error updating profile: " + e.message);
+            }
+        }
+
+        async function logoutCustomer() {
+            await auth.signOut();
+            closeAccountModal();
+            window.location.reload();
+        }
+
+        loadStorefront();
     </script>
 </body>
 </html>
