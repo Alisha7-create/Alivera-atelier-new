@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier — Luxury Custom Apparel</title>
+    <title>Alivèra Atelier — Luxury Dresses Including Custom Sized</title>
     <link rel="icon" href="favicon.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
-<body class="antialiased selection:bg-amber-400 selection:text-black">
+<body class="antialiased selection:bg-amber-400 selection:text-black flex flex-col min-h-screen">
 
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b gold-border">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -30,11 +30,6 @@
                 <div id="nav-profile-container">
                     <button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>
                 </div>
-
-                <button type="button" onclick="openWishlistModal()" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-1.5">
-                    <span>Wishlist</span>
-                    <span id="wishlist-badge" class="bg-stone-900 border gold-border text-amber-300 text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
-                </button>
 
                 <button type="button" onclick="openCartModal()" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-2">
                     <span>Bag</span>
@@ -54,13 +49,19 @@
         </div>
     </section>
 
-    <main class="max-w-7xl mx-auto px-4 md:px-6 py-12 space-y-16">
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-12 space-y-16 flex-grow">
         <div>
-            <div class="text-center mb-12">
-                <h2 class="font-serif text-3xl font-light tracking-wide mb-2 gold-gradient">Bespoke Collection</h2>
-                <p class="text-stone-400 text-xs tracking-[0.2em] uppercase">Hand-tailored from XS to XXL or Crafted to Your Exact Measurements</p>
+            <div class="text-center mb-12 space-y-3">
+                <h2 class="font-serif text-3xl font-light tracking-wide gold-gradient">Luxury dresses including custom sized</h2>
+                <p id="storefront-subtitle-display" class="text-stone-300 text-sm tracking-wide italic font-serif">"Beautiful. The way you are..."</p>
+                <p id="storefront-desc-display" class="text-stone-400 text-xs tracking-[0.15em] uppercase max-w-xl mx-auto"></p>
             </div>
             <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8"></div>
+        </div>
+
+        <div id="popular-products-section" class="border-t gold-border pt-12">
+            <h3 class="font-serif text-xl gold-gradient mb-6 tracking-wide text-center">Popular Masterpieces</h3>
+            <div id="popular-products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </div>
 
         <div id="recently-viewed-section" class="hidden border-t gold-border pt-12">
@@ -69,18 +70,26 @@
         </div>
     </main>
 
+    <!-- FOOTER -->
+    <footer class="bg-black border-t gold-border py-12 px-6 mt-20 text-stone-400 text-xs">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div class="space-y-2">
+                <h4 class="font-serif text-lg tracking-widest gold-gradient font-bold">ALIVÉRA ATELIER</h4>
+                <p class="text-stone-400 italic font-serif">"Beautiful. The way you are..."</p>
+                <p class="text-[10px] text-stone-500">&copy; 2026 Alivèra Atelier. All rights reserved.</p>
+            </div>
+            <div class="space-y-2 flex flex-col items-center md:items-end">
+                <p>Instagram: <a href="https://instagram.com/aliveraatelier" target="_blank" class="text-amber-300 hover:underline">@aliveraatelier</a></p>
+                <p>Contact: <a href="mailto:contact@aliveraatelier.in" class="text-amber-300 hover:underline">contact@aliveraatelier.in</a></p>
+            </div>
+        </div>
+    </footer>
+
     <div id="sizechart-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-stone-950 border gold-border w-full max-w-xl p-6 relative text-stone-100">
             <button type="button" onclick="closeSizeChartModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
             <h3 class="font-serif text-xl gold-gradient mb-4">Measurement & Size Chart</h3>
             <div id="sizechart-content" class="w-full max-h-[70vh] overflow-y-auto flex items-center justify-center bg-stone-900 border gold-border p-2"></div>
-        </div>
-    </div>
-
-    <div id="wishlist-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
-        <div class="bg-stone-950 border-l gold-border w-full max-w-md h-full flex flex-col p-6 overflow-y-auto text-stone-100">
-            <div class="flex justify-between pb-6 border-b border-stone-900"><h3 class="font-serif text-xl text-amber-200">Your Wishlist</h3><button onclick="closeWishlistModal()" class="text-xs">Close</button></div>
-            <div id="wishlist-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
         </div>
     </div>
 
@@ -99,7 +108,6 @@
 
             <div class="space-y-4 bg-stone-900/60 p-4 border gold-border">
                 <h4 class="font-serif text-lg text-amber-200">Set Up Your Client Profile</h4>
-                <p class="text-[11px] text-stone-400">Ensure your name and phone number are completely saved for swift checkout and order coordination.</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">Full Name *</label>
@@ -174,7 +182,6 @@
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">6-digit Pincode *</label>
                         <input type="text" id="chk-pincode" placeholder="Pincode" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                        <span id="pin-status" class="text-[10px] mt-1 block"></span>
                     </div>
                 </div>
 
@@ -186,7 +193,7 @@
                     </select>
                 </div>
 
-                <button type="button" onclick="submitOrder()" class="w-full gold-bg text-black py-4 text-xs uppercase tracking-widest font-semibold gold-hover mt-4">Confirm & Book Order (24h Cancellation Window)</button>
+                <button type="button" onclick="submitOrder()" class="w-full gold-bg text-black py-4 text-xs uppercase tracking-widest font-semibold gold-hover mt-4">Confirm & Book Order</button>
             </div>
         </div>
     </div>
@@ -234,7 +241,6 @@
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
-        let wishlistIds = JSON.parse(localStorage.getItem('alivera_wishlist_ids')) || [];
         let recentlyViewedIds = JSON.parse(localStorage.getItem('alivera_recent_ids')) || [];
         let currentUser = null;
         let checkoutItemsPayload = [];
@@ -264,7 +270,6 @@
                 profileContainer.innerHTML = `<button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>`;
             }
             updateCartUI();
-            updateWishlistUI();
         });
 
         async function signInWithGoogle() {
@@ -299,20 +304,25 @@
 
         async function loadStorefront() {
             const grid = document.getElementById('storefront-products-grid');
+            const popularGrid = document.getElementById('popular-products-grid');
             const snap = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
-            if(snap.empty) { grid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No dresses published yet.</p>`; return; }
+            if(snap.empty) { 
+                grid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No dresses published yet.</p>`; 
+                popularGrid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No popular dresses available.</p>`;
+                return; 
+            }
             
-            grid.innerHTML = snap.docs.map(doc => {
+            let docsArray = snap.docs;
+            docsArray.forEach(doc => {
+                allDressesMap[doc.id] = { id: doc.id, ...doc.data() };
+            });
+
+            // Main storefront grid
+            grid.innerHTML = docsArray.map(doc => {
                 const item = doc.data();
                 const dressId = doc.id;
-                allDressesMap[dressId] = { id: dressId, ...item };
-                const isWishlisted = wishlistIds.includes(dressId);
-
                 return `
                     <div class="bg-stone-950 border gold-border p-4 flex flex-col justify-between shadow-lg relative">
-                        <button type="button" onclick="toggleWishlist('${dressId}')" class="absolute top-6 right-6 z-10 bg-black/70 p-2 rounded-full border gold-border text-xs ${isWishlisted ? 'text-amber-400 font-bold' : 'text-stone-400'} hover:text-amber-300">
-                            ♥
-                        </button>
                         <div onclick="viewProduct('${dressId}')" class="cursor-pointer">
                             <div class="aspect-[3/4] bg-stone-900 mb-3 overflow-hidden border gold-border"><img src="${item.imageUrl}" class="w-full h-full object-cover"></div>
                             <h4 class="font-serif text-sm text-amber-200 mb-1">${item.name}</h4>
@@ -338,8 +348,23 @@
                     </div>
                 `;
             }).join('');
+
+            // Popular products section (displaying top 4 items as popular showcases)
+            const popularItems = docsArray.slice(0, 4);
+            popularGrid.innerHTML = popularItems.map(doc => {
+                const item = doc.data();
+                return `
+                    <div class="bg-stone-950 border gold-border p-3 flex gap-3 items-center">
+                        <img src="${item.imageUrl}" class="w-14 h-16 object-cover border gold-border">
+                        <div>
+                            <h5 class="font-serif text-xs text-amber-200">${item.name}</h5>
+                            <p class="text-[10px] text-stone-400">₹${item.price}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
             renderRecentlyViewed();
-            updateWishlistUI();
         }
 
         function viewProduct(id) {
@@ -366,37 +391,6 @@
                         <h5 class="font-serif text-xs text-amber-200">${item.name}</h5>
                         <p class="text-[10px] text-stone-400">₹${item.price}</p>
                     </div>
-                </div>
-            `).join('');
-        }
-
-        function toggleWishlist(id) {
-            const idx = wishlistIds.indexOf(id);
-            if(idx > -1) {
-                wishlistIds.splice(idx, 1);
-            } else {
-                wishlistIds.push(id);
-            }
-            localStorage.setItem('alivera_wishlist_ids', JSON.stringify(wishlistIds));
-            updateWishlistUI();
-            loadStorefront();
-        }
-
-        function updateWishlistUI() {
-            document.getElementById('wishlist-badge').innerText = wishlistIds.length;
-            const container = document.getElementById('wishlist-items');
-            const validWishlist = wishlistIds.map(id => allDressesMap[id]).filter(Boolean);
-            if(validWishlist.length === 0) { container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your wishlist is empty</p>`; return; }
-            container.innerHTML = validWishlist.map(item => `
-                <div class="bg-stone-900 p-3 border gold-border flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-3">
-                        <img src="${item.imageUrl}" class="w-10 h-12 object-cover">
-                        <div>
-                            <span class="font-medium text-amber-200">${item.name}</span>
-                            <p class="text-stone-400 text-[10px]">₹${item.price}</p>
-                        </div>
-                    </div>
-                    <button onclick="toggleWishlist('${item.id}')" class="text-red-400 text-[10px]">Remove</button>
                 </div>
             `).join('');
         }
@@ -429,10 +423,18 @@
 
         db.collection("atelier_settings").doc("promotion_config").onSnapshot(doc => {
             const bannerImg = document.getElementById('hero-banner-img');
+            const subtitleDisplay = document.getElementById('storefront-subtitle-display');
+            const descDisplay = document.getElementById('storefront-desc-display');
             if (doc.exists) {
                 const data = doc.data();
                 if (data.bannerImageUrl) {
                     bannerImg.src = data.bannerImageUrl;
+                }
+                if (data.storefrontSubtitle) {
+                    subtitleDisplay.innerText = data.storefrontSubtitle;
+                }
+                if (data.storefrontDescription) {
+                    descDisplay.innerText = data.storefrontDescription;
                 }
                 manageBannerStates(data.saleStartTimestamp, data.saleEndTimestamp, data.saleActive, data.saleType, data.saleCap);
             }
@@ -623,8 +625,6 @@
         function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
         function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); }
         function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
-        function openWishlistModal() { document.getElementById('wishlist-modal').classList.remove('hidden'); }
-        function closeWishlistModal() { document.getElementById('wishlist-modal').classList.add('hidden'); }
         function closeCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
 
         async function updateProfileDetails() {
