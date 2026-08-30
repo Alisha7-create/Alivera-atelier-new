@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio Admin Control Center — Alivèra Atelier</title>
+    <link rel="icon" href="../favicon.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -12,105 +13,117 @@
         .gold-gradient { background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gold-border { border-color: rgba(191, 149, 63, 0.3); }
         .gold-bg { background-color: #bf953f; }
+        .gold-hover:hover { background-color: #d4af37; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
-<body class="antialiased p-6 md:p-12">
+<body class="antialiased selection:bg-amber-400 selection:text-black min-h-screen flex flex-col">
 
-    <div class="max-w-6xl mx-auto space-y-8">
-        <div class="flex justify-between items-center pb-6 border-b gold-border">
+    <header class="bg-black/95 border-b gold-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <div>
-                <span class="text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold">Restricted Access</span>
-                <h1 class="font-serif text-3xl gold-gradient mt-1">Studio Admin Dashboard</h1>
+                <h1 class="font-serif text-xl tracking-[0.2em] font-bold gold-gradient">ATELIER STUDIO CONTROL</h1>
+                <p class="text-[10px] text-stone-400 uppercase tracking-widest">Admin Dashboard & Operations</p>
             </div>
             <div class="flex items-center gap-4">
-                <a href="../index.html" class="text-xs uppercase tracking-widest text-stone-400 hover:text-amber-300">View Storefront →</a>
-                <button type="button" onclick="auth.signOut().then(() => window.location.href='../index.html')" class="text-xs uppercase tracking-widest text-red-400">Sign Out</button>
+                <a href="../index.html" class="text-xs uppercase tracking-widest text-stone-300 hover:text-amber-300 transition border gold-border px-4 py-2">View Live Store</a>
+                <button type="button" onclick="adminLogout()" class="text-xs uppercase tracking-widest text-red-400 hover:text-red-300 border border-red-500/40 px-4 py-2">Sign Out</button>
             </div>
         </div>
+    </header>
 
-        <div id="admin-auth-gate" class="bg-stone-950 border gold-border p-8 max-w-md mx-auto text-center space-y-4">
-            <h3 class="font-serif text-xl text-amber-200">Admin Authentication Required</h3>
-            <p class="text-xs text-stone-400">Sign in using <strong class="text-amber-400">hello@aliveraatelier.in</strong></p>
-            <input type="email" id="adm-email" value="hello@aliveraatelier.in" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-            <input type="password" id="adm-pass" placeholder="Password" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-            <button type="button" onclick="adminLogin()" class="w-full gold-bg text-black py-3 text-xs uppercase font-semibold">Access Dashboard</button>
-        </div>
-
-        <div id="admin-main-content" class="hidden space-y-8">
-            
-            <!-- Cinematic Banner Manager & Promotion Type -->
-            <div class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
-                <h3 class="font-serif text-xl text-amber-200">Cinematic Banner Manager (1897 x 412) & Promotion Rules</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <main class="max-w-7xl mx-auto px-6 py-10 flex-grow space-y-12">
+        
+        <!-- SECTION 1: STOREFRONT TEXT & HERO BANNER CONFIGURATION -->
+        <section class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
+            <h2 class="font-serif text-xl text-amber-200">Storefront Banner & Text Configuration</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
                     <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Banner Image (1897x412)</label>
-                        <input type="file" id="banner-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Hero Banner Image URL (1897x412px)</label>
+                        <input type="text" id="cfg-banner-url" placeholder="https://..." class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Promotion / Drop Type</label>
-                        <select id="promo-type" onchange="toggleTimeInputs()" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                            <option value="regular">Regular Daily Banner (No Timer / Permanent Banner)</option>
-                            <option value="countdown">Scheduled Drop (Timer Starts → Sale Live → Auto-Replaces Banner)</option>
-                            <option value="fcfs">First-Come-First-Serve (Timer / Order Cap Limit)</option>
-                        </select>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Storefront Subtitle (e.g., Tagline)</label>
+                        <input type="text" id="cfg-subtitle" placeholder='"Beautiful. The way you are..."' class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                     </div>
-                    <div id="time-inputs-container" class="contents">
-                        <div>
-                            <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale Start Date & Time</label>
-                            <input type="datetime-local" id="sale-start" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Storefront Description</label>
+                        <textarea id="cfg-desc" rows="2" placeholder="Custom atelier description..." class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="space-y-4 bg-stone-900/40 p-4 border gold-border flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-serif text-sm text-amber-200 mb-2">Flash Sale / Promotion Control</h3>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale Type</label>
+                                <select id="cfg-sale-type" class="w-full bg-stone-900 border gold-border p-2 text-xs text-stone-100 outline-none">
+                                    <option value="regular">Regular Showcase</option>
+                                    <option value="countdown">Countdown Timer</option>
+                                    <option value="fcfs">First Come First Serve (FCFS)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase text-stone-400 mb-1">Item Limit (For FCFS)</label>
+                                <input type="number" id="cfg-sale-cap" placeholder="e.g., 50" class="w-full bg-stone-900 border gold-border p-2 text-xs text-stone-100 outline-none">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale End Date & Time</label>
-                            <input type="datetime-local" id="sale-end" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
+                        <div class="flex items-center gap-2 mb-2">
+                            <input type="checkbox" id="cfg-sale-active" class="w-4 h-4 accent-amber-500">
+                            <label class="text-xs text-stone-300">Enable Active Sale / Status Display</label>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Max Orders Cap (Optional for FCFS)</label>
-                        <input type="number" id="sale-cap" placeholder="e.g. 50" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none text-stone-300">
-                    </div>
-                </div>
-                <div class="flex gap-4">
-                    <button type="button" onclick="saveBannerPromotion()" class="gold-bg text-black px-6 py-3 text-[10px] uppercase font-semibold">Deploy Banner & Rules</button>
-                    <button type="button" onclick="endSaleNow()" class="bg-red-950 text-red-400 border border-red-900 px-6 py-3 text-[10px] uppercase font-semibold">End / Clear Banner</button>
+                    <button type="button" onclick="saveStorefrontConfig()" class="w-full gold-bg text-black py-3 text-xs uppercase font-semibold tracking-wider gold-hover">Save Storefront Settings</button>
                 </div>
             </div>
+        </section>
 
-            <!-- Publish Dress Live & Size Chart Management -->
-            <div class="bg-stone-950 border gold-border p-6 shadow-xl">
-                <h3 class="font-serif text-xl text-amber-200 mb-4">Publish Dress Live & Attach Size Chart</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Dress Name</label>
-                        <input type="text" id="d-name" placeholder="e.g. Midnight Orchid" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Price (₹)</label>
-                        <input type="number" id="d-price" placeholder="e.g. 4500" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Dress Photo</label>
-                        <input type="file" id="d-img-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Upload Custom Size Chart (Image or PDF)</label>
-                        <input type="file" id="d-sizechart-file" accept="image/*,application/pdf" class="w-full bg-stone-900 border gold-border p-2.5 text-xs text-stone-300 file:mr-4 file:py-1 file:px-3 file:border-0 file:text-[10px] file:font-semibold file:bg-amber-400 file:text-black">
-                    </div>
+        <!-- SECTION 2: PUBLISH NEW DRESS -->
+        <section class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
+            <h2 class="font-serif text-xl text-amber-200">Publish New Dress Masterpiece</h2>
+            <div id="upload-status-msg" class="text-xs text-amber-400 font-semibold hidden"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Dress Name *</label>
+                    <input type="text" id="dress-name" placeholder="e.g., Midnight Orchid" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                 </div>
-                <button type="button" onclick="publishDress()" class="mt-6 gold-bg text-black px-6 py-3 text-xs uppercase font-semibold">Publish Dress Live</button>
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Price (INR ₹) *</label>
+                    <input type="number" id="dress-price" placeholder="e.g., 12500" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Dress Portrait Image (3:4 Ratio, <300KB) *</label>
+                    <input type="file" id="dress-img-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2 text-xs text-stone-300 outline-none">
+                </div>
             </div>
+            <div>
+                <label class="block text-[10px] uppercase text-stone-400 mb-1">Optional Size Chart (Image or PDF, <1MB)</label>
+                <input type="file" id="dress-chart-file" accept="image/*,application/pdf" class="w-full bg-stone-900 border gold-border p-2 text-xs text-stone-300 outline-none max-w-md">
+            </div>
+            <button type="button" onclick="publishDress()" class="gold-bg text-black px-8 py-3 text-xs uppercase font-semibold tracking-wider gold-hover">Publish to Live Catalog</button>
+        </section>
 
-            <!-- Live Customer Orders -->
-            <div class="bg-stone-950 border gold-border p-6 shadow-xl">
-                <h3 class="font-serif text-xl text-amber-200 mb-4">Live Customer Orders</h3>
-                <div id="admin-orders-list" class="space-y-4">
-                    <p class="text-xs text-stone-500 uppercase">Loading orders...</p>
-                </div>
+        <!-- SECTION 3: LIVE CATALOG MANAGEMENT -->
+        <section class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
+            <h2 class="font-serif text-xl text-amber-200">Catalog Inventory Management</h2>
+            <div id="admin-catalog-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <p class="text-xs text-stone-500">Loading catalog inventory...</p>
             </div>
-        </div>
-    </div>
+        </section>
+
+        <!-- SECTION 4: CLIENT ORDERS -->
+        <section class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
+            <h2 class="font-serif text-xl text-amber-200">Client Orders & Production Tracking</h2>
+            <div id="admin-orders-list" class="space-y-3">
+                <p class="text-xs text-stone-500">Loading orders...</p>
+            </div>
+        </section>
+
+    </main>
 
     <script>
         const firebaseConfig = {
@@ -128,33 +141,147 @@
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
         auth.onAuthStateChanged(user => {
-            if (user && user.email === ADMIN_EMAIL) {
-                document.getElementById('admin-auth-gate').classList.add('hidden');
-                document.getElementById('admin-main-content').classList.remove('hidden');
-                loadOrders();
+            if (!user || user.email !== ADMIN_EMAIL) {
+                alert("Unauthorized access. Admin privileges required.");
+                window.location.href = "../index.html";
             } else {
-                document.getElementById('admin-auth-gate').classList.remove('hidden');
-                document.getElementById('admin-main-content').classList.add('hidden');
+                loadAdminData();
             }
         });
 
-        async function adminLogin() {
-            try {
-                await auth.signInWithEmailAndPassword(document.getElementById('adm-email').value, document.getElementById('adm-pass').value);
-            } catch(e) { alert(e.message); }
+        function adminLogout() {
+            auth.signOut().then(() => { window.location.href = "../index.html"; });
         }
 
-        function toggleTimeInputs() {
-            const promoType = document.getElementById('promo-type').value;
-            const container = document.getElementById('time-inputs-container');
-            if (promoType === 'regular') {
-                container.style.display = 'none';
+        async function loadAdminData() {
+            // Load config
+            const cfgDoc = await db.collection("atelier_settings").doc("promotion_config").get();
+            if(cfgDoc.exists) {
+                const data = cfgDoc.data();
+                document.getElementById('cfg-banner-url').value = data.bannerImageUrl || '';
+                document.getElementById('cfg-subtitle').value = data.storefrontSubtitle || '';
+                document.getElementById('cfg-desc').value = data.storefrontDescription || '';
+                document.getElementById('cfg-sale-type').value = data.saleType || 'regular';
+                document.getElementById('cfg-sale-cap').value = data.saleCap || '';
+                document.getElementById('cfg-sale-active').checked = data.saleActive || false;
+            }
+
+            // Load catalog inventory
+            const catalogGrid = document.getElementById('admin-catalog-grid');
+            const dressSnap = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
+            if(dressSnap.empty) {
+                catalogGrid.innerHTML = `<p class="text-xs text-stone-500 col-span-4">No dresses in inventory.</p>`;
             } else {
-                container.style.display = 'contents';
+                catalogGrid.innerHTML = dressSnap.docs.map(doc => {
+                    const item = doc.data();
+                    return `
+                        <div class="bg-stone-900 border gold-border p-3 flex flex-col justify-between text-xs space-y-2">
+                            <img src="${item.imageUrl}" class="w-full h-32 object-cover border gold-border">
+                            <div>
+                                <h4 class="font-serif text-amber-200 font-medium truncate">${item.name}</h4>
+                                <p class="text-stone-400">₹${item.price}</p>
+                            </div>
+                            <button onclick="deleteDress('${doc.id}')" class="w-full bg-red-950/40 border border-red-500/40 text-red-400 py-1.5 uppercase text-[10px] font-semibold hover:bg-red-900/40">Delete Dress</button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Load orders
+            const ordersList = document.getElementById('admin-orders-list');
+            const orderSnap = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
+            if(orderSnap.empty) {
+                ordersList.innerHTML = `<p class="text-xs text-stone-500">No client orders received yet.</p>`;
+            } else {
+                ordersList.innerHTML = orderSnap.docs.map(doc => {
+                    const o = doc.data();
+                    const date = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleString() : 'Recent';
+                    return `
+                        <div class="bg-stone-900 border gold-border p-4 text-xs space-y-2">
+                            <div class="flex justify-between text-amber-200 font-medium">
+                                <span>Order ID: ${doc.id}</span>
+                                <span class="text-amber-400 font-bold">₹${o.totalAmount}</span>
+                            </div>
+                            <p class="text-stone-300"><b>Client:</b> ${o.clientName} (${o.clientPhone} / ${o.clientEmail})</p>
+                            <p class="text-stone-300"><b>Shipping Address:</b> ${o.shippingAddress}</p>
+                            <p class="text-stone-400"><b>Payment:</b> ${o.paymentMethod} | <b>Date:</b> ${date}</p>
+                            <div class="flex items-center gap-2 pt-2 border-t border-stone-800">
+                                <span class="text-stone-400">Status:</span>
+                                <select onchange="updateOrderStatus('${doc.id}', this.value)" class="bg-stone-950 border gold-border text-amber-300 p-1 text-[11px] outline-none">
+                                    <option value="Pending Production" ${o.status === 'Pending Production' ? 'selected' : ''}>Pending Production</option>
+                                    <option value="Crafting in Atelier" ${o.status === 'Crafting in Atelier' ? 'selected' : ''}>Crafting in Atelier</option>
+                                    <option value="Dispatched / Shipped" ${o.status === 'Dispatched / Shipped' ? 'selected' : ''}>Dispatched / Shipped</option>
+                                    <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                </select>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
             }
         }
 
-        function convertFileToBase64(file) {
+        async function saveStorefrontConfig() {
+            const bannerImageUrl = document.getElementById('cfg-banner-url').value;
+            const storefrontSubtitle = document.getElementById('cfg-subtitle').value;
+            const storefrontDescription = document.getElementById('cfg-desc').value;
+            const saleType = document.getElementById('cfg-sale-type').value;
+            const saleCap = document.getElementById('cfg-sale-cap').value;
+            const saleActive = document.getElementById('cfg-sale-active').checked;
+
+            try {
+                await db.collection("atelier_settings").doc("promotion_config").set({
+                    bannerImageUrl,
+                    storefrontSubtitle,
+                    storefrontDescription,
+                    saleType,
+                    saleCap,
+                    saleActive
+                }, { merge: true });
+                alert("Storefront settings saved successfully!");
+            } catch(e) {
+                alert("Error saving settings: " + e.message);
+            }
+        }
+
+        async function publishDress() {
+            const name = document.getElementById('dress-name').value;
+            const price = Number(document.getElementById('dress-price').value);
+            const imgFile = document.getElementById('dress-img-file').files[0];
+            const chartFile = document.getElementById('dress-chart-file').files[0];
+            const statusMsg = document.getElementById('upload-status-msg');
+
+            if(!name || !price || !imgFile) {
+                alert("Please provide name, price, and dress image file.");
+                return;
+            }
+
+            statusMsg.classList.remove('hidden');
+            statusMsg.innerText = "Uploading assets...";
+
+            try {
+                const imgBase64 = await fileToBase64(imgFile);
+                let chartBase64 = "";
+                if(chartFile) {
+                    chartBase64 = await fileToBase64(chartFile);
+                }
+
+                await db.collection("atelier_dresses").add({
+                    name,
+                    price,
+                    imageUrl: imgBase64,
+                    sizeChartUrl: chartBase64,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                statusMsg.innerText = "Dress successfully published!";
+                setTimeout(() => { window.location.reload(); }, 1200);
+            } catch(e) {
+                statusMsg.innerText = "Error publishing dress.";
+                alert("Upload failed: " + e.message);
+            }
+        }
+
+        function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
@@ -163,111 +290,16 @@
             });
         }
 
-        async function saveBannerPromotion() {
-            const file = document.getElementById('banner-file').files[0];
-            const saleType = document.getElementById('promo-type').value;
-            const startDateStr = document.getElementById('sale-start').value;
-            const endDateStr = document.getElementById('sale-end').value;
-            const saleCap = document.getElementById('sale-cap').value;
-
-            if (saleType !== 'regular' && (!startDateStr || !endDateStr)) {
-                alert("Please provide both start and end date/time for scheduled or FCFS sales.");
-                return;
+        async function deleteDress(id) {
+            if(confirm("Are you sure you want to delete this dress from inventory?")) {
+                await db.collection("atelier_dresses").doc(id).delete();
+                window.location.reload();
             }
-
-            let bannerImageUrl = "";
-            if (file) {
-                alert("Uploading banner photo...");
-                bannerImageUrl = await convertFileToBase64(file);
-            }
-
-            const payload = {
-                saleType,
-                saleCap: saleCap || "",
-                saleActive: true,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            if (saleType !== 'regular') {
-                payload.saleStartTimestamp = new Date(startDateStr).getTime();
-                payload.saleEndTimestamp = new Date(endDateStr).getTime();
-            } else {
-                payload.saleStartTimestamp = null;
-                payload.saleEndTimestamp = null;
-            }
-
-            if (bannerImageUrl) payload.bannerImageUrl = bannerImageUrl;
-
-            await db.collection("atelier_settings").doc("promotion_config").set(payload, { merge: true });
-            alert("Banner and promotion rules deployed successfully!");
         }
 
-        async function endSaleNow() {
-            await db.collection("atelier_settings").doc("promotion_config").update({ saleActive: false });
-            alert("Promotion ended/banner cleared successfully!");
-        }
-
-        async function publishDress() {
-            const name = document.getElementById('d-name').value.trim();
-            const price = Number(document.getElementById('d-price').value);
-            const imgFile = document.getElementById('d-img-file').files[0];
-            const sizeChartFile = document.getElementById('d-sizechart-file').files[0];
-
-            if(!name || !price || !imgFile) { 
-                alert("Please provide Dress Name, Price, and Dress Photo."); 
-                return; 
-            }
-
-            alert("Uploading assets...");
-            const imageUrl = await convertFileToBase64(imgFile);
-            
-            let sizeChartUrl = "";
-            if (sizeChartFile) {
-                sizeChartUrl = await convertFileToBase64(sizeChartFile);
-            }
-
-            await db.collection("atelier_dresses").add({
-                name, 
-                price, 
-                imageUrl, 
-                sizeChartUrl,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            alert("Dress published live with size chart successfully!");
-            document.getElementById('d-name').value = '';
-            document.getElementById('d-price').value = '';
-            document.getElementById('d-img-file').value = '';
-            document.getElementById('d-sizechart-file').value = '';
-        }
-
-        async function loadOrders() {
-            const container = document.getElementById('admin-orders-list');
-            const snap = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
-            if(snap.empty) { container.innerHTML = `<p class="text-xs text-stone-500">No orders received yet.</p>`; return; }
-            container.innerHTML = snap.docs.map(doc => {
-                const o = doc.data();
-                return `
-                    <div class="bg-stone-900 border gold-border p-4 text-xs space-y-2">
-                        <div class="flex justify-between font-semibold text-amber-200">
-                            <span>Client: ${o.clientName || 'Guest'} (${o.clientEmail || 'N/A'})</span>
-                            <span>Status: ${o.status || 'Pending'}</span>
-                        </div>
-                        <p class="text-stone-300">Phone: ${o.phone || 'N/A'} | Address: ${o.address || 'N/A'}</p>
-                        <p class="text-stone-400">Items: ${o.items ? o.items.map(i => `${i.name} (${i.size})`).join(', ') : 'No items'}</p>
-                        <div class="flex gap-4 pt-2">
-                            <button onclick="updateStatus('${doc.id}', 'Accepted')" class="gold-bg text-black px-4 py-1.5 font-bold uppercase">Accept</button>
-                            <button onclick="updateStatus('${doc.id}', 'Declined')" class="bg-red-950 text-red-400 border border-red-900 px-4 py-1.5 font-bold uppercase">Decline</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function updateStatus(id, status) {
+        async function updateOrderStatus(id, status) {
             await db.collection("atelier_orders").doc(id).update({ status });
-            alert(`Order marked as ${status}`);
-            loadOrders();
+            alert("Order status updated!");
         }
     </script>
 </body>
