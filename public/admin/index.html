@@ -46,7 +46,7 @@
                         <input type="text" id="cfg-banner-url" placeholder="https://..." class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Storefront Subtitle (e.g., Tagline)</label>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Storefront Subtitle (Tagline)</label>
                         <input type="text" id="cfg-subtitle" placeholder='"Beautiful. The way you are..."' class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                     </div>
                     <div>
@@ -107,7 +107,7 @@
             <button type="button" onclick="publishDress()" class="gold-bg text-black px-8 py-3 text-xs uppercase font-semibold tracking-wider gold-hover">Publish to Live Catalog</button>
         </section>
 
-        <!-- SECTION 3: LIVE CATALOG MANAGEMENT -->
+        <!-- SECTION 3: CATALOG INVENTORY MANAGEMENT -->
         <section class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
             <h2 class="font-serif text-xl text-amber-200">Catalog Inventory Management</h2>
             <div id="admin-catalog-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -115,10 +115,10 @@
             </div>
         </section>
 
-        <!-- SECTION 4: CLIENT ORDERS -->
+        <!-- SECTION 4: CLIENT ORDERS & MANAGEMENT -->
         <section class="bg-stone-950 border gold-border p-6 shadow-xl space-y-6">
             <h2 class="font-serif text-xl text-amber-200">Client Orders & Production Tracking</h2>
-            <div id="admin-orders-list" class="space-y-3">
+            <div id="admin-orders-list" class="space-y-4">
                 <p class="text-xs text-stone-500">Loading orders...</p>
             </div>
         </section>
@@ -154,7 +154,6 @@
         }
 
         async function loadAdminData() {
-            // Load config
             const cfgDoc = await db.collection("atelier_settings").doc("promotion_config").get();
             if(cfgDoc.exists) {
                 const data = cfgDoc.data();
@@ -166,7 +165,6 @@
                 document.getElementById('cfg-sale-active').checked = data.saleActive || false;
             }
 
-            // Load catalog inventory
             const catalogGrid = document.getElementById('admin-catalog-grid');
             const dressSnap = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
             if(dressSnap.empty) {
@@ -187,7 +185,6 @@
                 }).join('');
             }
 
-            // Load orders
             const ordersList = document.getElementById('admin-orders-list');
             const orderSnap = await db.collection("atelier_orders").orderBy("createdAt", "desc").get();
             if(orderSnap.empty) {
@@ -196,22 +193,34 @@
                 ordersList.innerHTML = orderSnap.docs.map(doc => {
                     const o = doc.data();
                     const date = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleString() : 'Recent';
+                    const itemsListStr = o.items ? o.items.map(i => `- ${i.name} [Size: ${i.size}] (₹${i.price})`).join('\n') : '';
+                    
                     return `
-                        <div class="bg-stone-900 border gold-border p-4 text-xs space-y-2">
-                            <div class="flex justify-between text-amber-200 font-medium">
+                        <div class="bg-stone-900 border gold-border p-4 text-xs space-y-3">
+                            <div class="flex justify-between items-center text-amber-200 font-medium border-b border-stone-800 pb-2">
                                 <span>Order ID: ${doc.id}</span>
-                                <span class="text-amber-400 font-bold">₹${o.totalAmount}</span>
+                                <span class="text-amber-400 font-bold text-sm">₹${o.totalAmount}</span>
                             </div>
-                            <p class="text-stone-300"><b>Client:</b> ${o.clientName} (${o.clientPhone} / ${o.clientEmail})</p>
-                            <p class="text-stone-300"><b>Shipping Address:</b> ${o.shippingAddress}</p>
-                            <p class="text-stone-400"><b>Payment:</b> ${o.paymentMethod} | <b>Date:</b> ${date}</p>
-                            <div class="flex items-center gap-2 pt-2 border-t border-stone-800">
-                                <span class="text-stone-400">Status:</span>
-                                <select onchange="updateOrderStatus('${doc.id}', this.value)" class="bg-stone-950 border gold-border text-amber-300 p-1 text-[11px] outline-none">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-stone-300">
+                                <p><b>Client Name:</b> ${o.clientName}</p>
+                                <p><b>Phone:</b> ${o.clientPhone}</p>
+                                <p><b>Email:</b> ${o.clientEmail}</p>
+                                <p><b>Payment:</b> ${o.paymentMethod}</p>
+                                <p class="md:col-span-2"><b>Shipping Address:</b> ${o.shippingAddress}</p>
+                            </div>
+                            <div class="bg-stone-950 p-2 border gold-border text-stone-300">
+                                <p class="text-amber-300 uppercase text-[10px] mb-1 font-semibold">Ordered Masterpieces:</p>
+                                <pre class="font-sans whitespace-pre-line text-[11px]">${itemsListStr}</pre>
+                            </div>
+                            <div class="flex items-center justify-between pt-2 border-t border-stone-800">
+                                <span class="text-stone-400">Manage Order Status:</span>
+                                <select onchange="updateOrderStatus('${doc.id}', this.value, '${o.clientEmail}', '${o.clientName}', '${o.totalAmount}')" class="bg-stone-950 border gold-border text-amber-300 p-2 text-xs outline-none">
                                     <option value="Pending Production" ${o.status === 'Pending Production' ? 'selected' : ''}>Pending Production</option>
+                                    <option value="Confirmed & Accepted" ${o.status === 'Confirmed & Accepted' ? 'selected' : ''}>Confirm & Accept Order</option>
                                     <option value="Crafting in Atelier" ${o.status === 'Crafting in Atelier' ? 'selected' : ''}>Crafting in Atelier</option>
                                     <option value="Dispatched / Shipped" ${o.status === 'Dispatched / Shipped' ? 'selected' : ''}>Dispatched / Shipped</option>
                                     <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                    <option value="Declined by Atelier" ${o.status === 'Declined by Atelier' ? 'selected' : ''}>Decline Order</option>
                                 </select>
                             </div>
                         </div>
@@ -261,9 +270,7 @@
             try {
                 const imgBase64 = await fileToBase64(imgFile);
                 let chartBase64 = "";
-                if(chartFile) {
-                    chartBase64 = await fileToBase64(chartFile);
-                }
+                if(chartFile) { chartBase64 = await fileToBase64(chartFile); }
 
                 await db.collection("atelier_dresses").add({
                     name,
@@ -297,9 +304,16 @@
             }
         }
 
-        async function updateOrderStatus(id, status) {
+        async function updateOrderStatus(id, status, clientEmail, clientName, totalAmount) {
             await db.collection("atelier_orders").doc(id).update({ status });
-            alert("Order status updated!");
+            
+            // Trigger automatic email notice from hello@aliveraatelier.in to client and atelier record
+            const subject = encodeURIComponent(`Alivèra Atelier Order Update: ${status}`);
+            const body = encodeURIComponent(`Dear ${clientName},\n\nYour order (ID: ${id}) status has been updated by Alivèra Atelier to: ${status}.\nTotal Amount: ₹${totalAmount}\n\nThank you for choosing Alivèra Atelier.\n\nBest regards,\nAlivèra Atelier\ncontact@aliveraatelier.in`);
+            
+            // Opens email client pre-addressed to both client and atelier inbox
+            window.location.href = `mailto:${clientEmail},contact@aliveraatelier.in?subject=${subject}&body=${body}`;
+            alert(`Order status updated to "${status}" and email dispatch triggered!`);
         }
     </script>
 </body>
