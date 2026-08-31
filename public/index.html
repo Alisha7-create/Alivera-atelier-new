@@ -317,7 +317,6 @@
                 allDressesMap[doc.id] = { id: doc.id, ...doc.data() };
             });
 
-            // Main storefront grid
             grid.innerHTML = docsArray.map(doc => {
                 const item = doc.data();
                 const dressId = doc.id;
@@ -343,13 +342,11 @@
                                 <button type="button" onclick="addToCart('${dressId}')" class="bg-stone-900 border gold-border text-stone-200 py-2 text-[9px] uppercase tracking-wider font-semibold hover:text-amber-300 transition">Add to Bag</button>
                                 <button type="button" onclick="buyNow('${dressId}')" class="gold-bg text-black py-2 text-[9px] uppercase tracking-wider font-bold">Buy Now</button>
                             </div>
-                            <button type="button" onclick="shareProduct('${item.name}', ${item.price})" class="w-full bg-stone-900/50 border gold-border text-stone-300 py-1.5 text-[9px] uppercase tracking-widest hover:text-amber-300 transition">Share Dress</button>
                         </div>
                     </div>
                 `;
             }).join('');
 
-            // Popular products section (displaying top 4 items as popular showcases)
             const popularItems = docsArray.slice(0, 4);
             popularGrid.innerHTML = popularItems.map(doc => {
                 const item = doc.data();
@@ -395,20 +392,6 @@
             `).join('');
         }
 
-        function shareProduct(name, price) {
-            const shareData = {
-                title: `${name} — Alivèra Atelier`,
-                text: `Explore ${name} crafted by Alivèra Atelier for ₹${price}.`,
-                url: window.location.href
-            };
-            if (navigator.share) {
-                navigator.share(shareData).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-                alert("Dress link copied to clipboard!");
-            }
-        }
-
         function openSizeChart(url) {
             const container = document.getElementById('sizechart-content');
             if (url.startsWith('data:application/pdf')) {
@@ -427,48 +410,11 @@
             const descDisplay = document.getElementById('storefront-desc-display');
             if (doc.exists) {
                 const data = doc.data();
-                if (data.bannerImageUrl) {
-                    bannerImg.src = data.bannerImageUrl;
-                }
-                if (data.storefrontSubtitle) {
-                    subtitleDisplay.innerText = data.storefrontSubtitle;
-                }
-                if (data.storefrontDescription) {
-                    descDisplay.innerText = data.storefrontDescription;
-                }
-                manageBannerStates(data.saleStartTimestamp, data.saleEndTimestamp, data.saleActive, data.saleType, data.saleCap);
+                if (data.bannerImageUrl) bannerImg.src = data.bannerImageUrl;
+                if (data.storefrontSubtitle) subtitleDisplay.innerText = data.storefrontSubtitle;
+                if (data.storefrontDescription) descDisplay.innerText = data.storefrontDescription;
             }
         });
-
-        let timerInterval = null;
-        function manageBannerStates(startMs, endMs, isActive, saleType, saleCap) {
-            const statusEl = document.getElementById('banner-status-display');
-            if (timerInterval) clearInterval(timerInterval);
-
-            if (!isActive || saleType === 'regular') {
-                statusEl.innerText = "";
-                return;
-            }
-
-            timerInterval = setInterval(async () => {
-                const now = new Date().getTime();
-                if (now > endMs || !isActive) { statusEl.innerText = ""; clearInterval(timerInterval); return; }
-                if (saleType === 'fcfs' && saleCap) {
-                    const ordersSnap = await db.collection("atelier_orders").get();
-                    if (ordersSnap.size >= Number(saleCap)) { statusEl.innerText = "SOLD OUT"; clearInterval(timerInterval); return; }
-                }
-                if (now >= startMs && now <= endMs) {
-                    statusEl.innerText = "SALE LIVE";
-                } else if (now < startMs) {
-                    const distance = startMs - now;
-                    const d = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const s = Math.floor((distance % (1000 * 60)) / 1000);
-                    statusEl.innerText = `Starts in: ${d}d ${h}h ${m}m ${s}s`;
-                }
-            }, 1000);
-        }
 
         function addToCart(id) {
             const item = allDressesMap[id];
@@ -556,11 +502,12 @@
             }
 
             let total = checkoutItemsPayload.reduce((sum, i) => sum + i.price, 0);
+            const clientEmail = currentUser ? currentUser.email : "guest@atelier.com";
 
             const orderData = {
                 clientName: name,
                 clientPhone: phone,
-                clientEmail: currentUser ? currentUser.email : "guest@atelier.com",
+                clientEmail: clientEmail,
                 shippingAddress: `${house}, ${landmark}, ${city}, ${state} - ${pincode}`,
                 items: checkoutItemsPayload,
                 totalAmount: total,
@@ -570,8 +517,16 @@
             };
 
             try {
-                await db.collection("atelier_orders").add(orderData);
-                alert("Order successfully placed! You can view it in your client account.");
+                const docRef = await db.collection("atelier_orders").add(orderData);
+                
+                // Automatically dispatch notification email to contact@aliveraatelier.in and client upon order submission
+                const itemsSummary = checkoutItemsPayload.map(i => `${i.name} [Size: ${i.size}] - ₹${i.price}`).join('\n');
+                const emailSub = encodeURIComponent(`New Atelier Order Placed: #${docRef.id.slice(0,6)}`);
+                const emailBody = encodeURIComponent(`New order submitted!\n\nClient Name: ${name}\nPhone: ${phone}\nEmail: ${clientEmail}\nShipping Address: ${house}, ${landmark}, ${city}, ${state} - ${pincode}\nPayment Method: ${paymentMethod}\nTotal: ₹${total}\n\nItems:\n${itemsSummary}`);
+                
+                window.location.href = `mailto:contact@aliveraatelier.in,${clientEmail}?subject=${emailSub}&body=${emailBody}`;
+
+                alert("Order successfully placed and sent to atelier inbox!");
                 cart = [];
                 localStorage.setItem('alivera_cart', JSON.stringify(cart));
                 updateCartUI();
@@ -601,7 +556,6 @@
                                 <span>₹${o.totalAmount}</span>
                             </div>
                             <p class="text-stone-400 text-[10px]">Status: <span class="text-amber-400">${o.status}</span> | Date: ${date}</p>
-                            <p class="text-stone-500 text-[10px]">Payment: ${o.paymentMethod}</p>
                         </div>
                     `;
                 }).join('');
