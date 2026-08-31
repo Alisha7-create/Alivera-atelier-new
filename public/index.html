@@ -31,6 +31,11 @@
                     <button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>
                 </div>
 
+                <button type="button" onclick="openWishlistModal()" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-1">
+                    <span>Wishlist</span>
+                    <span id="wishlist-badge" class="text-amber-400 font-bold">0</span>
+                </button>
+
                 <button type="button" onclick="openCartModal()" class="relative text-xs uppercase tracking-[0.15em] font-medium hover:text-amber-300 transition flex items-center gap-2">
                     <span>Bag</span>
                     <span id="cart-badge" class="gold-bg text-black text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
@@ -70,7 +75,6 @@
         </div>
     </main>
 
-    <!-- FOOTER -->
     <footer class="bg-black border-t gold-border py-12 px-6 mt-20 text-stone-400 text-xs">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <div class="space-y-2">
@@ -90,6 +94,13 @@
             <button type="button" onclick="closeSizeChartModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
             <h3 class="font-serif text-xl gold-gradient mb-4">Measurement & Size Chart</h3>
             <div id="sizechart-content" class="w-full max-h-[70vh] overflow-y-auto flex items-center justify-center bg-stone-900 border gold-border p-2"></div>
+        </div>
+    </div>
+
+    <div id="wishlist-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
+        <div class="bg-stone-950 border-l gold-border w-full max-w-md h-full flex flex-col p-6 overflow-y-auto text-stone-100">
+            <div class="flex justify-between pb-6 border-b border-stone-900"><h3 class="font-serif text-xl text-amber-200">Your Account Wishlist</h3><button onclick="closeWishlistModal()" class="text-xs">Close</button></div>
+            <div id="wishlist-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
         </div>
     </div>
 
@@ -241,6 +252,7 @@
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
+        let wishlist = []; // Account-synced array
         let recentlyViewedIds = JSON.parse(localStorage.getItem('alivera_recent_ids')) || [];
         let currentUser = null;
         let checkoutItemsPayload = [];
@@ -264,13 +276,44 @@
                         <span class="hidden md:inline">${user.displayName || 'Account'}</span>
                     </button>
                 `;
+                await fetchUserWishlist();
                 loadCustomerOrders();
             } else {
                 adminLink.classList.add('hidden');
                 profileContainer.innerHTML = `<button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>`;
+                wishlist = [];
+                updateWishlistUI();
             }
             updateCartUI();
+            loadStorefront();
         });
+
+        async function fetchUserWishlist() {
+            if(!currentUser) return;
+            try {
+                const docRef = await db.collection("atelier_wishlists").doc(currentUser.uid).get();
+                if(docRef.exists) {
+                    wishlist = docRef.data().items || [];
+                } else {
+                    wishlist = [];
+                }
+            } catch(e) {
+                wishlist = [];
+            }
+            updateWishlistUI();
+        }
+
+        async function saveUserWishlist() {
+            if(!currentUser) return;
+            try {
+                await db.collection("atelier_wishlists").doc(currentUser.uid).set({
+                    items: wishlist,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch(e) {
+                console.error("Error saving wishlist:", e);
+            }
+        }
 
         async function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
@@ -320,10 +363,16 @@
             grid.innerHTML = docsArray.map(doc => {
                 const item = doc.data();
                 const dressId = doc.id;
+                const isWishlisted = wishlist.some(w => w.id === dressId);
                 return `
                     <div class="bg-stone-950 border gold-border p-4 flex flex-col justify-between shadow-lg relative">
                         <div onclick="viewProduct('${dressId}')" class="cursor-pointer">
-                            <div class="aspect-[3/4] bg-stone-900 mb-3 overflow-hidden border gold-border"><img src="${item.imageUrl}" class="w-full h-full object-cover"></div>
+                            <div class="aspect-[3/4] bg-stone-900 mb-3 overflow-hidden border gold-border relative">
+                                <img src="${item.imageUrl}" class="w-full h-full object-cover">
+                                <button type="button" onclick="event.stopPropagation(); toggleWishlist('${dressId}')" class="absolute top-2 right-2 bg-black/60 p-2 text-xs rounded-full border gold-border text-amber-300 hover:bg-black">
+                                    ${isWishlisted ? '♥' : '♡'}
+                                </button>
+                            </div>
                             <h4 class="font-serif text-sm text-amber-200 mb-1">${item.name}</h4>
                             <p class="text-xs text-stone-400 mb-2">₹${item.price}</p>
                             ${item.sizeChartUrl ? `<button type="button" onclick="event.stopPropagation(); openSizeChart('${item.sizeChartUrl}')" class="text-[10px] text-amber-400 underline uppercase tracking-wider mb-3 block">View Size Chart</button>` : ''}
@@ -342,6 +391,7 @@
                                 <button type="button" onclick="addToCart('${dressId}')" class="bg-stone-900 border gold-border text-stone-200 py-2 text-[9px] uppercase tracking-wider font-semibold hover:text-amber-300 transition">Add to Bag</button>
                                 <button type="button" onclick="buyNow('${dressId}')" class="gold-bg text-black py-2 text-[9px] uppercase tracking-wider font-bold">Buy Now</button>
                             </div>
+                            <button type="button" onclick="shareProduct('${item.name}', ${item.price})" class="w-full bg-stone-900/50 border gold-border text-stone-300 py-1.5 text-[9px] uppercase tracking-widest hover:text-amber-300 transition">Share Dress</button>
                         </div>
                     </div>
                 `;
@@ -391,6 +441,76 @@
                 </div>
             `).join('');
         }
+
+        function shareProduct(name, price) {
+            const shareData = {
+                title: `${name} — Alivèra Atelier`,
+                text: `Explore ${name} by Alivèra Atelier for ₹${price}.`,
+                url: window.location.href
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+                alert("Dress link copied to clipboard!");
+            }
+        }
+
+        async function toggleWishlist(id) {
+            if(!currentUser) {
+                alert("Please sign in to manage your personal wishlist.");
+                openAuthModal();
+                return;
+            }
+            const item = allDressesMap[id];
+            const idx = wishlist.findIndex(w => w.id === id);
+            if(idx > -1) {
+                wishlist.splice(idx, 1);
+            } else {
+                wishlist.push(item);
+            }
+            await saveUserWishlist();
+            updateWishlistUI();
+            loadStorefront();
+        }
+
+        function updateWishlistUI() {
+            document.getElementById('wishlist-badge').innerText = wishlist.length;
+            const container = document.getElementById('wishlist-items');
+            if(wishlist.length === 0) {
+                container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your account wishlist is empty</p>`;
+                return;
+            }
+            container.innerHTML = wishlist.map((item, idx) => `
+                <div class="bg-stone-900 p-3 border gold-border flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-3">
+                        <img src="${item.imageUrl}" class="w-10 h-12 object-cover">
+                        <div>
+                            <span class="font-medium text-amber-200">${item.name}</span>
+                            <p class="text-stone-400 text-[10px]">₹${item.price}</p>
+                        </div>
+                    </div>
+                    <button onclick="removeFromWishlist(${idx})" class="text-red-400 text-[10px]">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        async function removeFromWishlist(idx) {
+            wishlist.splice(idx, 1);
+            await saveUserWishlist();
+            updateWishlistUI();
+            loadStorefront();
+        }
+
+        function openWishlistModal() {
+            if(!currentUser) {
+                alert("Please sign in to view your personal wishlist.");
+                openAuthModal();
+                return;
+            }
+            document.getElementById('wishlist-modal').classList.remove('hidden');
+        }
+        function closeWishlistModal() { document.getElementById('wishlist-modal').classList.add('hidden'); }
 
         function openSizeChart(url) {
             const container = document.getElementById('sizechart-content');
@@ -519,7 +639,6 @@
             try {
                 const docRef = await db.collection("atelier_orders").add(orderData);
                 
-                // Automatically dispatch notification email to contact@aliveraatelier.in and client upon order submission
                 const itemsSummary = checkoutItemsPayload.map(i => `${i.name} [Size: ${i.size}] - ₹${i.price}`).join('\n');
                 const emailSub = encodeURIComponent(`New Atelier Order Placed: #${docRef.id.slice(0,6)}`);
                 const emailBody = encodeURIComponent(`New order submitted!\n\nClient Name: ${name}\nPhone: ${phone}\nEmail: ${clientEmail}\nShipping Address: ${house}, ${landmark}, ${city}, ${state} - ${pincode}\nPayment Method: ${paymentMethod}\nTotal: ₹${total}\n\nItems:\n${itemsSummary}`);
