@@ -71,9 +71,7 @@
                 <p id="storefront-subtitle-display" class="text-stone-300 text-sm tracking-wide italic font-serif">"Beautiful. The way you are..."</p>
                 <p id="storefront-desc-display" class="text-stone-400 text-xs tracking-[0.15em] uppercase max-w-xl mx-auto px-4"></p>
             </div>
-            <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
-                <!-- Dynamic grid items load here -->
-            </div>
+            <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8"></div>
         </div>
 
         <div id="popular-products-section" class="border-t gold-border pt-12">
@@ -366,37 +364,24 @@
 
         async function loadStorefront() {
             try {
-                // Fetch from atelier_dresses collection
-                const snap = await db.collection("atelier_dresses").get();
+                const snap = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
                 let docsArray = [];
                 snap.forEach(doc => {
                     const data = { id: doc.id, ...doc.data() };
                     allDressesMap[doc.id] = data;
                     docsArray.push(data);
                 });
-                
-                // Sort client-side by createdAt if available to prevent missing index errors
-                docsArray.sort((a, b) => {
-                    const timeA = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
-                    const timeB = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
-                    return timeB - timeA;
-                });
-
                 localStorage.setItem('alivera_cached_dresses', JSON.stringify(docsArray));
                 renderStorefrontGrid(docsArray);
-            } catch(e) {
-                console.error("Error loading storefront dresses from Firestore:", e);
-                const grid = document.getElementById('storefront-products-grid');
-                grid.innerHTML = `<p class="text-red-400 text-xs col-span-full text-center py-8">Unable to load dresses. Please check Firestore security rules or collection name.</p>`;
-            }
+            } catch(e) {}
         }
 
         function renderStorefrontGrid(dressesArray) {
             const grid = document.getElementById('storefront-products-grid');
             const popularGrid = document.getElementById('popular-products-grid');
             if(!dressesArray || dressesArray.length === 0) { 
-                grid.innerHTML = `<p class="text-stone-500 text-xs col-span-full text-center py-8">No dresses published yet. Add some from the Admin portal.</p>`; 
-                popularGrid.innerHTML = `<p class="text-stone-500 text-xs col-span-full text-center py-8">No popular dresses available.</p>`;
+                grid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No dresses published yet.</p>`; 
+                popularGrid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No popular dresses available.</p>`;
                 return; 
             }
 
@@ -753,7 +738,7 @@
                     `;
                 }).join('');
             } catch(e) {
-                listEl.ordersList = `<p class="text-xs text-red-400">Could not load orders.</p>`;
+                listEl.innerHTML = `<p class="text-xs text-red-400">Could not load orders.</p>`;
             }
         }
 
@@ -777,7 +762,7 @@
         async function updateProfileDetails() {
             if(!currentUser) return;
             const name = document.getElementById('edit-name').value;
-            const photoURL = document.getElementById('edit-pic'].value;
+            const photoURL = document.getElementById('edit-pic').value;
             try {
                 await currentUser.updateProfile({ displayName: name, photoURL: photoURL });
                 alert("Profile updated successfully!");
