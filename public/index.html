@@ -8,7 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #050505; color: #f5f5f4; }
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #050505;
+            color: #f5f5f4;
+        }
         .font-serif { font-family: 'Playfair Display', serif; }
         .gold-gradient { background: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .gold-border { border-color: rgba(191, 149, 63, 0.3); }
@@ -22,10 +28,10 @@
 <body class="antialiased selection:bg-amber-400 selection:text-black flex flex-col min-h-screen">
 
     <header class="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b gold-border">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <a href="index.html" class="font-serif text-2xl tracking-[0.25em] font-bold gold-gradient">ALIVÉRA ATELIER</a>
-            <div class="flex items-center space-x-6">
-                <a id="nav-admin-link" href="admin/index.html" class="text-[10px] uppercase tracking-widest text-amber-400 hover:text-amber-300 transition hidden font-semibold">Admin Portal</a>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="font-serif text-xl sm:text-2xl tracking-[0.2em] sm:tracking-[0.25em] font-bold gold-gradient">ALIVÉRA ATELIER</a>
+            <div class="flex items-center space-x-4 sm:space-x-6">
+                <a id="nav-admin-link" href="admin/index.html" class="text-[10px] uppercase tracking-widest text-amber-400 hover:text-amber-300 transition hidden font-semibold">Admin</a>
                 
                 <div id="nav-profile-container">
                     <button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>
@@ -44,24 +50,28 @@
         </div>
     </header>
 
-    <section class="max-w-7xl mx-auto px-6 py-8">
-        <div class="relative w-full bg-stone-900 border gold-border overflow-hidden flex items-center justify-center shadow-2xl">
-            <img id="hero-banner-img" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1897&q=80" class="w-full h-auto block opacity-60">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
-            <div class="absolute inset-0 z-10 flex items-center justify-center text-center px-6 pointer-events-none">
-                <div id="banner-status-display" class="font-serif text-2xl md:text-4xl font-light gold-gradient tracking-widest uppercase"></div>
+    <!-- PROMOTIONAL BANNER & TIMER SECTION -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full">
+        <div id="promo-banner-wrapper" class="relative w-full bg-stone-900 border gold-border overflow-hidden flex flex-col items-center justify-center shadow-2xl min-h-[280px] sm:min-h-[350px]">
+            <img id="hero-banner-img" src="" class="w-full h-full object-cover opacity-50 absolute inset-0">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none"></div>
+            <div class="relative z-10 text-center px-4 sm:px-6 py-12 space-y-4 max-w-2xl">
+                <div id="banner-status-display" class="font-serif text-xl sm:text-4xl font-light gold-gradient tracking-widest uppercase"></div>
+                <p id="banner-subtext-display" class="text-stone-300 text-xs tracking-[0.2em] uppercase"></p>
+                <div id="banner-countdown-box" class="flex justify-center gap-3 sm:gap-4 text-amber-300 font-serif text-base sm:text-lg pt-2 hidden"></div>
+                <div id="banner-counter-box" class="inline-block bg-black/70 border gold-border px-4 py-2 text-xs text-amber-200 tracking-wider hidden"></div>
             </div>
         </div>
     </section>
 
-    <main class="max-w-7xl mx-auto px-4 md:px-6 py-12 space-y-16 flex-grow">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-16 flex-grow w-full">
         <div>
-            <div class="text-center mb-12 space-y-3">
-                <h2 class="font-serif text-3xl font-light tracking-wide gold-gradient">Luxury dresses including custom sized</h2>
+            <div class="text-center mb-10 sm:mb-12 space-y-3">
+                <h2 class="font-serif text-2xl sm:text-3xl font-light tracking-wide gold-gradient">Luxury dresses including custom sized</h2>
                 <p id="storefront-subtitle-display" class="text-stone-300 text-sm tracking-wide italic font-serif">"Beautiful. The way you are..."</p>
-                <p id="storefront-desc-display" class="text-stone-400 text-xs tracking-[0.15em] uppercase max-w-xl mx-auto"></p>
+                <p id="storefront-desc-display" class="text-stone-400 text-xs tracking-[0.15em] uppercase max-w-xl mx-auto px-4"></p>
             </div>
-            <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8"></div>
+            <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8"></div>
         </div>
 
         <div id="popular-products-section" class="border-t gold-border pt-12">
@@ -75,7 +85,8 @@
         </div>
     </main>
 
-    <footer class="bg-black border-t gold-border py-12 px-6 mt-20 text-stone-400 text-xs">
+    <!-- FOOTER -->
+    <footer class="bg-black border-t gold-border py-12 px-6 mt-20 text-stone-400 text-xs w-full">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
             <div class="space-y-2">
                 <h4 class="font-serif text-lg tracking-widest gold-gradient font-bold">ALIVÉRA ATELIER</h4>
@@ -89,6 +100,7 @@
         </div>
     </footer>
 
+    <!-- MODALS -->
     <div id="sizechart-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
         <div class="bg-stone-950 border gold-border w-full max-w-xl p-6 relative text-stone-100">
             <button type="button" onclick="closeSizeChartModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
@@ -97,28 +109,32 @@
         </div>
     </div>
 
+    <!-- RESPONSIVE MOBILE WISHLIST DRAWER -->
     <div id="wishlist-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
-        <div class="bg-stone-950 border-l gold-border w-full max-w-md h-full flex flex-col p-6 overflow-y-auto text-stone-100">
-            <div class="flex justify-between pb-6 border-b border-stone-900"><h3 class="font-serif text-xl text-amber-200">Your Account Wishlist</h3><button onclick="closeWishlistModal()" class="text-xs">Close</button></div>
+        <div class="bg-stone-950 border-l gold-border w-full max-w-full sm:max-w-md h-[100dvh] flex flex-col p-4 sm:p-6 overflow-y-auto text-stone-100">
+            <div class="flex justify-between pb-6 border-b border-stone-900 items-center">
+                <h3 class="font-serif text-lg sm:text-xl text-amber-200">Your Account Wishlist</h3>
+                <button onclick="closeWishlistModal()" class="text-xs uppercase tracking-wider text-amber-300 px-3 py-1 bg-stone-900 border gold-border">Close</button>
+            </div>
             <div id="wishlist-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
         </div>
     </div>
 
     <div id="account-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-stone-950 border gold-border w-full max-w-2xl p-8 relative text-stone-100 my-8 shadow-2xl space-y-6">
+        <div class="bg-stone-950 border gold-border w-full max-w-2xl p-6 sm:p-8 relative text-stone-100 my-8 shadow-2xl space-y-6">
             <button type="button" onclick="closeAccountModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
             
-            <div class="flex items-center gap-6 pb-6 border-b gold-border">
-                <img id="acc-pic" src="" class="w-20 h-20 rounded-full object-cover border gold-border bg-stone-900">
+            <div class="flex items-center gap-4 sm:gap-6 pb-6 border-b gold-border">
+                <img id="acc-pic" src="" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full object-cover border gold-border bg-stone-900">
                 <div>
-                    <h3 id="acc-name" class="font-serif text-2xl gold-gradient">Client Name</h3>
+                    <h3 id="acc-name" class="font-serif text-xl sm:text-2xl gold-gradient">Client Name</h3>
                     <p id="acc-email" class="text-xs text-stone-400">client@email.com</p>
                     <p id="acc-phone" class="text-xs text-amber-300 mt-1">Phone not added</p>
                 </div>
             </div>
 
             <div class="space-y-4 bg-stone-900/60 p-4 border gold-border">
-                <h4 class="font-serif text-lg text-amber-200">Set Up Your Client Profile</h4>
+                <h4 class="font-serif text-base sm:text-lg text-amber-200">Set Up Your Client Profile</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">Full Name *</label>
@@ -137,7 +153,7 @@
             </div>
 
             <div class="border-t gold-border pt-6 space-y-4">
-                <h4 class="font-serif text-lg text-amber-200">Your Atelier Orders</h4>
+                <h4 class="font-serif text-base sm:text-lg text-amber-200">Your Atelier Orders</h4>
                 <div id="acc-orders-list" class="space-y-3 max-h-60 overflow-y-auto">
                     <p class="text-xs text-stone-500">Loading orders...</p>
                 </div>
@@ -150,9 +166,9 @@
     </div>
 
     <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-stone-950 border gold-border w-full max-w-2xl p-8 shadow-2xl relative text-stone-100 my-8">
+        <div class="bg-stone-950 border gold-border w-full max-w-2xl p-6 sm:p-8 shadow-2xl relative text-stone-100 my-8">
             <button type="button" onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
-            <h3 class="font-serif text-2xl font-medium gold-gradient mb-6">Secure Atelier Checkout</h3>
+            <h3 class="font-serif text-xl sm:text-2xl font-medium gold-gradient mb-6">Secure Atelier Checkout</h3>
             
             <div class="space-y-4">
                 <div id="checkout-summary-box" class="bg-stone-900 p-4 border gold-border text-xs mb-4"></div>
@@ -181,7 +197,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">City *</label>
                         <input type="text" id="chk-city" placeholder="City" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
@@ -210,9 +226,9 @@
     </div>
 
     <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex items-center justify-center p-4">
-        <div class="bg-stone-950 border gold-border w-full max-w-md p-8 relative text-stone-100 space-y-4">
+        <div class="bg-stone-950 border gold-border w-full max-w-md p-6 sm:p-8 relative text-stone-100 space-y-4">
             <button type="button" onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 text-xs">Close</button>
-            <h3 class="font-serif text-2xl font-medium gold-gradient">Client Authentication</h3>
+            <h3 class="font-serif text-xl sm:text-2xl font-medium gold-gradient">Client Authentication</h3>
             <button type="button" onclick="signInWithGoogle()" class="w-full bg-stone-900 border gold-border py-3 text-xs uppercase tracking-wider font-semibold text-amber-200 hover:bg-stone-800 transition">Continue with Google</button>
             <div class="flex items-center my-4"><div class="flex-grow border-t border-stone-800"></div><span class="px-3 text-[10px] text-stone-500 uppercase">Or Email</span><div class="flex-grow border-t border-stone-800"></div></div>
             <input type="text" id="auth-reg-name" placeholder="Full Name (for new accounts)" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
@@ -225,13 +241,17 @@
         </div>
     </div>
 
+    <!-- RESPONSIVE MOBILE SHOPPING BAG DRAWER -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
-        <div class="bg-stone-950 border-l gold-border w-full max-w-md h-full flex flex-col p-6 overflow-y-auto text-stone-100">
-            <div class="flex justify-between pb-6 border-b border-stone-900"><h3 class="font-serif text-xl text-amber-200">Shopping Bag</h3><button onclick="closeCartModal()" class="text-xs">Close</button></div>
+        <div class="bg-stone-950 border-l gold-border w-full max-w-full sm:max-w-md h-[100dvh] flex flex-col p-4 sm:p-6 overflow-y-auto text-stone-100">
+            <div class="flex justify-between pb-6 border-b border-stone-900 items-center">
+                <h3 class="font-serif text-lg sm:text-xl text-amber-200">Shopping Bag</h3>
+                <button onclick="closeCartModal()" class="text-xs uppercase tracking-wider text-amber-300 px-3 py-1 bg-stone-900 border gold-border">Close</button>
+            </div>
             <div id="cart-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
             <div class="border-t border-stone-900 pt-6 mt-auto">
-                <div class="flex justify-between mb-6 text-stone-100"><span>Total</span><span id="cart-total" class="text-amber-300">₹0</span></div>
-                <button type="button" onclick="proceedCartCheckout()" class="w-full gold-bg text-black py-4 text-xs uppercase font-semibold">Proceed to Checkout</button>
+                <div class="flex justify-between mb-6 text-stone-100 text-sm"><span>Total</span><span id="cart-total" class="text-amber-300 font-bold">₹0</span></div>
+                <button type="button" onclick="proceedCartCheckout()" class="w-full gold-bg text-black py-4 text-xs uppercase font-semibold tracking-wider">Proceed to Checkout</button>
             </div>
         </div>
     </div>
@@ -252,11 +272,21 @@
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
-        let wishlist = []; // Account-synced array
+        let wishlist = [];
         let recentlyViewedIds = JSON.parse(localStorage.getItem('alivera_recent_ids')) || [];
         let currentUser = null;
         let checkoutItemsPayload = [];
         let allDressesMap = {};
+
+        // INSTANT MOBILE INITIALIZATION FROM LOCAL STORAGE CACHE
+        const cachedDresses = localStorage.getItem('alivera_cached_dresses');
+        if (cachedDresses) {
+            try {
+                const parsed = JSON.parse(cachedDresses);
+                parsed.forEach(item => { allDressesMap[item.id] = item; });
+                renderStorefrontGrid(parsed);
+            } catch(e) {}
+        }
 
         auth.onAuthStateChanged(async user => {
             currentUser = user;
@@ -292,14 +322,9 @@
             if(!currentUser) return;
             try {
                 const docRef = await db.collection("atelier_wishlists").doc(currentUser.uid).get();
-                if(docRef.exists) {
-                    wishlist = docRef.data().items || [];
-                } else {
-                    wishlist = [];
-                }
-            } catch(e) {
-                wishlist = [];
-            }
+                if(docRef.exists) { wishlist = docRef.data().items || []; }
+                else { wishlist = []; }
+            } catch(e) { wishlist = []; }
             updateWishlistUI();
         }
 
@@ -310,17 +335,12 @@
                     items: wishlist,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-            } catch(e) {
-                console.error("Error saving wishlist:", e);
-            }
+            } catch(e) {}
         }
 
         async function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                await auth.signInWithPopup(provider);
-                closeAuthModal();
-            } catch(e) { alert(e.message); }
+            try { await auth.signInWithPopup(provider); closeAuthModal(); } catch(e) { alert(e.message); }
         }
 
         async function registerUserEmail() {
@@ -339,33 +359,37 @@
         async function loginUserEmail() {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                closeAuthModal();
-            } catch(e) { alert(e.message); }
+            try { await auth.signInWithEmailAndPassword(email, password); closeAuthModal(); } catch(e) { alert(e.message); }
         }
 
         async function loadStorefront() {
+            try {
+                const snap = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
+                let docsArray = [];
+                snap.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    allDressesMap[doc.id] = data;
+                    docsArray.push(data);
+                });
+                localStorage.setItem('alivera_cached_dresses', JSON.stringify(docsArray));
+                renderStorefrontGrid(docsArray);
+            } catch(e) {}
+        }
+
+        function renderStorefrontGrid(dressesArray) {
             const grid = document.getElementById('storefront-products-grid');
             const popularGrid = document.getElementById('popular-products-grid');
-            const snap = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
-            if(snap.empty) { 
+            if(!dressesArray || dressesArray.length === 0) { 
                 grid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No dresses published yet.</p>`; 
                 popularGrid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No popular dresses available.</p>`;
                 return; 
             }
-            
-            let docsArray = snap.docs;
-            docsArray.forEach(doc => {
-                allDressesMap[doc.id] = { id: doc.id, ...doc.data() };
-            });
 
-            grid.innerHTML = docsArray.map(doc => {
-                const item = doc.data();
-                const dressId = doc.id;
+            grid.innerHTML = dressesArray.map(item => {
+                const dressId = item.id;
                 const isWishlisted = wishlist.some(w => w.id === dressId);
                 return `
-                    <div class="bg-stone-950 border gold-border p-4 flex flex-col justify-between shadow-lg relative">
+                    <div class="bg-stone-950 border gold-border p-3 sm:p-4 flex flex-col justify-between shadow-lg relative">
                         <div onclick="viewProduct('${dressId}')" class="cursor-pointer">
                             <div class="aspect-[3/4] bg-stone-900 mb-3 overflow-hidden border gold-border relative">
                                 <img src="${item.imageUrl}" class="w-full h-full object-cover">
@@ -373,12 +397,12 @@
                                     ${isWishlisted ? '♥' : '♡'}
                                 </button>
                             </div>
-                            <h4 class="font-serif text-sm text-amber-200 mb-1">${item.name}</h4>
-                            <p class="text-xs text-stone-400 mb-2">₹${item.price}</p>
+                            <h4 class="font-serif text-xs sm:text-sm text-amber-200 mb-1">${item.name}</h4>
+                            <p class="text-[11px] sm:text-xs text-stone-400 mb-2">₹${item.price}</p>
                             ${item.sizeChartUrl ? `<button type="button" onclick="event.stopPropagation(); openSizeChart('${item.sizeChartUrl}')" class="text-[10px] text-amber-400 underline uppercase tracking-wider mb-3 block">View Size Chart</button>` : ''}
                         </div>
                         <div class="space-y-2">
-                            <select id="size-${dressId}" class="w-full bg-stone-900 border gold-border text-stone-200 p-2 text-[11px] uppercase outline-none">
+                            <select id="size-${dressId}" class="w-full bg-stone-900 border gold-border text-stone-200 p-2 text-[10px] sm:text-[11px] uppercase outline-none">
                                 <option value="XS">XS</option>
                                 <option value="S">S</option>
                                 <option value="M" selected>M</option>
@@ -397,19 +421,16 @@
                 `;
             }).join('');
 
-            const popularItems = docsArray.slice(0, 4);
-            popularGrid.innerHTML = popularItems.map(doc => {
-                const item = doc.data();
-                return `
-                    <div class="bg-stone-950 border gold-border p-3 flex gap-3 items-center">
-                        <img src="${item.imageUrl}" class="w-14 h-16 object-cover border gold-border">
-                        <div>
-                            <h5 class="font-serif text-xs text-amber-200">${item.name}</h5>
-                            <p class="text-[10px] text-stone-400">₹${item.price}</p>
-                        </div>
+            const popularItems = dressesArray.slice(0, 4);
+            popularGrid.innerHTML = popularItems.map(item => `
+                <div class="bg-stone-950 border gold-border p-3 flex gap-3 items-center">
+                    <img src="${item.imageUrl}" class="w-14 h-16 object-cover border gold-border">
+                    <div>
+                        <h5 class="font-serif text-xs text-amber-200">${item.name}</h5>
+                        <p class="text-[10px] text-stone-400">₹${item.price}</p>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
 
             renderRecentlyViewed();
         }
@@ -443,32 +464,17 @@
         }
 
         function shareProduct(name, price) {
-            const shareData = {
-                title: `${name} — Alivèra Atelier`,
-                text: `Explore ${name} by Alivèra Atelier for ₹${price}.`,
-                url: window.location.href
-            };
-            if (navigator.share) {
-                navigator.share(shareData).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-                alert("Dress link copied to clipboard!");
-            }
+            const shareData = { title: `${name} — Alivèra Atelier`, text: `Explore ${name} by Alivèra Atelier for ₹${price}.`, url: window.location.href };
+            if (navigator.share) { navigator.share(shareData).catch(() => {}); }
+            else { navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`); alert("Dress link copied to clipboard!"); }
         }
 
         async function toggleWishlist(id) {
-            if(!currentUser) {
-                alert("Please sign in to manage your personal wishlist.");
-                openAuthModal();
-                return;
-            }
+            if(!currentUser) { alert("Please sign in to manage your personal wishlist."); openAuthModal(); return; }
             const item = allDressesMap[id];
             const idx = wishlist.findIndex(w => w.id === id);
-            if(idx > -1) {
-                wishlist.splice(idx, 1);
-            } else {
-                wishlist.push(item);
-            }
+            if(idx > -1) { wishlist.splice(idx, 1); }
+            else { wishlist.push(item); }
             await saveUserWishlist();
             updateWishlistUI();
             loadStorefront();
@@ -503,38 +509,89 @@
         }
 
         function openWishlistModal() {
-            if(!currentUser) {
-                alert("Please sign in to view your personal wishlist.");
-                openAuthModal();
-                return;
-            }
+            if(!currentUser) { alert("Please sign in to view your personal wishlist."); openAuthModal(); return; }
             document.getElementById('wishlist-modal').classList.remove('hidden');
         }
         function closeWishlistModal() { document.getElementById('wishlist-modal').classList.add('hidden'); }
 
         function openSizeChart(url) {
             const container = document.getElementById('sizechart-content');
-            if (url.startsWith('data:application/pdf')) {
-                container.innerHTML = `<embed src="${url}" type="application/pdf" width="100%" height="450px" />`;
-            } else {
-                container.innerHTML = `<img src="${url}" class="max-w-full h-auto object-contain">`;
-            }
+            if (url.startsWith('data:application/pdf')) { container.innerHTML = `<embed src="${url}" type="application/pdf" width="100%" height="450px" />`; }
+            else { container.innerHTML = `<img src="${url}" class="max-w-full h-auto object-contain">`; }
             document.getElementById('sizechart-modal').classList.remove('hidden');
         }
-
         function closeSizeChartModal() { document.getElementById('sizechart-modal').classList.add('hidden'); }
 
+        // DYNAMIC PROMOTIONAL BANNER, TIMERS & LIVE COUNTER REAL-TIME LISTENER
         db.collection("atelier_settings").doc("promotion_config").onSnapshot(doc => {
             const bannerImg = document.getElementById('hero-banner-img');
             const subtitleDisplay = document.getElementById('storefront-subtitle-display');
             const descDisplay = document.getElementById('storefront-desc-display');
+            const statusDisplay = document.getElementById('banner-status-display');
+            const subtextDisplay = document.getElementById('banner-subtext-display');
+            const countdownBox = document.getElementById('banner-countdown-box');
+            const counterBox = document.getElementById('banner-counter-box');
+
             if (doc.exists) {
                 const data = doc.data();
-                if (data.bannerImageUrl) bannerImg.src = data.bannerImageUrl;
                 if (data.storefrontSubtitle) subtitleDisplay.innerText = data.storefrontSubtitle;
                 if (data.storefrontDescription) descDisplay.innerText = data.storefrontDescription;
+
+                const now = new Date().getTime();
+                const startSaleTime = data.saleStartTime ? new Date(data.saleStartTime).getTime() : 0;
+                const endSaleTime = data.saleEndTime ? new Date(data.saleEndTime).getTime() : 0;
+
+                if (startSaleTime && now < startSaleTime) {
+                    bannerImg.src = data.normalBannerUrl || data.bannerImageUrl || "";
+                    statusDisplay.innerText = data.normalBannerTitle || "Upcoming Atelier Release";
+                    subtextDisplay.innerText = "Sale launches in:";
+                    countdownBox.classList.remove('hidden');
+                    counterBox.classList.add('hidden');
+                    
+                    startCountdownTimer(startSaleTime, countdownBox, () => {
+                        window.location.reload();
+                    });
+                } else if (startSaleTime && endSaleTime && now >= startSaleTime && now <= endSaleTime) {
+                    bannerImg.src = data.saleBannerUrl || data.bannerImageUrl || "";
+                    statusDisplay.innerText = data.saleBannerTitle || "Special Collection Sale Active";
+                    subtextDisplay.innerText = data.saleBannerSubtitle || "Exclusive limited-time pricing";
+                    countdownBox.classList.add('hidden');
+                    
+                    if (data.maxDiscountSlots) {
+                        const remainingSlots = Math.max(0, data.maxDiscountSlots - (data.usedDiscountSlots || 0));
+                        counterBox.innerText = `⚡ First ${data.maxDiscountSlots} Customers Offer: ${remainingSlots} slots remaining!`;
+                        counterBox.classList.remove('hidden');
+                    } else {
+                        counterBox.classList.add('hidden');
+                    }
+                } else {
+                    bannerImg.src = data.bannerImageUrl || "";
+                    statusDisplay.innerText = data.storefrontSubtitle || "";
+                    subtextDisplay.innerText = "";
+                    countdownBox.classList.add('hidden');
+                    counterBox.classList.add('hidden');
+                }
             }
         });
+
+        function startCountdownTimer(targetTime, containerEl, onComplete) {
+            const updateTimer = () => {
+                const now = new Date().getTime();
+                const distance = targetTime - now;
+                if (distance < 0) {
+                    containerEl.innerHTML = "SALE IS LIVE NOW!";
+                    if(onComplete) onComplete();
+                    return;
+                }
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                containerEl.innerHTML = `<span>${days}d</span> : <span>${hours}h</span> : <span>${minutes}m</span> : <span>${seconds}s</span>`;
+            };
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
 
         function addToCart(id) {
             const item = allDressesMap[id];
@@ -567,9 +624,7 @@
                 return `<div class="flex justify-between py-1"><span>${i.name} (${i.size})</span><span class="text-amber-300">₹${i.price}</span></div>`;
             }).join('') + `<div class="border-t border-stone-800 mt-2 pt-2 flex justify-between font-bold"><span>Total Amount</span><span class="text-amber-300">₹${total}</span></div>`;
             
-            if(currentUser) {
-                document.getElementById('chk-name').value = currentUser.displayName || '';
-            }
+            if(currentUser) { document.getElementById('chk-name').value = currentUser.displayName || ''; }
             document.getElementById('checkout-modal').classList.remove('hidden');
         }
 
@@ -639,13 +694,20 @@
             try {
                 const docRef = await db.collection("atelier_orders").add(orderData);
                 
+                const promoRef = db.collection("atelier_settings").doc("promotion_config");
+                const promoDoc = await promoRef.get();
+                if(promoDoc.exists && promoDoc.data().maxDiscountSlots) {
+                    const currentUsed = promoDoc.data().usedDiscountSlots || 0;
+                    await promoRef.update({ usedDiscountSlots: currentUsed + 1 });
+                }
+
                 const itemsSummary = checkoutItemsPayload.map(i => `${i.name} [Size: ${i.size}] - ₹${i.price}`).join('\n');
                 const emailSub = encodeURIComponent(`New Atelier Order Placed: #${docRef.id.slice(0,6)}`);
                 const emailBody = encodeURIComponent(`New order submitted!\n\nClient Name: ${name}\nPhone: ${phone}\nEmail: ${clientEmail}\nShipping Address: ${house}, ${landmark}, ${city}, ${state} - ${pincode}\nPayment Method: ${paymentMethod}\nTotal: ₹${total}\n\nItems:\n${itemsSummary}`);
                 
-                window.location.href = `mailto:contact@aliveraatelier.in,${clientEmail}?subject=${emailSub}&body=${emailBody}`;
+                window.open(`mailto:contact@aliveraatelier.in?subject=${emailSub}&body=${emailBody}`, '_blank');
 
-                alert("Order successfully placed and sent to atelier inbox!");
+                alert("Order successfully placed! Your order details have been recorded in the Atelier database.");
                 cart = [];
                 localStorage.setItem('alivera_cart', JSON.stringify(cart));
                 updateCartUI();
@@ -661,10 +723,7 @@
             const listEl = document.getElementById('acc-orders-list');
             try {
                 const snap = await db.collection("atelier_orders").where("clientEmail", "==", currentUser.email).get();
-                if(snap.empty) {
-                    listEl.innerHTML = `<p class="text-xs text-stone-500">No orders placed yet.</p>`;
-                    return;
-                }
+                if(snap.empty) { listEl.innerHTML = `<p class="text-xs text-stone-500">No orders placed yet.</p>`; return; }
                 listEl.innerHTML = snap.docs.map(doc => {
                     const o = doc.data();
                     const date = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleDateString() : 'Recent';
@@ -709,9 +768,7 @@
                 alert("Profile updated successfully!");
                 closeAccountModal();
                 window.location.reload();
-            } catch(e) {
-                alert("Error updating profile: " + e.message);
-            }
+            } catch(e) { alert("Error updating profile: " + e.message); }
         }
 
         async function logoutCustomer() {
