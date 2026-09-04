@@ -56,10 +56,8 @@
             <img id="hero-banner-img" src="" class="w-full h-full object-cover opacity-50 absolute inset-0">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none"></div>
             <div class="relative z-10 text-center px-4 sm:px-6 py-12 space-y-4 max-w-2xl">
-                <div id="banner-status-display" class="font-serif text-xl sm:text-4xl font-light gold-gradient tracking-widest uppercase"></div>
-                <p id="banner-subtext-display" class="text-stone-300 text-xs tracking-[0.2em] uppercase"></p>
-                <div id="banner-countdown-box" class="flex justify-center gap-3 sm:gap-4 text-amber-300 font-serif text-base sm:text-lg pt-2 hidden"></div>
-                <div id="banner-counter-box" class="inline-block bg-black/70 border gold-border px-4 py-2 text-xs text-amber-200 tracking-wider hidden"></div>
+                <div id="banner-status-display" class="font-serif text-xl sm:text-4xl font-light gold-gradient tracking-widest uppercase">Custom Couture Collection</div>
+                <p id="banner-subtext-display" class="text-stone-300 text-xs tracking-[0.2em] uppercase">Tailored to Perfection</p>
             </div>
         </div>
     </section>
@@ -72,16 +70,6 @@
                 <p id="storefront-desc-display" class="text-stone-400 text-xs tracking-[0.15em] uppercase max-w-xl mx-auto px-4"></p>
             </div>
             <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8"></div>
-        </div>
-
-        <div id="popular-products-section" class="border-t gold-border pt-12">
-            <h3 class="font-serif text-xl gold-gradient mb-6 tracking-wide text-center">Popular Masterpieces</h3>
-            <div id="popular-products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-        </div>
-
-        <div id="recently-viewed-section" class="hidden border-t gold-border pt-12">
-            <h3 class="font-serif text-xl gold-gradient mb-6 tracking-wide">Recently Viewed Masterpieces</h3>
-            <div id="recently-viewed-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </div>
     </main>
 
@@ -101,15 +89,6 @@
     </footer>
 
     <!-- MODALS -->
-    <div id="sizechart-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-stone-950 border gold-border w-full max-w-xl p-6 relative text-stone-100">
-            <button type="button" onclick="closeSizeChartModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
-            <h3 class="font-serif text-xl gold-gradient mb-4">Measurement & Size Chart</h3>
-            <div id="sizechart-content" class="w-full max-h-[70vh] overflow-y-auto flex items-center justify-center bg-stone-900 border gold-border p-2"></div>
-        </div>
-    </div>
-
-    <!-- RESPONSIVE MOBILE WISHLIST DRAWER -->
     <div id="wishlist-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
         <div class="bg-stone-950 border-l gold-border w-full max-w-full sm:max-w-md h-[100dvh] flex flex-col p-4 sm:p-6 overflow-y-auto text-stone-100">
             <div class="flex justify-between pb-6 border-b border-stone-900 items-center">
@@ -117,111 +96,6 @@
                 <button onclick="closeWishlistModal()" class="text-xs uppercase tracking-wider text-amber-300 px-3 py-1 bg-stone-900 border gold-border">Close</button>
             </div>
             <div id="wishlist-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
-        </div>
-    </div>
-
-    <div id="account-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-stone-950 border gold-border w-full max-w-2xl p-6 sm:p-8 relative text-stone-100 my-8 shadow-2xl space-y-6">
-            <button type="button" onclick="closeAccountModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
-            
-            <div class="flex items-center gap-4 sm:gap-6 pb-6 border-b gold-border">
-                <img id="acc-pic" src="" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full object-cover border gold-border bg-stone-900">
-                <div>
-                    <h3 id="acc-name" class="font-serif text-xl sm:text-2xl gold-gradient">Client Name</h3>
-                    <p id="acc-email" class="text-xs text-stone-400">client@email.com</p>
-                    <p id="acc-phone" class="text-xs text-amber-300 mt-1">Phone not added</p>
-                </div>
-            </div>
-
-            <div class="space-y-4 bg-stone-900/60 p-4 border gold-border">
-                <h4 class="font-serif text-base sm:text-lg text-amber-200">Set Up Your Client Profile</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Full Name *</label>
-                        <input type="text" id="edit-name" placeholder="Enter Full Name" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Phone Number *</label>
-                        <input type="text" id="edit-phone" placeholder="Enter Phone Number" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Profile Avatar Image URL</label>
-                    <input type="text" id="edit-pic" placeholder="https://..." class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                </div>
-                <button type="button" onclick="updateProfileDetails()" class="w-full gold-bg text-black py-3 text-xs uppercase font-semibold tracking-wider gold-hover">Save Client Profile</button>
-            </div>
-
-            <div class="border-t gold-border pt-6 space-y-4">
-                <h4 class="font-serif text-base sm:text-lg text-amber-200">Your Atelier Orders</h4>
-                <div id="acc-orders-list" class="space-y-3 max-h-60 overflow-y-auto">
-                    <p class="text-xs text-stone-500">Loading orders...</p>
-                </div>
-            </div>
-
-            <div class="pt-4 border-t border-stone-900 flex justify-between items-center">
-                <button type="button" onclick="logoutCustomer()" class="w-full bg-stone-900 border border-red-500/40 text-red-400 py-3 text-xs uppercase tracking-widest font-semibold hover:bg-red-950/20 transition">Log Out / Sign Out</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-stone-950 border gold-border w-full max-w-2xl p-6 sm:p-8 shadow-2xl relative text-stone-100 my-8">
-            <button type="button" onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
-            <h3 class="font-serif text-xl sm:text-2xl font-medium gold-gradient mb-6">Secure Atelier Checkout</h3>
-            
-            <div class="space-y-4">
-                <div id="checkout-summary-box" class="bg-stone-900 p-4 border gold-border text-xs mb-4"></div>
-                
-                <h4 class="font-serif text-sm text-amber-200 uppercase tracking-wider">Detailed Shipping Address</h4>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Full Name *</label>
-                        <input type="text" id="chk-name" placeholder="Full Name" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Phone Number *</label>
-                        <input type="text" id="chk-phone" placeholder="Phone Number" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">House / Flat Number *</label>
-                        <input type="text" id="chk-house" placeholder="e.g., Villa 4B or Flat 201" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Landmark *</label>
-                        <input type="text" id="chk-landmark" placeholder="e.g., Near Royal Park" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">City *</label>
-                        <input type="text" id="chk-city" placeholder="City" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">State *</label>
-                        <input type="text" id="chk-state" placeholder="State" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] uppercase text-stone-400 mb-1">6-digit Pincode *</label>
-                        <input type="text" id="chk-pincode" placeholder="Pincode" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Payment Method *</label>
-                    <select id="chk-payment-method" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                        <option value="Online Payment">Online Payment (UPI, GPay, Cards, NetBanking at booking)</option>
-                        <option value="Cash on Delivery">Cash on Delivery (COD)</option>
-                    </select>
-                </div>
-
-                <button type="button" onclick="submitOrder()" class="w-full gold-bg text-black py-4 text-xs uppercase tracking-widest font-semibold gold-hover mt-4">Confirm & Book Order</button>
-            </div>
         </div>
     </div>
 
@@ -241,7 +115,6 @@
         </div>
     </div>
 
-    <!-- RESPONSIVE MOBILE SHOPPING BAG DRAWER -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
         <div class="bg-stone-950 border-l gold-border w-full max-w-full sm:max-w-md h-[100dvh] flex flex-col p-4 sm:p-6 overflow-y-auto text-stone-100">
             <div class="flex justify-between pb-6 border-b border-stone-900 items-center">
@@ -251,7 +124,6 @@
             <div id="cart-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
             <div class="border-t border-stone-900 pt-6 mt-auto">
                 <div class="flex justify-between mb-6 text-stone-100 text-sm"><span>Total</span><span id="cart-total" class="text-amber-300 font-bold">₹0</span></div>
-                <button type="button" onclick="proceedCartCheckout()" class="w-full gold-bg text-black py-4 text-xs uppercase font-semibold tracking-wider">Proceed to Checkout</button>
             </div>
         </div>
     </div>
@@ -273,511 +145,143 @@
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
         let wishlist = [];
-        let recentlyViewedIds = JSON.parse(localStorage.getItem('alivera_recent_ids')) || [];
         let currentUser = null;
-        let checkoutItemsPayload = [];
         let allDressesMap = {};
 
-        // INSTANT MOBILE INITIALIZATION FROM LOCAL STORAGE CACHE
-        const cachedDresses = localStorage.getItem('alivera_cached_dresses');
-        if (cachedDresses) {
-            try {
-                const parsed = JSON.parse(cachedDresses);
-                parsed.forEach(item => { allDressesMap[item.id] = item; });
-                renderStorefrontGrid(parsed);
-            } catch(e) {}
-        }
-
-        auth.onAuthStateChanged(async user => {
-            currentUser = user;
-            const adminLink = document.getElementById('nav-admin-link');
-            const profileContainer = document.getElementById('nav-profile-container');
-
-            if (user) {
-                if (user.email === ADMIN_EMAIL) {
-                    adminLink.classList.remove('hidden');
-                } else {
-                    adminLink.classList.add('hidden');
-                }
-                const photoURL = user.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
-                profileContainer.innerHTML = `
-                    <button type="button" onclick="openAccountModal()" class="flex items-center gap-2 text-xs uppercase tracking-widest text-amber-300 font-medium">
-                        <img src="${photoURL}" class="w-8 h-8 rounded-full object-cover border gold-border">
-                        <span class="hidden md:inline">${user.displayName || 'Account'}</span>
-                    </button>
-                `;
-                await fetchUserWishlist();
-                loadCustomerOrders();
-            } else {
-                adminLink.classList.add('hidden');
-                profileContainer.innerHTML = `<button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>`;
-                wishlist = [];
-                updateWishlistUI();
-            }
-            updateCartUI();
-            loadStorefront();
-        });
-
-        async function fetchUserWishlist() {
-            if(!currentUser) return;
-            try {
-                const docRef = await db.collection("atelier_wishlists").doc(currentUser.uid).get();
-                if(docRef.exists) { wishlist = docRef.data().items || []; }
-                else { wishlist = []; }
-            } catch(e) { wishlist = []; }
-            updateWishlistUI();
-        }
-
-        async function saveUserWishlist() {
-            if(!currentUser) return;
-            try {
-                await db.collection("atelier_wishlists").doc(currentUser.uid).set({
-                    items: wishlist,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            } catch(e) {}
-        }
-
-        async function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try { await auth.signInWithPopup(provider); closeAuthModal(); } catch(e) { alert(e.message); }
-        }
-
-        async function registerUserEmail() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            const name = document.getElementById('auth-reg-name').value;
-            if(!email || !password) { alert("Please provide email and password."); return; }
-            try {
-                const cred = await auth.createUserWithEmailAndPassword(email, password);
-                if(name) { await cred.user.updateProfile({ displayName: name }); }
-                closeAuthModal();
-                alert("Account created successfully!");
-            } catch(e) { alert(e.message); }
-        }
-
-        async function loginUserEmail() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            try { await auth.signInWithEmailAndPassword(email, password); closeAuthModal(); } catch(e) { alert(e.message); }
-        }
-
-        async function loadStorefront() {
-            try {
-                const snap = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
-                let docsArray = [];
-                snap.forEach(doc => {
-                    const data = { id: doc.id, ...doc.data() };
-                    allDressesMap[doc.id] = data;
-                    docsArray.push(data);
-                });
-                localStorage.setItem('alivera_cached_dresses', JSON.stringify(docsArray));
-                renderStorefrontGrid(docsArray);
-            } catch(e) {}
-        }
-
-        function renderStorefrontGrid(dressesArray) {
-            const grid = document.getElementById('storefront-products-grid');
-            const popularGrid = document.getElementById('popular-products-grid');
-            if(!dressesArray || dressesArray.length === 0) { 
-                grid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No dresses published yet.</p>`; 
-                popularGrid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No popular dresses available.</p>`;
-                return; 
-            }
-
-            grid.innerHTML = dressesArray.map(item => {
-                const dressId = item.id;
-                const isWishlisted = wishlist.some(w => w.id === dressId);
-                return `
-                    <div class="bg-stone-950 border gold-border p-3 sm:p-4 flex flex-col justify-between shadow-lg relative">
-                        <div onclick="viewProduct('${dressId}')" class="cursor-pointer">
-                            <div class="aspect-[3/4] bg-stone-900 mb-3 overflow-hidden border gold-border relative">
-                                <img src="${item.imageUrl}" class="w-full h-full object-cover">
-                                <button type="button" onclick="event.stopPropagation(); toggleWishlist('${dressId}')" class="absolute top-2 right-2 bg-black/60 p-2 text-xs rounded-full border gold-border text-amber-300 hover:bg-black">
-                                    ${isWishlisted ? '♥' : '♡'}
-                                </button>
-                            </div>
-                            <h4 class="font-serif text-xs sm:text-sm text-amber-200 mb-1">${item.name}</h4>
-                            <p class="text-[11px] sm:text-xs text-stone-400 mb-2">₹${item.price}</p>
-                            ${item.sizeChartUrl ? `<button type="button" onclick="event.stopPropagation(); openSizeChart('${item.sizeChartUrl}')" class="text-[10px] text-amber-400 underline uppercase tracking-wider mb-3 block">View Size Chart</button>` : ''}
-                        </div>
-                        <div class="space-y-2">
-                            <select id="size-${dressId}" class="w-full bg-stone-900 border gold-border text-stone-200 p-2 text-[10px] sm:text-[11px] uppercase outline-none">
-                                <option value="XS">XS</option>
-                                <option value="S">S</option>
-                                <option value="M" selected>M</option>
-                                <option value="L">L</option>
-                                <option value="XL">XL</option>
-                                <option value="XXL">XXL</option>
-                                <option value="CUSTOM">Custom Measurements</option>
-                            </select>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button type="button" onclick="addToCart('${dressId}')" class="bg-stone-900 border gold-border text-stone-200 py-2 text-[9px] uppercase tracking-wider font-semibold hover:text-amber-300 transition">Add to Bag</button>
-                                <button type="button" onclick="buyNow('${dressId}')" class="gold-bg text-black py-2 text-[9px] uppercase tracking-wider font-bold">Buy Now</button>
-                            </div>
-                            <button type="button" onclick="shareProduct('${item.name}', ${item.price})" class="w-full bg-stone-900/50 border gold-border text-stone-300 py-1.5 text-[9px] uppercase tracking-widest hover:text-amber-300 transition">Share Dress</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            const popularItems = dressesArray.slice(0, 4);
-            popularGrid.innerHTML = popularItems.map(item => `
-                <div class="bg-stone-950 border gold-border p-3 flex gap-3 items-center">
-                    <img src="${item.imageUrl}" class="w-14 h-16 object-cover border gold-border">
-                    <div>
-                        <h5 class="font-serif text-xs text-amber-200">${item.name}</h5>
-                        <p class="text-[10px] text-stone-400">₹${item.price}</p>
-                    </div>
-                </div>
-            `).join('');
-
-            renderRecentlyViewed();
-        }
-
-        function viewProduct(id) {
-            const item = allDressesMap[id];
-            if(!item) return;
-            if(!recentlyViewedIds.includes(id)) {
-                recentlyViewedIds.unshift(id);
-                if(recentlyViewedIds.length > 4) recentlyViewedIds.pop();
-                localStorage.setItem('alivera_recent_ids', JSON.stringify(recentlyViewedIds));
-            }
-            renderRecentlyViewed();
-        }
-
-        function renderRecentlyViewed() {
-            const sec = document.getElementById('recently-viewed-section');
-            const grid = document.getElementById('recently-viewed-grid');
-            const validRecent = recentlyViewedIds.map(id => allDressesMap[id]).filter(Boolean);
-            if(validRecent.length === 0) { sec.classList.add('hidden'); return; }
-            sec.classList.remove('hidden');
-            grid.innerHTML = validRecent.map(item => `
-                <div class="bg-stone-950 border gold-border p-3 flex gap-3 items-center">
-                    <img src="${item.imageUrl}" class="w-14 h-16 object-cover border gold-border">
-                    <div>
-                        <h5 class="font-serif text-xs text-amber-200">${item.name}</h5>
-                        <p class="text-[10px] text-stone-400">₹${item.price}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function shareProduct(name, price) {
-            const shareData = { title: `${name} — Alivèra Atelier`, text: `Explore ${name} by Alivèra Atelier for ₹${price}.`, url: window.location.href };
-            if (navigator.share) { navigator.share(shareData).catch(() => {}); }
-            else { navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`); alert("Dress link copied to clipboard!"); }
-        }
-
-        async function toggleWishlist(id) {
-            if(!currentUser) { alert("Please sign in to manage your personal wishlist."); openAuthModal(); return; }
-            const item = allDressesMap[id];
-            const idx = wishlist.findIndex(w => w.id === id);
-            if(idx > -1) { wishlist.splice(idx, 1); }
-            else { wishlist.push(item); }
-            await saveUserWishlist();
-            updateWishlistUI();
-            loadStorefront();
-        }
-
-        function updateWishlistUI() {
-            document.getElementById('wishlist-badge').innerText = wishlist.length;
-            const container = document.getElementById('wishlist-items');
-            if(wishlist.length === 0) {
-                container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your account wishlist is empty</p>`;
-                return;
-            }
-            container.innerHTML = wishlist.map((item, idx) => `
-                <div class="bg-stone-900 p-3 border gold-border flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-3">
-                        <img src="${item.imageUrl}" class="w-10 h-12 object-cover">
-                        <div>
-                            <span class="font-medium text-amber-200">${item.name}</span>
-                            <p class="text-stone-400 text-[10px]">₹${item.price}</p>
-                        </div>
-                    </div>
-                    <button onclick="removeFromWishlist(${idx})" class="text-red-400 text-[10px]">Remove</button>
-                </div>
-            `).join('');
-        }
-
-        async function removeFromWishlist(idx) {
-            wishlist.splice(idx, 1);
-            await saveUserWishlist();
-            updateWishlistUI();
-            loadStorefront();
-        }
-
-        function openWishlistModal() {
-            if(!currentUser) { alert("Please sign in to view your personal wishlist."); openAuthModal(); return; }
-            document.getElementById('wishlist-modal').classList.remove('hidden');
-        }
-        function closeWishlistModal() { document.getElementById('wishlist-modal').classList.add('hidden'); }
-
-        function openSizeChart(url) {
-            const container = document.getElementById('sizechart-content');
-            if (url.startsWith('data:application/pdf')) { container.innerHTML = `<embed src="${url}" type="application/pdf" width="100%" height="450px" />`; }
-            else { container.innerHTML = `<img src="${url}" class="max-w-full h-auto object-contain">`; }
-            document.getElementById('sizechart-modal').classList.remove('hidden');
-        }
-        function closeSizeChartModal() { document.getElementById('sizechart-modal').classList.add('hidden'); }
-
-        // DYNAMIC PROMOTIONAL BANNER, TIMERS & LIVE COUNTER REAL-TIME LISTENER
-        db.collection("atelier_settings").doc("promotion_config").onSnapshot(doc => {
-            const bannerImg = document.getElementById('hero-banner-img');
-            const subtitleDisplay = document.getElementById('storefront-subtitle-display');
-            const descDisplay = document.getElementById('storefront-desc-display');
-            const statusDisplay = document.getElementById('banner-status-display');
-            const subtextDisplay = document.getElementById('banner-subtext-display');
-            const countdownBox = document.getElementById('banner-countdown-box');
-            const counterBox = document.getElementById('banner-counter-box');
-
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.storefrontSubtitle) subtitleDisplay.innerText = data.storefrontSubtitle;
-                if (data.storefrontDescription) descDisplay.innerText = data.storefrontDescription;
-
-                const now = new Date().getTime();
-                const startSaleTime = data.saleStartTime ? new Date(data.saleStartTime).getTime() : 0;
-                const endSaleTime = data.saleEndTime ? new Date(data.saleEndTime).getTime() : 0;
-
-                if (startSaleTime && now < startSaleTime) {
-                    bannerImg.src = data.normalBannerUrl || data.bannerImageUrl || "";
-                    statusDisplay.innerText = data.normalBannerTitle || "Upcoming Atelier Release";
-                    subtextDisplay.innerText = "Sale launches in:";
-                    countdownBox.classList.remove('hidden');
-                    counterBox.classList.add('hidden');
-                    
-                    startCountdownTimer(startSaleTime, countdownBox, () => {
-                        window.location.reload();
-                    });
-                } else if (startSaleTime && endSaleTime && now >= startSaleTime && now <= endSaleTime) {
-                    bannerImg.src = data.saleBannerUrl || data.bannerImageUrl || "";
-                    statusDisplay.innerText = data.saleBannerTitle || "Special Collection Sale Active";
-                    subtextDisplay.innerText = data.saleBannerSubtitle || "Exclusive limited-time pricing";
-                    countdownBox.classList.add('hidden');
-                    
-                    if (data.maxDiscountSlots) {
-                        const remainingSlots = Math.max(0, data.maxDiscountSlots - (data.usedDiscountSlots || 0));
-                        counterBox.innerText = `⚡ First ${data.maxDiscountSlots} Customers Offer: ${remainingSlots} slots remaining!`;
-                        counterBox.classList.remove('hidden');
-                    } else {
-                        counterBox.classList.add('hidden');
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCartBadge();
+            loadStorefrontDresses(); // Runs automatically for all visitors
+            
+            auth.onAuthStateChanged((user) => {
+                currentUser = user;
+                updateNavProfile(user);
+                if (user) {
+                    if (user.email === ADMIN_EMAIL) {
+                        document.getElementById("nav-admin-link").classList.remove("hidden");
                     }
                 } else {
-                    bannerImg.src = data.bannerImageUrl || "";
-                    statusDisplay.innerText = data.storefrontSubtitle || "";
-                    subtextDisplay.innerText = "";
-                    countdownBox.classList.add('hidden');
-                    counterBox.classList.add('hidden');
+                    document.getElementById("nav-admin-link").classList.add("hidden");
                 }
-            }
+            });
         });
 
-        function startCountdownTimer(targetTime, containerEl, onComplete) {
-            const updateTimer = () => {
-                const now = new Date().getTime();
-                const distance = targetTime - now;
-                if (distance < 0) {
-                    containerEl.innerHTML = "SALE IS LIVE NOW!";
-                    if(onComplete) onComplete();
+        // LOAD DRESSES FOR STOREFRONT
+        function loadStorefrontDresses() {
+            const grid = document.getElementById("storefront-products-grid");
+            db.collection("dresses").onSnapshot((snapshot) => {
+                grid.innerHTML = "";
+                if (snapshot.empty) {
+                    grid.innerHTML = `<p class="col-span-full text-center text-stone-500 text-xs py-8">No dresses available in the atelier collection at this time.</p>`;
                     return;
                 }
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                containerEl.innerHTML = `<span>${days}d</span> : <span>${hours}h</span> : <span>${minutes}m</span> : <span>${seconds}s</span>`;
-            };
-            updateTimer();
-            setInterval(updateTimer, 1000);
+                snapshot.forEach((doc) => {
+                    const dress = doc.data();
+                    allDressesMap[doc.id] = dress;
+                    grid.innerHTML += renderDressCard(doc.id, dress);
+                });
+            }, (error) => {
+                console.error("Firestore Error:", error);
+                grid.innerHTML = `<p class="col-span-full text-center text-red-400 text-xs py-8">Failed to load dresses. Please check database permissions.</p>`;
+            });
         }
 
-        function addToCart(id) {
-            const item = allDressesMap[id];
-            const size = document.getElementById(`size-${id}`).value;
-            cart.push({ ...item, size });
-            localStorage.setItem('alivera_cart', JSON.stringify(cart));
-            updateCartUI();
-            alert("Added to your shopping bag!");
-        }
-
-        function buyNow(id) {
-            const item = allDressesMap[id];
-            const size = document.getElementById(`size-${id}`).value;
-            checkoutItemsPayload = [{ ...item, size }];
-            openCheckoutModalWithItems();
-        }
-
-        function proceedCartCheckout() {
-            if(cart.length === 0) { alert("Your bag is empty."); return; }
-            checkoutItemsPayload = [...cart];
-            closeCartModal();
-            openCheckoutModalWithItems();
-        }
-
-        function openCheckoutModalWithItems() {
-            let total = 0;
-            const summaryBox = document.getElementById('checkout-summary-box');
-            summaryBox.innerHTML = checkoutItemsPayload.map(i => {
-                total += i.price;
-                return `<div class="flex justify-between py-1"><span>${i.name} (${i.size})</span><span class="text-amber-300">₹${i.price}</span></div>`;
-            }).join('') + `<div class="border-t border-stone-800 mt-2 pt-2 flex justify-between font-bold"><span>Total Amount</span><span class="text-amber-300">₹${total}</span></div>`;
+        function renderDressCard(id, dress) {
+            const price = dress.price ? `₹${Number(dress.price).toLocaleString('en-IN')}` : "Price on Request";
+            const imageUrl = dress.imageUrl || dress.images?.[0] || 'https://via.placeholder.com/400x600?text=Alivera+Atelier';
             
-            if(currentUser) { document.getElementById('chk-name').value = currentUser.displayName || ''; }
-            document.getElementById('checkout-modal').classList.remove('hidden');
-        }
-
-        function updateCartUI() {
-            document.getElementById('cart-badge').innerText = cart.length;
-            const container = document.getElementById('cart-items');
-            let total = 0;
-            if(cart.length === 0) {
-                container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your shopping bag is empty</p>`;
-                document.getElementById('cart-total').innerText = '₹0';
-                return;
-            }
-            container.innerHTML = cart.map((item, idx) => {
-                total += item.price;
-                return `
-                    <div class="bg-stone-900 p-3 border gold-border flex items-center justify-between text-xs">
-                        <div class="flex items-center gap-3">
-                            <img src="${item.imageUrl}" class="w-10 h-12 object-cover">
-                            <div>
-                                <span class="font-medium text-amber-200">${item.name}</span>
-                                <p class="text-stone-400 text-[10px]">Size: ${item.size} | ₹${item.price}</p>
-                            </div>
-                        </div>
-                        <button onclick="removeFromCart(${idx})" class="text-red-400 text-[10px]">Remove</button>
+            return `
+                <div class="group relative bg-stone-900 border gold-border flex flex-col justify-between p-3 sm:p-4">
+                    <div class="aspect-[3/4] overflow-hidden mb-3 relative bg-black">
+                        <img src="${imageUrl}" alt="${dress.name || 'Dress'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                     </div>
-                `;
-            }).join('');
-            document.getElementById('cart-total').innerText = `₹${total}`;
+                    <div class="space-y-1 text-center">
+                        <h4 class="font-serif text-sm tracking-wide text-amber-100 font-medium truncate">${dress.name || 'Atelier Design'}</h4>
+                        <p class="text-xs gold-gradient font-semibold">${price}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mt-4">
+                        <button onclick="addToWishlist('${id}')" class="bg-stone-950 border gold-border text-[10px] uppercase tracking-wider py-2 text-stone-300 hover:text-amber-300 transition">Wishlist</button>
+                        <button onclick="addToCart('${id}')" class="gold-bg text-black text-[10px] uppercase tracking-wider font-semibold py-2 gold-hover">Add to Bag</button>
+                    </div>
+                </div>
+            `;
         }
 
-        function removeFromCart(idx) {
-            cart.splice(idx, 1);
-            localStorage.setItem('alivera_cart', JSON.stringify(cart));
-            updateCartUI();
+        // AUTHENTICATION LOGIC
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(() => closeAuthModal())
+                .catch((error) => alert("Google Sign-In Error: " + error.message));
         }
 
-        async function submitOrder() {
-            const name = document.getElementById('chk-name').value;
-            const phone = document.getElementById('chk-phone').value;
-            const house = document.getElementById('chk-house').value;
-            const landmark = document.getElementById('chk-landmark').value;
-            const city = document.getElementById('chk-city').value;
-            const state = document.getElementById('chk-state').value;
-            const pincode = document.getElementById('chk-pincode').value;
-            const paymentMethod = document.getElementById('chk-payment-method').value;
+        function registerUserEmail() {
+            const email = document.getElementById("auth-email").value.trim();
+            const password = document.getElementById("auth-password").value.trim();
+            const name = document.getElementById("auth-reg-name").value.trim();
 
-            if(!name || !phone || !house || !city || !state || !pincode) {
-                alert("Please fill in all required shipping fields.");
+            if (!email || !password) {
+                alert("Please fill in both email and password.");
                 return;
             }
 
-            let total = checkoutItemsPayload.reduce((sum, i) => sum + i.price, 0);
-            const clientEmail = currentUser ? currentUser.email : "guest@atelier.com";
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    if (name) userCredential.user.updateProfile({ displayName: name });
+                    closeAuthModal();
+                })
+                .catch((error) => alert("Registration Error: " + error.message));
+        }
 
-            const orderData = {
-                clientName: name,
-                clientPhone: phone,
-                clientEmail: clientEmail,
-                shippingAddress: `${house}, ${landmark}, ${city}, ${state} - ${pincode}`,
-                items: checkoutItemsPayload,
-                totalAmount: total,
-                paymentMethod: paymentMethod,
-                status: "Pending Production",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
+        function loginUserEmail() {
+            const email = document.getElementById("auth-email").value.trim();
+            const password = document.getElementById("auth-password").value.trim();
 
-            try {
-                const docRef = await db.collection("atelier_orders").add(orderData);
-                
-                const promoRef = db.collection("atelier_settings").doc("promotion_config");
-                const promoDoc = await promoRef.get();
-                if(promoDoc.exists && promoDoc.data().maxDiscountSlots) {
-                    const currentUsed = promoDoc.data().usedDiscountSlots || 0;
-                    await promoRef.update({ usedDiscountSlots: currentUsed + 1 });
-                }
+            if (!email || !password) {
+                alert("Please enter your email and password.");
+                return;
+            }
 
-                const itemsSummary = checkoutItemsPayload.map(i => `${i.name} [Size: ${i.size}] - ₹${i.price}`).join('\n');
-                const emailSub = encodeURIComponent(`New Atelier Order Placed: #${docRef.id.slice(0,6)}`);
-                const emailBody = encodeURIComponent(`New order submitted!\n\nClient Name: ${name}\nPhone: ${phone}\nEmail: ${clientEmail}\nShipping Address: ${house}, ${landmark}, ${city}, ${state} - ${pincode}\nPayment Method: ${paymentMethod}\nTotal: ₹${total}\n\nItems:\n${itemsSummary}`);
-                
-                window.open(`mailto:contact@aliveraatelier.in?subject=${emailSub}&body=${emailBody}`, '_blank');
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => closeAuthModal())
+                .catch((error) => alert("Sign-In Error: " + error.message));
+        }
 
-                alert("Order successfully placed! Your order details have been recorded in the Atelier database.");
-                cart = [];
-                localStorage.setItem('alivera_cart', JSON.stringify(cart));
-                updateCartUI();
-                closeCheckoutModal();
-                if(currentUser) loadCustomerOrders();
-            } catch(e) {
-                alert("Error placing order: " + e.message);
+        // NAVIGATION & MODALS
+        function updateNavProfile(user) {
+            const container = document.getElementById("nav-profile-container");
+            if (user) {
+                const displayName = user.displayName || user.email.split('@')[0];
+                container.innerHTML = `<span class="text-xs uppercase tracking-[0.15em] font-medium text-amber-300">${displayName}</span>`;
+            } else {
+                container.innerHTML = `<button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>`;
             }
         }
 
-        async function loadCustomerOrders() {
-            if(!currentUser) return;
-            const listEl = document.getElementById('acc-orders-list');
-            try {
-                const snap = await db.collection("atelier_orders").where("clientEmail", "==", currentUser.email).get();
-                if(snap.empty) { listEl.innerHTML = `<p class="text-xs text-stone-500">No orders placed yet.</p>`; return; }
-                listEl.innerHTML = snap.docs.map(doc => {
-                    const o = doc.data();
-                    const date = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleDateString() : 'Recent';
-                    return `
-                        <div class="bg-stone-900 p-3 border gold-border text-xs space-y-1">
-                            <div class="flex justify-between text-amber-200">
-                                <span>Order ID: ${doc.id.slice(0,6)}...</span>
-                                <span>₹${o.totalAmount}</span>
-                            </div>
-                            <p class="text-stone-400 text-[10px]">Status: <span class="text-amber-400">${o.status}</span> | Date: ${date}</p>
-                        </div>
-                    `;
-                }).join('');
-            } catch(e) {
-                listEl.innerHTML = `<p class="text-xs text-red-400">Could not load orders.</p>`;
-            }
+        function openAuthModal() { document.getElementById("auth-modal").classList.remove("hidden"); }
+        function closeAuthModal() { document.getElementById("auth-modal").classList.add("hidden"); }
+        function openCartModal() { document.getElementById("cart-modal").classList.remove("hidden"); }
+        function closeCartModal() { document.getElementById("cart-modal").classList.add("hidden"); }
+        function openWishlistModal() { document.getElementById("wishlist-modal").classList.remove("hidden"); }
+        function closeWishlistModal() { document.getElementById("wishlist-modal").classList.add("hidden"); }
+
+        function addToCart(dressId) {
+            const dress = allDressesMap[dressId];
+            if (!dress) return;
+            cart.push(dress);
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            updateCartBadge();
+            openCartModal();
         }
 
-        function openAccountModal() {
-            if(!currentUser) { openAuthModal(); return; }
-            document.getElementById('acc-name').innerText = currentUser.displayName || 'Client';
-            document.getElementById('acc-email').innerText = currentUser.email;
-            document.getElementById('acc-pic').src = currentUser.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
-            document.getElementById('edit-name').value = currentUser.displayName || '';
-            document.getElementById('edit-pic').value = currentUser.photoURL || '';
-            document.getElementById('account-modal').classList.remove('hidden');
+        function updateCartBadge() {
+            document.getElementById("cart-badge").textContent = cart.length;
         }
 
-        function closeAccountModal() { document.getElementById('account-modal').classList.add('hidden'); }
-        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
-        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
-        function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); }
-        function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
-        function closeCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
-
-        async function updateProfileDetails() {
-            if(!currentUser) return;
-            const name = document.getElementById('edit-name').value;
-            const photoURL = document.getElementById('edit-pic').value;
-            try {
-                await currentUser.updateProfile({ displayName: name, photoURL: photoURL });
-                alert("Profile updated successfully!");
-                closeAccountModal();
-                window.location.reload();
-            } catch(e) { alert("Error updating profile: " + e.message); }
+        function addToWishlist(dressId) {
+            if (!currentUser) { openAuthModal(); return; }
+            wishlist.push(dressId);
+            document.getElementById("wishlist-badge").textContent = wishlist.length;
         }
-
-        async function logoutCustomer() {
-            await auth.signOut();
-            closeAccountModal();
-            window.location.reload();
-        }
-
-        loadStorefront();
     </script>
 </body>
 </html>
