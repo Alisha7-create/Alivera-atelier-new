@@ -53,11 +53,13 @@
     <!-- PROMOTIONAL BANNER & TIMER SECTION -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full">
         <div id="promo-banner-wrapper" class="relative w-full bg-stone-900 border gold-border overflow-hidden flex flex-col items-center justify-center shadow-2xl min-h-[280px] sm:min-h-[350px]">
-            <img id="hero-banner-img" src="" class="w-full h-full object-cover opacity-50 absolute inset-0">
+            <img id="hero-banner-img" src="" class="w-full h-full object-cover opacity-50 absolute inset-0 hidden">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none"></div>
             <div class="relative z-10 text-center px-4 sm:px-6 py-12 space-y-4 max-w-2xl">
-                <div id="banner-status-display" class="font-serif text-xl sm:text-4xl font-light gold-gradient tracking-widest uppercase">Custom Couture Collection</div>
-                <p id="banner-subtext-display" class="text-stone-300 text-xs tracking-[0.2em] uppercase">Tailored to Perfection</p>
+                <div id="banner-status-display" class="font-serif text-xl sm:text-4xl font-light gold-gradient tracking-widest uppercase">ALIVÉRA ATELIER</div>
+                <p id="banner-subtext-display" class="text-stone-300 text-xs tracking-[0.2em] uppercase">HAUTE COUTURE & CUSTOM TAILORING</p>
+                <div id="banner-countdown-box" class="flex justify-center gap-3 sm:gap-4 text-amber-300 font-serif text-base sm:text-lg pt-2 hidden"></div>
+                <div id="banner-counter-box" class="inline-block bg-black/70 border gold-border px-4 py-2 text-xs text-amber-200 tracking-wider hidden"></div>
             </div>
         </div>
     </section>
@@ -69,7 +71,19 @@
                 <p id="storefront-subtitle-display" class="text-stone-300 text-sm tracking-wide italic font-serif">"Beautiful. The way you are..."</p>
                 <p id="storefront-desc-display" class="text-stone-400 text-xs tracking-[0.15em] uppercase max-w-xl mx-auto px-4"></p>
             </div>
-            <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8"></div>
+            <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
+                <p class="col-span-full text-center text-stone-500 text-xs py-8">Loading atelier collection...</p>
+            </div>
+        </div>
+
+        <div id="popular-products-section" class="border-t gold-border pt-12">
+            <h3 class="font-serif text-xl gold-gradient mb-6 tracking-wide text-center">Popular Masterpieces</h3>
+            <div id="popular-products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        </div>
+
+        <div id="recently-viewed-section" class="hidden border-t gold-border pt-12">
+            <h3 class="font-serif text-xl gold-gradient mb-6 tracking-wide">Recently Viewed Masterpieces</h3>
+            <div id="recently-viewed-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </div>
     </main>
 
@@ -89,6 +103,15 @@
     </footer>
 
     <!-- MODALS -->
+    <div id="sizechart-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-stone-950 border gold-border w-full max-w-xl p-6 relative text-stone-100">
+            <button type="button" onclick="closeSizeChartModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
+            <h3 class="font-serif text-xl gold-gradient mb-4">Measurement & Size Chart</h3>
+            <div id="sizechart-content" class="w-full max-h-[70vh] overflow-y-auto flex items-center justify-center bg-stone-900 border gold-border p-2"></div>
+        </div>
+    </div>
+
+    <!-- RESPONSIVE MOBILE WISHLIST DRAWER -->
     <div id="wishlist-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
         <div class="bg-stone-950 border-l gold-border w-full max-w-full sm:max-w-md h-[100dvh] flex flex-col p-4 sm:p-6 overflow-y-auto text-stone-100">
             <div class="flex justify-between pb-6 border-b border-stone-900 items-center">
@@ -96,6 +119,111 @@
                 <button onclick="closeWishlistModal()" class="text-xs uppercase tracking-wider text-amber-300 px-3 py-1 bg-stone-900 border gold-border">Close</button>
             </div>
             <div id="wishlist-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <div id="account-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-stone-950 border gold-border w-full max-w-2xl p-6 sm:p-8 relative text-stone-100 my-8 shadow-2xl space-y-6">
+            <button type="button" onclick="closeAccountModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
+            
+            <div class="flex items-center gap-4 sm:gap-6 pb-6 border-b gold-border">
+                <img id="acc-pic" src="" class="w-16 sm:w-20 h-16 sm:h-20 rounded-full object-cover border gold-border bg-stone-900">
+                <div>
+                    <h3 id="acc-name" class="font-serif text-xl sm:text-2xl gold-gradient">Client Name</h3>
+                    <p id="acc-email" class="text-xs text-stone-400">client@email.com</p>
+                    <p id="acc-phone" class="text-xs text-amber-300 mt-1">Phone not added</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 bg-stone-900/60 p-4 border gold-border">
+                <h4 class="font-serif text-base sm:text-lg text-amber-200">Set Up Your Client Profile</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Full Name *</label>
+                        <input type="text" id="edit-name" placeholder="Enter Full Name" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Phone Number *</label>
+                        <input type="text" id="edit-phone" placeholder="Enter Phone Number" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Profile Avatar Image URL</label>
+                    <input type="text" id="edit-pic" placeholder="https://..." class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                </div>
+                <button type="button" onclick="updateProfileDetails()" class="w-full gold-bg text-black py-3 text-xs uppercase font-semibold tracking-wider gold-hover">Save Client Profile</button>
+            </div>
+
+            <div class="border-t gold-border pt-6 space-y-4">
+                <h4 class="font-serif text-base sm:text-lg text-amber-200">Your Atelier Orders</h4>
+                <div id="acc-orders-list" class="space-y-3 max-h-60 overflow-y-auto">
+                    <p class="text-xs text-stone-500">Loading orders...</p>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-stone-900 flex justify-between items-center">
+                <button type="button" onclick="logoutCustomer()" class="w-full bg-stone-900 border border-red-500/40 text-red-400 py-3 text-xs uppercase tracking-widest font-semibold hover:bg-red-950/20 transition">Log Out / Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-stone-950 border gold-border w-full max-w-2xl p-6 sm:p-8 shadow-2xl relative text-stone-100 my-8">
+            <button type="button" onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
+            <h3 class="font-serif text-xl sm:text-2xl font-medium gold-gradient mb-6">Secure Atelier Checkout</h3>
+            
+            <div class="space-y-4">
+                <div id="checkout-summary-box" class="bg-stone-900 p-4 border gold-border text-xs mb-4"></div>
+                
+                <h4 class="font-serif text-sm text-amber-200 uppercase tracking-wider">Detailed Shipping Address</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Full Name *</label>
+                        <input type="text" id="chk-name" placeholder="Full Name" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Phone Number *</label>
+                        <input type="text" id="chk-phone" placeholder="Phone Number" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">House / Flat Number *</label>
+                        <input type="text" id="chk-house" placeholder="e.g., Villa 4B or Flat 201" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Landmark *</label>
+                        <input type="text" id="chk-landmark" placeholder="e.g., Near Royal Park" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">City *</label>
+                        <input type="text" id="chk-city" placeholder="City" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">State *</label>
+                        <input type="text" id="chk-state" placeholder="State" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">6-digit Pincode *</label>
+                        <input type="text" id="chk-pincode" placeholder="Pincode" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Payment Method *</label>
+                    <select id="chk-payment-method" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                        <option value="Online Payment">Online Payment (UPI, GPay, Cards, NetBanking at booking)</option>
+                        <option value="Cash on Delivery">Cash on Delivery (COD)</option>
+                    </select>
+                </div>
+
+                <button type="button" onclick="submitOrder()" class="w-full gold-bg text-black py-4 text-xs uppercase tracking-widest font-semibold gold-hover mt-4">Confirm & Book Order</button>
+            </div>
         </div>
     </div>
 
@@ -115,6 +243,7 @@
         </div>
     </div>
 
+    <!-- RESPONSIVE MOBILE SHOPPING BAG DRAWER -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
         <div class="bg-stone-950 border-l gold-border w-full max-w-full sm:max-w-md h-[100dvh] flex flex-col p-4 sm:p-6 overflow-y-auto text-stone-100">
             <div class="flex justify-between pb-6 border-b border-stone-900 items-center">
@@ -124,6 +253,7 @@
             <div id="cart-items" class="flex-grow py-6 space-y-4 overflow-y-auto"></div>
             <div class="border-t border-stone-900 pt-6 mt-auto">
                 <div class="flex justify-between mb-6 text-stone-100 text-sm"><span>Total</span><span id="cart-total" class="text-amber-300 font-bold">₹0</span></div>
+                <button type="button" onclick="proceedCartCheckout()" class="w-full gold-bg text-black py-4 text-xs uppercase font-semibold tracking-wider">Proceed to Checkout</button>
             </div>
         </div>
     </div>
@@ -145,33 +275,55 @@
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
         let wishlist = [];
+        let recentlyViewedIds = JSON.parse(localStorage.getItem('alivera_recent_ids')) || [];
         let currentUser = null;
+        let checkoutItemsPayload = [];
         let allDressesMap = {};
 
         document.addEventListener("DOMContentLoaded", () => {
             updateCartBadge();
-            loadStorefrontDresses(); // Runs automatically for all visitors
-            
+            loadPromoBanner();
+            loadStorefrontDresses();
+
             auth.onAuthStateChanged((user) => {
                 currentUser = user;
                 updateNavProfile(user);
                 if (user) {
                     if (user.email === ADMIN_EMAIL) {
-                        document.getElementById("nav-admin-link").classList.remove("hidden");
+                        const adminLink = document.getElementById("nav-admin-link");
+                        if (adminLink) adminLink.classList.remove("hidden");
                     }
+                    loadUserWishlist(user.uid);
                 } else {
-                    document.getElementById("nav-admin-link").classList.add("hidden");
+                    const adminLink = document.getElementById("nav-admin-link");
+                    if (adminLink) adminLink.classList.add("hidden");
                 }
             });
         });
 
-        // LOAD DRESSES FOR STOREFRONT
+        // 1. PROMOTIONAL BANNER & TIMER FETCH
+        function loadPromoBanner() {
+            db.collection("settings").doc("banner").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.status) document.getElementById("banner-status-display").textContent = data.status;
+                    if (data.subtext) document.getElementById("banner-subtext-display").textContent = data.subtext;
+                    if (data.imageUrl) {
+                        const img = document.getElementById("hero-banner-img");
+                        img.src = data.imageUrl;
+                        img.classList.remove("hidden");
+                    }
+                }
+            }, (err) => console.log("Banner settings offline, showing default view."));
+        }
+
+        // 2. STOREFRONT DRESSES CATALOG FETCH
         function loadStorefrontDresses() {
             const grid = document.getElementById("storefront-products-grid");
             db.collection("dresses").onSnapshot((snapshot) => {
                 grid.innerHTML = "";
                 if (snapshot.empty) {
-                    grid.innerHTML = `<p class="col-span-full text-center text-stone-500 text-xs py-8">No dresses available in the atelier collection at this time.</p>`;
+                    grid.innerHTML = `<p class="col-span-full text-center text-stone-500 text-xs py-8">No dresses available in the collection right now.</p>`;
                     return;
                 }
                 snapshot.forEach((doc) => {
@@ -181,37 +333,40 @@
                 });
             }, (error) => {
                 console.error("Firestore Error:", error);
-                grid.innerHTML = `<p class="col-span-full text-center text-red-400 text-xs py-8">Failed to load dresses. Please check database permissions.</p>`;
+                grid.innerHTML = `<p class="col-span-full text-center text-red-400 text-xs py-8">Database permissions pending. Update Firestore rules to public read access.</p>`;
             });
         }
 
         function renderDressCard(id, dress) {
             const price = dress.price ? `₹${Number(dress.price).toLocaleString('en-IN')}` : "Price on Request";
-            const imageUrl = dress.imageUrl || dress.images?.[0] || 'https://via.placeholder.com/400x600?text=Alivera+Atelier';
+            const imageUrl = dress.imageUrl || (dress.images && dress.images[0]) || 'https://via.placeholder.com/400x600?text=Alivera+Atelier';
             
             return `
-                <div class="group relative bg-stone-900 border gold-border flex flex-col justify-between p-3 sm:p-4">
+                <div class="group relative bg-stone-900 border gold-border flex flex-col justify-between p-3 sm:p-4 shadow-lg">
                     <div class="aspect-[3/4] overflow-hidden mb-3 relative bg-black">
-                        <img src="${imageUrl}" alt="${dress.name || 'Dress'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <img src="${imageUrl}" alt="${dress.name || 'Custom Dress'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                     </div>
                     <div class="space-y-1 text-center">
-                        <h4 class="font-serif text-sm tracking-wide text-amber-100 font-medium truncate">${dress.name || 'Atelier Design'}</h4>
+                        <h4 class="font-serif text-sm tracking-wide text-amber-100 font-medium truncate">${dress.name || 'Atelier Garment'}</h4>
                         <p class="text-xs gold-gradient font-semibold">${price}</p>
                     </div>
                     <div class="grid grid-cols-2 gap-2 mt-4">
-                        <button onclick="addToWishlist('${id}')" class="bg-stone-950 border gold-border text-[10px] uppercase tracking-wider py-2 text-stone-300 hover:text-amber-300 transition">Wishlist</button>
+                        <button onclick="toggleWishlist('${id}')" class="bg-stone-950 border gold-border text-[10px] uppercase tracking-wider py-2 text-stone-300 hover:text-amber-300 transition">Wishlist</button>
                         <button onclick="addToCart('${id}')" class="gold-bg text-black text-[10px] uppercase tracking-wider font-semibold py-2 gold-hover">Add to Bag</button>
                     </div>
                 </div>
             `;
         }
 
-        // AUTHENTICATION LOGIC
+        // 3. AUTHENTICATION & PROFILE MANAGERS
         function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider)
-                .then(() => closeAuthModal())
-                .catch((error) => alert("Google Sign-In Error: " + error.message));
+                .then((res) => {
+                    closeAuthModal();
+                    syncUserProfile(res.user);
+                })
+                .catch((err) => alert("Google Sign-In Error: " + err.message));
         }
 
         function registerUserEmail() {
@@ -219,55 +374,77 @@
             const password = document.getElementById("auth-password").value.trim();
             const name = document.getElementById("auth-reg-name").value.trim();
 
-            if (!email || !password) {
-                alert("Please fill in both email and password.");
-                return;
-            }
+            if (!email || !password) return alert("Email & Password required.");
 
             auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    if (name) userCredential.user.updateProfile({ displayName: name });
+                .then((cred) => {
+                    if (name) cred.user.updateProfile({ displayName: name });
+                    syncUserProfile(cred.user, name);
                     closeAuthModal();
                 })
-                .catch((error) => alert("Registration Error: " + error.message));
+                .catch((err) => alert("Registration Error: " + err.message));
         }
 
         function loginUserEmail() {
             const email = document.getElementById("auth-email").value.trim();
             const password = document.getElementById("auth-password").value.trim();
 
-            if (!email || !password) {
-                alert("Please enter your email and password.");
-                return;
-            }
+            if (!email || !password) return alert("Email & Password required.");
 
             auth.signInWithEmailAndPassword(email, password)
                 .then(() => closeAuthModal())
-                .catch((error) => alert("Sign-In Error: " + error.message));
+                .catch((err) => alert("Sign-In Error: " + err.message));
         }
 
-        // NAVIGATION & MODALS
+        function syncUserProfile(user, customName = null) {
+            if (!user) return;
+            db.collection("users").doc(user.uid).set({
+                uid: user.uid,
+                email: user.email,
+                displayName: customName || user.displayName || "Client",
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
+
+        function logoutCustomer() {
+            auth.signOut().then(() => {
+                closeAccountModal();
+                window.location.reload();
+            });
+        }
+
         function updateNavProfile(user) {
             const container = document.getElementById("nav-profile-container");
             if (user) {
                 const displayName = user.displayName || user.email.split('@')[0];
-                container.innerHTML = `<span class="text-xs uppercase tracking-[0.15em] font-medium text-amber-300">${displayName}</span>`;
+                container.innerHTML = `<button type="button" onclick="openAccountModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-amber-300 hover:text-amber-200 transition">${displayName}</button>`;
             } else {
                 container.innerHTML = `<button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>`;
             }
         }
 
+        // 4. MODALS AND UI TRIGGERS
         function openAuthModal() { document.getElementById("auth-modal").classList.remove("hidden"); }
         function closeAuthModal() { document.getElementById("auth-modal").classList.add("hidden"); }
-        function openCartModal() { document.getElementById("cart-modal").classList.remove("hidden"); }
+        function openCartModal() { renderCartItems(); document.getElementById("cart-modal").classList.remove("hidden"); }
         function closeCartModal() { document.getElementById("cart-modal").classList.add("hidden"); }
-        function openWishlistModal() { document.getElementById("wishlist-modal").classList.remove("hidden"); }
+        function openWishlistModal() { renderWishlistItems(); document.getElementById("wishlist-modal").classList.remove("hidden"); }
         function closeWishlistModal() { document.getElementById("wishlist-modal").classList.add("hidden"); }
+        function openAccountModal() { 
+            if (!currentUser) return openAuthModal();
+            document.getElementById("acc-name").textContent = currentUser.displayName || "Client";
+            document.getElementById("acc-email").textContent = currentUser.email;
+            document.getElementById("account-modal").classList.remove("hidden"); 
+        }
+        function closeAccountModal() { document.getElementById("account-modal").classList.add("hidden"); }
+        function closeSizeChartModal() { document.getElementById("sizechart-modal").classList.add("hidden"); }
+        function closeCheckoutModal() { document.getElementById("checkout-modal").classList.add("hidden"); }
 
-        function addToCart(dressId) {
-            const dress = allDressesMap[dressId];
+        // 5. SHOPPING CART & WISHLIST CONTROLLERS
+        function addToCart(id) {
+            const dress = allDressesMap[id];
             if (!dress) return;
-            cart.push(dress);
+            cart.push({ id, ...dress });
             localStorage.setItem('alivera_cart', JSON.stringify(cart));
             updateCartBadge();
             openCartModal();
@@ -277,10 +454,75 @@
             document.getElementById("cart-badge").textContent = cart.length;
         }
 
-        function addToWishlist(dressId) {
-            if (!currentUser) { openAuthModal(); return; }
-            wishlist.push(dressId);
+        function renderCartItems() {
+            const container = document.getElementById("cart-items");
+            const totalDisplay = document.getElementById("cart-total");
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">Your shopping bag is empty.</p>`;
+                totalDisplay.textContent = "₹0";
+                return;
+            }
+            let total = 0;
+            container.innerHTML = cart.map((item, i) => {
+                const itemPrice = Number(item.price) || 0;
+                total += itemPrice;
+                return `
+                    <div class="flex justify-between items-center bg-stone-900 border gold-border p-3">
+                        <div>
+                            <p class="text-xs text-amber-100 font-medium">${item.name || 'Dress'}</p>
+                            <p class="text-[10px] gold-gradient">₹${itemPrice.toLocaleString('en-IN')}</p>
+                        </div>
+                        <button onclick="removeFromCart(${i})" class="text-red-400 text-xs uppercase tracking-wider">Remove</button>
+                    </div>
+                `;
+            }).join('');
+            totalDisplay.textContent = `₹${total.toLocaleString('en-IN')}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        function toggleWishlist(id) {
+            if (!currentUser) return openAuthModal();
+            const pos = wishlist.indexOf(id);
+            if (pos > -1) wishlist.splice(pos, 1);
+            else wishlist.push(id);
             document.getElementById("wishlist-badge").textContent = wishlist.length;
+            db.collection("users").doc(currentUser.uid).set({ wishlist }, { merge: true });
+        }
+
+        function loadUserWishlist(uid) {
+            db.collection("users").doc(uid).get().then((doc) => {
+                if (doc.exists && doc.data().wishlist) {
+                    wishlist = doc.data().wishlist;
+                    document.getElementById("wishlist-badge").textContent = wishlist.length;
+                }
+            });
+        }
+
+        function renderWishlistItems() {
+            const container = document.getElementById("wishlist-items");
+            if (wishlist.length === 0) {
+                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">Your wishlist is empty.</p>`;
+                return;
+            }
+            container.innerHTML = wishlist.map((id) => {
+                const item = allDressesMap[id];
+                if (!item) return '';
+                return `
+                    <div class="flex justify-between items-center bg-stone-900 border gold-border p-3">
+                        <div>
+                            <p class="text-xs text-amber-100 font-medium">${item.name || 'Dress'}</p>
+                            <p class="text-[10px] gold-gradient">₹${(Number(item.price) || 0).toLocaleString('en-IN')}</p>
+                        </div>
+                        <button onclick="addToCart('${id}')" class="gold-bg text-black text-[10px] px-2 py-1 uppercase font-semibold">Bag</button>
+                    </div>
+                `;
+            }).join('');
         }
     </script>
 </body>
