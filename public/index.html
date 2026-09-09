@@ -18,14 +18,14 @@
         h1 { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 22px; margin: 0; letter-spacing: 2px; }
         .tagline { font-size: 9px; color: #a8a29e; text-transform: uppercase; letter-spacing: 3px; margin-top: 6px; }
 
-        /* Storefront Grid */
+        /* Storefront Grid Listing */
         .store-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin: 24px 0; }
         .product-card {
             background: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.3);
             padding: 14px; cursor: pointer; transition: border-color 0.2s ease;
         }
         .product-card:hover { border-color: #fcf6ba; }
-        .product-thumb { width: 100%; height: 320px; object-fit: cover; display: block; background: #050505; }
+        .product-thumb { width: 100%; height: 380px; object-fit: cover; display: block; background: #050505; border: 1px solid rgba(191,149,63,0.2); }
         .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 16px; color: #fcf6ba; margin: 12px 0 4px 0; }
         .card-price { font-size: 14px; color: #f5f5f4; font-weight: bold; }
         .tap-hint { font-size: 11px; color: #a8a29e; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
@@ -40,7 +40,7 @@
             position: relative; overflow: hidden; text-align: center;
             border: 1px solid rgba(191, 149, 63, 0.3); background: #050505; cursor: zoom-in;
         }
-        .modal-img { width: 100%; max-height: 380px; object-fit: cover; transition: transform 0.3s ease; display: block; }
+        .modal-img { width: 100%; max-height: 420px; object-fit: cover; transition: transform 0.3s ease; display: block; }
         
         /* Modal Components */
         .modal-title { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 20px; margin: 16px 0 6px 0; }
@@ -77,14 +77,33 @@
             <div class="tagline">Bespoke Haute Couture</div>
         </header>
 
-        <!-- Storefront Grid Listing -->
+        <!-- Storefront Dress Grid Listing -->
         <div class="store-grid">
+            
+            <!-- Dress 1: Midnight Orchid -->
             <div class="product-card" onclick="openProductModal({name: 'Midnight Orchid Convertible Dress', price: 4500, image: 'favicon.ico.png'})">
                 <img src="favicon.ico.png" alt="Midnight Orchid Dress" class="product-thumb">
                 <div class="card-title">Midnight Orchid Convertible Dress</div>
                 <div class="card-price">₹4,500</div>
-                <div class="tap-hint">Tap to view details & zoom →</div>
+                <div class="tap-hint">Tap to inspect, zoom & review →</div>
             </div>
+
+            <!-- Dress 2: Ethereal Silk Gown -->
+            <div class="product-card" onclick="openProductModal({name: 'Ethereal Silk Gown', price: 5200, image: 'favicon.ico.png'})">
+                <img src="favicon.ico.png" alt="Ethereal Silk Gown" class="product-thumb">
+                <div class="card-title">Ethereal Silk Gown</div>
+                <div class="card-price">₹5,200</div>
+                <div class="tap-hint">Tap to inspect, zoom & review →</div>
+            </div>
+
+            <!-- Dress 3: Velvet Noir Corset Gown -->
+            <div class="product-card" onclick="openProductModal({name: 'Velvet Noir Corset Gown', price: 6100, image: 'favicon.ico.png'})">
+                <img src="favicon.ico.png" alt="Velvet Noir Corset Gown" class="product-thumb">
+                <div class="card-title">Velvet Noir Corset Gown</div>
+                <div class="card-price">₹6,100</div>
+                <div class="tap-hint">Tap to inspect, zoom & review →</div>
+            </div>
+
         </div>
     </div>
 
@@ -201,8 +220,12 @@
         }
 
         async function triggerCheckoutFromModal() {
+            const dressName = document.getElementById('modalTitle').innerText;
+            const dressPriceText = document.getElementById('modalPrice').innerText.replace('₹', '');
+            const dressPrice = Number(dressPriceText);
+
             const payload = {
-                items: [{ name: document.getElementById('modalTitle').innerText, price: 4500, quantity: 1 }],
+                items: [{ name: dressName, price: dressPrice, quantity: 1 }],
                 customerDetails: { name: "Valued Client", email: "client@example.com" }
             };
             
