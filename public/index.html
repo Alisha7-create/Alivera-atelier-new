@@ -53,11 +53,11 @@
     <!-- PROMOTIONAL BANNER & TIMER SECTION -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 w-full">
         <div id="promo-banner-wrapper" class="relative w-full bg-stone-900 border gold-border overflow-hidden flex flex-col items-center justify-center shadow-2xl min-h-[280px] sm:min-h-[350px]">
-            <img id="hero-banner-img" src="" class="w-full h-full object-cover opacity-50 absolute inset-0 hidden">
+            <img id="hero-banner-img" src="" class="w-full h-full object-cover opacity-50 absolute inset-0">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none"></div>
             <div class="relative z-10 text-center px-4 sm:px-6 py-12 space-y-4 max-w-2xl">
-                <div id="banner-status-display" class="font-serif text-xl sm:text-4xl font-light gold-gradient tracking-widest uppercase">ALIVÉRA ATELIER</div>
-                <p id="banner-subtext-display" class="text-stone-300 text-xs tracking-[0.2em] uppercase">HAUTE COUTURE & CUSTOM TAILORING</p>
+                <div id="banner-status-display" class="font-serif text-xl sm:text-4xl font-light gold-gradient tracking-widest uppercase"></div>
+                <p id="banner-subtext-display" class="text-stone-300 text-xs tracking-[0.2em] uppercase"></p>
                 <div id="banner-countdown-box" class="flex justify-center gap-3 sm:gap-4 text-amber-300 font-serif text-base sm:text-lg pt-2 hidden"></div>
                 <div id="banner-counter-box" class="inline-block bg-black/70 border gold-border px-4 py-2 text-xs text-amber-200 tracking-wider hidden"></div>
             </div>
@@ -71,9 +71,7 @@
                 <p id="storefront-subtitle-display" class="text-stone-300 text-sm tracking-wide italic font-serif">"Beautiful. The way you are..."</p>
                 <p id="storefront-desc-display" class="text-stone-400 text-xs tracking-[0.15em] uppercase max-w-xl mx-auto px-4"></p>
             </div>
-            <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
-                <p class="col-span-full text-center text-stone-500 text-xs py-8">Loading atelier collection...</p>
-            </div>
+            <div id="storefront-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8"></div>
         </div>
 
         <div id="popular-products-section" class="border-t gold-border pt-12">
@@ -155,7 +153,7 @@
             </div>
 
             <div class="border-t gold-border pt-6 space-y-4">
-                <h4 class="font-serif text-base sm:text-lg text-amber-200">Your Atelier Orders</h4>
+                <h4 class="font-serif text-base sm:text-lg text-amber-200">Your Atelier Orders & Refund Status</h4>
                 <div id="acc-orders-list" class="space-y-3 max-h-60 overflow-y-auto">
                     <p class="text-xs text-stone-500">Loading orders...</p>
                 </div>
@@ -175,7 +173,7 @@
             <div class="space-y-4">
                 <div id="checkout-summary-box" class="bg-stone-900 p-4 border gold-border text-xs mb-4"></div>
                 
-                <h4 class="font-serif text-sm text-amber-200 uppercase tracking-wider">Detailed Shipping Address</h4>
+                <h4 class="font-serif text-sm text-amber-200 uppercase tracking-wider">Detailed Shipping Address & Client Notes</h4>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -212,6 +210,11 @@
                         <label class="block text-[10px] uppercase text-stone-400 mb-1">6-digit Pincode *</label>
                         <input type="text" id="chk-pincode" placeholder="Pincode" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                     </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Your Special Request / Custom Note to Atelier</label>
+                    <textarea id="chk-custom-notes" rows="2" placeholder="Mention any custom requests, specific color hues, or customized measurements here..." class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none"></textarea>
                 </div>
 
                 <div>
@@ -280,250 +283,501 @@
         let checkoutItemsPayload = [];
         let allDressesMap = {};
 
-        document.addEventListener("DOMContentLoaded", () => {
-            updateCartBadge();
-            loadPromoBanner();
-            loadStorefrontDresses();
+        const cachedDresses = localStorage.getItem('alivera_cached_dresses');
+        if (cachedDresses) {
+            try {
+                const parsed = JSON.parse(cachedDresses);
+                parsed.forEach(item => { allDressesMap[item.id] = item; });
+                renderStorefrontGrid(parsed);
+            } catch(e) {}
+        }
 
-            auth.onAuthStateChanged((user) => {
-                currentUser = user;
-                updateNavProfile(user);
-                if (user) {
-                    if (user.email === ADMIN_EMAIL) {
-                        const adminLink = document.getElementById("nav-admin-link");
-                        if (adminLink) adminLink.classList.remove("hidden");
-                    }
-                    loadUserWishlist(user.uid);
+        auth.onAuthStateChanged(async user => {
+            currentUser = user;
+            const adminLink = document.getElementById('nav-admin-link');
+            const profileContainer = document.getElementById('nav-profile-container');
+
+            if (user) {
+                if (user.email === ADMIN_EMAIL) {
+                    adminLink.classList.remove('hidden');
                 } else {
-                    const adminLink = document.getElementById("nav-admin-link");
-                    if (adminLink) adminLink.classList.add("hidden");
+                    adminLink.classList.add('hidden');
                 }
-            });
+                const photoURL = user.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
+                profileContainer.innerHTML = `
+                    <button type="button" onclick="openAccountModal()" class="flex items-center gap-2 text-xs uppercase tracking-widest text-amber-300 font-medium">
+                        <img src="${photoURL}" class="w-8 h-8 rounded-full object-cover border gold-border">
+                        <span class="hidden md:inline">${user.displayName || 'Account'}</span>
+                    </button>
+                `;
+                await fetchUserWishlist();
+                loadCustomerOrders();
+            } else {
+                adminLink.classList.add('hidden');
+                profileContainer.innerHTML = `<button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>`;
+                wishlist = [];
+                updateWishlistUI();
+            }
+            updateCartUI();
+            loadStorefront();
         });
 
-        // 1. PROMOTIONAL BANNER & TIMER FETCH
-        function loadPromoBanner() {
-            db.collection("settings").doc("banner").onSnapshot((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    if (data.status) document.getElementById("banner-status-display").textContent = data.status;
-                    if (data.subtext) document.getElementById("banner-subtext-display").textContent = data.subtext;
-                    if (data.imageUrl) {
-                        const img = document.getElementById("hero-banner-img");
-                        img.src = data.imageUrl;
-                        img.classList.remove("hidden");
-                    }
-                }
-            }, (err) => console.log("Banner settings offline, showing default view."));
+        async function fetchUserWishlist() {
+            if(!currentUser) return;
+            try {
+                const docRef = await db.collection("atelier_wishlists").doc(currentUser.uid).get();
+                if(docRef.exists) { wishlist = docRef.data().items || []; }
+                else { wishlist = []; }
+            } catch(e) { wishlist = []; }
+            updateWishlistUI();
         }
 
-        // 2. STOREFRONT DRESSES CATALOG FETCH
-        function loadStorefrontDresses() {
-            const grid = document.getElementById("storefront-products-grid");
-            db.collection("dresses").onSnapshot((snapshot) => {
-                grid.innerHTML = "";
-                if (snapshot.empty) {
-                    grid.innerHTML = `<p class="col-span-full text-center text-stone-500 text-xs py-8">No dresses available in the collection right now.</p>`;
-                    return;
-                }
-                snapshot.forEach((doc) => {
-                    const dress = doc.data();
-                    allDressesMap[doc.id] = dress;
-                    grid.innerHTML += renderDressCard(doc.id, dress);
+        async function saveUserWishlist() {
+            if(!currentUser) return;
+            try {
+                await db.collection("atelier_wishlists").doc(currentUser.uid).set({
+                    items: wishlist,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-            }, (error) => {
-                console.error("Firestore Error:", error);
-                grid.innerHTML = `<p class="col-span-full text-center text-red-400 text-xs py-8">Database permissions pending. Update Firestore rules to public read access.</p>`;
-            });
+            } catch(e) {}
         }
 
-        function renderDressCard(id, dress) {
-            const price = dress.price ? `₹${Number(dress.price).toLocaleString('en-IN')}` : "Price on Request";
-            const imageUrl = dress.imageUrl || (dress.images && dress.images[0]) || 'https://via.placeholder.com/400x600?text=Alivera+Atelier';
-            
-            return `
-                <div class="group relative bg-stone-900 border gold-border flex flex-col justify-between p-3 sm:p-4 shadow-lg">
-                    <div class="aspect-[3/4] overflow-hidden mb-3 relative bg-black">
-                        <img src="${imageUrl}" alt="${dress.name || 'Custom Dress'}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+        async function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try { await auth.signInWithPopup(provider); closeAuthModal(); } catch(e) { alert(e.message); }
+        }
+
+        async function registerUserEmail() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-reg-name').value;
+            if(!email || !password) { alert("Please provide email and password."); return; }
+            try {
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
+                if(name) { await cred.user.updateProfile({ displayName: name }); }
+                closeAuthModal();
+                alert("Account created successfully!");
+            } catch(e) { alert(e.message); }
+        }
+
+        async function loginUserEmail() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            try { await auth.signInWithEmailAndPassword(email, password); closeAuthModal(); } catch(e) { alert(e.message); }
+        }
+
+        async function loadStorefront() {
+            try {
+                const snap = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
+                let docsArray = [];
+                snap.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    allDressesMap[doc.id] = data;
+                    docsArray.push(data);
+                });
+                localStorage.setItem('alivera_cached_dresses', JSON.stringify(docsArray));
+                renderStorefrontGrid(docsArray);
+            } catch(e) {}
+        }
+
+        function renderStorefrontGrid(dressesArray) {
+            const grid = document.getElementById('storefront-products-grid');
+            const popularGrid = document.getElementById('popular-products-grid');
+            if(!dressesArray || dressesArray.length === 0) { 
+                grid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No dresses published yet.</p>`; 
+                popularGrid.innerHTML = `<p class="text-stone-500 text-xs col-span-2 text-center py-8">No popular dresses available.</p>`;
+                return; 
+            }
+
+            grid.innerHTML = dressesArray.map(item => {
+                const dressId = item.id;
+                const isWishlisted = wishlist.some(w => w.id === dressId);
+                return `
+                    <div class="bg-stone-950 border gold-border p-3 sm:p-4 flex flex-col justify-between shadow-lg relative">
+                        <div onclick="viewProduct('${dressId}')" class="cursor-pointer">
+                            <div class="aspect-[3/4] bg-stone-900 mb-3 overflow-hidden border gold-border relative">
+                                <img src="${item.imageUrl}" class="w-full h-full object-cover">
+                                <button type="button" onclick="event.stopPropagation(); toggleWishlist('${dressId}')" class="absolute top-2 right-2 bg-black/60 p-2 text-xs rounded-full border gold-border text-amber-300 hover:bg-black">
+                                    ${isWishlisted ? '♥' : '♡'}
+                                </button>
+                            </div>
+                            <h4 class="font-serif text-xs sm:text-sm text-amber-200 mb-1">${item.name}</h4>
+                            <p class="text-[11px] sm:text-xs text-stone-400 mb-2">₹${item.price}</p>
+                            ${item.sizeChartUrl ? `<button type="button" onclick="event.stopPropagation(); openSizeChart('${item.sizeChartUrl}')" class="text-[10px] text-amber-400 underline uppercase tracking-wider mb-3 block">View Size Chart</button>` : ''}
+                        </div>
+                        <div class="space-y-2">
+                            <select id="size-${dressId}" class="w-full bg-stone-900 border gold-border text-stone-200 p-2 text-[10px] sm:text-[11px] uppercase outline-none">
+                                <option value="XS">XS</option>
+                                <option value="S">S</option>
+                                <option value="M" selected>M</option>
+                                <option value="L">L</option>
+                                <option value="XL">XL</option>
+                                <option value="XXL">XXL</option>
+                                <option value="CUSTOM">Custom Measurements</option>
+                            </select>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="addToCart('${dressId}')" class="bg-stone-900 border gold-border text-stone-200 py-2 text-[9px] uppercase tracking-wider font-semibold hover:text-amber-300 transition">Add to Bag</button>
+                                <button type="button" onclick="buyNow('${dressId}')" class="gold-bg text-black py-2 text-[9px] uppercase tracking-wider font-bold">Buy Now</button>
+                            </div>
+                            <button type="button" onclick="shareProduct('${item.name}', ${item.price})" class="w-full bg-stone-900/50 border gold-border text-stone-300 py-1.5 text-[9px] uppercase tracking-widest hover:text-amber-300 transition">Share Dress</button>
+                        </div>
                     </div>
-                    <div class="space-y-1 text-center">
-                        <h4 class="font-serif text-sm tracking-wide text-amber-100 font-medium truncate">${dress.name || 'Atelier Garment'}</h4>
-                        <p class="text-xs gold-gradient font-semibold">${price}</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 mt-4">
-                        <button onclick="toggleWishlist('${id}')" class="bg-stone-950 border gold-border text-[10px] uppercase tracking-wider py-2 text-stone-300 hover:text-amber-300 transition">Wishlist</button>
-                        <button onclick="addToCart('${id}')" class="gold-bg text-black text-[10px] uppercase tracking-wider font-semibold py-2 gold-hover">Add to Bag</button>
+                `;
+            }).join('');
+
+            const popularItems = dressesArray.slice(0, 4);
+            popularGrid.innerHTML = popularItems.map(item => `
+                <div class="bg-stone-950 border gold-border p-3 flex gap-3 items-center">
+                    <img src="${item.imageUrl}" class="w-14 h-16 object-cover border gold-border">
+                    <div>
+                        <h5 class="font-serif text-xs text-amber-200">${item.name}</h5>
+                        <p class="text-[10px] text-stone-400">₹${item.price}</p>
                     </div>
                 </div>
-            `;
+            `).join('');
+
+            renderRecentlyViewed();
         }
 
-        // 3. AUTHENTICATION & PROFILE MANAGERS
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then((res) => {
-                    closeAuthModal();
-                    syncUserProfile(res.user);
-                })
-                .catch((err) => alert("Google Sign-In Error: " + err.message));
+        function viewProduct(id) {
+            const item = allDressesMap[id];
+            if(!item) return;
+            if(!recentlyViewedIds.includes(id)) {
+                recentlyViewedIds.unshift(id);
+                if(recentlyViewedIds.length > 4) recentlyViewedIds.pop();
+                localStorage.setItem('alivera_recent_ids', JSON.stringify(recentlyViewedIds));
+            }
+            renderRecentlyViewed();
         }
 
-        function registerUserEmail() {
-            const email = document.getElementById("auth-email").value.trim();
-            const password = document.getElementById("auth-password").value.trim();
-            const name = document.getElementById("auth-reg-name").value.trim();
-
-            if (!email || !password) return alert("Email & Password required.");
-
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((cred) => {
-                    if (name) cred.user.updateProfile({ displayName: name });
-                    syncUserProfile(cred.user, name);
-                    closeAuthModal();
-                })
-                .catch((err) => alert("Registration Error: " + err.message));
+        function renderRecentlyViewed() {
+            const sec = document.getElementById('recently-viewed-section');
+            const grid = document.getElementById('recently-viewed-grid');
+            const validRecent = recentlyViewedIds.map(id => allDressesMap[id]).filter(Boolean);
+            if(validRecent.length === 0) { sec.classList.add('hidden'); return; }
+            sec.classList.remove('hidden');
+            grid.innerHTML = validRecent.map(item => `
+                <div class="bg-stone-950 border gold-border p-3 flex gap-3 items-center">
+                    <img src="${item.imageUrl}" class="w-14 h-16 object-cover border gold-border">
+                    <div>
+                        <h5 class="font-serif text-xs text-amber-200">${item.name}</h5>
+                        <p class="text-[10px] text-stone-400">₹${item.price}</p>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function loginUserEmail() {
-            const email = document.getElementById("auth-email").value.trim();
-            const password = document.getElementById("auth-password").value.trim();
-
-            if (!email || !password) return alert("Email & Password required.");
-
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => closeAuthModal())
-                .catch((err) => alert("Sign-In Error: " + err.message));
+        function shareProduct(name, price) {
+            const shareData = { title: `${name} — Alivèra Atelier`, text: `Explore ${name} by Alivèra Atelier for ₹${price}.`, url: window.location.href };
+            if (navigator.share) { navigator.share(shareData).catch(() => {}); }
+            else { navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`); alert("Dress link copied to clipboard!"); }
         }
 
-        function syncUserProfile(user, customName = null) {
-            if (!user) return;
-            db.collection("users").doc(user.uid).set({
-                uid: user.uid,
-                email: user.email,
-                displayName: customName || user.displayName || "Client",
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
+        async function toggleWishlist(id) {
+            if(!currentUser) { alert("Please sign in to manage your personal wishlist."); openAuthModal(); return; }
+            const item = allDressesMap[id];
+            const idx = wishlist.findIndex(w => w.id === id);
+            if(idx > -1) { wishlist.splice(idx, 1); }
+            else { wishlist.push(item); }
+            await saveUserWishlist();
+            updateWishlistUI();
+            loadStorefront();
         }
 
-        function logoutCustomer() {
-            auth.signOut().then(() => {
+        function updateWishlistUI() {
+            document.getElementById('wishlist-badge').innerText = wishlist.length;
+            const container = document.getElementById('wishlist-items');
+            if(wishlist.length === 0) {
+                container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your account wishlist is empty</p>`;
+                return;
+            }
+            container.innerHTML = wishlist.map((item, idx) => `
+                <div class="bg-stone-900 p-3 border gold-border flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-3">
+                        <img src="${item.imageUrl}" class="w-10 h-12 object-cover">
+                        <div>
+                            <span class="font-medium text-amber-200">${item.name}</span>
+                            <p class="text-stone-400 text-[10px]">₹${item.price}</p>
+                        </div>
+                    </div>
+                    <button onclick="removeFromWishlist(${idx})" class="text-red-400 text-[10px]">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        async function removeFromWishlist(idx) {
+            wishlist.splice(idx, 1);
+            await saveUserWishlist();
+            updateWishlistUI();
+            loadStorefront();
+        }
+
+        function openWishlistModal() {
+            if(!currentUser) { alert("Please sign in to view your personal wishlist."); openAuthModal(); return; }
+            document.getElementById('wishlist-modal').classList.remove('hidden');
+        }
+        function closeWishlistModal() { document.getElementById('wishlist-modal').classList.add('hidden'); }
+
+        function openSizeChart(url) {
+            const container = document.getElementById('sizechart-content');
+            if (url.startsWith('data:application/pdf')) { container.innerHTML = `<embed src="${url}" type="application/pdf" width="100%" height="450px" />`; }
+            else { container.innerHTML = `<img src="${url}" class="max-w-full h-auto object-contain">`; }
+            document.getElementById('sizechart-modal').classList.remove('hidden');
+        }
+        function closeSizeChartModal() { document.getElementById('sizechart-modal').classList.add('hidden'); }
+
+        db.collection("atelier_settings").doc("promotion_config").onSnapshot(doc => {
+            const bannerImg = document.getElementById('hero-banner-img');
+            const subtitleDisplay = document.getElementById('storefront-subtitle-display');
+            const descDisplay = document.getElementById('storefront-desc-display');
+            const statusDisplay = document.getElementById('banner-status-display');
+            const subtextDisplay = document.getElementById('banner-subtext-display');
+            const countdownBox = document.getElementById('banner-countdown-box');
+            const counterBox = document.getElementById('banner-counter-box');
+
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.storefrontSubtitle) subtitleDisplay.innerText = data.storefrontSubtitle;
+                if (data.storefrontDescription) descDisplay.innerText = data.storefrontDescription;
+
+                const now = new Date().getTime();
+                const startSaleTime = data.saleStartTime ? new Date(data.saleStartTime).getTime() : 0;
+                const endSaleTime = data.saleEndTime ? new Date(data.saleEndTime).getTime() : 0;
+
+                if (startSaleTime && now < startSaleTime) {
+                    bannerImg.src = data.normalBannerUrl || data.bannerImageUrl || "";
+                    statusDisplay.innerText = data.normalBannerTitle || "Upcoming Atelier Release";
+                    subtextDisplay.innerText = "Sale launches in:";
+                    countdownBox.classList.remove('hidden');
+                    counterBox.classList.add('hidden');
+                    
+                    startCountdownTimer(startSaleTime, countdownBox, () => {
+                        window.location.reload();
+                    });
+                } else if (startSaleTime && endSaleTime && now >= startSaleTime && now <= endSaleTime) {
+                    bannerImg.src = data.saleBannerUrl || data.bannerImageUrl || "";
+                    statusDisplay.innerText = data.saleBannerTitle || "Special Collection Sale Active";
+                    subtextDisplay.innerText = data.saleBannerSubtitle || "Exclusive limited-time pricing";
+                    countdownBox.classList.add('hidden');
+                    
+                    if (data.maxDiscountSlots) {
+                        const remainingSlots = Math.max(0, data.maxDiscountSlots - (data.usedDiscountSlots || 0));
+                        counterBox.innerText = `⚡ First ${data.maxDiscountSlots} Customers Offer: ${remainingSlots} slots remaining!`;
+                        counterBox.classList.remove('hidden');
+                    } else {
+                        counterBox.classList.add('hidden');
+                    }
+                } else {
+                    bannerImg.src = data.bannerImageUrl || "";
+                    statusDisplay.innerText = data.storefrontSubtitle || "";
+                    subtextDisplay.innerText = "";
+                    countdownBox.classList.add('hidden');
+                    counterBox.classList.add('hidden');
+                }
+            }
+        });
+
+        function startCountdownTimer(targetTime, containerEl, onComplete) {
+            const updateTimer = () => {
+                const now = new Date().getTime();
+                const distance = targetTime - now;
+                if (distance < 0) {
+                    containerEl.innerHTML = "SALE IS LIVE NOW!";
+                    if(onComplete) onComplete();
+                    return;
+                }
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                containerEl.innerHTML = `<span>${days}d</span> : <span>${hours}h</span> : <span>${minutes}m</span> : <span>${seconds}s</span>`;
+            };
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        function addToCart(id) {
+            const item = allDressesMap[id];
+            const size = document.getElementById(`size-${id}`).value;
+            cart.push({ ...item, size });
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            updateCartUI();
+            alert("Added to your shopping bag!");
+        }
+
+        function buyNow(id) {
+            const item = allDressesMap[id];
+            const size = document.getElementById(`size-${id}`).value;
+            checkoutItemsPayload = [{ ...item, size }];
+            openCheckoutModalWithItems();
+        }
+
+        function proceedCartCheckout() {
+            if(cart.length === 0) { alert("Your bag is empty."); return; }
+            checkoutItemsPayload = [...cart];
+            closeCartModal();
+            openCheckoutModalWithItems();
+        }
+
+        function openCheckoutModalWithItems() {
+            let total = 0;
+            const summaryBox = document.getElementById('checkout-summary-box');
+            summaryBox.innerHTML = checkoutItemsPayload.map(i => {
+                total += i.price;
+                return `<div class="flex justify-between py-1"><span>${i.name} (${i.size})</span><span class="text-amber-300">₹${i.price}</span></div>`;
+            }).join('') + `<div class="border-t border-stone-800 mt-2 pt-2 flex justify-between font-bold"><span>Total Amount</span><span class="text-amber-300">₹${total}</span></div>`;
+            
+            if(currentUser) { document.getElementById('chk-name').value = currentUser.displayName || ''; }
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-badge').innerText = cart.length;
+            const container = document.getElementById('cart-items');
+            let total = 0;
+            if(cart.length === 0) {
+                container.innerHTML = `<p class="text-stone-500 text-xs text-center py-8">Your shopping bag is empty</p>`;
+                document.getElementById('cart-total').innerText = '₹0';
+                return;
+            }
+            container.innerHTML = cart.map((item, idx) => {
+                total += item.price;
+                return `
+                    <div class="bg-stone-900 p-3 border gold-border flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-3">
+                            <img src="${item.imageUrl}" class="w-10 h-12 object-cover">
+                            <div>
+                                <span class="font-medium text-amber-200">${item.name}</span>
+                                <p class="text-stone-400 text-[10px]">Size: ${item.size} | ₹${item.price}</p>
+                            </div>
+                        </div>
+                        <button onclick="removeFromCart(${idx})" class="text-red-400 text-[10px]">Remove</button>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('cart-total').innerText = `₹${total}`;
+        }
+
+        function removeFromCart(idx) {
+            cart.splice(idx, 1);
+            localStorage.setItem('alivera_cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        async function submitOrder() {
+            const name = document.getElementById('chk-name').value;
+            const phone = document.getElementById('chk-phone').value;
+            const house = document.getElementById('chk-house').value;
+            const landmark = document.getElementById('chk-landmark').value;
+            const city = document.getElementById('chk-city').value;
+            const state = document.getElementById('chk-state').value;
+            const pincode = document.getElementById('chk-pincode').value;
+            const customNotes = document.getElementById('chk-custom-notes').value || "None provided";
+            const paymentMethod = document.getElementById('chk-payment-method').value;
+
+            if(!name || !phone || !house || !city || !state || !pincode) {
+                alert("Please fill in all required shipping fields.");
+                return;
+            }
+
+            let total = checkoutItemsPayload.reduce((sum, i) => sum + i.price, 0);
+            const clientEmail = currentUser ? currentUser.email : "guest@atelier.com";
+
+            const orderData = {
+                clientName: name,
+                clientPhone: phone,
+                clientEmail: clientEmail,
+                shippingAddress: `${house}, ${landmark}, ${city}, ${state} - ${pincode}`,
+                clientNotes: customNotes,
+                items: checkoutItemsPayload,
+                totalAmount: total,
+                paymentMethod: paymentMethod,
+                status: "Pending Production",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                const docRef = await db.collection("atelier_orders").add(orderData);
+                
+                const promoRef = db.collection("atelier_settings").doc("promotion_config");
+                const promoDoc = await promoRef.get();
+                if(promoDoc.exists && promoDoc.data().maxDiscountSlots) {
+                    const currentUsed = promoDoc.data().usedDiscountSlots || 0;
+                    await promoRef.update({ usedDiscountSlots: currentUsed + 1 });
+                }
+
+                alert("Order successfully placed! Your order details and custom requests have been registered.");
+                cart = [];
+                localStorage.setItem('alivera_cart', JSON.stringify(cart));
+                updateCartUI();
+                closeCheckoutModal();
+                if(currentUser) loadCustomerOrders();
+            } catch(e) {
+                alert("Error placing order: " + e.message);
+            }
+        }
+
+        async function loadCustomerOrders() {
+            if(!currentUser) return;
+            const listEl = document.getElementById('acc-orders-list');
+            try {
+                const snap = await db.collection("atelier_orders").where("clientEmail", "==", currentUser.email).get();
+                if(snap.empty) { listEl.innerHTML = `<p class="text-xs text-stone-500">No orders placed yet.</p>`; return; }
+                listEl.innerHTML = snap.docs.map(doc => {
+                    const o = doc.data();
+                    const date = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleDateString() : 'Recent';
+                    return `
+                        <div class="bg-stone-900 p-3 border gold-border text-xs space-y-1">
+                            <div class="flex justify-between text-amber-200">
+                                <span>Order ID: #${doc.id.slice(0,6)}</span>
+                                <span>₹${o.totalAmount}</span>
+                            </div>
+                            <p class="text-stone-400 text-[10px]">Status: <span class="text-amber-400 font-semibold">${o.status}</span> | Date: ${date}</p>
+                            ${o.clientNotes ? `<p class="text-stone-300 text-[10px] italic">Your Note: "${o.clientNotes}"</p>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                listEl.innerHTML = `<p class="text-xs text-red-400">Could not load orders.</p>`;
+            }
+        }
+
+        function openAccountModal() {
+            if(!currentUser) { openAuthModal(); return; }
+            document.getElementById('acc-name').innerText = currentUser.displayName || 'Client';
+            document.getElementById('acc-email').innerText = currentUser.email;
+            document.getElementById('acc-pic').src = currentUser.photoURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80";
+            document.getElementById('edit-name').value = currentUser.displayName || '';
+            document.getElementById('edit-pic').value = currentUser.photoURL || '';
+            document.getElementById('account-modal').classList.remove('hidden');
+        }
+
+        function closeAccountModal() { document.getElementById('account-modal').classList.add('hidden'); }
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+        function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); }
+        function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
+        function closeCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
+
+        async function updateProfileDetails() {
+            if(!currentUser) return;
+            const name = document.getElementById('edit-name').value;
+            const photoURL = document.getElementById('edit-pic').value;
+            try {
+                await currentUser.updateProfile({ displayName: name, photoURL: photoURL });
+                alert("Profile updated successfully!");
                 closeAccountModal();
                 window.location.reload();
-            });
+            } catch(e) { alert("Error updating profile: " + e.message); }
         }
 
-        function updateNavProfile(user) {
-            const container = document.getElementById("nav-profile-container");
-            if (user) {
-                const displayName = user.displayName || user.email.split('@')[0];
-                container.innerHTML = `<button type="button" onclick="openAccountModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-amber-300 hover:text-amber-200 transition">${displayName}</button>`;
-            } else {
-                container.innerHTML = `<button type="button" onclick="openAuthModal()" class="text-xs uppercase tracking-[0.15em] font-medium text-stone-300 hover:text-amber-300 transition">Sign In</button>`;
-            }
+        async function logoutCustomer() {
+            await auth.signOut();
+            closeAccountModal();
+            window.location.reload();
         }
 
-        // 4. MODALS AND UI TRIGGERS
-        function openAuthModal() { document.getElementById("auth-modal").classList.remove("hidden"); }
-        function closeAuthModal() { document.getElementById("auth-modal").classList.add("hidden"); }
-        function openCartModal() { renderCartItems(); document.getElementById("cart-modal").classList.remove("hidden"); }
-        function closeCartModal() { document.getElementById("cart-modal").classList.add("hidden"); }
-        function openWishlistModal() { renderWishlistItems(); document.getElementById("wishlist-modal").classList.remove("hidden"); }
-        function closeWishlistModal() { document.getElementById("wishlist-modal").classList.add("hidden"); }
-        function openAccountModal() { 
-            if (!currentUser) return openAuthModal();
-            document.getElementById("acc-name").textContent = currentUser.displayName || "Client";
-            document.getElementById("acc-email").textContent = currentUser.email;
-            document.getElementById("account-modal").classList.remove("hidden"); 
-        }
-        function closeAccountModal() { document.getElementById("account-modal").classList.add("hidden"); }
-        function closeSizeChartModal() { document.getElementById("sizechart-modal").classList.add("hidden"); }
-        function closeCheckoutModal() { document.getElementById("checkout-modal").classList.add("hidden"); }
-
-        // 5. SHOPPING CART & WISHLIST CONTROLLERS
-        function addToCart(id) {
-            const dress = allDressesMap[id];
-            if (!dress) return;
-            cart.push({ id, ...dress });
-            localStorage.setItem('alivera_cart', JSON.stringify(cart));
-            updateCartBadge();
-            openCartModal();
-        }
-
-        function updateCartBadge() {
-            document.getElementById("cart-badge").textContent = cart.length;
-        }
-
-        function renderCartItems() {
-            const container = document.getElementById("cart-items");
-            const totalDisplay = document.getElementById("cart-total");
-            if (cart.length === 0) {
-                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">Your shopping bag is empty.</p>`;
-                totalDisplay.textContent = "₹0";
-                return;
-            }
-            let total = 0;
-            container.innerHTML = cart.map((item, i) => {
-                const itemPrice = Number(item.price) || 0;
-                total += itemPrice;
-                return `
-                    <div class="flex justify-between items-center bg-stone-900 border gold-border p-3">
-                        <div>
-                            <p class="text-xs text-amber-100 font-medium">${item.name || 'Dress'}</p>
-                            <p class="text-[10px] gold-gradient">₹${itemPrice.toLocaleString('en-IN')}</p>
-                        </div>
-                        <button onclick="removeFromCart(${i})" class="text-red-400 text-xs uppercase tracking-wider">Remove</button>
-                    </div>
-                `;
-            }).join('');
-            totalDisplay.textContent = `₹${total.toLocaleString('en-IN')}`;
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            localStorage.setItem('alivera_cart', JSON.stringify(cart));
-            updateCartBadge();
-            renderCartItems();
-        }
-
-        function toggleWishlist(id) {
-            if (!currentUser) return openAuthModal();
-            const pos = wishlist.indexOf(id);
-            if (pos > -1) wishlist.splice(pos, 1);
-            else wishlist.push(id);
-            document.getElementById("wishlist-badge").textContent = wishlist.length;
-            db.collection("users").doc(currentUser.uid).set({ wishlist }, { merge: true });
-        }
-
-        function loadUserWishlist(uid) {
-            db.collection("users").doc(uid).get().then((doc) => {
-                if (doc.exists && doc.data().wishlist) {
-                    wishlist = doc.data().wishlist;
-                    document.getElementById("wishlist-badge").textContent = wishlist.length;
-                }
-            });
-        }
-
-        function renderWishlistItems() {
-            const container = document.getElementById("wishlist-items");
-            if (wishlist.length === 0) {
-                container.innerHTML = `<p class="text-xs text-stone-500 text-center py-6">Your wishlist is empty.</p>`;
-                return;
-            }
-            container.innerHTML = wishlist.map((id) => {
-                const item = allDressesMap[id];
-                if (!item) return '';
-                return `
-                    <div class="flex justify-between items-center bg-stone-900 border gold-border p-3">
-                        <div>
-                            <p class="text-xs text-amber-100 font-medium">${item.name || 'Dress'}</p>
-                            <p class="text-[10px] gold-gradient">₹${(Number(item.price) || 0).toLocaleString('en-IN')}</p>
-                        </div>
-                        <button onclick="addToCart('${id}')" class="gold-bg text-black text-[10px] px-2 py-1 uppercase font-semibold">Bag</button>
-                    </div>
-                `;
-            }).join('');
-        }
+        loadStorefront();
     </script>
 </body>
 </html>
