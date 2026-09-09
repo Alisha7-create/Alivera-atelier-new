@@ -3,26 +3,15 @@ export async function onRequestPost(context) {
     const { request, env } = context;
     const orderData = await request.json();
 
-    // 1. Authenticate with Shiprocket to get token
-    const authResponse = await fetch("https://apiv2.shiprocket.in/v1/external/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: env.SHIPROCKET_EMAIL,
-        password: env.SHIPROCKET_PASSWORD
-      })
-    });
+    if (!env.SHIPROCKET_API_KEY) {
+      throw new Error("Shiprocket API Key is not configured in Cloudflare environment variables.");
+    }
 
-    const authResult = await authResponse.json();
-    if (!authResponse.ok) throw new Error("Shiprocket Authentication Failed: " + (authResult.message || "Unknown error"));
-
-    const token = authResult.token;
-
-    // 2. Format the order payload for Shiprocket
+    // 1. Format the order payload for Shiprocket
     const shipmentPayload = {
       order_id: orderData.orderId,
       order_date: new Date().toISOString().slice(0, 10),
-      pickup_location: "Primary", // Change to your exact warehouse/pickup location name in Shiprocket
+      pickup_location: "Primary", // Update this if your warehouse location has a different name in Shiprocket
       billing_customer_name: orderData.customerName,
       billing_last_name: "",
       billing_address: orderData.address,
@@ -47,12 +36,12 @@ export async function onRequestPost(context) {
       weight: 0.5
     };
 
-    // 3. Push order to Shiprocket
+    // 2. Push order directly to Shiprocket using your API Key
     const orderResponse = await fetch("https://apiv2.shiprocket.in/v1/external/orders/create/adhoc", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${env.SHIPROCKET_API_KEY}`
       },
       body: JSON.stringify(shipmentPayload)
     });
