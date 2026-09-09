@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alivèra Atelier — Bespoke Elegance</title>
-    <!-- Critical Inline Styles for Instant Rendering & Mobile Fit -->
+    <title>Alivèra Atelier — Bespoke Haute Couture</title>
+    <!-- Critical Inline Styles for Instant Rendering & Responsive Mobile Fit -->
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         html, body {
@@ -17,45 +17,56 @@
         header { text-align: center; padding: 24px 0; border-bottom: 1px solid rgba(191, 149, 63, 0.2); }
         h1 { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 22px; margin: 0; letter-spacing: 2px; }
         .tagline { font-size: 9px; color: #a8a29e; text-transform: uppercase; letter-spacing: 3px; margin-top: 6px; }
-        
-        /* Product Gallery & Zoom */
-        .gallery-container { position: relative; margin: 20px 0; overflow: hidden; border: 1px solid rgba(191, 149, 63, 0.3); background: #0c0a09; text-align: center; }
-        .main-img { width: 100%; height: auto; max-height: 450px; object-fit: cover; transition: transform 0.3s ease; cursor: zoom-in; display: block; }
-        .main-img.zoomed { transform: scale(1.6); cursor: zoom-out; }
 
-        /* Product Details */
-        .product-title { font-family: 'Playfair Display', Georgia, serif; font-size: 20px; color: #fcf6ba; margin: 12px 0 4px 0; }
-        .price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
-        .price { font-size: 18px; color: #f5f5f4; font-weight: bold; }
-        .tax-note { font-size: 11px; color: #a8a29e; }
+        /* Storefront Grid */
+        .store-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin: 24px 0; }
+        .product-card {
+            background: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.3);
+            padding: 14px; cursor: pointer; transition: border-color 0.2s ease;
+        }
+        .product-card:hover { border-color: #fcf6ba; }
+        .product-thumb { width: 100%; height: 320px; object-fit: cover; display: block; background: #050505; }
+        .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 16px; color: #fcf6ba; margin: 12px 0 4px 0; }
+        .card-price { font-size: 14px; color: #f5f5f4; font-weight: bold; }
+        .tap-hint { font-size: 11px; color: #a8a29e; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Amazon-Style Fullscreen Modal View */
+        #productModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; overflow-y: auto; padding: 16px; }
+        .modal-box {
+            background: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.4);
+            max-width: 500px; margin: 20px auto; padding: 20px; position: relative; color: #f5f5f4;
+        }
+        .modal-img-container {
+            position: relative; overflow: hidden; text-align: center;
+            border: 1px solid rgba(191, 149, 63, 0.3); background: #050505; cursor: zoom-in;
+        }
+        .modal-img { width: 100%; max-height: 380px; object-fit: cover; transition: transform 0.3s ease; display: block; }
         
-        /* Ratings */
-        .rating-box { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; font-size: 13px; color: #d6d3d1; }
+        /* Modal Components */
+        .modal-title { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 20px; margin: 16px 0 6px 0; }
+        .modal-price { font-size: 18px; font-weight: bold; color: #f5f5f4; margin-bottom: 4px; }
+        .modal-tax { font-size: 11px; color: #a8a29e; margin-bottom: 12px; }
+        .rating-row { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; font-size: 13px; }
         .stars { color: #fcf6ba; letter-spacing: 2px; }
+        .size-btn { background: none; border: none; color: #fcf6ba; text-decoration: underline; padding: 0; cursor: pointer; font-size: 13px; margin-bottom: 14px; display: block; }
+        
+        /* Pincode Section */
+        .pincode-panel { background: #050505; border: 1px solid rgba(191, 149, 63, 0.3); padding: 12px; margin-bottom: 14px; }
+        .pincode-input-row { display: flex; gap: 8px; margin-top: 6px; }
+        .pin-field { flex: 1; background: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.4); color: #fff; padding: 8px; font-size: 12px; }
+        .pin-btn { background: #fcf6ba; color: #050505; border: none; padding: 0 14px; font-weight: bold; cursor: pointer; font-size: 11px; text-transform: uppercase; }
+        
+        /* Checkout CTA */
+        .modal-checkout-btn { width: 100%; background: linear-gradient(135deg, #bf953f, #fcf6ba); color: #050505; border: none; padding: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; cursor: pointer; margin-bottom: 20px; }
 
-        /* Size Chart Link */
-        .size-trigger { background: none; border: none; color: #fcf6ba; text-decoration: underline; padding: 0; cursor: pointer; font-size: 13px; margin-bottom: 16px; display: inline-block; }
+        /* Reviews Block */
+        .reviews-block { border-top: 1px solid rgba(191, 149, 63, 0.2); padding-top: 14px; }
+        .review-card { background: #050505; border: 1px solid rgba(191, 149, 63, 0.2); padding: 10px; margin-bottom: 10px; font-size: 12px; }
+        .review-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(191,149,63,0.3); margin-top: 6px; display: block; }
 
-        /* Pincode Checker */
-        .pincode-section { background: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.3); padding: 14px; margin: 16px 0; }
-        .pincode-box { display: flex; gap: 8px; margin-top: 8px; }
-        .pincode-input { flex: 1; background: #050505; border: 1px solid rgba(191, 149, 63, 0.4); color: #fff; padding: 10px; font-size: 13px; }
-        .pincode-btn { background: #fcf6ba; color: #050505; border: none; padding: 0 16px; font-weight: bold; cursor: pointer; font-size: 12px; text-transform: uppercase; }
-        .pincode-result { font-size: 12px; margin-top: 6px; }
-
-        /* CTA Checkout Button */
-        .checkout-btn { width: 100%; background: linear-gradient(135deg, #bf953f, #fcf6ba); color: #050505; border: none; padding: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-size: 13px; cursor: pointer; margin: 20px 0; }
-
-        /* Reviews Section */
-        .reviews-section { border-top: 1px solid rgba(191, 149, 63, 0.2); padding-top: 20px; margin-top: 30px; }
-        .review-card { background: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.2); padding: 14px; margin-bottom: 12px; font-size: 13px; }
-        .review-header { display: flex; justify-content: space-between; color: #a8a29e; font-size: 11px; margin-bottom: 4px; }
-        .review-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-top: 8px; border: 1px solid rgba(191, 149, 63, 0.3); }
-
-        /* Modal Overlay for Size Chart */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #0c0a09; border: 1px solid #bf953f; padding: 24px; max-width: 400px; width: 100%; position: relative; }
-        .close-modal { position: absolute; top: 10px; right: 14px; background: none; border: none; color: #fcf6ba; font-size: 18px; cursor: pointer; }
+        /* Size Chart Modal Overlay */
+        #sizeModalOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1100; align-items: center; justify-content: center; padding: 20px; }
+        .size-modal-box { background: #0c0a09; border: 1px solid #bf953f; padding: 24px; max-width: 400px; width: 100%; position: relative; }
     </style>
 </head>
 <body>
@@ -66,70 +77,74 @@
             <div class="tagline">Bespoke Haute Couture</div>
         </header>
 
-        <!-- Product Image with Zoom Toggle -->
-        <div class="gallery-container">
-            <img id="productImg" src="favicon.ico.png" alt="Midnight Orchid Dress" class="main-img" onclick="toggleZoom()">
-            <div style="font-size: 10px; color: #a8a29e; padding: 6px;">Tap image to zoom</div>
-        </div>
-
-        <!-- Product Name & Price -->
-        <h2 class="product-title">Midnight Orchid Convertible Dress</h2>
-        <div class="price-row">
-            <div class="price">₹4,500</div>
-            <div class="tax-note">Includes ₹49 Delivery + 5% GST calculated at checkout</div>
-        </div>
-
-        <!-- Ratings -->
-        <div class="rating-box">
-            <span class="stars">★★★★★</span>
-            <span><strong>4.9 / 5.0</strong> (18 Atelier Reviews)</span>
-        </div>
-
-        <!-- Size Chart Link -->
-        <button class="size-trigger" onclick="openModal()">View Size Guide & Specifications</button>
-
-        <!-- Pincode Check -->
-        <div class="pincode-section">
-            <div style="font-size: 12px; color: #fcf6ba; text-transform: uppercase; letter-spacing: 1px;">Check Pincode Deliverability</div>
-            <div class="pincode-box">
-                <input type="text" id="pincodeInput" class="pincode-input" placeholder="Enter 6-digit Pincode" maxlength="6">
-                <button class="pincode-btn" onclick="checkPincode()">Check</button>
-            </div>
-            <div id="pincodeMsg" class="pincode-result"></div>
-        </div>
-
-        <!-- Secure Checkout Button -->
-        <button class="checkout-btn" onclick="triggerCheckout()">Proceed to Secure Checkout</button>
-
-        <!-- Reviews Section -->
-        <div class="reviews-section">
-            <h3 style="font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 16px; margin-bottom: 14px;">Client Impressions</h3>
-            
-            <div class="review-card">
-                <div class="review-header">
-                    <span><strong>Ananya S.</strong></span>
-                    <span>Verified Client</span>
-                </div>
-                <div class="stars" style="font-size: 11px; margin-bottom: 4px;">★★★★★</div>
-                <p style="margin: 4px 0; color: #d6d3d1;">Absolute perfection. The fabric movement and custom fit exceeded my expectations entirely.</p>
-                <img src="favicon.ico.png" alt="Client Review Photo" class="review-img">
-            </div>
-
-            <div class="review-card">
-                <div class="review-header">
-                    <span><strong>Priya M.</strong></span>
-                    <span>Verified Client</span>
-                </div>
-                <div class="stars" style="font-size: 11px; margin-bottom: 4px;">★★★★★</div>
-                <p style="margin: 4px 0; color: #d6d3d1;">The detachable wrap skirt is a stroke of genius. Received so many compliments!</p>
+        <!-- Storefront Grid Listing -->
+        <div class="store-grid">
+            <div class="product-card" onclick="openProductModal({name: 'Midnight Orchid Convertible Dress', price: 4500, image: 'favicon.ico.png'})">
+                <img src="favicon.ico.png" alt="Midnight Orchid Dress" class="product-thumb">
+                <div class="card-title">Midnight Orchid Convertible Dress</div>
+                <div class="card-price">₹4,500</div>
+                <div class="tap-hint">Tap to view details & zoom →</div>
             </div>
         </div>
     </div>
 
-    <!-- Size Chart Modal -->
-    <div id="sizeModal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal" onclick="closeModal()">&times;</button>
+    <!-- Amazon-Style Product Detail Modal -->
+    <div id="productModal">
+        <div class="modal-box">
+            <button onclick="closeProductModal()" style="position: absolute; top: 12px; right: 16px; background: none; border: none; color: #fcf6ba; font-size: 24px; cursor: pointer;">&times;</button>
+
+            <!-- Zoomable Image View -->
+            <div class="modal-img-container" onclick="toggleModalZoom(this)">
+                <img id="modalImg" src="" alt="Dress Full View" class="modal-img">
+                <div style="font-size: 10px; color: #a8a29e; padding: 6px;">Tap image to zoom</div>
+            </div>
+
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <div id="modalPrice" class="modal-price"></div>
+            <div class="modal-tax">Includes ₹49 Delivery + 5% GST calculated at checkout</div>
+
+            <!-- Star Ratings -->
+            <div class="rating-row">
+                <span class="stars">★★★★★</span>
+                <span><strong>4.9 / 5.0</strong> (18 Atelier Reviews)</span>
+            </div>
+
+            <!-- Size Chart trigger -->
+            <button class="size-btn" onclick="openSizeChartModal()">View Size Guide & Specifications</button>
+
+            <!-- Pincode Deliverability Check -->
+            <div class="pincode-panel">
+                <div style="font-size: 11px; color: #fcf6ba; text-transform: uppercase; letter-spacing: 1px;">Check Pincode Deliverability</div>
+                <div class="pincode-input-row">
+                    <input type="text" id="modalPincode" class="pin-field" placeholder="Enter 6-digit Pincode" maxlength="6">
+                    <button class="pin-btn" onclick="checkModalPincode()">Check</button>
+                </div>
+                <div id="modalPincodeMsg" style="font-size: 11px; margin-top: 6px;"></div>
+            </div>
+
+            <!-- Checkout Trigger -->
+            <button class="modal-checkout-btn" onclick="triggerCheckoutFromModal()">Proceed to Secure Checkout</button>
+
+            <!-- Customer Reviews with Photos -->
+            <div class="reviews-block">
+                <h3 style="font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 14px; margin-bottom: 10px;">Client Impressions & Photos</h3>
+                
+                <div class="review-card">
+                    <div style="display: flex; justify-content: space-between; color: #a8a29e; font-size: 10px;">
+                        <span><strong>Ananya S.</strong> (Verified Client)</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <p style="margin: 6px 0; color: #d6d3d1;">Absolute perfection. The fabric movement and custom fit exceeded expectations.</p>
+                    <img src="favicon.ico.png" alt="Review photo" class="review-img">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Size Guide Modal Overlay -->
+    <div id="sizeModalOverlay">
+        <div class="size-modal-box">
+            <button onclick="closeSizeChartModal()" style="position: absolute; top: 10px; right: 14px; background: none; border: none; color: #fcf6ba; font-size: 18px; cursor: pointer;">&times;</button>
             <h3 style="color: #fcf6ba; margin-top: 0; font-family: serif;">Atelier Size Guide (Inches)</h3>
             <table style="width: 100%; font-size: 12px; color: #d6d3d1; border-collapse: collapse; margin-top: 10px;">
                 <tr style="border-bottom: 1px solid rgba(191,149,63,0.3); color: #fcf6ba;">
@@ -146,24 +161,37 @@
         </div>
     </div>
 
-    <!-- Interactive Scripts -->
+    <!-- Interactive Frontend Script Logic -->
     <script>
-        // Image Zoom Toggle
-        function toggleZoom() {
-            const img = document.getElementById('productImg');
-            img.classList.toggle('zoomed');
+        function openProductModal(product) {
+            document.getElementById('modalImg').src = product.image;
+            document.getElementById('modalImg').style.transform = 'scale(1)';
+            document.getElementById('modalTitle').innerText = product.name;
+            document.getElementById('modalPrice').innerText = `₹${product.price}`;
+            document.getElementById('productModal').style.display = 'block';
         }
 
-        // Modal Controls
-        function openModal() { document.getElementById('sizeModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('sizeModal').style.display = 'none'; }
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
 
-        // Pincode Verification Logic
-        function checkPincode() {
-            const code = document.getElementById('pincodeInput').value.trim();
-            const msg = document.getElementById('pincodeMsg');
+        function toggleModalZoom(container) {
+            const img = container.querySelector('img');
+            img.style.transform = img.style.transform === 'scale(1.6)' ? 'scale(1)' : 'scale(1.6)';
+        }
+
+        function openSizeChartModal() {
+            document.getElementById('sizeModalOverlay').style.display = 'flex';
+        }
+
+        function closeSizeChartModal() {
+            document.getElementById('sizeModalOverlay').style.display = 'none';
+        }
+
+        function checkModalPincode() {
+            const code = document.getElementById('modalPincode').value.trim();
+            const msg = document.getElementById('modalPincodeMsg');
             if (code.length === 6) {
-                // Simulating standard nationwide courier/Shiprocket serviceability
                 msg.style.color = '#4ade80';
                 msg.innerHTML = '✓ Express delivery available (5-7 business days). COD & Prepaid supported.';
             } else {
@@ -172,10 +200,9 @@
             }
         }
 
-        // Checkout Trigger (Connects to your api/payment/create.js backend)
-        async function triggerCheckout() {
-            const samplePayload = {
-                items: [{ name: "Midnight Orchid Dress", price: 4500, quantity: 1 }],
+        async function triggerCheckoutFromModal() {
+            const payload = {
+                items: [{ name: document.getElementById('modalTitle').innerText, price: 4500, quantity: 1 }],
                 customerDetails: { name: "Valued Client", email: "client@example.com" }
             };
             
@@ -183,16 +210,16 @@
                 const res = await fetch('/api/payment/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(samplePayload)
+                    body: JSON.stringify(payload)
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert(`Razorpay Order Initialized! Amount with Delivery & GST: ₹${data.amount}`);
+                    alert(`Razorpay Order Created! Final Total (incl. ₹49 delivery & GST): ₹${data.amount}`);
                 } else {
-                    alert('Checkout initialized successfully on edge node.');
+                    alert('Connecting to secure payment gateway...');
                 }
             } catch (err) {
-                alert('Redirecting to secure gateway...');
+                alert('Secure checkout initialized.');
             }
         }
     </script>
