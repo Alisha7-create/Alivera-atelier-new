@@ -1,55 +1,175 @@
-import { db } from '../../src/compat.js';
-import { emailAssets, shell, sendResend } from '../../lib/order-email.js';
+export async function onRequestPost(context) {
+  try {
+    const { request, env } = context;
+    const body = await request.json();
+    
+    const { 
+      razorpay_order_id, 
+      razorpay_payment_id, 
+      razorpay_signature, 
+      customerDetails, 
+      cartItems, 
+      finalAmount 
+    } = body;
 
-export const access = 'public';
-export const methods = ['POST'];
+    // 1. Verify Razorpay Signature securely using Web Crypto API
+    const text = `${razorpay_order_id}|${razorpay_payment_id}`;
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      "raw",
+      enc.encode(env.RAZORPAY_KEY_SECRET),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"]
+    );
+    const signatureBuffer = await crypto.subtle.sign("HMAC", key, enc.encode(text));
+    const generatedSignature = Array.from(new Uint8Array(signatureBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
 
-const clean = v => String(v ?? '').trim();
-const esc = s => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+    if (generatedSignature !== razorpay_signature) {
+      return new Response(JSON.stringify({ success: false, error: "Invalid payment signature verification failed." }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      });
+    }
 
-function safeEqual(a, b) {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
+    // Prepare unified order payload
+    const dressSummary = cartItems.map(i => `${i.name} (Qty: ${i.quantity})`).join(', ');
+    const orderPayload = {
+      orderId: razorpay_payment_id,
+      customerName: customerDetails.name,
+      to: customerDetails.email,
+      phone: customerDetails.phone,
+      address: customerDetails.address,
+      city: customerDetails.city,
+      pincode: customerDetails.pincode,
+      state: customerDetails.state || "Rajasthan",
+      dressDetails: dressSummary,
+      status: "Under Production",
+      totalAmount: finalAmount,
+      items: cartItems.map(item => ({
+        name: item.name,
+        sku: item.sku || "ALV-DRESS",
+        quantity: item.quantity || 1,
+        price: item.price
+      }))
+    };
+
+    // 2. Automatically dispatch order to Shiprocket
+    const shiprocketPayload = {
+      order_id: razorpay_payment_id,
+      order_date: new Date().toISOString().slice(0, 10),
+      pickup_location: "Primary",
+      billing_customer_name: customerDetails.name,
+      billing_last_name: "",
+      billing_address: customerDetails.address,
+      billing_city: customerDetails.city,
+      billing_pincode: customerDetails.pincode,
+      billing_state: customerDetails.state || "Rajasthan",
+      billing_country: "India",
+      billing_email: customerDetails.email,
+      billing_phone: customerDetails.phone,
+      shipping_is_billing: true,
+      order_items: orderPayload.items,
+      payment_method: "Prepaid",
+      sub_total: finalAmount,
+      length: 10,
+      breadth: 10,
+      height: 5,
+      weight: 0.5
+    };
+
+    const shiprocketRes = await fetch("https://apiv2.shiprocket.in/v1/external/orders/create/adhoc", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${env.SHIPROCKET_API_KEY}`
+      },
+      body: JSON.stringify(shiprocketPayload)
+    });
+
+    const shiprocketResult = await shiprocketRes.json();
+
+    // 3. Trigger Email Dispatch (Customer + Admin Notification)
+    await sendEmailsInternal(env, orderPayload);
+
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: "Payment verified, fulfillment triggered, and emails dispatched successfully.",
+      orderId: razorpay_payment_id,
+      shipment: shiprocketResult
+    }), {
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+    });
+
+  } catch (e) {
+    return new Response(JSON.stringify({ success: false, error: e.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+    });
+  }
 }
 
-export default async function(req, res) {
-  try {
-    const b = req.body || {}, dbOrderId = clean(b.db_order_id), paymentId = clean(b.razorpay_payment_id), paymentOrderId = clean(b.razorpay_order_id), signature = clean(b.razorpay_signature);
-    if (!dbOrderId || !paymentId || !paymentOrderId || !signature) return res.status(400).json({ error: 'Incomplete payment verification.' });
-    
-    const { rows } = await db.query('SELECT * FROM orders WHERE id=$1 LIMIT 1', [dbOrderId]);
-    const order = rows[0];
-    if (!order || order.payment_order_id !== paymentOrderId) return res.status(400).json({ error: 'Payment order could not be matched.' });
-    if (order.payment_status === 'paid') return res.json({ ok: true, order: order.order_number, total: order.total });
+// Internal email runner
+async function sendEmailsInternal(env, orderData) {
+  const { to, customerName, orderId, dressDetails, totalAmount, phone, address, city, pincode } = orderData;
+  const firstName = customerName ? customerName.split(' ')[0] : 'Valued Client';
+  const shortId = orderId ? orderId.slice(0, 6).toUpperCase() : 'ALV-001';
 
-    const cryptoKey = await crypto.subtle.importKey('raw', new TextEncoder().encode(env().RAZORPAY_KEY_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-    const sig = await crypto.subtle.sign('HMAC', cryptoKey, new TextEncoder().encode(`${order.payment_order_id}|${paymentId}`));
-    const expected = [...new Uint8Array(sig)].map(x => x.toString(16).padStart(2, '0')).join('');
-    
-    if (!safeEqual(expected, signature)) return res.status(400).json({ error: 'Payment verification failed.' });
+  const customerHtmlBody = `
+  <div style="background-color: #050505; color: #f5f5f4; font-family: 'Plus Jakarta Sans', Arial, sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; border: 1px solid rgba(191, 149, 63, 0.3);">
+      <div style="text-align: center; border-bottom: 1px solid rgba(191, 149, 63, 0.3); padding-bottom: 20px; margin-bottom: 24px;">
+          <h1 style="font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 24px; margin: 0; letter-spacing: 2px;">ALIVÈRA ATELIER</h1>
+          <p style="font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 3px; margin-top: 5px;">#${shortId}</p>
+      </div>
+      <p style="font-size: 14px; color: #d6d3d1;">Dear ${firstName},</p>
+      <p style="font-size: 14px; color: #e7e5e4; line-height: 1.6;">Your bespoke dress is currently under creation!<br>Your selection: <strong>${dressDetails}</strong>.<br><br>Estimated delivery: 5-7 business days.</p>
+      <div style="background-color: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.3); padding: 16px; margin: 24px 0; font-size: 12px;">
+          <p style="color: #fcf6ba; font-weight: bold; text-transform: uppercase; margin: 0 0 8px 0; letter-spacing: 1px;">--- Pricing Breakdown ---</p>
+          <p style="margin: 4px 0; color: #d6d3d1;"><strong>Total Paid (incl. Delivery & GST):</strong> ₹${totalAmount}</p>
+      </div>
+      <p style="font-size: 13px; color: #a8a29e; margin-top: 30px; text-align: center;">
+          Thank you for choosing Alivèra Atelier.<br><br>
+          <em style="font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 14px; letter-spacing: 1px;">Beautiful. The way you are...</em>
+      </p>
+  </div>`;
 
-    await db.query("UPDATE orders SET payment_id=$1, payment_signature=$2, payment_status='paid', status='placed' WHERE id=$3 AND payment_status <> 'paid'", [paymentId, signature, order.id]);
-    
-    const { rows: items } = await db.query('SELECT * FROM order_items WHERE order_id=$1', [order.id]);
-    for (const x of items) {
-      await db.query('UPDATE products SET stock=GREATEST(stock-$1,0), updated_at=now() WHERE id=$2 AND stock>0', [x.quantity, x.product_id]);
-    }
+  // 1. Send confirmation to customer
+  await env.EMAIL.send({
+    to: to,
+    from: "hello@aliveraatelier.in",
+    subject: `Order Confirmation #${shortId} — Alivèra Atelier`,
+    html: customerHtmlBody,
+  });
 
-    if (order.promo_code) {
-      await db.query("UPDATE campaigns SET used_count=used_count+1, updated_at=now() WHERE code=$1 AND used_count < COALESCE(max_uses,2147483647)", [order.promo_code]);
-    }
+  // 2. Send notification to admin from customer email
+  await env.EMAIL.send({
+    to: "contact@aliveraatelier.in",
+    from: to,
+    subject: `[New Order Alert] #${shortId} - ₹${totalAmount}`,
+    html: `
+      <div style="background-color: #050505; color: #f5f5f4; font-family: sans-serif; padding: 20px; border: 1px solid #bf953f; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #fcf6ba; margin-top: 0; font-family: serif; letter-spacing: 1px;">New Atelier Order Received</h2>
+        <p><strong>Order ID:</strong> #${shortId}</p>
+        <p><strong>Client Name:</strong> ${customerName}</p>
+        <p><strong>Client Email:</strong> ${to}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Shipping Address:</strong> ${address}, ${city} - ${pincode}</p>
+        <p><strong>Total Paid:</strong> ₹${totalAmount}</p>
+        <hr style="border-color: rgba(191,149,63,0.3);">
+        <p style="font-size: 12px; color: #a8a29e;">This order has been securely verified, pushed to Shiprocket, and emailed directly from ${to}.</p>
+      </div>
+    `,
+  });
+}
 
-    const assets = await emailAssets(items, req), cards = assets.cards;
-    const body = `<p style="font-size:11px;letter-spacing:2px;color:#846f8a">PAYMENT RECEIVED</p><h1 style="font:500 30px Georgia,serif;margin:5px 0 12px">Thank you, ${esc(order.customer_name)}.</h1><p>Your online payment for order <b>${esc(order.order_number)}</b> has been received. Your order is now placed and awaiting owner confirmation.</p>${cards}<div style="background:#fbf7f3;padding:18px;margin-top:22px;line-height:1.8">Subtotal: ₹${Number(order.subtotal).toFixed(0)}<br>${order.promo_code ? `Discount (${esc(order.promo_code)})<br>` : ''}Shipping: ₹${Number(order.shipping).toFixed(0)}<br><b style="font-size:17px">Total paid: ₹${Number(order.total).toFixed(0)}</b></div><div style="margin-top:22px;padding:16px;border:1px solid #e8ddd4"><b>Deliver to</b><br>${esc(order.address)}, ${esc(order.city)}, ${esc(order.state)} ${esc(order.pincode)}<br>${esc(order.phone)}</div>`;
-    const ownerBody = `<p style="font-size:11px;letter-spacing:2px;color:#846f8a">NEW PAID ORDER · ACTION REQUIRED</p><h1 style="font:500 30px Georgia,serif;margin:5px 0 12px">${esc(order.order_number)}</h1><p><b>${esc(order.customer_name)}</b><br>${esc(order.email)} · ${esc(order.phone)}<br>${esc(order.address)}, ${esc(order.city)}, ${esc(order.state)} ${esc(order.pincode)}</p>${cards}<div style="background:#fbf7f3;padding:18px;margin-top:22px;line-height:1.8">Subtotal: ₹${Number(order.subtotal).toFixed(0)}<br>${order.promo_code ? `Discount (${esc(order.promo_code)})<br>` : ''}Shipping: ₹${Number(order.shipping).toFixed(0)}<br><b style="font-size:17px">Total paid: ₹${Number(order.total).toFixed(0)}</b></div><p>Razorpay payment ID: ${esc(paymentId)}</p>`;
-
-    try { await sendResend('contact@aliveraatelier.in', `NEW PAID Alivèra Atelier order ${order.order_number}`, shell(ownerBody), assets.attachments); } catch (e) { console.log('Owner email failed', e?.message); }
-    try { await sendResend(order.email, `Payment received · ${order.order_number} · Alivèra Atelier`, shell(body), assets.attachments); } catch (e) { console.log('Customer email failed', e?.message); }
-
-    res.json({ ok: true, order: order.order_number, total: order.total });
-  } catch (e) {
-    res.status(400).json({ error: e.message || 'Payment verification failed.' });
-  }
+export async function onRequestOptions() {
+  return new Response(null, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
 }
