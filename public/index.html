@@ -288,15 +288,6 @@
         let checkoutItemsPayload = [];
         let allDressesMap = {};
 
-        const cachedDresses = localStorage.getItem('alivera_cached_dresses');
-        if (cachedDresses) {
-            try {
-                const parsed = JSON.parse(cachedDresses);
-                parsed.forEach(item => { allDressesMap[item.id] = item; });
-                renderStorefrontGrid(parsed);
-            } catch(e) {}
-        }
-
         auth.onAuthStateChanged(async user => {
             currentUser = user;
             const adminLink = document.getElementById('nav-admin-link');
@@ -373,7 +364,7 @@
 
         async function loadStorefront() {
             try {
-                const snap = await db.collection("atelier_dresses").orderBy("createdAt", "desc").get();
+                const snap = await db.collection("atelier_dresses").get();
                 let docsArray = [];
                 snap.forEach(doc => {
                     const data = { id: doc.id, ...doc.data() };
@@ -382,7 +373,9 @@
                 });
                 localStorage.setItem('alivera_cached_dresses', JSON.stringify(docsArray));
                 renderStorefrontGrid(docsArray);
-            } catch(e) {}
+            } catch(e) {
+                console.error("Error loading storefront dresses:", e);
+            }
         }
 
         function renderStorefrontGrid(dressesArray) {
