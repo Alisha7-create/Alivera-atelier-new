@@ -29,17 +29,63 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- PUBLISH DRESS WITH FILE UPLOADS -->
             <div class="bg-stone-950 border gold-border p-6 space-y-4">
                 <h3 class="font-serif text-lg gold-gradient">Publish New Masterpiece</h3>
-                <input type="text" id="dress-name" placeholder="Dress Name" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                <input type="text" id="dress-name" placeholder="Dress Name (e.g., Midnight Orchid)" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
                 <input type="number" id="dress-price" placeholder="Price in INR (₹)" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                <input type="text" id="dress-image" placeholder="Image URL (Unsplash / Storage)" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
-                <input type="text" id="dress-sizechart" placeholder="Size Chart URL or PDF Data URL" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Dress Image (Upload File)</label>
+                    <input type="file" id="dress-image-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2 text-xs text-stone-300 file:bg-amber-400 file:text-black file:border-0 file:py-1 file:px-2 file:text-[10px] file:uppercase">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Size Chart (Upload Image or PDF)</label>
+                    <input type="file" id="dress-sizechart-file" accept="image/*,application/pdf" class="w-full bg-stone-900 border gold-border p-2 text-xs text-stone-300 file:bg-amber-400 file:text-black file:border-0 file:py-1 file:px-2 file:text-[10px] file:uppercase">
+                </div>
+
                 <button onclick="publishDress()" class="w-full gold-bg text-black py-3 text-xs uppercase font-semibold gold-hover">Publish Dress</button>
             </div>
 
-            <div class="lg:col-span-2 bg-stone-950 border gold-border p-6 space-y-6">
-                <h3 class="font-serif text-lg gold-gradient">Client Orders & Custom Requests Management</h3>
+            <!-- BANNER & PROMO TIMER CONFIGURATION -->
+            <div class="bg-stone-950 border gold-border p-6 space-y-4">
+                <h3 class="font-serif text-lg gold-gradient">Banners & Discount Timers</h3>
+                
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Normal / Default Banner Image</label>
+                    <input type="file" id="normal-banner-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2 text-xs text-stone-300 file:bg-amber-400 file:text-black file:border-0 file:py-1 file:px-2 file:text-[10px] file:uppercase">
+                </div>
+                <input type="text" id="normal-banner-title" placeholder="Normal Banner Title (e.g., Upcoming Atelier Release)" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">Preserved Sale Banner Image</label>
+                    <input type="file" id="sale-banner-file" accept="image/*" class="w-full bg-stone-900 border gold-border p-2 text-xs text-stone-300 file:bg-amber-400 file:text-black file:border-0 file:py-1 file:px-2 file:text-[10px] file:uppercase">
+                </div>
+                <input type="text" id="sale-banner-title" placeholder="Sale Banner Title (e.g., Special Collection Sale Active)" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale Start Date & Time</label>
+                        <input type="datetime-local" id="sale-start-time" class="w-full bg-stone-900 border gold-border p-2 text-[11px] text-stone-100 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase text-stone-400 mb-1">Sale End Date & Time</label>
+                        <input type="datetime-local" id="sale-end-time" class="w-full bg-stone-900 border gold-border p-2 text-[11px] text-stone-100 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase text-stone-400 mb-1">First-N Customers Count (e.g., 10 for first 10)</label>
+                    <input type="number" id="max-discount-slots" placeholder="10" class="w-full bg-stone-900 border gold-border p-3 text-xs text-stone-100 outline-none">
+                </div>
+
+                <button onclick="saveBannerConfig()" class="w-full gold-bg text-black py-3 text-xs uppercase font-semibold gold-hover">Save Banner & Timer Settings</button>
+            </div>
+
+            <!-- CLIENT ORDERS -->
+            <div class="bg-stone-950 border gold-border p-6 space-y-6">
+                <h3 class="font-serif text-lg gold-gradient">Client Orders & Requests</h3>
                 <div id="admin-orders-list" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                     <p class="text-xs text-stone-500">Loading incoming orders...</p>
                 </div>
@@ -70,17 +116,33 @@
             }
             document.getElementById('admin-email-display').innerText = user.email;
             loadAdminOrders();
+            loadExistingBannerConfig();
         });
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
 
         async function publishDress() {
             const name = document.getElementById('dress-name').value;
             const price = Number(document.getElementById('dress-price').value);
-            const imageUrl = document.getElementById('dress-image').value;
-            const sizeChartUrl = document.getElementById('dress-sizechart').value;
+            const imageFile = document.getElementById('dress-image-file').files[0];
+            const sizeChartFile = document.getElementById('dress-sizechart-file').files[0];
 
-            if(!name || !price || !imageUrl) { alert("Please fill in dress name, price, and image URL."); return; }
+            if(!name || !price || !imageFile) { alert("Please provide a dress name, price, and image file."); return; }
 
             try {
+                const imageUrl = await readFileAsDataURL(imageFile);
+                let sizeChartUrl = "";
+                if(sizeChartFile) {
+                    sizeChartUrl = await readFileAsDataURL(sizeChartFile);
+                }
+
                 await db.collection("atelier_dresses").add({
                     name, price, imageUrl, sizeChartUrl,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -88,9 +150,54 @@
                 alert("Dress published successfully!");
                 document.getElementById('dress-name').value = '';
                 document.getElementById('dress-price').value = '';
-                document.getElementById('dress-image').value = '';
-                document.getElementById('dress-sizechart').value = '';
+                document.getElementById('dress-image-file').value = '';
+                document.getElementById('dress-sizechart-file').value = '';
             } catch(e) { alert("Error: " + e.message); }
+        }
+
+        async function saveBannerConfig() {
+            const normalBannerFile = document.getElementById('normal-banner-file').files[0];
+            const saleBannerFile = document.getElementById('sale-banner-file').files[0];
+            const normalBannerTitle = document.getElementById('normal-banner-title').value;
+            const saleBannerTitle = document.getElementById('sale-banner-title').value;
+            const saleStartTime = document.getElementById('sale-start-time').value;
+            const saleEndTime = document.getElementById('sale-end-time').value;
+            const maxDiscountSlots = Number(document.getElementById('max-discount-slots').value) || 0;
+
+            try {
+                let payload = {
+                    normalBannerTitle,
+                    saleBannerTitle,
+                    saleStartTime,
+                    saleEndTime,
+                    maxDiscountSlots,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if(normalBannerFile) {
+                    payload.normalBannerUrl = await readFileAsDataURL(normalBannerFile);
+                }
+                if(saleBannerFile) {
+                    payload.saleBannerUrl = await readFileAsDataURL(saleBannerFile);
+                }
+
+                await db.collection("atelier_settings").doc("promotion_config").set(payload, { merge: true });
+                alert("Banner and discount timer configuration saved successfully!");
+            } catch(e) { alert("Error saving banners: " + e.message); }
+        }
+
+        async function loadExistingBannerConfig() {
+            try {
+                const doc = await db.collection("atelier_settings").doc("promotion_config").get();
+                if(doc.exists) {
+                    const d = doc.data();
+                    if(d.normalBannerTitle) document.getElementById('normal-banner-title').value = d.normalBannerTitle;
+                    if(d.saleBannerTitle) document.getElementById('sale-banner-title').value = d.saleBannerTitle;
+                    if(d.saleStartTime) document.getElementById('sale-start-time').value = d.saleStartTime;
+                    if(d.saleEndTime) document.getElementById('sale-end-time').value = d.saleEndTime;
+                    if(d.maxDiscountSlots) document.getElementById('max-discount-slots').value = d.maxDiscountSlots;
+                }
+            } catch(e) {}
         }
 
         async function loadAdminOrders() {
