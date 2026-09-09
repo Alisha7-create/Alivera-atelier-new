@@ -91,7 +91,7 @@
             <div class="space-y-2">
                 <h4 class="font-serif text-lg tracking-widest gold-gradient font-bold">ALIVÉRA ATELIER</h4>
                 <p class="text-stone-400 italic font-serif">"Beautiful. The way you are..."</p>
-                <p class="text-[10px] text-stone-500">&copy; 2026 Alivèra Atelier. All rights reserved.</p>
+                <p class="text-[10px] text-stone-500">&copy; 2026 Alivèra Atelier. All rights reserved. GSTIN: 08CBPPJ9205G1ZE</p>
             </div>
             <div class="space-y-2 flex flex-col items-center md:items-end">
                 <p>Instagram: <a href="https://instagram.com/aliveraatelier" target="_blank" class="text-amber-300 hover:underline">@aliveraatelier</a></p>
@@ -109,7 +109,7 @@
         </div>
     </div>
 
-    <!-- RESPONSIVE MOBILE WISHLIST DRAWER -->
+    <!-- WISHLIST DRAWER -->
     <div id="wishlist-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
         <div class="bg-stone-950 border-l gold-border w-full max-w-full sm:max-w-md h-[100dvh] flex flex-col p-4 sm:p-6 overflow-y-auto text-stone-100">
             <div class="flex justify-between pb-6 border-b border-stone-900 items-center">
@@ -165,10 +165,14 @@
         </div>
     </div>
 
+    <!-- CHECKOUT MODAL WITH GSTIN -->
     <div id="checkout-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-stone-950 border gold-border w-full max-w-2xl p-6 sm:p-8 shadow-2xl relative text-stone-100 my-8">
             <button type="button" onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-stone-400 text-xs uppercase">Close</button>
-            <h3 class="font-serif text-xl sm:text-2xl font-medium gold-gradient mb-6">Secure Atelier Checkout</h3>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-serif text-xl sm:text-2xl font-medium gold-gradient">Secure Atelier Checkout</h3>
+                <span class="text-[10px] text-amber-400 border gold-border px-2.5 py-1 bg-stone-900 font-mono">GSTIN: 08CBPPJ9205G1ZE</span>
+            </div>
             
             <div class="space-y-4">
                 <div id="checkout-summary-box" class="bg-stone-900 p-4 border gold-border text-xs mb-4"></div>
@@ -246,7 +250,7 @@
         </div>
     </div>
 
-    <!-- RESPONSIVE MOBILE SHOPPING BAG DRAWER -->
+    <!-- SHOPPING BAG DRAWER -->
     <div id="cart-modal" class="fixed inset-0 z-50 bg-black/80 hidden flex justify-end">
         <div class="bg-stone-950 border-l gold-border w-full max-w-full sm:max-w-md h-[100dvh] flex flex-col p-4 sm:p-6 overflow-y-auto text-stone-100">
             <div class="flex justify-between pb-6 border-b border-stone-900 items-center">
@@ -275,6 +279,7 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
         const ADMIN_EMAIL = "hello@aliveraatelier.in";
+        const GSTIN_NUMBER = "08CBPPJ9205G1ZE";
 
         let cart = JSON.parse(localStorage.getItem('alivera_cart')) || [];
         let wishlist = [];
@@ -625,7 +630,12 @@
             summaryBox.innerHTML = checkoutItemsPayload.map(i => {
                 total += i.price;
                 return `<div class="flex justify-between py-1"><span>${i.name} (${i.size})</span><span class="text-amber-300">₹${i.price}</span></div>`;
-            }).join('') + `<div class="border-t border-stone-800 mt-2 pt-2 flex justify-between font-bold"><span>Total Amount</span><span class="text-amber-300">₹${total}</span></div>`;
+            }).join('') + `
+                <div class="border-t border-stone-800 mt-2 pt-2 space-y-1">
+                    <div class="flex justify-between text-[11px] text-stone-400"><span>GSTIN Issuer</span><span class="font-mono">${GSTIN_NUMBER}</span></div>
+                    <div class="flex justify-between font-bold text-sm pt-1"><span>Total Amount</span><span class="text-amber-300">₹${total}</span></div>
+                </div>
+            `;
             
             if(currentUser) { document.getElementById('chk-name').value = currentUser.displayName || ''; }
             document.getElementById('checkout-modal').classList.remove('hidden');
@@ -691,6 +701,7 @@
                 clientNotes: customNotes,
                 items: checkoutItemsPayload,
                 totalAmount: total,
+                gstin: GSTIN_NUMBER,
                 paymentMethod: paymentMethod,
                 status: "Pending Production",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -706,7 +717,7 @@
                     await promoRef.update({ usedDiscountSlots: currentUsed + 1 });
                 }
 
-                alert("Order successfully placed! Your order details and custom requests have been registered.");
+                alert("Order successfully placed! Your order details, GSTIN invoice info, and custom requests have been registered.");
                 cart = [];
                 localStorage.setItem('alivera_cart', JSON.stringify(cart));
                 updateCartUI();
@@ -733,6 +744,7 @@
                                 <span>₹${o.totalAmount}</span>
                             </div>
                             <p class="text-stone-400 text-[10px]">Status: <span class="text-amber-400 font-semibold">${o.status}</span> | Date: ${date}</p>
+                            <p class="text-stone-500 text-[9px]">GSTIN: ${o.gstin || GSTIN_NUMBER}</p>
                             ${o.clientNotes ? `<p class="text-stone-300 text-[10px] italic">Your Note: "${o.clientNotes}"</p>` : ''}
                         </div>
                     `;
