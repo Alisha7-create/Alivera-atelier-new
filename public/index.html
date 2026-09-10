@@ -22,7 +22,6 @@
         h1 { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 26px; margin: 0; letter-spacing: 2px; }
         .sub-tagline { font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 3px; margin-top: 4px; }
 
-        /* Profile Avatar Circle */
         .user-avatar-circle {
             width: 30px; height: 30px; border-radius: 50%; background: #bf953f; color: #050505;
             display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px;
@@ -30,7 +29,6 @@
         }
         .user-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Hero & Banner Container (1897 x 412 Aspect Ratio) */
         .banner-display-box {
             width: 100%; aspect-ratio: 1897 / 412; max-height: 350px; background: #0c0a09; border: 1px solid rgba(191,149,63,0.4);
             margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden;
@@ -41,7 +39,6 @@
         .section-heading { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 20px; text-align: center; margin: 30px 0 10px 0; }
         .section-sub { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #a8a29e; font-size: 13px; text-align: center; margin-bottom: 20px; }
 
-        /* Store Grid */
         .store-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
         @media(max-width: 900px) { .store-grid { grid-template-columns: repeat(2, 1fr); } }
         @media(max-width: 600px) { .store-grid { grid-template-columns: 1fr; } }
@@ -58,7 +55,6 @@
         .btn-cart { background: transparent; color: #fcf6ba; }
         .btn-buy { background: linear-gradient(135deg, #bf953f, #fcf6ba); color: #050505; border: none; }
 
-        /* Modals */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px; }
         .modal-box { background: #0c0a09; border: 1px solid #bf953f; max-width: 500px; margin: 40px auto; padding: 24px; position: relative; color: #f5f5f4; }
         .close-modal { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #fcf6ba; font-size: 24px; cursor: pointer; }
@@ -67,7 +63,6 @@
         .input-field { width: 100%; background: #050505; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 10px; font-size: 12px; margin-bottom: 12px; }
         .btn-action { background: #bf953f; color: #050505; border: none; padding: 11px; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 5px; }
 
-        /* Golden Scratch Card Component */
         .golden-card { background: linear-gradient(135deg, #bf953f, #fcf6ba, #99752b); color: #050505; padding: 15px; border-radius: 6px; text-align: center; margin: 10px 0; font-family: 'Playfair Display', Georgia, serif; position: relative; overflow: hidden; }
         .scratch-cover { position: absolute; inset: 0; background: #222; color: #fcf6ba; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; font-weight: bold; }
 
@@ -77,7 +72,6 @@
 <body>
 
     <div class="container">
-        <!-- Header & Nav -->
         <header>
             <div class="top-nav">
                 <span id="navAdminLink" style="display: none; color: #fcf6ba; font-weight: bold;" onclick="openAdminDashboard()">ADMIN DASHBOARD</span>
@@ -91,16 +85,13 @@
             <div class="sub-tagline">BESPOKE HAUTE COUTURE</div>
         </header>
 
-        <!-- Hero & Banner Container (1897 x 412 Aspect Ratio) -->
         <div class="banner-display-box" id="mainBannerContainer">
             <div class="banner-content-overlay">
-                <div style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:22px;" id="bannerTitle">WELCOME TO ALIVÈRA ATELIER</div>
-                <div style="font-size:12px; color:#d6d3d1; margin-top:6px;" id="bannerSubtitle">"Beautiful. The Way You Are."</div>
-                <div id="bannerTimerDisplay" style="font-family:monospace; font-size:14px; color:#fff; margin-top:10px; display:none;"></div>
+                <div style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:22px;">WELCOME TO ALIVÈRA ATELIER</div>
+                <div style="font-size:12px; color:#d6d3d1; margin-top:6px;">"Beautiful. The Way You Are."</div>
             </div>
         </div>
 
-        <!-- Store Catalog -->
         <div class="section-heading">Bespoke Collection</div>
         <div class="section-sub">"Handcrafted to celebrate your unique essence."</div>
         <div class="store-grid" id="storeGrid"></div>
@@ -110,7 +101,6 @@
         &copy; 2026 Alivèra Atelier. All Rights Reserved. "Beautiful. The Way You Are."
     </footer>
 
-    <!-- AUTHENTICATION MODAL (With Autofill Disabled) -->
     <div id="authModal" class="modal-overlay">
         <div class="modal-box" style="text-align: center;">
             <button class="close-modal" onclick="closeModals()">&times;</button>
@@ -122,41 +112,21 @@
         </div>
     </div>
 
-    <!-- MY ACCOUNT MODAL (Contains Wishlist, Profile & Saved Scratch Cards) -->
     <div id="accountModal" class="modal-overlay">
         <div class="modal-box">
             <button class="close-modal" onclick="closeModals()">&times;</button>
             <h2 class="modal-title">Client Account Dashboard</h2>
-            
-            <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 15px; background: #050505; padding: 15px; border: 1px solid rgba(191,149,63,0.3);">
-                <div class="user-avatar-circle" style="width: 50px; height: 50px; font-size: 16px;" id="accountModalAvatar">AC</div>
-                <div>
-                    <input type="file" id="avatarUploadInput" accept="image/*" style="font-size: 10px; color: #a8a29e;" onchange="uploadProfileImage(event)">
-                    <div style="font-size: 10px; color: #888; margin-top: 4px;">Upload custom avatar image</div>
-                </div>
-            </div>
-
             <div style="font-size: 12px; margin-bottom: 15px; background: #050505; padding: 12px; border: 1px solid rgba(191,149,63,0.3);">
                 <p><strong>Name:</strong> <input type="text" id="accNameInput" class="input-field" style="margin:4px 0 0 0;" value="Bespoke Client"></p>
                 <p><strong>Email:</strong> <span id="accEmail">Not signed in</span></p>
-                <p><strong>Phone:</strong> <input type="text" id="accPhoneInput" class="input-field" style="margin:4px 0 0 0;" placeholder="+91 XXXXX XXXXX"></p>
-                <p><strong>Delivery Address:</strong> <input type="text" id="accAddressInput" class="input-field" style="margin:4px 0 0 0;" placeholder="Primary street address"></p>
                 <button class="btn-action" style="width: auto; padding: 6px 12px;" onclick="saveAccountDetails()">Save Profile Details</button>
             </div>
-
             <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:13px; margin-bottom:6px;">My Wishlist Collection:</h3>
             <div id="accountWishlistContainer" style="font-size: 11px; color: #a8a29e; margin-bottom: 15px;">Your wishlist is currently empty.</div>
-
-            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:13px; margin-bottom:6px;">My Saved Golden Scratch Cards:</h3>
-            <div id="myScratchCardsContainer" style="margin-bottom: 15px;">
-                <div style="font-size: 11px; color: #888;">No scratch cards currently saved.</div>
-            </div>
-
             <button class="btn-action" style="background: #ff6b6b; color: #fff;" onclick="handleLogout()">Sign Out / Logout</button>
         </div>
     </div>
 
-    <!-- PRODUCT DETAIL & CHECKOUT MODAL -->
     <div id="productModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 600px;">
             <button class="close-modal" onclick="closeModals()">&times;</button>
@@ -183,7 +153,6 @@
         </div>
     </div>
 
-    <!-- SCRATCH CARD REWARD MODAL -->
     <div id="scratchModal" class="modal-overlay">
         <div class="modal-box" style="text-align: center; max-width: 450px;">
             <button class="close-modal" onclick="closeModals()">&times;</button>
@@ -212,46 +181,53 @@
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        // Default Restored Dresses Collection
-        let defaultDresses = [
-            { id: 1, name: "Midnight Orchid with overskirt", price: 6000, image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&auto=format&fit=crop&q=60", sizeChart: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500&auto=format&fit=crop&q=60" },
-            { id: 2, name: "The Forest Flare Dress", price: 5200, image: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=500&auto=format&fit=crop&q=60", sizeChart: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500&auto=format&fit=crop&q=60" },
-            { id: 3, name: "Rose Petal Crop Top", price: 1600, image: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500&auto=format&fit=crop&q=60", sizeChart: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500&auto=format&fit=crop&q=60" },
-            { id: 4, name: "Sunset Bespoke Dress", price: 4500, image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=500&auto=format&fit=crop&q=60", sizeChart: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500&auto=format&fit=crop&q=60" }
-        ];
-
-        let storeProducts = JSON.parse(localStorage.getItem('alivera_products')) || defaultDresses;
-        let liveOrders = JSON.parse(localStorage.getItem('alivera_orders')) || [];
-        let userScratchCards = JSON.parse(localStorage.getItem('alivera_scratch_cards')) || [];
+        let storeProducts = [];
         let wishlistItems = JSON.parse(localStorage.getItem('alivera_wishlist')) || [];
         let currentUser = null;
         let userProfile = { phone: "", address: "", avatar: "" };
-        let saleSettings = JSON.parse(localStorage.getItem('alivera_sale')) || { active: false };
+
+        // Fetch Dresses Live from Firestore
+        function fetchDressesFromFirestore() {
+            db.collection("dresses").get().then((querySnapshot) => {
+                storeProducts = [];
+                querySnapshot.forEach((doc) => {
+                    storeProducts.push({ firestoreId: doc.id, ...doc.data() });
+                });
+                renderStore(storeProducts);
+            }).catch((error) => {
+                console.error("Error fetching dresses: ", error);
+            });
+        }
+        fetchDressesFromFirestore();
 
         function renderStore(productsToRender) {
             const grid = document.getElementById('storeGrid');
             grid.innerHTML = '';
+            if(productsToRender.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#a8a29e; font-size:12px;">No dresses found in Firebase Firestore collection. Upload via Admin Dashboard.</div>';
+                return;
+            }
             productsToRender.forEach(p => {
                 grid.innerHTML += `
                     <div class="product-card">
-                        <div class="product-thumb-container" onclick="openProductDetail(${p.id})">
+                        <div class="product-thumb-container" onclick="openProductDetail('${p.firestoreId}')">
                             <img src="${p.image}" alt="${p.name}">
                         </div>
-                        <div class="card-title" onclick="openProductDetail(${p.id})">${p.name}</div>
+                        <div class="card-title" onclick="openProductDetail('${p.firestoreId}')">${p.name}</div>
                         <div class="card-price">₹${p.price}</div>
-                        <button class="size-chart-link" onclick="openProductDetail(${p.id})">VIEW SIZE CHART</button>
+                        <button class="size-chart-link" onclick="openProductDetail('${p.firestoreId}')">VIEW SIZE CHART</button>
                         <div class="card-buttons">
-                            <button class="btn-cart" onclick="addToBag(${p.id})">ADD TO BAG</button>
-                            <button class="btn-buy" onclick="openProductDetail(${p.id})">BUY NOW</button>
+                            <button class="btn-cart" onclick="addToBag('${p.firestoreId}')">ADD TO BAG</button>
+                            <button class="btn-buy" onclick="openProductDetail('${p.firestoreId}')">BUY NOW</button>
                         </div>
-                        <button class="size-chart-link" style="margin-top:6px; color:#a8a29e;" onclick="addToWishlist(${p.id})">♡ Add to Wishlist</button>
+                        <button class="size-chart-link" style="margin-top:6px; color:#a8a29e;" onclick="addToWishlist('${p.firestoreId}')">♡ Add to Wishlist</button>
                     </div>
                 `;
             });
             document.getElementById('bagCount').innerText = JSON.parse(localStorage.getItem('alivera_bag_count')) || 0;
         }
-        renderStore(storeProducts);
 
         auth.onAuthStateChanged(user => {
             if (user) {
@@ -264,7 +240,6 @@
         });
 
         function openAuthModal() {
-            // Clear autofill inputs explicitly on open
             document.getElementById('authEmail').value = '';
             document.getElementById('authPassword').value = '';
             document.getElementById('authModal').style.display = 'block';
@@ -305,23 +280,11 @@
         function updateUIAfterLogin() {
             document.getElementById('navAuthTrigger').style.display = 'none';
             document.getElementById('navAvatarContainer').style.display = 'block';
-            
             const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-            const avatarEl = document.getElementById('navUserAvatar');
-            const modalAvatarEl = document.getElementById('accountModalAvatar');
-            
-            if(userProfile.avatar) {
-                avatarEl.innerHTML = `<img src="${userProfile.avatar}" alt="Avatar">`;
-                modalAvatarEl.innerHTML = `<img src="${userProfile.avatar}" alt="Avatar">`;
-            } else {
-                avatarEl.innerText = initials;
-                modalAvatarEl.innerText = initials;
-            }
-
+            document.getElementById('navUserAvatar').innerText = initials;
             document.getElementById('accEmail').innerText = currentUser.email;
             document.getElementById('accNameInput').value = currentUser.name;
 
-            // Strict Admin Access Check
             if(currentUser.email.toLowerCase() === "hello@aliveraatelier.in") {
                 document.getElementById('navAdminLink').style.display = 'inline-block';
             } else {
@@ -346,40 +309,39 @@
 
         function openAdminDashboard() {
             if(!currentUser || currentUser.email.toLowerCase() !== "hello@aliveraatelier.in") {
-                alert('Access Denied. Only hello@aliveraatelier.in can access the Admin Dashboard.');
+                alert('Access Denied.');
                 return;
             }
-            window.location.href = "Admin/index.html";
+            // Absolute path from web root to fix 404 errors
+            window.location.href = "/admin/index.html";
         }
 
         function openAccountModal() {
             if(!currentUser) { openAuthModal(); return; }
-            renderAccountWishlist();
-            renderAccountScratchCards();
             document.getElementById('accountModal').style.display = 'block';
         }
 
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
 
         let activeProduct = null;
-        function openProductDetail(id) {
-            activeProduct = storeProducts.find(p => p.id === id);
+        function openProductDetail(firestoreId) {
+            activeProduct = storeProducts.find(p => p.firestoreId === firestoreId);
             document.getElementById('modalTitle').innerText = activeProduct.name;
             document.getElementById('modalImg').src = activeProduct.image;
             document.getElementById('modalPrice').innerText = `₹${activeProduct.price}`;
             document.getElementById('productModal').style.display = 'block';
         }
 
-        function addToBag(id) {
+        function addToBag(firestoreId) {
             let count = (Number(localStorage.getItem('alivera_bag_count')) || 0) + 1;
             localStorage.setItem('alivera_bag_count', count);
             document.getElementById('bagCount').innerText = count;
             alert('Item added to your shopping bag!');
         }
 
-        function addToWishlist(id) {
-            const prod = storeProducts.find(p => p.id === id);
-            if(!wishlistItems.some(item => item.id === id)) {
+        function addToWishlist(firestoreId) {
+            const prod = storeProducts.find(p => p.firestoreId === firestoreId);
+            if(!wishlistItems.some(item => item.firestoreId === firestoreId)) {
                 wishlistItems.push(prod);
                 localStorage.setItem('alivera_wishlist', JSON.stringify(wishlistItems));
             }
@@ -396,7 +358,6 @@
             if(!name || !phone || !address) { alert('Please fill in your shipping details.'); return; }
 
             const newOrder = {
-                id: Date.now(),
                 dress: activeProduct.name,
                 size: size,
                 notes: notes,
@@ -404,53 +365,26 @@
                 email: currentUser ? currentUser.email : "guest@client.com",
                 phone: phone,
                 address: address,
-                status: "Pending Confirmation"
+                status: "Pending Confirmation",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-            liveOrders.push(newOrder);
-            localStorage.setItem('alivera_orders', JSON.stringify(liveOrders));
-            closeModals();
 
-            document.getElementById('scratchCodeText').innerText = `CODE: ALIVERA-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
-            document.getElementById('scratchCover').style.display = 'flex';
-            document.getElementById('scratchModal').style.display = 'block';
+            db.collection("orders").add(newOrder).then(() => {
+                closeModals();
+                document.getElementById('scratchCodeText').innerText = `CODE: ALIVERA-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
+                document.getElementById('scratchCover').style.display = 'flex';
+                document.getElementById('scratchModal').style.display = 'block';
+            }).catch(err => {
+                alert('Error placing order: ' + err.message);
+            });
         }
 
         function revealScratch() {
             document.getElementById('scratchCover').style.display = 'none';
-            userScratchCards.push({ code: document.getElementById('scratchCodeText').innerText, expiry: "Valid for 30 Days" });
-            localStorage.setItem('alivera_scratch_cards', JSON.stringify(userScratchCards));
-        }
-
-        function uploadProfileImage(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                userProfile.avatar = e.target.result;
-                document.getElementById('navUserAvatar').innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
-                document.getElementById('accountModalAvatar').innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
-                alert('Profile picture updated successfully.');
-            };
-            reader.readAsDataURL(file);
         }
 
         function saveAccountDetails() {
             alert('Account details saved successfully.');
-        }
-
-        function renderAccountWishlist() {
-            const container = document.getElementById('accountWishlistContainer');
-            if(wishlistItems.length === 0) { container.innerHTML = 'Your wishlist is currently empty.'; return; }
-            container.innerHTML = wishlistItems.map(p => `<div style="padding:4px 0;">• ${p.name} (₹${p.price})</div>`).join('');
-        }
-
-        function renderAccountScratchCards() {
-            const container = document.getElementById('myScratchCardsContainer');
-            if(userScratchCards.length === 0) { container.innerHTML = '<div style="font-size: 11px; color: #888;">No scratch cards currently saved.</div>'; return; }
-            container.innerHTML = '';
-            userScratchCards.forEach(c => {
-                container.innerHTML += `<div style="background:#050505; border:1px solid #bf953f; padding:8px; margin-bottom:6px; font-size:11px;"><strong style="color:#fcf6ba;">${c.code}</strong> — ${c.expiry}</div>`;
-            });
         }
     </script>
 </body>
