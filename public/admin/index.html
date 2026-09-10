@@ -46,12 +46,13 @@
             <div class="sub-tagline">ADMINISTRATION & MANAGEMENT DASHBOARD</div>
         </header>
 
+        <!-- Main Admin Content Container (Protected) -->
         <div id="adminProtectedContent" style="display: none;">
             <div class="admin-grid">
                 <div class="admin-card">
                     <h3 class="admin-title">Upload Dress Collection (Firestore)</h3>
-                    <input type="text" id="adminDressName" class="input-field" placeholder="Dress Name" autocomplete="off" data-lpignore="true">
-                    <input type="number" id="adminDressPrice" class="input-field" placeholder="Price (₹)" autocomplete="off" data-lpignore="true">
+                    <input type="text" id="adminDressName" class="input-field" placeholder="Dress Name" autocomplete="off">
+                    <input type="number" id="adminDressPrice" class="input-field" placeholder="Price (₹)" autocomplete="off">
                     <label style="font-size: 10px; color: #a8a29e;">Dress Photo File:</label>
                     <input type="file" id="adminDressFile" class="input-field" accept="image/*">
                     <label style="font-size: 10px; color: #a8a29e;">Size Chart Photo File:</label>
@@ -60,13 +61,13 @@
                 </div>
 
                 <div class="admin-card">
-                    <h3 class="admin-title">Sale & Banner Configuration</h3>
+                    <h3 class="admin-title">Sale Configuration</h3>
                     <select id="adminSaleType" class="input-field">
                         <option value="type1">Type 1: First 'X' Persons Promotion</option>
                         <option value="type2">Type 2: Date-to-Date Window Promotion</option>
                     </select>
-                    <input type="number" id="adminDiscountPct" class="input-field" placeholder="Discount Percentage (e.g., 15 for 15%)">
-                    <button class="btn-action" onclick="alert('Sale configured.')">Configure Sale</button>
+                    <input type="number" id="adminDiscountPct" class="input-field" placeholder="Discount Percentage (e.g., 15)">
+                    <button class="btn-action" onclick="alert('Sale configuration saved.')">Configure Sale</button>
                 </div>
             </div>
 
@@ -78,6 +79,7 @@
             </div>
         </div>
 
+        <!-- Access Denied Screen -->
         <div id="adminAccessDenied" style="display: none; text-align: center; padding: 50px;">
             <h2 style="font-family:'Playfair Display',serif; color:#ff6b6b; font-size:22px;">Access Denied</h2>
             <p style="font-size: 12px; color: #a8a29e; margin: 10px 0 20px 0;">You must be signed in as <strong>hello@aliveraatelier.in</strong> to view the administration dashboard.</p>
@@ -86,26 +88,35 @@
     </div>
 
     <script>
+        // REPLACE THESE WITH YOUR ACTUAL FIREBASE CONSOLE PROJECT CREDENTIALS
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForAliveraAtelier",
+            apiKey: "YOUR_ACTUAL_API_KEY",
             authDomain: "alivera-atelier.firebaseapp.com",
             projectId: "alivera-atelier",
             storageBucket: "alivera-atelier.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef"
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
+        
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // Fixed Auth State Check (Prevents premature Access Denied flash)
         auth.onAuthStateChanged(user => {
-            if (user && user.email.toLowerCase() === "hello@aliveraatelier.in") {
-                document.getElementById('adminAuthStatus').innerText = `Logged in: ${user.email}`;
-                document.getElementById('adminProtectedContent').style.display = 'block';
-                document.getElementById('adminAccessDenied').style.display = 'none';
-                fetchAdminOrders();
+            if (user) {
+                if (user.email.toLowerCase() === "hello@aliveraatelier.in") {
+                    document.getElementById('adminAuthStatus').innerText = `Logged in: ${user.email}`;
+                    document.getElementById('adminProtectedContent').style.display = 'block';
+                    document.getElementById('adminAccessDenied').style.display = 'none';
+                    fetchAdminOrders();
+                } else {
+                    document.getElementById('adminAuthStatus').innerText = `Logged in as ${user.email} (Unauthorized)`;
+                    document.getElementById('adminProtectedContent').style.display = 'none';
+                    document.getElementById('adminAccessDenied').style.display = 'block';
+                }
             } else {
-                document.getElementById('adminAuthStatus').innerText = "Access Restricted";
+                document.getElementById('adminAuthStatus').innerText = "Not Signed In";
                 document.getElementById('adminProtectedContent').style.display = 'none';
                 document.getElementById('adminAccessDenied').style.display = 'block';
             }
@@ -135,7 +146,7 @@
                     };
 
                     db.collection("dresses").add(dressData).then(() => {
-                        alert('Dress successfully published to Firebase Firestore collection!');
+                        alert('Dress successfully published to your live Firebase Firestore collection!');
                         document.getElementById('adminDressName').value = '';
                         document.getElementById('adminDressPrice').value = '';
                     }).catch(error => {
@@ -161,12 +172,10 @@
                             <strong style="color: #fcf6ba; font-size: 13px;">${o.dress} (Size: ${o.size})</strong><br>
                             <strong>Customer:</strong> ${o.customer} (${o.email}) | <strong>Phone:</strong> ${o.phone}<br>
                             <strong>Address:</strong> ${o.address}<br>
-                            ${o.notes ? `<strong>Custom Notes:</strong> ${o.notes}<br>` : ''}
                             <strong>Status:</strong> <span style="color:#bf953f;">${o.status}</span><br>
                             <div style="margin-top: 8px; display: flex; gap: 6px;">
                                 <button onclick="updateOrderStatus('${docId}', 'Confirmed')" style="background:green; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Confirm</button>
                                 <button onclick="updateOrderStatus('${docId}', 'Denied')" style="background:orange; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Deny</button>
-                                <button onclick="updateOrderStatus('${docId}', 'Cancelled')" style="background:red; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Cancel</button>
                             </div>
                         </div>
                     `;
@@ -176,7 +185,7 @@
 
         function updateOrderStatus(docId, newStatus) {
             db.collection("orders").doc(docId).update({ status: newStatus }).then(() => {
-                alert(`Order status updated to ${newStatus} in Firebase Firestore`);
+                alert(`Order status updated to ${newStatus}`);
             });
         }
     </script>
