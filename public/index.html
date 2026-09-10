@@ -116,7 +116,7 @@
         <!-- Hero Welcome Banner -->
         <div class="hero-banner">
             <div style="font-size: 32px; color: #fcf6ba; font-family: 'Playfair Display', serif; margin-bottom: 8px;">A</div>
-            <div class="hero-title">Welcome to Alivèra Atelier. Each bespoke creation is meticulously designed and crafted to celebrate your Y essence.<br>Discover custom-sized perfectly you.</div>
+            <div class="hero-title">Welcome to Alivèra Atelier. Each bespoke creation is meticulously designed and crafted to celebrate your essence.<br>Discover custom-sized garments tailored perfectly for you.</div>
             <div class="hero-subtitle">"Beautiful. The Way You Are."</div>
         </div>
 
@@ -130,7 +130,7 @@
         <div class="store-grid" id="row2Grid"></div>
     </div>
 
-    <!-- ATELIER FOOTER -->
+    <!-- ATELIER FOOTER (Cleaned up: No newsletters or VIP WhatsApp links) -->
     <footer>
         <div class="footer-grid">
             <div class="footer-col">
@@ -150,8 +150,7 @@
                 <h4>Connect With Us</h4>
                 <ul>
                     <li><a href="#" onclick="alert('Redirecting to Instagram @aliveraatelier'); return false;">Instagram @aliveraatelier</a></li>
-                    <li><a href="#" onclick="alert('Atelier VIP WhatsApp Concierge.'); return false;">VIP WhatsApp Support</a></li>
-                    <li><a href="#" onclick="alert('Subscribed to Atelier newsletter.'); return false;">Newsletter Signup</a></li>
+                    <li><a href="#" onclick="alert('Opening official email contact.'); return false;">Email Atelier</a></li>
                 </ul>
             </div>
         </div>
@@ -160,7 +159,7 @@
         </div>
     </footer>
 
-    <!-- PRODUCT DETAIL POPUP MODAL (Amazon / Flipkart Style) -->
+    <!-- PRODUCT DETAIL POPUP MODAL -->
     <div id="productModal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal()">&times;</button>
@@ -204,12 +203,11 @@
                 </div>
             </div>
 
-            <!-- RATINGS & REVIEWS SECTION (Starts clean, no fake reviews) -->
+            <!-- RATINGS & REVIEWS SECTION -->
             <div class="reviews-section">
                 <h3 style="font-family: 'Playfair Display', serif; color: #fcf6ba; font-size: 13px; margin: 0 0 8px 0;">Client Ratings & Verified Reviews</h3>
                 <div id="reviewsContainer" style="font-size: 11px; color: #888; margin-bottom: 12px;">No reviews yet. Be the first client to review this bespoke piece.</div>
 
-                <!-- Submit Review Form -->
                 <div style="background: #050505; padding: 10px; border: 1px solid rgba(191,149,63,0.3);">
                     <div style="font-size: 11px; color: #fcf6ba; margin-bottom: 4px;">Leave Your Review</div>
                     <select id="reviewRating" class="dropdown-select" style="margin-bottom: 6px;">
@@ -228,17 +226,22 @@
 
     <!-- JavaScript Application Logic -->
     <script>
+        /* 
+           NOTE: Replace the filename strings under 'image' and 'sizeChart' below 
+           with your exact dress image filenames (e.g., 'midnight-orchid.jpg') 
+           so your product pictures appear correctly on the page.
+        */
         const row1Products = [
-            { id: 1, name: "Midnight Orchid with overskirt", price: 4500, image: "favicon.ico.png", sizeChart: "favicon.ico.png" },
-            { id: 2, name: "The Forest Flare Dress", price: 5200, image: "favicon.ico.png", sizeChart: "favicon.ico.png" },
-            { id: 3, name: "Rose Petal Crop Top", price: 1600, image: "favicon.ico.png", sizeChart: "favicon.ico.png" },
-            { id: 4, name: "Sunset Bespoke Dress", price: 4500, image: "favicon.ico.png", sizeChart: "favicon.ico.png" }
+            { id: 1, name: "Midnight Orchid with overskirt", price: 4500, image: "midnight-orchid.jpg", sizeChart: "size-chart.jpg" },
+            { id: 2, name: "The Forest Flare Dress", price: 5200, image: "forest-flare.jpg", sizeChart: "size-chart.jpg" },
+            { id: 3, name: "Rose Petal Crop Top", price: 1600, image: "rose-crop.jpg", sizeChart: "size-chart.jpg" },
+            { id: 4, name: "Sunset Bespoke Dress", price: 4500, image: "sunset-dress.jpg", sizeChart: "size-chart.jpg" }
         ];
 
         const row2Products = [
-            { id: 5, name: "Emerald Pearl Dress", price: 5500, image: "favicon.ico.png", sizeChart: "favicon.ico.png" },
-            { id: 6, name: "The White Lily Dress", price: 2200, image: "favicon.ico.png", sizeChart: "favicon.ico.png" },
-            { id: 7, name: "Lavender Light Top", price: 1800, image: "favicon.ico.png", sizeChart: "favicon.ico.png" }
+            { id: 5, name: "Emerald Pearl Dress", price: 5500, image: "emerald-pearl.jpg", sizeChart: "size-chart.jpg" },
+            { id: 6, name: "The White Lily Dress", price: 2200, image: "white-lily.jpg", sizeChart: "size-chart.jpg" },
+            { id: 7, name: "Lavender Light Top", price: 1800, image: "lavender-top.jpg", sizeChart: "size-chart.jpg" }
         ];
 
         let currentActiveProduct = null;
@@ -250,7 +253,7 @@
             products.forEach(p => {
                 grid.innerHTML += `
                     <div class="product-card">
-                        <img src="${p.image}" alt="${p.name}" class="product-thumb" onclick="openProductModal(${p.id})">
+                        <img src="${p.image}" alt="${p.name}" class="product-thumb" onerror="this.src='favicon.ico.png'" onclick="openProductModal(${p.id})">
                         <div class="card-title" onclick="openProductModal(${p.id})">${p.name}</div>
                         <div class="card-price">₹${p.price}</div>
                         <button class="size-chart-link" onclick="openProductModal(${p.id})">VIEW SIZE CHART</button>
