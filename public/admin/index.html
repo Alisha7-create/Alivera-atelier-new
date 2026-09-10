@@ -24,7 +24,7 @@
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
         @media(max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
 
-        .admin-card { background: #0c0a09; border: 1px solid rgba(191,149,63,0.3); padding: 20px; }
+        .admin-card { background: #0c0a09; border: 1px solid rgba(191,149,63,0.3); padding: 20px; margin-bottom: 20px; }
         .admin-title { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 16px; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid rgba(191,149,63,0.2); padding-bottom: 8px; }
 
         .input-field { width: 100%; background: #050505; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 10px; font-size: 12px; margin-bottom: 12px; }
@@ -52,8 +52,8 @@
                 <!-- Upload Dress Section -->
                 <div class="admin-card">
                     <h3 class="admin-title">Upload Dress Collection</h3>
-                    <input type="text" id="adminDressName" class="input-field" placeholder="Dress Name">
-                    <input type="number" id="adminDressPrice" class="input-field" placeholder="Price (₹)">
+                    <input type="text" id="adminDressName" class="input-field" placeholder="Dress Name" autocomplete="off" data-lpignore="true">
+                    <input type="number" id="adminDressPrice" class="input-field" placeholder="Price (₹)" autocomplete="off" data-lpignore="true">
                     <label style="font-size: 10px; color: #a8a29e;">Dress Photo File:</label>
                     <input type="file" id="adminDressFile" class="input-field" accept="image/*">
                     <label style="font-size: 10px; color: #a8a29e;">Size Chart Photo File:</label>
@@ -64,7 +64,7 @@
                 <!-- Sale & Banner Configuration -->
                 <div class="admin-card">
                     <h3 class="admin-title">Sale & Banner (1897 x 412)</h3>
-                    <select id="adminSaleType" class="input-field" onclick="toggleAdminSaleInputs()">
+                    <select id="adminSaleType" class="input-field" onchange="toggleAdminSaleInputs()">
                         <option value="type1">Type 1: First 'X' Persons Promotion</option>
                         <option value="type2">Type 2: Date-to-Date Window Promotion</option>
                     </select>
@@ -88,7 +88,7 @@
             <!-- Golden Scratch Card Issuer -->
             <div class="admin-card">
                 <h3 class="admin-title">Issue Golden Scratch Card</h3>
-                <input type="email" id="scratchCustomerEmail" class="input-field" placeholder="Customer Email Address">
+                <input type="email" id="scratchCustomerEmail" class="input-field" placeholder="Customer Email Address" autocomplete="off" data-lpignore="true">
                 <button class="btn-action" onclick="adminIssueCard()">Generate & Send Scratch Card to Account</button>
             </div>
 
@@ -129,7 +129,6 @@
                 document.getElementById('adminAccessDenied').style.display = 'none';
                 renderAdminOrders();
             } else {
-                // Fallback simulation check for local testing if needed
                 document.getElementById('adminAuthStatus').innerText = "Access Restricted";
                 document.getElementById('adminProtectedContent').style.display = 'none';
                 document.getElementById('adminAccessDenied').style.display = 'block';
