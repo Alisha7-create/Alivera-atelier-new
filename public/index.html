@@ -6,13 +6,9 @@
     <title>Alivèra Atelier — Bespoke Haute Couture</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; }
-        body {
-            margin: 0; padding: 0; background-color: #050505; color: #f5f5f4;
-            font-family: 'Plus Jakarta Sans', Arial, sans-serif;
-        }
+        body { margin: 0; padding: 0; background-color: #050505; color: #f5f5f4; font-family: 'Plus Jakarta Sans', Arial, sans-serif; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        /* Header & Navigation */
         header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(191, 149, 63, 0.2); }
         .top-nav { display: flex; justify-content: flex-end; gap: 16px; font-size: 11px; color: #fcf6ba; text-transform: uppercase; margin-bottom: 10px; }
         .top-nav span { cursor: pointer; transition: color 0.2s; }
@@ -20,18 +16,17 @@
         h1 { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 26px; margin: 0; letter-spacing: 2px; }
         .sub-tagline { font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 3px; margin-top: 4px; }
 
-        /* Promotional Banner */
-        .promo-banner {
-            background: linear-gradient(135deg, #2a220f, #0c0a09); border: 1px solid #bf953f; color: #fcf6ba;
-            text-align: center; padding: 14px; margin: 15px 0; font-size: 13px; font-family: 'Playfair Display', Georgia, serif;
-        }
+        /* Search Bar */
+        .search-container { max-width: 400px; margin: 20px auto; text-align: center; }
+        .search-input { width: 100%; background: #0c0a09; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 10px; font-size: 12px; text-align: center; }
 
-        .hero-banner {
-            border: 1px solid rgba(191, 149, 63, 0.3); background: #0c0a09; text-align: center;
-            padding: 30px 20px; margin: 20px 0;
+        /* Banners (1897 x 412 Aspect Ratio container) */
+        .banner-display-box {
+            width: 100%; aspect-ratio: 1897 / 412; max-height: 350px; background: #0c0a09; border: 1px solid rgba(191,149,63,0.4);
+            margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden;
         }
-        .hero-title { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 16px; line-height: 1.6; margin-bottom: 6px; }
-        .hero-subtitle { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #d6d3d1; font-size: 13px; }
+        .banner-display-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+        .banner-content-overlay { position: relative; z-index: 2; background: rgba(5,5,5,0.75); padding: 20px; border: 1px solid #bf953f; }
 
         .section-heading { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 20px; text-align: center; margin: 30px 0 10px 0; }
         .section-sub { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #a8a29e; font-size: 13px; text-align: center; margin-bottom: 20px; }
@@ -42,275 +37,459 @@
         @media(max-width: 600px) { .store-grid { grid-template-columns: 1fr; } }
 
         .product-card { background: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.3); padding: 12px; text-align: center; }
-        
-        .product-thumb-container {
-            width: 100%; height: 280px; background: #12100e; border: 1px solid rgba(191,149,63,0.2);
-            position: relative; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center;
-        }
+        .product-thumb-container { width: 100%; height: 260px; background: #12100e; border: 1px solid rgba(191,149,63,0.2); position: relative; cursor: pointer; overflow: hidden; }
         .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; }
         .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 14px; color: #fcf6ba; margin: 10px 0 4px 0; cursor: pointer; }
         .card-price { font-size: 13px; color: #f5f5f4; font-weight: bold; margin-bottom: 6px; }
         .size-chart-link { font-size: 10px; color: #bf953f; background: none; border: none; text-decoration: underline; cursor: pointer; margin-bottom: 10px; display: block; width: 100%; text-align: center; }
         
         .card-buttons { display: flex; gap: 6px; margin-top: 8px; }
-        .btn-cart, .btn-buy { flex: 1; padding: 7px 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid #bf953f; transition: background 0.2s; }
+        .btn-cart, .btn-buy { flex: 1; padding: 7px 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid #bf953f; }
         .btn-cart { background: transparent; color: #fcf6ba; }
-        .btn-cart:hover { background: rgba(191,149,63,0.1); }
         .btn-buy { background: linear-gradient(135deg, #bf953f, #fcf6ba); color: #050505; border: none; }
-        .btn-buy:hover { opacity: 0.9; }
-        .share-btn { background: none; border: none; color: #a8a29e; font-size: 10px; text-transform: uppercase; margin-top: 8px; cursor: pointer; letter-spacing: 1px; display: block; width: 100%; text-align: center; }
+        .share-btn { background: none; border: none; color: #a8a29e; font-size: 10px; text-transform: uppercase; margin-top: 8px; cursor: pointer; display: block; width: 100%; text-align: center; }
 
-        /* Modals Overlay */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; overflow-y: auto; padding: 20px; }
-        .modal-box { background: #0c0a09; border: 1px solid #bf953f; max-width: 600px; margin: 40px auto; padding: 24px; position: relative; color: #f5f5f4; }
+        /* Modals */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px; }
+        .modal-box { background: #0c0a09; border: 1px solid #bf953f; max-width: 650px; margin: 30px auto; padding: 24px; position: relative; color: #f5f5f4; }
         .close-modal { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #fcf6ba; font-size: 24px; cursor: pointer; }
         .modal-title { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid rgba(191,149,63,0.3); padding-bottom: 8px; }
 
+        .input-field { width: 100%; background: #050505; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 9px; font-size: 12px; margin-bottom: 10px; }
+        .btn-action { background: #bf953f; color: #050505; border: none; padding: 10px; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 5px; }
+
         /* Golden Scratch Card Component */
-        .golden-scratch-card {
-            background: linear-gradient(135deg, #bf953f, #fcf6ba, #99752b); color: #050505; padding: 20px;
-            border-radius: 6px; text-align: center; margin: 15px 0; font-family: 'Playfair Display', Georgia, serif; position: relative; overflow: hidden;
-        }
-        .scratch-cover {
-            position: absolute; inset: 0; background: #262626; color: #fcf6ba; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.5s ease; font-family: sans-serif; font-size: 12px; font-weight: bold;
-        }
+        .golden-card { background: linear-gradient(135deg, #bf953f, #fcf6ba, #99752b); color: #050505; padding: 15px; border-radius: 6px; text-align: center; margin: 10px 0; font-family: 'Playfair Display', Georgia, serif; position: relative; overflow: hidden; }
+        .scratch-cover { position: absolute; inset: 0; background: #222; color: #fcf6ba; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; font-weight: bold; }
 
-        /* Account Saved Cards List */
-        .saved-coupon-item {
-            background: #050505; border: 1px solid #bf953f; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 12px;
-        }
-
-        footer {
-            margin-top: 60px; border-top: 1px solid rgba(191, 149, 63, 0.3);
-            background: #080605; padding: 30px 20px; text-align: center; color: #a8a29e; font-size: 12px;
-        }
+        footer { margin-top: 60px; border-top: 1px solid rgba(191, 149, 63, 0.3); background: #080605; padding: 30px 20px; text-align: center; color: #a8a29e; font-size: 12px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Header & Clickable Navigation -->
+        <!-- Header & Nav -->
         <header>
             <div class="top-nav">
-                <span onclick="openAdminModal()">Admin</span>
-                <span onclick="openAccountModal()">Account</span>
-                <span onclick="alert('Your Wishlist is currently empty.')">Wishlist (0)</span>
-                <span onclick="alert('Your Shopping Bag is currently empty.')">Bag (0)</span>
+                <span onclick="checkAdminAccess()">Admin Dashboard</span>
+                <span onclick="openAccountModal()">My Account</span>
+                <span onclick="openAuthModal()">Sign In / Sign Up</span>
+                <span onclick="alert('Wishlist is empty.')">Wishlist (<span id="wishlistCount">0</span>)</span>
+                <span onclick="alert('Bag is empty.')">Bag (0)</span>
             </div>
             <h1>ALIVÈRA ATELIER</h1>
             <div class="sub-tagline">BESPOKE HAUTE COUTURE</div>
         </header>
 
-        <div class="promo-banner">
-            ✨ <strong>INTRODUCTORY OFFER:</strong> 10% OFF Your First Bespoke Creation. Use Code: <strong>FIRST10</strong>
+        <!-- Search Collection -->
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search dresses from collection..." oninput="filterCollection()">
         </div>
 
-        <div class="hero-banner">
-            <div style="font-size: 28px; color: #fcf6ba; font-family: 'Playfair Display', serif; margin-bottom: 4px;">A</div>
-            <div class="hero-title">Welcome to Alivèra Atelier. Each bespoke creation is meticulously designed and crafted to celebrate your essence.</div>
-            <div class="hero-subtitle">"Beautiful. The Way You Are."</div>
+        <!-- Dynamic Banner Section (1897 x 412 Aspect Ratio Container) -->
+        <div class="banner-display-box" id="mainBannerContainer">
+            <div class="banner-content-overlay">
+                <div style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:16px;" id="bannerTitle">WELCOME TO ALIVÈRA ATELIER</div>
+                <div style="font-size:11px; color:#d6d3d1; margin-top:4px;" id="bannerSubtitle">"Beautiful. The Way You Are."</div>
+                <div id="bannerTimerDisplay" style="font-family:monospace; font-size:14px; color:#fff; margin-top:8px; display:none;"></div>
+            </div>
         </div>
 
-        <div class="section-heading">Luxury dresses including custom sized</div>
-        <div class="section-sub">"Beautiful. The way you are..."</div>
-        <div class="store-grid" id="row1Grid"></div>
-
-        <div class="section-heading" style="margin-top: 40px;">Popular Masterpieces</div>
-        <div class="store-grid" id="row2Grid"></div>
+        <!-- Store Catalog -->
+        <div class="section-heading">Bespoke Collection</div>
+        <div class="section-sub">"Handcrafted to celebrate your unique essence."</div>
+        <div class="store-grid" id="storeGrid"></div>
     </div>
 
     <footer>
         &copy; 2026 Alivèra Atelier. All Rights Reserved. "Beautiful. The Way You Are."
     </footer>
 
-    <!-- PRODUCT DETAIL / VIEW MODAL -->
-    <div id="productModal" class="modal-overlay">
-        <div class="modal-box" style="max-width: 500px; text-align: center;">
+    <!-- AUTHENTICATION MODAL (Email & Google) -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 400px;">
             <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 id="modalDressTitle" class="modal-title"></h2>
-            <div style="width: 100%; height: 320px; background: #000; border: 1px solid #bf953f; margin-bottom: 15px; overflow: hidden;">
-                <img id="modalDressImg" src="" alt="Dress View" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div id="modalDressPrice" style="font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #fcf6ba;"></div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-cart" onclick="alert('Item added to your bag!'); closeModals();">ADD TO BAG</button>
-                <button class="btn-buy" onclick="simulateOrderPlacement()">BUY NOW (TEST ORDER)</button>
-            </div>
+            <h2 class="modal-title">Customer Authentication</h2>
+            <input type="email" id="authEmail" class="input-field" placeholder="Email Address">
+            <input type="password" id="authPassword" class="input-field" placeholder="Password">
+            <button class="btn-action" onclick="handleEmailAuth()">Sign In / Sign Up with Email</button>
+            <button class="btn-action" style="background: #4285F4; color: #fff; margin-top: 8px;" onclick="handleGoogleAuth()">Sign In with Google</button>
         </div>
     </div>
 
     <!-- ADMIN DASHBOARD MODAL -->
     <div id="adminModal" class="modal-overlay">
-        <div class="modal-box">
+        <div class="modal-box" style="max-width: 800px;">
             <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 class="modal-title">Atelier Admin Dashboard</h2>
-            <p style="font-size: 12px; color: #a8a29e; margin-bottom: 15px;">Manage active storefront sales, order inventory, and promotional coupons.</p>
-            <div style="background: #050505; border: 1px solid rgba(191,149,63,0.3); padding: 15px; font-size: 12px;">
-                <p><strong>Store Status:</strong> Active & Live on Cloudflare</p>
-                <p><strong>Total Active Coupons Issued:</strong> <span id="adminCouponCount">2</span></p>
-                <button class="btn-buy" style="margin-top: 10px;" onclick="alert('Admin settings updated successfully.')">Save Configuration</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ACCOUNT MODAL WITH SAVED SCRATCH CARDS -->
-    <div id="accountModal" class="modal-overlay">
-        <div class="modal-box">
-            <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 class="modal-title">Client Account & Saved Scratch Cards</h2>
-            <p style="font-size: 12px; color: #a8a29e; margin-bottom: 15px;">Access your profile, measurement logs, and scratched reward coupons below:</p>
+            <h2 class="modal-title">Admin Dashboard — Atelier Management</h2>
             
-            <h3 style="font-size: 13px; color: #fcf6ba; font-family: 'Playfair Display', serif; margin-bottom: 8px;">Your Saved Scratch Cards (Valid 30 Days):</h3>
-            <div id="savedCouponsContainer">
-                <!-- Dynamically populated scratch cards -->
-            </div>
-        </div>
-    </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- Upload Product -->
+                <div style="background: #050505; padding: 15px; border: 1px solid rgba(191,149,63,0.3);">
+                    <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:14px; margin-top:0;">Upload New Dress</h3>
+                    <input type="text" id="newDressName" class="input-field" placeholder="Dress Name">
+                    <input type="number" id="newDressPrice" class="input-field" placeholder="Price (₹)">
+                    <input type="text" id="newDressImg" class="input-field" placeholder="Dress Image URL">
+                    <input type="text" id="newDressSizeChart" class="input-field" placeholder="Size Chart Image URL">
+                    <button class="btn-action" onclick="adminUploadDress()">Publish Dress to Store</button>
+                </div>
 
-    <!-- ORDER SUCCESS & SCRATCH CARD MODAL -->
-    <div id="orderSuccessModal" class="modal-overlay">
-        <div class="modal-box" style="text-align: center;">
-            <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 class="modal-title">Order Placed Successfully!</h2>
-            <p style="font-size: 12px; color: #a8a29e;">Thank you for your bespoke order. As a token of appreciation, you have received a Golden Scratch Card!</p>
-            
-            <!-- Golden Scratch Component -->
-            <div class="golden-scratch-card">
-                <div style="font-size: 12px; letter-spacing: 1px;">EXCLUSIVE REWARD</div>
-                <div style="font-size: 22px; font-weight: bold; margin: 6px 0;">10% OFF NEXT ORDER</div>
-                <div style="font-size: 11px;" id="scratchCodeDisplay">CODE: ALIVERA-XXXX</div>
-                
-                <!-- Scratch Cover Layer -->
-                <div class="scratch-cover" id="scratchCoverLayer" onclick="revealScratchCard()">
-                    <span>✨ SCRATCH HERE ✨</span>
-                    <span style="font-size: 9px; font-weight: normal; margin-top: 4px;">(Click to reveal code)</span>
+                <!-- Sale & Banner Controls -->
+                <div style="background: #050505; padding: 15px; border: 1px solid rgba(191,149,63,0.3);">
+                    <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:14px; margin-top:0;">Sale & Banner Config</h3>
+                    <select id="saleTypeSelect" class="input-field">
+                        <option value="type1">Type 1: First 'X' Persons (Slots)</option>
+                        <option value="type2">Type 2: Date-to-Date Window</option>
+                    </select>
+                    <input type="text" id="saleBannerImg" class="input-field" placeholder="Promo Banner Image URL (1897x412)">
+                    <input type="datetime-local" id="saleStartTime" class="input-field">
+                    <button class="btn-action" onclick="saveSaleConfig()">Configure & Start Timer</button>
+                    <button class="btn-action" style="background:#ff6b6b; color:#fff;" onclick="stopSaleManually()">Stop Sale & Restore Normal Banner</button>
                 </div>
             </div>
 
-            <p style="font-size: 11px; color: #fcf6ba;" id="scratchStatusMsg">Scratch the card above to save it automatically to your Account.</p>
-            <button class="btn-buy" style="margin-top: 10px;" onclick="closeModals()">Continue Shopping</button>
+            <!-- Live Orders Management -->
+            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:14px; margin-top:20px;">Live Customer Orders & Fulfillment</h3>
+            <div id="adminOrdersList" style="background: #050505; padding: 10px; border: 1px solid rgba(191,149,63,0.3); max-height: 200px; overflow-y:auto; font-size: 11px;">
+                <div style="color: #888;">No orders received yet.</div>
+            </div>
+
+            <!-- Scratch Card Generator -->
+            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:14px; margin-top:20px;">Issue Golden Scratch Card</h3>
+            <input type="email" id="targetCustomerEmail" class="input-field" placeholder="Customer Email">
+            <button class="btn-action" onclick="adminIssueScratchCard()">Generate & Send Scratch Card</button>
         </div>
     </div>
 
-    <!-- APPLICATION SCRIPTS -->
+    <!-- MY ACCOUNT MODAL -->
+    <div id="accountModal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 class="modal-title">Client Account Dashboard</h2>
+            <div style="font-size: 12px; margin-bottom: 15px; background: #050505; padding: 12px; border: 1px solid rgba(191,149,63,0.3);">
+                <p><strong>Name:</strong> <span id="accName">Bespoke Client</span></p>
+                <p><strong>Email:</strong> <span id="accEmail">Not signed in</span></p>
+                <p><strong>Primary Phone:</strong> <span id="accPhone">+91 XXXXX XXXXX</span></p>
+                <p><strong>Delivery Addresses:</strong> <span id="accAddress">Saved primary address</span></p>
+            </div>
+
+            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:13px; margin-bottom:6px;">My Saved Golden Scratch Cards (Unopened):</h3>
+            <div id="myScratchCardsContainer" style="margin-bottom: 15px;">
+                <div style="font-size: 11px; color: #888;">No scratch cards currently in your account.</div>
+            </div>
+
+            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:13px; margin-bottom:6px;">Recently Viewed Dresses:</h3>
+            <div id="recentlyViewedContainer" style="font-size: 11px; color: #a8a29e; margin-bottom: 15px;">No recent items viewed.</div>
+
+            <button class="btn-action" style="background: #ff6b6b; color: #fff;" onclick="handleLogout()">Sign Out / Logout</button>
+        </div>
+    </div>
+
+    <!-- PRODUCT DETAIL & CHECKOUT MODAL -->
+    <div id="productModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 600px;">
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <img id="modalImg" src="" alt="Dress" style="width: 100%; height: 280px; object-fit: cover; border: 1px solid #bf953f;">
+                <div>
+                    <div id="modalPrice" style="font-size: 16px; font-weight: bold; color: #fcf6ba; margin-bottom: 10px;"></div>
+                    <label style="font-size: 11px; color: #fcf6ba;">Dress Size:</label>
+                    <select id="orderSize" class="input-field">
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M" selected>M</option>
+                        <option value="L">L</option>
+                        <option value="Custom">Custom Sized</option>
+                    </select>
+                    <input type="text" id="orderCustomNotes" class="input-field" placeholder="Custom Measurement Notes (Optional)">
+                    <input type="text" id="orderCustomerName" class="input-field" placeholder="Full Name">
+                    <input type="text" id="orderCustomerPhone" class="input-field" placeholder="Phone Number">
+                    <input type="text" id="orderCustomerAddress" class="input-field" placeholder="Delivery Address">
+                    <button class="btn-action" onclick="placeOrder()">Place Order & Get Scratch Card</button>
+                </div>
+            </div>
+            <div style="margin-top: 15px; border-top: 1px solid rgba(191,149,63,0.3); padding-top: 10px;">
+                <div style="font-size: 11px; color: #fcf6ba; margin-bottom: 5px;">Size Chart Reference:</div>
+                <img id="modalSizeChart" src="" alt="Size Chart" style="width: 100%; max-height: 120px; object-fit: contain; background: #000;">
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRATCH CARD REWARD MODAL -->
+    <div id="scratchModal" class="modal-overlay">
+        <div class="modal-box" style="text-align: center; max-width: 450px;">
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 class="modal-title">Order Placed Successfully!</h2>
+            <p style="font-size: 11px; color: #a8a29e;">You have been awarded a Golden Scratch Card by Atelier Management!</p>
+            <div class="golden-card">
+                <div style="font-size: 11px;">ALIVÈRA REWARD</div>
+                <div style="font-size: 20px; font-weight: bold; margin: 4px 0;">10% OFF DISCOUNT</div>
+                <div style="font-size: 11px;" id="scratchCodeText">CODE: ALIVERA-XXXX</div>
+                <div class="scratch-cover" id="scratchCover" onclick="revealScratch()">
+                    <span>✨ SCRATCH TO REVEAL ✨</span>
+                </div>
+            </div>
+            <button class="btn-action" onclick="closeModals()">Done</button>
+        </div>
+    </div>
+
+    <!-- APPLICATION LOGIC SCRIPT -->
     <script>
-        /* Product Data with embedded working display visuals */
-        const row1Products = [
-            { id: 1, name: "Midnight Orchid with overskirt", price: 6000, image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&auto=format&fit=crop&q=60" },
-            { id: 2, name: "The Forest Flare Dress", price: 5200, image: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=500&auto=format&fit=crop&q=60" },
-            { id: 3, name: "Rose Petal Crop Top", price: 1600, image: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500&auto=format&fit=crop&q=60" },
-            { id: 4, name: "Sunset Bespoke Dress", price: 4500, image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=500&auto=format&fit=crop&q=60" }
+        // State Management
+        let currentUser = null; // { email, name, role }
+        let storeProducts = [
+            { id: 1, name: "Midnight Orchid with overskirt", price: 6000, image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&auto=format&fit=crop&q=60", sizeChart: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500&auto=format&fit=crop&q=60" },
+            { id: 2, name: "The Forest Flare Dress", price: 5200, image: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=500&auto=format&fit=crop&q=60", sizeChart: "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500&auto=format&fit=crop&q=60" }
         ];
+        let liveOrders = [];
+        let userScratchCards = []; // Unopened scratch cards saved in account
+        let recentlyViewed = [];
+        let wishlistItems = [];
 
-        const row2Products = [
-            { id: 5, name: "Emerald Pearl Dress", price: 5500, image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500&auto=format&fit=crop&q=60" },
-            { id: 6, name: "The White Lily Dress", price: 2200, image: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=500&auto=format&fit=crop&q=60" },
-            { id: 7, name: "Lavender Light Top", price: 1800, image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500&auto=format&fit=crop&q=60" }
-        ];
+        let saleSettings = {
+            active: false,
+            type: "type1",
+            bannerImg: "",
+            startTime: null
+        };
 
-        // Saved customer scratch cards array
-        let savedAccountCoupons = [];
-        let currentGeneratedCode = "";
-
-        function renderGrid(products, containerId) {
-            const grid = document.getElementById(containerId);
+        // Render Store Catalog
+        function renderStore(productsToRender) {
+            const grid = document.getElementById('storeGrid');
             grid.innerHTML = '';
-            products.forEach(p => {
+            if(productsToRender.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; font-size: 12px;">No dresses found matching your search.</div>';
+                return;
+            }
+            productsToRender.forEach(p => {
                 grid.innerHTML += `
                     <div class="product-card">
-                        <div class="product-thumb-container" onclick="openProductModal('${p.name}', '${p.image}', ${p.price})">
+                        <div class="product-thumb-container" onclick="openProductDetail(${p.id})">
                             <img src="${p.image}" alt="${p.name}">
                         </div>
-                        <div class="card-title" onclick="openProductModal('${p.name}', '${p.image}', ${p.price})">${p.name}</div>
+                        <div class="card-title" onclick="openProductDetail(${p.id})">${p.name}</div>
                         <div class="card-price">₹${p.price}</div>
-                        <button class="size-chart-link" onclick="alert('Opening size chart reference for ${p.name}')">VIEW SIZE CHART</button>
+                        <button class="size-chart-link" onclick="openProductDetail(${p.id})">VIEW SIZE CHART</button>
                         <div class="card-buttons">
-                            <button class="btn-cart" onclick="alert('Added ${p.name} to shopping bag!')">ADD TO BAG</button>
-                            <button class="btn-buy" onclick="simulateOrderPlacement()">BUY NOW</button>
+                            <button class="btn-cart" onclick="alert('Added ${p.name} to bag!')">ADD TO BAG</button>
+                            <button class="btn-buy" onclick="openProductDetail(${p.id})">BUY NOW</button>
                         </div>
-                        <button class="share-btn" onclick="alert('Share link copied to clipboard!')">SHARE DRESS</button>
+                        <button class="share-btn" onclick="addToWishlist(${p.id})">♡ Add to Wishlist</button>
                     </div>
                 `;
             });
         }
+        renderStore(storeProducts);
 
-        renderGrid(row1Products, 'row1Grid');
-        renderGrid(row2Products, 'row2Grid');
-
-        // Modal Controls
-        function openProductModal(name, img, price) {
-            document.getElementById('modalDressTitle').innerText = name;
-            document.getElementById('modalDressImg').src = img;
-            document.getElementById('modalDressPrice').innerText = `₹${price}`;
-            document.getElementById('productModal').style.display = 'block';
+        function filterCollection() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = storeProducts.filter(p => p.name.toLowerCase().includes(query));
+            renderStore(filtered);
         }
 
-        function openAdminModal() {
-            document.getElementById('adminModal').style.display = 'block';
+        // Authentication Handler
+        function openAuthModal() { document.getElementById('authModal').style.display = 'block'; }
+        
+        function handleEmailAuth() {
+            const email = document.getElementById('authEmail').value.trim();
+            if(!email) { alert('Please enter a valid email.'); return; }
+            currentUser = { email: email, name: email.split('@')[0], role: email === "hello@aliveraatelier.in" ? "admin" : "customer" };
+            document.getElementById('accEmail').innerText = currentUser.email;
+            document.getElementById('accName').innerText = currentUser.name;
+            closeModals();
+            alert(`Successfully signed in as ${currentUser.email}`);
+        }
+
+        function handleGoogleAuth() {
+            currentUser = { email: "client@gmail.com", name: "Google User", role: "customer" };
+            document.getElementById('accEmail').innerText = currentUser.email;
+            document.getElementById('accName').innerText = currentUser.name;
+            closeModals();
+            alert('Successfully signed in with Google.');
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            closeModals();
+            alert('Signed out successfully.');
+        }
+
+        function checkAdminAccess() {
+            if(!currentUser || currentUser.role !== "admin") {
+                alert('Access Denied. Only hello@aliveraatelier.in can access the Admin Dashboard.');
+                openAuthModal();
+            } else {
+                renderAdminOrders();
+                document.getElementById('adminModal').style.display = 'block';
+            }
         }
 
         function openAccountModal() {
-            renderSavedCoupons();
+            if(!currentUser) { openAuthModal(); return; }
+            renderAccountScratchCards();
+            renderRecentlyViewed();
             document.getElementById('accountModal').style.display = 'block';
         }
 
-        function closeModals() {
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
-        }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
 
-        // Order Placement & Scratch Card Simulation
-        function simulateOrderPlacement() {
-            closeModals();
-            // Generate unique code valid for 30 days
-            const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
-            currentGeneratedCode = `ALIVERA-${randomSuffix}`;
-            document.getElementById('scratchCodeDisplay').innerText = `CODE: ${currentGeneratedCode}`;
-            document.getElementById('scratchCoverLayer').style.opacity = '1'; // Reset cover
-            document.getElementById('scratchStatusMsg').innerText = "Scratch the card above to save it automatically to your Account.";
+        // Admin Actions
+        function adminUploadDress() {
+            const name = document.getElementById('newDressName').value;
+            const price = Number(document.getElementById('newDressPrice').value);
+            const image = document.getElementById('newDressImg').value;
+            const sizeChart = document.getElementById('newDressSizeChart').value;
+            if(!name || !price || !image) { alert('Please fill in required dress details.'); return; }
             
-            document.getElementById('orderSuccessModal').style.display = 'block';
+            storeProducts.push({ id: Date.now(), name, price, image, sizeChart });
+            renderStore(storeProducts);
+            alert('Dress successfully published to collection!');
         }
 
-        function revealScratchCard() {
-            const cover = document.getElementById('scratchCoverLayer');
-            cover.style.opacity = '0';
-            setTimeout(() => { cover.style.display = 'none'; }, 500);
-
-            document.getElementById('scratchStatusMsg').innerText = "Card scratched! Code saved to your Account section.";
-
-            // Save to account coupons list with 30 day validity
-            const expiryDate = new Date();
-            expiryDate.setDate(expiryDate.getDate() + 30);
-
-            savedAccountCoupons.push({
-                code: currentGeneratedCode,
-                discount: "10% OFF",
-                expiry: expiryDate.toLocaleDateString()
-            });
-
-            document.getElementById('adminCouponCount').innerText = savedAccountCoupons.length + 2;
+        function saveSaleConfig() {
+            saleSettings.type = document.getElementById('saleTypeSelect').value;
+            saleSettings.bannerImg = document.getElementById('saleBannerImg').value;
+            saleSettings.startTime = new Date(document.getElementById('saleStartTime').value);
+            saleSettings.active = true;
+            updateBannerState();
+            alert('Sale configured and timer started successfully.');
         }
 
-        function renderSavedCoupons() {
-            const container = document.getElementById('savedCouponsContainer');
-            if (savedAccountCoupons.length === 0) {
-                container.innerHTML = '<div style="font-size: 11px; color: #888; text-align: center; padding: 10px;">No scratch cards saved yet. Complete an order to earn golden scratch cards!</div>';
+        function stopSaleManually() {
+            saleSettings.active = false;
+            updateBannerState();
+            alert('Sale stopped. Normal daily banner restored.');
+        }
+
+        // Banner & Timer Logic
+        function updateBannerState() {
+            const container = document.getElementById('mainBannerContainer');
+            const title = document.getElementById('bannerTitle');
+            const subtitle = document.getElementById('bannerSubtitle');
+            const timer = document.getElementById('bannerTimerDisplay');
+
+            if(!saleSettings.active) {
+                container.innerHTML = `<div class="banner-content-overlay"><div style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:16px;">WELCOME TO ALIVÈRA ATELIER</div><div style="font-size:11px; color:#d6d3d1; margin-top:4px;">"Beautiful. The Way You Are."</div></div>`;
                 return;
             }
 
+            const now = new Date();
+            const diff = saleSettings.startTime - now;
+
+            if(diff > 0) {
+                // Sale hasn't started yet: Show Timer
+                let d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                let h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                let m = Math.floor((diff / 1000 / 60) % 60);
+                title.innerText = "UPCOMING BESPOKE SALE DROP";
+                subtitle.innerText = "Sale begins in:";
+                timer.style.display = "block";
+                timer.innerText = `${d}d ${h}h ${m}m remaining`;
+            } else {
+                // Sale is Live: Show Promotional Banner (1897 x 412)
+                container.innerHTML = `<img src="${saleSettings.bannerImg}" alt="Promo Banner"><div class="banner-content-overlay"><div style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:18px;">LIVE EXCLUSIVE SALE</div></div>`;
+            }
+        }
+        setInterval(updateBannerState, 1000);
+
+        // Product Modal & Ordering
+        let activeProduct = null;
+        function openProductDetail(id) {
+            activeProduct = storeProducts.find(p => p.id === id);
+            if(!recentlyViewed.some(p => p.id === id)) { recentlyViewed.push(activeProduct); }
+            document.getElementById('modalTitle').innerText = activeProduct.name;
+            document.getElementById('modalImg').src = activeProduct.image;
+            document.getElementById('modalPrice').innerText = `₹${activeProduct.price}`;
+            document.getElementById('modalSizeChart').src = activeProduct.sizeChart || activeProduct.image;
+            document.getElementById('productModal').style.display = 'block';
+        }
+
+        function addToWishlist(id) {
+            const prod = storeProducts.find(p => p.id === id);
+            if(!wishlistItems.includes(prod)) { wishlistItems.push(prod); document.getElementById('wishlistCount').innerText = wishlistItems.length; }
+            alert(`Added ${prod.name} to your Wishlist.`);
+        }
+
+        function placeOrder() {
+            const name = document.getElementById('orderCustomerName').value;
+            const phone = document.getElementById('orderCustomerPhone').value;
+            const address = document.getElementById('orderCustomerAddress').value;
+            const size = document.getElementById('orderSize').value;
+            const notes = document.getElementById('orderCustomNotes').value;
+
+            if(!name || !phone || !address) { alert('Please fill in your shipping details.'); return; }
+
+            const newOrder = {
+                id: Date.now(),
+                dress: activeProduct.name,
+                size: size,
+                notes: notes,
+                customer: name,
+                email: currentUser ? currentUser.email : "guest@client.com",
+                phone: phone,
+                address: address,
+                status: "Pending Confirmation"
+            };
+            liveOrders.push(newOrder);
+            closeModals();
+
+            // Trigger Scratch Card Reward
+            document.getElementById('scratchCodeText').innerText = `CODE: ALIVERA-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
+            document.getElementById('scratchCover').style.display = 'flex';
+            document.getElementById('scratchModal').style.display = 'block';
+        }
+
+        function revealScratch() {
+            document.getElementById('scratchCover').style.display = 'none';
+            userScratchCards.push({ code: document.getElementById('scratchCodeText').innerText, expiry: "Valid for 30 Days" });
+        }
+
+        // Admin Order Fulfillment
+        function renderAdminOrders() {
+            const container = document.getElementById('adminOrdersList');
+            if(liveOrders.length === 0) { container.innerHTML = '<div style="color: #888;">No orders received yet.</div>'; return; }
             container.innerHTML = '';
-            savedAccountCoupons.forEach(c => {
+            liveOrders.forEach(o => {
                 container.innerHTML += `
-                    <div class="saved-coupon-item">
-                        <div>
-                            <strong style="color: #fcf6ba; font-size: 13px;">${c.code}</strong>
-                            <div style="color: #a8a29e; font-size: 10px;">Reward: ${c.discount} | Valid until: ${c.expiry}</div>
-                        </div>
-                        <button class="btn-buy" style="padding: 4px 10px; font-size: 9px;" onclick="alert('Coupon ${c.code} copied and applied to bag!')">APPLY</button>
+                    <div style="border-bottom: 1px solid #333; padding: 6px 0;">
+                        <strong>${o.dress} (Size: ${o.size})</strong><br>
+                        Customer: ${o.customer} | Ph: ${o.phone} | Addr: ${o.address}<br>
+                        Status: <span style="color:#bf953f;">${o.status}</span><br>
+                        <button onclick="updateOrderStatus(${o.id}, 'Confirmed')" style="background:green; color:#fff; border:none; padding:2px 6px; font-size:9px; cursor:pointer;">Confirm</button>
+                        <button onclick="updateOrderStatus(${o.id}, 'Denied')" style="background:orange; color:#fff; border:none; padding:2px 6px; font-size:9px; cursor:pointer;">Deny</button>
+                        <button onclick="updateOrderStatus(${o.id}, 'Cancelled')" style="background:red; color:#fff; border:none; padding:2px 6px; font-size:9px; cursor:pointer;">Cancel</button>
                     </div>
                 `;
             });
+        }
+
+        function updateOrderStatus(id, status) {
+            const ord = liveOrders.find(o => o.id === id);
+            if(ord) { ord.status = status; renderAdminOrders(); alert(`Order status updated to ${status}`); }
+        }
+
+        function adminIssueScratchCard() {
+            const email = document.getElementById('targetCustomerEmail').value;
+            if(!email) { alert('Enter customer email.'); return; }
+            userScratchCards.push({ code: `ALIVERA-ADMIN-${Math.random().toString(36).substring(2,6).toUpperCase()}`, expiry: "Valid for 30 Days" });
+            alert(`Golden Scratch Card successfully issued to ${email}`);
+        }
+
+        // Account Renderers
+        function renderAccountScratchCards() {
+            const container = document.getElementById('myScratchCardsContainer');
+            if(userScratchCards.length === 0) { container.innerHTML = '<div style="font-size: 11px; color: #888;">No unopened scratch cards saved in your account.</div>'; return; }
+            container.innerHTML = '';
+            userScratchCards.forEach(c => {
+                container.innerHTML += `<div style="background:#050505; border:1px solid #bf953f; padding:8px; margin-bottom:6px; font-size:11px;"><strong style="color:#fcf6ba;">${c.code}</strong> — ${c.expiry}</div>`;
+            });
+        }
+
+        function renderRecentlyViewed() {
+            const container = document.getElementById('recentlyViewedContainer');
+            if(recentlyViewed.length === 0) { container.innerHTML = 'No recent items viewed.'; return; }
+            container.innerHTML = recentlyViewed.map(p => `• ${p.name} (₹${p.price})`).join('<br>');
         }
     </script>
 </body>
