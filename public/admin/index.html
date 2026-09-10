@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Admin Dashboard</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: #050505; color: #f5f5f4; font-family: 'Plus Jakarta Sans', Arial, sans-serif; }
@@ -34,104 +40,170 @@
         <header>
             <div class="top-nav">
                 <span onclick="window.location.href='../index.html'">← Back to Storefront</span>
-                <span>Logged in as: hello@aliveraatelier.in</span>
+                <span id="adminAuthStatus">Verifying Admin Access...</span>
             </div>
             <h1>ALIVÈRA ATELIER</h1>
             <div class="sub-tagline">ADMINISTRATION & MANAGEMENT DASHBOARD</div>
         </header>
 
-        <div class="admin-grid">
-            <!-- Upload Dress Section -->
-            <div class="admin-card">
-                <h3 class="admin-title">Upload Dress Collection</h3>
-                <input type="text" id="adminDressName" class="input-field" placeholder="Dress Name">
-                <input type="number" id="adminDressPrice" class="input-field" placeholder="Price (₹)">
-                <input type="text" id="adminDressImg" class="input-field" placeholder="Dress Image URL">
-                <input type="text" id="adminDressSizeChart" class="input-field" placeholder="Size Chart Image URL">
-                <button class="btn-action" onclick="adminUploadNewDress()">Publish to Store</button>
+        <!-- Main Admin Content Container (Protected) -->
+        <div id="adminProtectedContent" style="display: none;">
+            <div class="admin-grid">
+                <!-- Upload Dress Section -->
+                <div class="admin-card">
+                    <h3 class="admin-title">Upload Dress Collection</h3>
+                    <input type="text" id="adminDressName" class="input-field" placeholder="Dress Name">
+                    <input type="number" id="adminDressPrice" class="input-field" placeholder="Price (₹)">
+                    <label style="font-size: 10px; color: #a8a29e;">Dress Photo File:</label>
+                    <input type="file" id="adminDressFile" class="input-field" accept="image/*">
+                    <label style="font-size: 10px; color: #a8a29e;">Size Chart Photo File:</label>
+                    <input type="file" id="adminSizeChartFile" class="input-field" accept="image/*">
+                    <button class="btn-action" onclick="adminUploadNewDress()">Publish to Store</button>
+                </div>
+
+                <!-- Sale & Banner Configuration -->
+                <div class="admin-card">
+                    <h3 class="admin-title">Sale & Banner (1897 x 412)</h3>
+                    <select id="adminSaleType" class="input-field" onclick="toggleAdminSaleInputs()">
+                        <option value="type1">Type 1: First 'X' Persons Promotion</option>
+                        <option value="type2">Type 2: Date-to-Date Window Promotion</option>
+                    </select>
+                    
+                    <div id="adminType1Group">
+                        <input type="number" id="adminMaxPersons" class="input-field" placeholder="Max Persons (e.g., First 10 people)">
+                    </div>
+                    <div id="adminType2Group" style="display:none;">
+                        <input type="datetime-local" id="adminSaleStart" class="input-field">
+                    </div>
+
+                    <input type="number" id="adminDiscountPct" class="input-field" placeholder="Discount Percentage (e.g., 15 for 15%)">
+                    <label style="font-size: 10px; color: #a8a29e;">Promotional Banner File (1897x412):</label>
+                    <input type="file" id="adminBannerFile" class="input-field" accept="image/*">
+
+                    <button class="btn-action" onclick="adminSaveSaleConfig()">Configure & Start Sale Timer</button>
+                    <button class="btn-action" style="background:#ff6b6b; color:#fff; margin-top:8px;" onclick="adminStopSale()">Stop Sale / Restore Hero</button>
+                </div>
             </div>
 
-            <!-- Sale & Banner Configuration -->
+            <!-- Golden Scratch Card Issuer -->
             <div class="admin-card">
-                <h3 class="admin-title">Sale & Banner (1897 x 412)</h3>
-                <select id="adminSaleType" class="input-field">
-                    <option value="type1">Type 1: First 'X' Persons (Slots)</option>
-                    <option value="type2">Type 2: Date-to-Date Window</option>
-                </select>
-                <input type="text" id="adminPromoBanner" class="input-field" placeholder="Promo Banner URL (1897 x 412)">
-                <input type="datetime-local" id="adminSaleStart" class="input-field">
-                <button class="btn-action" onclick="adminSaveSaleConfig()">Configure & Start Sale Timer</button>
-                <button class="btn-action" style="background:#ff6b6b; color:#fff; margin-top:8px;" onclick="adminStopSale()">Stop Sale / Restore Normal</button>
+                <h3 class="admin-title">Issue Golden Scratch Card</h3>
+                <input type="email" id="scratchCustomerEmail" class="input-field" placeholder="Customer Email Address">
+                <button class="btn-action" onclick="adminIssueCard()">Generate & Send Scratch Card to Account</button>
+            </div>
+
+            <!-- Live Orders Management -->
+            <div class="orders-box">
+                <h3 class="admin-title">Live Customer Orders & Fulfillment</h3>
+                <div id="adminOrdersContainer">
+                    <div style="color: #888; font-size: 12px;">No incoming customer orders found.</div>
+                </div>
             </div>
         </div>
 
-        <!-- Golden Scratch Card Issuer -->
-        <div class="admin-card">
-            <h3 class="admin-title">Issue Golden Scratch Card</h3>
-            <input type="email" id="scratchCustomerEmail" class="input-field" placeholder="Customer Email Address">
-            <button class="btn-action" onclick="adminIssueCard()">Generate & Send Scratch Card to Account</button>
-        </div>
-
-        <!-- Live Orders Management -->
-        <div class="orders-box">
-            <h3 class="admin-title">Live Customer Orders & Fulfillment</h3>
-            <div id="adminOrdersContainer">
-                <div style="color: #888; font-size: 12px;">No incoming customer orders found in session memory.</div>
-            </div>
+        <!-- Access Denied Screen -->
+        <div id="adminAccessDenied" style="display: none; text-align: center; padding: 50px;">
+            <h2 style="font-family:'Playfair Display',serif; color:#ff6b6b; font-size:22px;">Access Denied</h2>
+            <p style="font-size: 12px; color: #a8a29e; margin: 10px 0 20px 0;">You must be signed in as <strong>hello@aliveraatelier.in</strong> to view the administration dashboard.</p>
+            <button class="btn-action" style="max-width: 200px; margin: 0 auto;" onclick="window.location.href='../index.html'">Return to Storefront</button>
         </div>
     </div>
 
     <script>
-        // Access localStorage shared between Storefront and Admin panel
+        const firebaseConfig = {
+            apiKey: "AIzaSyDummyKeyForAliveraAtelier",
+            authDomain: "alivera-atelier.firebaseapp.com",
+            projectId: "alivera-atelier",
+            storageBucket: "alivera-atelier.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+
+        // Strict Admin Security Check on Load
+        auth.onAuthStateChanged(user => {
+            if (user && user.email.toLowerCase() === "hello@aliveraatelier.in") {
+                document.getElementById('adminAuthStatus').innerText = `Logged in: ${user.email}`;
+                document.getElementById('adminProtectedContent').style.display = 'block';
+                document.getElementById('adminAccessDenied').style.display = 'none';
+                renderAdminOrders();
+            } else {
+                // Fallback simulation check for local testing if needed
+                document.getElementById('adminAuthStatus').innerText = "Access Restricted";
+                document.getElementById('adminProtectedContent').style.display = 'none';
+                document.getElementById('adminAccessDenied').style.display = 'block';
+            }
+        });
+
         let storeProducts = JSON.parse(localStorage.getItem('alivera_products')) || [];
         let liveOrders = JSON.parse(localStorage.getItem('alivera_orders')) || [];
+
+        function readFileAsDataURL(fileInput, callback) {
+            const file = fileInput.files[0];
+            if(!file) { callback(""); return; }
+            const reader = new FileReader();
+            reader.onload = (e) => callback(e.target.result);
+            reader.readAsDataURL(file);
+        }
 
         function adminUploadNewDress() {
             const name = document.getElementById('adminDressName').value;
             const price = Number(document.getElementById('adminDressPrice').value);
-            const image = document.getElementById('adminDressImg').value;
-            const sizeChart = document.getElementById('adminDressSizeChart').value;
+            if(!name || !price) { alert('Please enter dress name and price.'); return; }
 
-            if(!name || !price || !image) {
-                alert('Please fill out the dress name, price, and image URL.');
-                return;
+            readFileAsDataURL(document.getElementById('adminDressFile'), (imgData) => {
+                readFileAsDataURL(document.getElementById('adminSizeChartFile'), (chartData) => {
+                    storeProducts.push({
+                        id: Date.now(),
+                        name,
+                        price,
+                        image: imgData || "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500",
+                        sizeChart: chartData || imgData || "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500"
+                    });
+                    localStorage.setItem('alivera_products', JSON.stringify(storeProducts));
+                    alert('Dress successfully published to store collection!');
+                    document.getElementById('adminDressName').value = '';
+                    document.getElementById('adminDressPrice').value = '';
+                });
+            });
+        }
+
+        function toggleAdminSaleInputs() {
+            const type = document.getElementById('adminSaleType').value;
+            if(type === 'type1') {
+                document.getElementById('adminType1Group').style.display = 'block';
+                document.getElementById('adminType2Group').style.display = 'none';
+            } else {
+                document.getElementById('adminType1Group').style.display = 'none';
+                document.getElementById('adminType2Group').style.display = 'block';
             }
-
-            storeProducts.push({ id: Date.now(), name, price, image, sizeChart });
-            localStorage.setItem('alivera_products', JSON.stringify(storeProducts));
-            alert('Dress successfully published to collection!');
-            
-            // Clear inputs
-            document.getElementById('adminDressName').value = '';
-            document.getElementById('adminDressPrice').value = '';
-            document.getElementById('adminDressImg').value = '';
-            document.getElementById('adminDressSizeChart').value = '';
         }
 
         function adminSaveSaleConfig() {
-            const saleConfig = {
-                active: true,
-                type: document.getElementById('adminSaleType').value,
-                bannerImg: document.getElementById('adminPromoBanner').value,
-                startTime: document.getElementById('adminSaleStart').value
-            };
-            localStorage.setItem('alivera_sale', JSON.stringify(saleConfig));
-            alert('Sale configured successfully! Timer will reflect on the main storefront.');
+            const type = document.getElementById('adminSaleType').value;
+            const discountPct = document.getElementById('adminDiscountPct').value;
+            const maxPersons = document.getElementById('adminMaxPersons').value;
+            const startTime = document.getElementById('adminSaleStart').value;
+
+            readFileAsDataURL(document.getElementById('adminBannerFile'), (bannerImg) => {
+                const saleConfig = { active: true, type, discountPct, maxPersons, startTime, bannerImg };
+                localStorage.setItem('alivera_sale', JSON.stringify(saleConfig));
+                alert('Sale promotion configured successfully!');
+            });
         }
 
         function adminStopSale() {
             localStorage.setItem('alivera_sale', JSON.stringify({ active: false }));
-            alert('Sale stopped. Normal daily banner restored on storefront.');
+            alert('Sale stopped. Normal daily hero restored.');
         }
 
         function adminIssueCard() {
             const email = document.getElementById('scratchCustomerEmail').value;
             if(!email) { alert('Please enter a customer email address.'); return; }
-            
-            let userCards = JSON.parse(localStorage.getItem(`scratch_cards_${email}`)) || [];
+            let userCards = JSON.parse(localStorage.getItem('alivera_scratch_cards')) || [];
             userCards.push({ code: `ALIVERA-GOLD-${Math.random().toString(36).substring(2,6).toUpperCase()}`, expiry: "Valid for 30 Days" });
-            localStorage.setItem(`scratch_cards_${email}`, JSON.stringify(userCards));
-            
+            localStorage.setItem('alivera_scratch_cards', JSON.stringify(userCards));
             alert(`Golden scratch card successfully sent to ${email}!`);
             document.getElementById('scratchCustomerEmail').value = '';
         }
@@ -142,7 +214,6 @@
                 container.innerHTML = '<div style="color: #888; font-size: 12px;">No incoming customer orders found.</div>';
                 return;
             }
-
             container.innerHTML = '';
             liveOrders.forEach(o => {
                 container.innerHTML += `
@@ -151,7 +222,7 @@
                         <strong>Customer:</strong> ${o.customer} (${o.email}) | <strong>Phone:</strong> ${o.phone}<br>
                         <strong>Address:</strong> ${o.address}<br>
                         ${o.notes ? `<strong>Custom Notes:</strong> ${o.notes}<br>` : ''}
-                        <strong>Status:</strong> <span style="color:#bf953f;" id="status_${o.id}">${o.status}</span><br>
+                        <strong>Status:</strong> <span style="color:#bf953f;">${o.status}</span><br>
                         <div style="margin-top: 8px; display: flex; gap: 6px;">
                             <button onclick="updateStatus(${o.id}, 'Confirmed')" style="background:green; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Confirm</button>
                             <button onclick="updateStatus(${o.id}, 'Denied')" style="background:orange; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Deny</button>
@@ -168,8 +239,6 @@
             renderAdminOrders();
             alert(`Order status updated to ${newStatus}`);
         }
-
-        renderAdminOrders();
     </script>
 </body>
 </html>
