@@ -51,14 +51,14 @@
             <div class="admin-grid">
                 <!-- Upload Dress Section -->
                 <div class="admin-card">
-                    <h3 class="admin-title">Upload Dress Collection</h3>
+                    <h3 class="admin-title">Upload Dress Collection (Firestore)</h3>
                     <input type="text" id="adminDressName" class="input-field" placeholder="Dress Name" autocomplete="off" data-lpignore="true">
                     <input type="number" id="adminDressPrice" class="input-field" placeholder="Price (₹)" autocomplete="off" data-lpignore="true">
                     <label style="font-size: 10px; color: #a8a29e;">Dress Photo File:</label>
                     <input type="file" id="adminDressFile" class="input-field" accept="image/*">
                     <label style="font-size: 10px; color: #a8a29e;">Size Chart Photo File:</label>
                     <input type="file" id="adminSizeChartFile" class="input-field" accept="image/*">
-                    <button class="btn-action" onclick="adminUploadNewDress()">Publish to Store</button>
+                    <button class="btn-action" onclick="adminUploadNewDress()">Publish to Firestore</button>
                 </div>
 
                 <!-- Sale & Banner Configuration -->
@@ -89,14 +89,14 @@
             <div class="admin-card">
                 <h3 class="admin-title">Issue Golden Scratch Card</h3>
                 <input type="email" id="scratchCustomerEmail" class="input-field" placeholder="Customer Email Address" autocomplete="off" data-lpignore="true">
-                <button class="btn-action" onclick="adminIssueCard()">Generate & Send Scratch Card to Account</button>
+                <button class="btn-action" onclick="adminIssueCard()">Generate & Send Scratch Card</button>
             </div>
 
             <!-- Live Orders Management -->
             <div class="orders-box">
-                <h3 class="admin-title">Live Customer Orders & Fulfillment</h3>
+                <h3 class="admin-title">Live Customer Orders & Fulfillment (Firestore)</h3>
                 <div id="adminOrdersContainer">
-                    <div style="color: #888; font-size: 12px;">No incoming customer orders found.</div>
+                    <div style="color: #888; font-size: 12px;">Loading incoming orders from Firestore...</div>
                 </div>
             </div>
         </div>
@@ -120,6 +120,7 @@
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
         // Strict Admin Security Check on Load
         auth.onAuthStateChanged(user => {
@@ -127,16 +128,13 @@
                 document.getElementById('adminAuthStatus').innerText = `Logged in: ${user.email}`;
                 document.getElementById('adminProtectedContent').style.display = 'block';
                 document.getElementById('adminAccessDenied').style.display = 'none';
-                renderAdminOrders();
+                fetchAdminOrders();
             } else {
                 document.getElementById('adminAuthStatus').innerText = "Access Restricted";
                 document.getElementById('adminProtectedContent').style.display = 'none';
                 document.getElementById('adminAccessDenied').style.display = 'block';
             }
         });
-
-        let storeProducts = JSON.parse(localStorage.getItem('alivera_products')) || [];
-        let liveOrders = JSON.parse(localStorage.getItem('alivera_orders')) || [];
 
         function readFileAsDataURL(fileInput, callback) {
             const file = fileInput.files[0];
@@ -146,6 +144,7 @@
             reader.readAsDataURL(file);
         }
 
+        // Upload Dress straight to Firestore collection 'dresses'
         function adminUploadNewDress() {
             const name = document.getElementById('adminDressName').value;
             const price = Number(document.getElementById('adminDressPrice').value);
@@ -153,17 +152,21 @@
 
             readFileAsDataURL(document.getElementById('adminDressFile'), (imgData) => {
                 readFileAsDataURL(document.getElementById('adminSizeChartFile'), (chartData) => {
-                    storeProducts.push({
-                        id: Date.now(),
-                        name,
-                        price,
+                    const dressData = {
+                        name: name,
+                        price: price,
                         image: imgData || "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500",
-                        sizeChart: chartData || imgData || "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500"
+                        sizeChart: chartData || imgData || "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500",
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    db.collection("dresses").add(dressData).then(() => {
+                        alert('Dress successfully published to Firebase Firestore collection!');
+                        document.getElementById('adminDressName').value = '';
+                        document.getElementById('adminDressPrice').value = '';
+                    }).catch(error => {
+                        alert('Error writing to Firestore: ' + error.message);
                     });
-                    localStorage.setItem('alivera_products', JSON.stringify(storeProducts));
-                    alert('Dress successfully published to store collection!');
-                    document.getElementById('adminDressName').value = '';
-                    document.getElementById('adminDressPrice').value = '';
                 });
             });
         }
@@ -203,40 +206,44 @@
             let userCards = JSON.parse(localStorage.getItem('alivera_scratch_cards')) || [];
             userCards.push({ code: `ALIVERA-GOLD-${Math.random().toString(36).substring(2,6).toUpperCase()}`, expiry: "Valid for 30 Days" });
             localStorage.setItem('alivera_scratch_cards', JSON.stringify(userCards));
-            alert(`Golden scratch card successfully sent to ${email}!`);
+            alert(`Golden scratch card successfully saved for ${email}!`);
             document.getElementById('scratchCustomerEmail').value = '';
         }
 
-        function renderAdminOrders() {
+        // Fetch Live Orders from Firestore
+        function fetchAdminOrders() {
             const container = document.getElementById('adminOrdersContainer');
-            if(liveOrders.length === 0) {
-                container.innerHTML = '<div style="color: #888; font-size: 12px;">No incoming customer orders found.</div>';
-                return;
-            }
-            container.innerHTML = '';
-            liveOrders.forEach(o => {
-                container.innerHTML += `
-                    <div class="order-item">
-                        <strong style="color: #fcf6ba; font-size: 13px;">${o.dress} (Size: ${o.size})</strong><br>
-                        <strong>Customer:</strong> ${o.customer} (${o.email}) | <strong>Phone:</strong> ${o.phone}<br>
-                        <strong>Address:</strong> ${o.address}<br>
-                        ${o.notes ? `<strong>Custom Notes:</strong> ${o.notes}<br>` : ''}
-                        <strong>Status:</strong> <span style="color:#bf953f;">${o.status}</span><br>
-                        <div style="margin-top: 8px; display: flex; gap: 6px;">
-                            <button onclick="updateStatus(${o.id}, 'Confirmed')" style="background:green; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Confirm</button>
-                            <button onclick="updateStatus(${o.id}, 'Denied')" style="background:orange; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Deny</button>
-                            <button onclick="updateStatus(${o.id}, 'Cancelled')" style="background:red; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Cancel</button>
+            db.collection("orders").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+                if(snapshot.empty) {
+                    container.innerHTML = '<div style="color: #888; font-size: 12px;">No incoming customer orders found in Firestore.</div>';
+                    return;
+                }
+                container.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const o = doc.data();
+                    const docId = doc.id;
+                    container.innerHTML += `
+                        <div class="order-item">
+                            <strong style="color: #fcf6ba; font-size: 13px;">${o.dress} (Size: ${o.size})</strong><br>
+                            <strong>Customer:</strong> ${o.customer} (${o.email}) | <strong>Phone:</strong> ${o.phone}<br>
+                            <strong>Address:</strong> ${o.address}<br>
+                            ${o.notes ? `<strong>Custom Notes:</strong> ${o.notes}<br>` : ''}
+                            <strong>Status:</strong> <span style="color:#bf953f;">${o.status}</span><br>
+                            <div style="margin-top: 8px; display: flex; gap: 6px;">
+                                <button onclick="updateOrderStatus('${docId}', 'Confirmed')" style="background:green; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Confirm</button>
+                                <button onclick="updateOrderStatus('${docId}', 'Denied')" style="background:orange; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Deny</button>
+                                <button onclick="updateOrderStatus('${docId}', 'Cancelled')" style="background:red; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Cancel</button>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                });
             });
         }
 
-        function updateStatus(id, newStatus) {
-            liveOrders = liveOrders.map(o => o.id === id ? { ...o, status: newStatus } : o);
-            localStorage.setItem('alivera_orders', JSON.stringify(liveOrders));
-            renderAdminOrders();
-            alert(`Order status updated to ${newStatus}`);
+        function updateOrderStatus(docId, newStatus) {
+            db.collection("orders").doc(docId).update({ status: newStatus }).then(() => {
+                alert(`Order status updated to ${newStatus} in Firebase Firestore`);
+            });
         }
     </script>
 </body>
