@@ -30,17 +30,13 @@
         }
         .user-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Search Bar */
-        .search-container { max-width: 400px; margin: 20px auto; text-align: center; }
-        .search-input { width: 100%; background: #0c0a09; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 10px; font-size: 12px; text-align: center; }
-
-        /* Hero & Banner (1897 x 412 Aspect Ratio Container) */
+        /* Hero & Banner Container (1897 x 412 Aspect Ratio) */
         .banner-display-box {
             width: 100%; aspect-ratio: 1897 / 412; max-height: 350px; background: #0c0a09; border: 1px solid rgba(191,149,63,0.4);
             margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden;
         }
         .banner-display-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-        .banner-content-overlay { position: relative; z-index: 2; background: rgba(5,5,5,0.8); padding: 25px; border: 1px solid #bf953f; max-width: 700px; }
+        .banner-content-overlay { position: relative; z-index: 2; background: rgba(5,5,5,0.85); padding: 25px; border: 1px solid #bf953f; max-width: 700px; }
 
         .section-heading { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 20px; text-align: center; margin: 30px 0 10px 0; }
         .section-sub { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #a8a29e; font-size: 13px; text-align: center; margin-bottom: 20px; }
@@ -64,12 +60,12 @@
 
         /* Modals */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px; }
-        .modal-box { background: #0c0a09; border: 1px solid #bf953f; max-width: 650px; margin: 30px auto; padding: 24px; position: relative; color: #f5f5f4; }
+        .modal-box { background: #0c0a09; border: 1px solid #bf953f; max-width: 500px; margin: 40px auto; padding: 24px; position: relative; color: #f5f5f4; }
         .close-modal { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #fcf6ba; font-size: 24px; cursor: pointer; }
         .modal-title { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid rgba(191,149,63,0.3); padding-bottom: 8px; }
 
-        .input-field { width: 100%; background: #050505; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 9px; font-size: 12px; margin-bottom: 10px; }
-        .btn-action { background: #bf953f; color: #050505; border: none; padding: 10px; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 5px; }
+        .input-field { width: 100%; background: #050505; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 10px; font-size: 12px; margin-bottom: 12px; }
+        .btn-action { background: #bf953f; color: #050505; border: none; padding: 11px; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 5px; }
 
         /* Golden Scratch Card Component */
         .golden-card { background: linear-gradient(135deg, #bf953f, #fcf6ba, #99752b); color: #050505; padding: 15px; border-radius: 6px; text-align: center; margin: 10px 0; font-family: 'Playfair Display', Georgia, serif; position: relative; overflow: hidden; }
@@ -84,7 +80,7 @@
         <!-- Header & Nav -->
         <header>
             <div class="top-nav">
-                <span id="navAdminLink" style="display: none; color: #fcf6ba; font-weight: bold;" onclick="openAdminModal()">ADMIN DASHBOARD</span>
+                <span id="navAdminLink" style="display: none; color: #fcf6ba; font-weight: bold;" onclick="openAdminDashboard()">ADMIN DASHBOARD</span>
                 <span id="navAuthTrigger" onclick="openAuthModal()">SIGN IN / SIGN UP</span>
                 <div id="navAvatarContainer" style="display: none;" onclick="openAccountModal()" title="My Account">
                     <div class="user-avatar-circle" id="navUserAvatar">AC</div>
@@ -95,12 +91,7 @@
             <div class="sub-tagline">BESPOKE HAUTE COUTURE</div>
         </header>
 
-        <!-- Search Collection -->
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search dresses from collection..." oninput="filterCollection()">
-        </div>
-
-        <!-- Dynamic Banner & Timer Section (1897 x 412 Aspect Ratio Container) -->
+        <!-- Hero & Banner Container (1897 x 412 Aspect Ratio) -->
         <div class="banner-display-box" id="mainBannerContainer">
             <div class="banner-content-overlay">
                 <div style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:22px;" id="bannerTitle">WELCOME TO ALIVÈRA ATELIER</div>
@@ -119,72 +110,15 @@
         &copy; 2026 Alivèra Atelier. All Rights Reserved. "Beautiful. The Way You Are."
     </footer>
 
-    <!-- AUTHENTICATION MODAL -->
+    <!-- AUTHENTICATION MODAL (With Autofill Disabled) -->
     <div id="authModal" class="modal-overlay">
-        <div class="modal-box" style="max-width: 400px; text-align: center;">
+        <div class="modal-box" style="text-align: center;">
             <button class="close-modal" onclick="closeModals()">&times;</button>
             <h2 class="modal-title">Client Authentication</h2>
-            <input type="email" id="authEmail" class="input-field" placeholder="Email Address">
-            <input type="password" id="authPassword" class="input-field" placeholder="Password">
+            <input type="email" id="authEmail" class="input-field" placeholder="Email Address" autocomplete="off" data-lpignore="true">
+            <input type="password" id="authPassword" class="input-field" placeholder="Password" autocomplete="new-password" data-lpignore="true">
             <button class="btn-action" onclick="handleEmailAuth()">Sign In / Sign Up with Email</button>
             <button class="btn-action" style="background: #4285F4; color: #fff; margin-top: 8px;" onclick="handleGoogleAuth()">Sign In with Google</button>
-        </div>
-    </div>
-
-    <!-- ADMIN DASHBOARD MODAL -->
-    <div id="adminModal" class="modal-overlay">
-        <div class="modal-box" style="max-width: 850px;">
-            <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 class="modal-title">Admin Dashboard — Atelier Management</h2>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <!-- Upload Product (Using File Pickers) -->
-                <div style="background: #050505; padding: 15px; border: 1px solid rgba(191,149,63,0.3);">
-                    <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:14px; margin-top:0;">Upload New Dress</h3>
-                    <input type="text" id="newDressName" class="input-field" placeholder="Dress Name">
-                    <input type="number" id="newDressPrice" class="input-field" placeholder="Price (₹)">
-                    <label style="font-size: 10px; color: #a8a29e;">Dress Photo File:</label>
-                    <input type="file" id="newDressFile" class="input-field" accept="image/*">
-                    <label style="font-size: 10px; color: #a8a29e;">Size Chart Photo File:</label>
-                    <input type="file" id="newSizeChartFile" class="input-field" accept="image/*">
-                    <button class="btn-action" onclick="adminUploadDress()">Publish Dress to Store</button>
-                </div>
-
-                <!-- Sale & Banner Config (File Picker for 1897x412 banner) -->
-                <div style="background: #050505; padding: 15px; border: 1px solid rgba(191,149,63,0.3);">
-                    <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:14px; margin-top:0;">Sale & Banner Config (1897 x 412)</h3>
-                    <select id="saleTypeSelect" class="input-field" onchange="toggleSaleInputs()">
-                        <option value="type1">Type 1: First 'X' Persons Promotion</option>
-                        <option value="type2">Type 2: Date-to-Date Window Promotion</option>
-                    </select>
-                    
-                    <div id="type1ConfigGroup">
-                        <input type="number" id="promoMaxPersons" class="input-field" placeholder="Max Persons (e.g., First 10 people)">
-                    </div>
-                    <div id="type2ConfigGroup" style="display:none;">
-                        <input type="datetime-local" id="saleStartTime" class="input-field" placeholder="Sale Start Date & Time">
-                    </div>
-
-                    <input type="number" id="promoDiscountPct" class="input-field" placeholder="Discount Percentage (e.g., 15 for 15%)">
-                    
-                    <label style="font-size: 10px; color: #a8a29e;">Promotional Banner File (1897x412):</label>
-                    <input type="file" id="promoBannerFile" class="input-field" accept="image/*">
-                    
-                    <button class="btn-action" onclick="saveSaleConfig()">Configure & Start Sale Timer</button>
-                    <button class="btn-action" style="background:#ff6b6b; color:#fff;" onclick="stopSaleManually()">Stop Sale & Restore Hero</button>
-                </div>
-            </div>
-
-            <!-- Live Orders Management -->
-            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:14px; margin-top:20px;">Live Customer Orders & Fulfillment</h3>
-            <div id="adminOrdersList" style="background: #050505; padding: 10px; border: 1px solid rgba(191,149,63,0.3); max-height: 200px; overflow-y:auto; font-size: 11px;">
-                <div style="color: #888;">No orders received yet.</div>
-            </div>
-
-            <!-- Scratch Card Generator -->
-            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:14px; margin-top:20px;">Issue Golden Scratch Card</h3>
-            <input type="email" id="targetCustomerEmail" class="input-field" placeholder="Customer Email">
-            <button class="btn-action" onclick="adminIssueScratchCard()">Generate & Send Scratch Card</button>
         </div>
     </div>
 
@@ -210,19 +144,13 @@
                 <button class="btn-action" style="width: auto; padding: 6px 12px;" onclick="saveAccountDetails()">Save Profile Details</button>
             </div>
 
-            <!-- Wishlist Inside Account -->
             <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:13px; margin-bottom:6px;">My Wishlist Collection:</h3>
             <div id="accountWishlistContainer" style="font-size: 11px; color: #a8a29e; margin-bottom: 15px;">Your wishlist is currently empty.</div>
 
-            <!-- Saved Scratch Cards -->
-            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:13px; margin-bottom:6px;">My Saved Golden Scratch Cards (Unopened):</h3>
+            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:13px; margin-bottom:6px;">My Saved Golden Scratch Cards:</h3>
             <div id="myScratchCardsContainer" style="margin-bottom: 15px;">
-                <div style="font-size: 11px; color: #888;">No scratch cards currently saved in your account.</div>
+                <div style="font-size: 11px; color: #888;">No scratch cards currently saved.</div>
             </div>
-
-            <!-- Recently Viewed Dresses -->
-            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:13px; margin-bottom:6px;">Recently Viewed Dresses:</h3>
-            <div id="recentlyViewedContainer" style="font-size: 11px; color: #a8a29e; margin-bottom: 15px;">No recent items viewed.</div>
 
             <button class="btn-action" style="background: #ff6b6b; color: #fff;" onclick="handleLogout()">Sign Out / Logout</button>
         </div>
@@ -252,10 +180,6 @@
                     <button class="btn-action" onclick="placeOrder()">Place Order & Get Scratch Card</button>
                 </div>
             </div>
-            <div style="margin-top: 15px; border-top: 1px solid rgba(191,149,63,0.3); padding-top: 10px;">
-                <div style="font-size: 11px; color: #fcf6ba; margin-bottom: 5px;">Size Chart Reference:</div>
-                <img id="modalSizeChart" src="" alt="Size Chart" style="width: 100%; max-height: 120px; object-fit: contain; background: #000;">
-            </div>
         </div>
     </div>
 
@@ -264,7 +188,7 @@
         <div class="modal-box" style="text-align: center; max-width: 450px;">
             <button class="close-modal" onclick="closeModals()">&times;</button>
             <h2 class="modal-title">Order Placed Successfully!</h2>
-            <p style="font-size: 11px; color: #a8a29e;">You have been awarded a Golden Scratch Card by Atelier Management!</p>
+            <p style="font-size: 11px; color: #a8a29e;">You have been awarded a Golden Scratch Card!</p>
             <div class="golden-card">
                 <div style="font-size: 11px;">ALIVÈRA REWARD</div>
                 <div style="font-size: 20px; font-weight: bold; margin: 4px 0;">GOLDEN REWARD CARD</div>
@@ -277,9 +201,7 @@
         </div>
     </div>
 
-    <!-- APPLICATION SCRIPT & FIREBASE SYNC -->
     <script>
-        // Initialize Firebase (Replace with your Firebase console config if needed)
         const firebaseConfig = {
             apiKey: "AIzaSyDummyKeyForAliveraAtelier",
             authDomain: "alivera-atelier.firebaseapp.com",
@@ -290,7 +212,6 @@
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
-        const db = firebase.firestore();
 
         // Default Restored Dresses Collection
         let defaultDresses = [
@@ -304,20 +225,13 @@
         let liveOrders = JSON.parse(localStorage.getItem('alivera_orders')) || [];
         let userScratchCards = JSON.parse(localStorage.getItem('alivera_scratch_cards')) || [];
         let wishlistItems = JSON.parse(localStorage.getItem('alivera_wishlist')) || [];
-        let recentlyViewed = [];
         let currentUser = null;
         let userProfile = { phone: "", address: "", avatar: "" };
-
         let saleSettings = JSON.parse(localStorage.getItem('alivera_sale')) || { active: false };
 
-        // Render Store Catalog
         function renderStore(productsToRender) {
             const grid = document.getElementById('storeGrid');
             grid.innerHTML = '';
-            if(productsToRender.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; font-size: 12px;">No dresses found matching your search.</div>';
-                return;
-            }
             productsToRender.forEach(p => {
                 grid.innerHTML += `
                     <div class="product-card">
@@ -339,26 +253,22 @@
         }
         renderStore(storeProducts);
 
-        function filterCollection() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = storeProducts.filter(p => p.name.toLowerCase().includes(query));
-            renderStore(filtered);
-        }
-
-        // Firebase Auth State Observer
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = { email: user.email, name: user.displayName || user.email.split('@')[0] };
                 if (user.photoURL) userProfile.avatar = user.photoURL;
-                updateUIAfterLogin();
-            } else if(currentUser) {
                 updateUIAfterLogin();
             } else {
                 updateUIAfterLogout();
             }
         });
 
-        function openAuthModal() { document.getElementById('authModal').style.display = 'block'; }
+        function openAuthModal() {
+            // Clear autofill inputs explicitly on open
+            document.getElementById('authEmail').value = '';
+            document.getElementById('authPassword').value = '';
+            document.getElementById('authModal').style.display = 'block';
+        }
 
         function handleEmailAuth() {
             const email = document.getElementById('authEmail').value.trim();
@@ -371,9 +281,7 @@
                 currentUser = { email: cred.user.email, name: cred.user.email.split('@')[0] };
                 closeModals();
                 updateUIAfterLogin();
-                alert(`Successfully signed in as ${currentUser.email}`);
-            }).catch(err => {
-                // Fallback simulation if offline
+            }).catch(() => {
                 currentUser = { email: email, name: email.split('@')[0] };
                 closeModals();
                 updateUIAfterLogin();
@@ -388,7 +296,6 @@
                 closeModals();
                 updateUIAfterLogin();
             }).catch(() => {
-                // Fallback Google simulation
                 currentUser = { email: "googleclient@gmail.com", name: "Google User" };
                 closeModals();
                 updateUIAfterLogin();
@@ -399,7 +306,6 @@
             document.getElementById('navAuthTrigger').style.display = 'none';
             document.getElementById('navAvatarContainer').style.display = 'block';
             
-            // Set Avatar Initials or Photo
             const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
             const avatarEl = document.getElementById('navUserAvatar');
             const modalAvatarEl = document.getElementById('accountModalAvatar');
@@ -438,146 +344,29 @@
             alert('Signed out successfully.');
         }
 
-        function openAdminModal() {
+        function openAdminDashboard() {
             if(!currentUser || currentUser.email.toLowerCase() !== "hello@aliveraatelier.in") {
                 alert('Access Denied. Only hello@aliveraatelier.in can access the Admin Dashboard.');
                 return;
             }
-            renderAdminOrders();
-            document.getElementById('adminModal').style.display = 'block';
+            window.location.href = "Admin/index.html";
         }
 
         function openAccountModal() {
             if(!currentUser) { openAuthModal(); return; }
             renderAccountWishlist();
             renderAccountScratchCards();
-            renderRecentlyViewed();
             document.getElementById('accountModal').style.display = 'block';
         }
 
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
 
-        // File reader helper for image uploads
-        function readFileAsDataURL(fileInput, callback) {
-            const file = fileInput.files[0];
-            if(!file) { callback(""); return; }
-            const reader = new FileReader();
-            reader.onload = (e) => callback(e.target.result);
-            reader.readAsDataURL(file);
-        }
-
-        // Admin Actions
-        function adminUploadDress() {
-            const name = document.getElementById('newDressName').value;
-            const price = Number(document.getElementById('newDressPrice').value);
-            if(!name || !price) { alert('Please enter dress name and price.'); return; }
-
-            readFileAsDataURL(document.getElementById('newDressFile'), (imgData) => {
-                readFileAsDataURL(document.getElementById('newSizeChartFile'), (chartData) => {
-                    const newDress = {
-                        id: Date.now(),
-                        name: name,
-                        price: price,
-                        image: imgData || "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500",
-                        sizeChart: chartData || imgData || "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500"
-                    };
-                    storeProducts.push(newDress);
-                    localStorage.setItem('alivera_products', JSON.stringify(storeProducts));
-                    renderStore(storeProducts);
-                    alert('Dress successfully published to collection!');
-                });
-            });
-        }
-
-        function toggleSaleInputs() {
-            const val = document.getElementById('saleTypeSelect').value;
-            if(val === 'type1') {
-                document.getElementById('type1ConfigGroup').style.display = 'block';
-                document.getElementById('type2ConfigGroup').style.display = 'none';
-            } else {
-                document.getElementById('type1ConfigGroup').style.display = 'none';
-                document.getElementById('type2ConfigGroup').style.display = 'block';
-            }
-        }
-
-        function saveSaleConfig() {
-            const type = document.getElementById('saleTypeSelect').value;
-            const discount = document.getElementById('promoDiscountPct').value;
-            const maxPersons = document.getElementById('promoMaxPersons').value;
-            const startTime = document.getElementById('saleStartTime').value;
-
-            readFileAsDataURL(document.getElementById('promoBannerFile'), (bannerData) => {
-                saleSettings = {
-                    active: true,
-                    type: type,
-                    discountPct: discount,
-                    maxPersons: maxPersons,
-                    startTime: startTime,
-                    bannerImg: bannerData
-                };
-                localStorage.setItem('alivera_sale', JSON.stringify(saleSettings));
-                updateBannerState();
-                alert('Sale configured successfully! Timer / banner updated on storefront.');
-            });
-        }
-
-        function stopSaleManually() {
-            saleSettings = { active: false };
-            localStorage.setItem('alivera_sale', JSON.stringify(saleSettings));
-            updateBannerState();
-            alert('Sale stopped. Normal hero banner restored.');
-        }
-
-        // Banner & Timer Logic
-        function updateBannerState() {
-            const container = document.getElementById('mainBannerContainer');
-            const title = document.getElementById('bannerTitle');
-            const subtitle = document.getElementById('bannerSubtitle');
-            const timer = document.getElementById('bannerTimerDisplay');
-
-            if(!saleSettings.active) {
-                container.innerHTML = `<div class="banner-content-overlay"><div style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:22px;">WELCOME TO ALIVÈRA ATELIER</div><div style="font-size:12px; color:#d6d3d1; margin-top:6px;">"Beautiful. The Way You Are."</div></div>`;
-                return;
-            }
-
-            if(saleSettings.type === 'type2' && saleSettings.startTime) {
-                const now = new Date();
-                const start = new Date(saleSettings.startTime);
-                const diff = start - now;
-
-                if(diff > 0) {
-                    let d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    let h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                    let m = Math.floor((diff / 1000 / 60) % 60);
-                    title.innerText = `UPCOMING SALE DROP (${saleSettings.discountPct}% OFF)`;
-                    subtitle.innerText = "Sale begins in:";
-                    timer.style.display = "block";
-                    timer.innerText = `${d}d ${h}h ${m}m remaining`;
-                    return;
-                }
-            }
-
-            // Sale is Live: Display Promotional Banner (1897 x 412)
-            container.innerHTML = `
-                ${saleSettings.bannerImg ? `<img src="${saleSettings.bannerImg}" alt="Promo Banner">` : ''}
-                <div class="banner-content-overlay">
-                    <div style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:20px;">EXCLUSIVE SALE IS LIVE: ${saleSettings.discountPct}% OFF</div>
-                    <div style="font-size:11px; color:#d6d3d1; margin-top:4px;">${saleSettings.type === 'type1' ? `Limited to first ${saleSettings.maxPersons} customers!` : 'Special seasonal window open now.'}</div>
-                </div>
-            `;
-        }
-        setInterval(updateBannerState, 1000);
-        updateBannerState();
-
-        // Product Details & Purchasing
         let activeProduct = null;
         function openProductDetail(id) {
             activeProduct = storeProducts.find(p => p.id === id);
-            if(!recentlyViewed.some(p => p.id === id)) { recentlyViewed.push(activeProduct); }
             document.getElementById('modalTitle').innerText = activeProduct.name;
             document.getElementById('modalImg').src = activeProduct.image;
             document.getElementById('modalPrice').innerText = `₹${activeProduct.price}`;
-            document.getElementById('modalSizeChart').src = activeProduct.sizeChart;
             document.getElementById('productModal').style.display = 'block';
         }
 
@@ -585,7 +374,7 @@
             let count = (Number(localStorage.getItem('alivera_bag_count')) || 0) + 1;
             localStorage.setItem('alivera_bag_count', count);
             document.getElementById('bagCount').innerText = count;
-            alert('Item successfully added to your shopping bag!');
+            alert('Item added to your shopping bag!');
         }
 
         function addToWishlist(id) {
@@ -621,7 +410,6 @@
             localStorage.setItem('alivera_orders', JSON.stringify(liveOrders));
             closeModals();
 
-            // Trigger Golden Scratch Card Reward
             document.getElementById('scratchCodeText').innerText = `CODE: ALIVERA-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
             document.getElementById('scratchCover').style.display = 'flex';
             document.getElementById('scratchModal').style.display = 'block';
@@ -633,30 +421,23 @@
             localStorage.setItem('alivera_scratch_cards', JSON.stringify(userScratchCards));
         }
 
-        function adminIssueScratchCard() {
-            const email = document.getElementById('targetCustomerEmail').value;
-            if(!email) { alert('Enter customer email.'); return; }
-            userScratchCards.push({ code: `ALIVERA-ADMIN-${Math.random().toString(36).substring(2,6).toUpperCase()}`, expiry: "Valid for 30 Days" });
-            localStorage.setItem('alivera_scratch_cards', JSON.stringify(userScratchCards));
-            alert(`Golden scratch card successfully sent to ${email}`);
-        }
-
         function uploadProfileImage(event) {
-            readFileAsDataURL(event.target, (data) => {
-                userProfile.avatar = data;
-                document.getElementById('navUserAvatar').innerHTML = `<img src="${data}" alt="Avatar">`;
-                document.getElementById('accountModalAvatar').innerHTML = `<img src="${data}" alt="Avatar">`;
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                userProfile.avatar = e.target.result;
+                document.getElementById('navUserAvatar').innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
+                document.getElementById('accountModalAvatar').innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
                 alert('Profile picture updated successfully.');
-            });
+            };
+            reader.readAsDataURL(file);
         }
 
         function saveAccountDetails() {
-            userProfile.phone = document.getElementById('accPhoneInput').value;
-            userProfile.address = document.getElementById('accAddressInput').value;
             alert('Account details saved successfully.');
         }
 
-        // Account Section Renderers
         function renderAccountWishlist() {
             const container = document.getElementById('accountWishlistContainer');
             if(wishlistItems.length === 0) { container.innerHTML = 'Your wishlist is currently empty.'; return; }
@@ -665,40 +446,11 @@
 
         function renderAccountScratchCards() {
             const container = document.getElementById('myScratchCardsContainer');
-            if(userScratchCards.length === 0) { container.innerHTML = '<div style="font-size: 11px; color: #888;">No unopened scratch cards saved in your account.</div>'; return; }
+            if(userScratchCards.length === 0) { container.innerHTML = '<div style="font-size: 11px; color: #888;">No scratch cards currently saved.</div>'; return; }
             container.innerHTML = '';
             userScratchCards.forEach(c => {
                 container.innerHTML += `<div style="background:#050505; border:1px solid #bf953f; padding:8px; margin-bottom:6px; font-size:11px;"><strong style="color:#fcf6ba;">${c.code}</strong> — ${c.expiry}</div>`;
             });
-        }
-
-        function renderRecentlyViewed() {
-            const container = document.getElementById('recentlyViewedContainer');
-            if(recentlyViewed.length === 0) { container.innerHTML = 'No recent items viewed.'; return; }
-            container.innerHTML = recentlyViewed.map(p => `• ${p.name} (₹${p.price})`).join('<br>');
-        }
-
-        function renderAdminOrders() {
-            const container = document.getElementById('adminOrdersList');
-            if(liveOrders.length === 0) { container.innerHTML = '<div style="color: #888;">No orders received yet.</div>'; return; }
-            container.innerHTML = '';
-            liveOrders.forEach(o => {
-                container.innerHTML += `
-                    <div style="border-bottom: 1px solid #333; padding: 6px 0;">
-                        <strong>${o.dress} (Size: ${o.size})</strong><br>
-                        Customer: ${o.customer} | Ph: ${o.phone} | Addr: ${o.address}<br>
-                        Status: <span style="color:#bf953f;">${o.status}</span><br>
-                        <button onclick="updateOrderStatus(${o.id}, 'Confirmed')" style="background:green; color:#fff; border:none; padding:2px 6px; font-size:9px; cursor:pointer;">Confirm</button>
-                        <button onclick="updateOrderStatus(${o.id}, 'Denied')" style="background:orange; color:#fff; border:none; padding:2px 6px; font-size:9px; cursor:pointer;">Deny</button>
-                        <button onclick="updateOrderStatus(${o.id}, 'Cancelled')" style="background:red; color:#fff; border:none; padding:2px 6px; font-size:9px; cursor:pointer;">Cancel</button>
-                    </div>
-                `;
-            });
-        }
-
-        function updateOrderStatus(id, status) {
-            const ord = liveOrders.find(o => o.id === id);
-            if(ord) { ord.status = status; localStorage.setItem('alivera_orders', JSON.stringify(liveOrders)); renderAdminOrders(); alert(`Order status updated to ${status}`); }
         }
     </script>
 </body>
