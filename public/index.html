@@ -3,38 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier — Bespoke Haute Couture</title>
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
+    <title>Alivéra Atelier | Storefront</title>
     <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: #050505; color: #f5f5f4; font-family: 'Plus Jakarta Sans', Arial, sans-serif; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        
-        header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(191, 149, 63, 0.2); }
-        .top-nav { display: flex; justify-content: flex-end; align-items: center; gap: 20px; font-size: 11px; color: #fcf6ba; text-transform: uppercase; margin-bottom: 10px; }
-        .top-nav span { cursor: pointer; color: #fcf6ba; }
-        h1 { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 26px; margin: 0; letter-spacing: 2px; }
-        .sub-tagline { font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 3px; margin-top: 4px; }
+        :root {
+            --bg-color: #0f0f0f;
+            --text-color: #f5f5f5;
+            --accent-color: #c5a880;
+            --card-bg: #1a1a1a;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid #333;
+        }
+        h1 {
+            margin: 0;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: var(--accent-color);
+        }
+        .auth-section button {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #222;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+        }
+        .card-content {
+            padding: 20px;
+        }
+        .card-content h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+        .price {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
 
-        .user-avatar-circle {
-            width: 30px; height: 30px; border-radius: 50%; background: #bf953f; color: #050505;
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; cursor: pointer; border: 1px solid #fcf6ba;
+    <header>
+        <h1>ALIVÉRA ATELIER</h1>
+        <div class="auth-section">
+            <button id="auth-btn">Sign In with Google</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>Collection</h2>
+        <div id="product-grid" class="grid">
+            <!-- Dynamic dresses from Firestore will load here -->
+            <p>Loading collection...</p>
+        </div>
+    </div>
+
+    <!-- Firebase and Storefront Logic Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase.app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase.analytics.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase.firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase.auth.js";
+
+        // Your exact Firebase configuration with custom authDomain
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc",
+            authDomain: "aliveraatelier.in",
+            databaseURL: "https://alivera-atelier-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "alivera-atelier",
+            storageBucket: "alivera-atelier.firebasestorage.app",
+            messagingSenderId: "952987801898",
+            appId: "1:952987801898:web:af49cb363c53584de1a653",
+            measurementId: "G-YQETZYQ3PT"
+        };
+
+        // Initialize Firebase services
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // UI Elements
+        const authBtn = document.getElementById("auth-btn");
+        const productGrid = document.getElementById("product-grid");
+
+        // Handle Google Login / Logout toggle
+        authBtn.addEventListener("click", async () => {
+            if (auth.currentUser) {
+                await signOut(auth);
+            } else {
+                try {
+                    await signInWithPopup(auth, provider);
+                } catch (error) {
+                    console.error("Authentication Error:", error);
+                }
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authBtn.textContent = `Sign Out (${user.displayName || user.email})`;
+            } else {
+                authBtn.textContent = "Sign In with Google";
+            }
+        });
+
+        // Fetch dresses from Firestore and render them on the grid
+        async function loadStorefrontDresses() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "dresses"));
+                if (querySnapshot.empty) {
+                    productGrid.innerHTML = "<p>No dresses found in the catalog yet.</p>";
+                    return;
+                }
+
+                productGrid.innerHTML = ""; // Clear loader
+                querySnapshot.forEach((doc) => {
+                    const dress = doc.data();
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.innerHTML = `
+                        <img src="${dress.imageUrl || dress.image || 'https://via.placeholder.com/300x350?text=Alivéra+Atelier'}" alt="${dress.name || 'Dress'}">
+                        <div class="card-content">
+                            <h3>${dress.name || 'Custom Garment'}</h3>
+                            <div class="price">₹${dress.price || 'On Request'}</div>
+                        </div>
+                    `;
+                    productGrid.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error loading dresses:", error);
+                productGrid.innerHTML = "<p>Error loading collection. Check console for details.</p>";
+            }
         }
 
-        .section-heading { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 20px; text-align: center; margin: 30px 0 10px 0; }
-        .section-sub { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #a8a29e; font-size: 13px; text-align: center; margin-bottom: 20px; }
-
-        .store-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        @media(max-width: 900px) { .store-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media(max-width: 600px) { .store-grid { grid-template-columns: 1fr; } }
-
-        .product-card { background: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.3); padding: 12px; text-align: center; }
-        .product-thumb-container { width: 100%; height: 260px; background: #12100e; border: 1px solid rgba(191,149,63,0.2); cursor: pointer; overflow: hidden; }
+        // Trigger load on page startup
+        document.addEventListener("DOMContentLoaded", loadStorefrontDresses);
+    </script>
+</body>
+</html>        .product-thumb-container { width: 100%; height: 260px; background: #12100e; border: 1px solid rgba(191,149,63,0.2); cursor: pointer; overflow: hidden; }
         .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; }
         .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 14px; color: #fcf6ba; margin: 10px 0 4px 0; cursor: pointer; }
         .card-price { font-size: 13px; color: #f5f5f4; font-weight: bold; margin-bottom: 6px; }
