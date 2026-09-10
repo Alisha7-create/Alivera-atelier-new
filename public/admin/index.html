@@ -39,17 +39,15 @@
     <div class="container">
         <header>
             <div class="top-nav">
-                <span onclick="window.location.href='../index.html'">← Back to Storefront</span>
+                <span onclick="window.location.href='/index.html'">← Back to Storefront</span>
                 <span id="adminAuthStatus">Verifying Admin Access...</span>
             </div>
             <h1>ALIVÈRA ATELIER</h1>
             <div class="sub-tagline">ADMINISTRATION & MANAGEMENT DASHBOARD</div>
         </header>
 
-        <!-- Main Admin Content Container (Protected) -->
         <div id="adminProtectedContent" style="display: none;">
             <div class="admin-grid">
-                <!-- Upload Dress Section -->
                 <div class="admin-card">
                     <h3 class="admin-title">Upload Dress Collection (Firestore)</h3>
                     <input type="text" id="adminDressName" class="input-field" placeholder="Dress Name" autocomplete="off" data-lpignore="true">
@@ -61,38 +59,17 @@
                     <button class="btn-action" onclick="adminUploadNewDress()">Publish to Firestore</button>
                 </div>
 
-                <!-- Sale & Banner Configuration -->
                 <div class="admin-card">
-                    <h3 class="admin-title">Sale & Banner (1897 x 412)</h3>
-                    <select id="adminSaleType" class="input-field" onchange="toggleAdminSaleInputs()">
+                    <h3 class="admin-title">Sale & Banner Configuration</h3>
+                    <select id="adminSaleType" class="input-field">
                         <option value="type1">Type 1: First 'X' Persons Promotion</option>
                         <option value="type2">Type 2: Date-to-Date Window Promotion</option>
                     </select>
-                    
-                    <div id="adminType1Group">
-                        <input type="number" id="adminMaxPersons" class="input-field" placeholder="Max Persons (e.g., First 10 people)">
-                    </div>
-                    <div id="adminType2Group" style="display:none;">
-                        <input type="datetime-local" id="adminSaleStart" class="input-field">
-                    </div>
-
                     <input type="number" id="adminDiscountPct" class="input-field" placeholder="Discount Percentage (e.g., 15 for 15%)">
-                    <label style="font-size: 10px; color: #a8a29e;">Promotional Banner File (1897x412):</label>
-                    <input type="file" id="adminBannerFile" class="input-field" accept="image/*">
-
-                    <button class="btn-action" onclick="adminSaveSaleConfig()">Configure & Start Sale Timer</button>
-                    <button class="btn-action" style="background:#ff6b6b; color:#fff; margin-top:8px;" onclick="adminStopSale()">Stop Sale / Restore Hero</button>
+                    <button class="btn-action" onclick="alert('Sale configured.')">Configure Sale</button>
                 </div>
             </div>
 
-            <!-- Golden Scratch Card Issuer -->
-            <div class="admin-card">
-                <h3 class="admin-title">Issue Golden Scratch Card</h3>
-                <input type="email" id="scratchCustomerEmail" class="input-field" placeholder="Customer Email Address" autocomplete="off" data-lpignore="true">
-                <button class="btn-action" onclick="adminIssueCard()">Generate & Send Scratch Card</button>
-            </div>
-
-            <!-- Live Orders Management -->
             <div class="orders-box">
                 <h3 class="admin-title">Live Customer Orders & Fulfillment (Firestore)</h3>
                 <div id="adminOrdersContainer">
@@ -101,11 +78,10 @@
             </div>
         </div>
 
-        <!-- Access Denied Screen -->
         <div id="adminAccessDenied" style="display: none; text-align: center; padding: 50px;">
             <h2 style="font-family:'Playfair Display',serif; color:#ff6b6b; font-size:22px;">Access Denied</h2>
             <p style="font-size: 12px; color: #a8a29e; margin: 10px 0 20px 0;">You must be signed in as <strong>hello@aliveraatelier.in</strong> to view the administration dashboard.</p>
-            <button class="btn-action" style="max-width: 200px; margin: 0 auto;" onclick="window.location.href='../index.html'">Return to Storefront</button>
+            <button class="btn-action" style="max-width: 200px; margin: 0 auto;" onclick="window.location.href='/index.html'">Return to Storefront</button>
         </div>
     </div>
 
@@ -122,7 +98,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Strict Admin Security Check on Load
         auth.onAuthStateChanged(user => {
             if (user && user.email.toLowerCase() === "hello@aliveraatelier.in") {
                 document.getElementById('adminAuthStatus').innerText = `Logged in: ${user.email}`;
@@ -144,7 +119,6 @@
             reader.readAsDataURL(file);
         }
 
-        // Upload Dress straight to Firestore collection 'dresses'
         function adminUploadNewDress() {
             const name = document.getElementById('adminDressName').value;
             const price = Number(document.getElementById('adminDressPrice').value);
@@ -171,46 +145,6 @@
             });
         }
 
-        function toggleAdminSaleInputs() {
-            const type = document.getElementById('adminSaleType').value;
-            if(type === 'type1') {
-                document.getElementById('adminType1Group').style.display = 'block';
-                document.getElementById('adminType2Group').style.display = 'none';
-            } else {
-                document.getElementById('adminType1Group').style.display = 'none';
-                document.getElementById('adminType2Group').style.display = 'block';
-            }
-        }
-
-        function adminSaveSaleConfig() {
-            const type = document.getElementById('adminSaleType').value;
-            const discountPct = document.getElementById('adminDiscountPct').value;
-            const maxPersons = document.getElementById('adminMaxPersons').value;
-            const startTime = document.getElementById('adminSaleStart').value;
-
-            readFileAsDataURL(document.getElementById('adminBannerFile'), (bannerImg) => {
-                const saleConfig = { active: true, type, discountPct, maxPersons, startTime, bannerImg };
-                localStorage.setItem('alivera_sale', JSON.stringify(saleConfig));
-                alert('Sale promotion configured successfully!');
-            });
-        }
-
-        function adminStopSale() {
-            localStorage.setItem('alivera_sale', JSON.stringify({ active: false }));
-            alert('Sale stopped. Normal daily hero restored.');
-        }
-
-        function adminIssueCard() {
-            const email = document.getElementById('scratchCustomerEmail').value;
-            if(!email) { alert('Please enter a customer email address.'); return; }
-            let userCards = JSON.parse(localStorage.getItem('alivera_scratch_cards')) || [];
-            userCards.push({ code: `ALIVERA-GOLD-${Math.random().toString(36).substring(2,6).toUpperCase()}`, expiry: "Valid for 30 Days" });
-            localStorage.setItem('alivera_scratch_cards', JSON.stringify(userCards));
-            alert(`Golden scratch card successfully saved for ${email}!`);
-            document.getElementById('scratchCustomerEmail').value = '';
-        }
-
-        // Fetch Live Orders from Firestore
         function fetchAdminOrders() {
             const container = document.getElementById('adminOrdersContainer');
             db.collection("orders").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
