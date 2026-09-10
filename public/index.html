@@ -17,24 +17,14 @@
         
         header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(191, 149, 63, 0.2); }
         .top-nav { display: flex; justify-content: flex-end; align-items: center; gap: 20px; font-size: 11px; color: #fcf6ba; text-transform: uppercase; margin-bottom: 10px; }
-        .top-nav span, .top-nav a { cursor: pointer; text-decoration: none; color: #fcf6ba; transition: color 0.2s; }
-        .top-nav span:hover { color: #fff; text-decoration: underline; }
+        .top-nav span { cursor: pointer; color: #fcf6ba; }
         h1 { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 26px; margin: 0; letter-spacing: 2px; }
         .sub-tagline { font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 3px; margin-top: 4px; }
 
         .user-avatar-circle {
             width: 30px; height: 30px; border-radius: 50%; background: #bf953f; color: #050505;
-            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px;
-            cursor: pointer; border: 1px solid #fcf6ba; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; cursor: pointer; border: 1px solid #fcf6ba;
         }
-        .user-avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
-
-        .banner-display-box {
-            width: 100%; aspect-ratio: 1897 / 412; max-height: 350px; background: #0c0a09; border: 1px solid rgba(191,149,63,0.4);
-            margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden;
-        }
-        .banner-display-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-        .banner-content-overlay { position: relative; z-index: 2; background: rgba(5,5,5,0.85); padding: 25px; border: 1px solid #bf953f; max-width: 700px; }
 
         .section-heading { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 20px; text-align: center; margin: 30px 0 10px 0; }
         .section-sub { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: #a8a29e; font-size: 13px; text-align: center; margin-bottom: 20px; }
@@ -44,11 +34,10 @@
         @media(max-width: 600px) { .store-grid { grid-template-columns: 1fr; } }
 
         .product-card { background: #0c0a09; border: 1px solid rgba(191, 149, 63, 0.3); padding: 12px; text-align: center; }
-        .product-thumb-container { width: 100%; height: 260px; background: #12100e; border: 1px solid rgba(191,149,63,0.2); position: relative; cursor: pointer; overflow: hidden; }
+        .product-thumb-container { width: 100%; height: 260px; background: #12100e; border: 1px solid rgba(191,149,63,0.2); cursor: pointer; overflow: hidden; }
         .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; }
         .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 14px; color: #fcf6ba; margin: 10px 0 4px 0; cursor: pointer; }
         .card-price { font-size: 13px; color: #f5f5f4; font-weight: bold; margin-bottom: 6px; }
-        .size-chart-link { font-size: 10px; color: #bf953f; background: none; border: none; text-decoration: underline; cursor: pointer; margin-bottom: 10px; display: block; width: 100%; text-align: center; }
         
         .card-buttons { display: flex; gap: 6px; margin-top: 8px; }
         .btn-cart, .btn-buy { flex: 1; padding: 7px 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid #bf953f; }
@@ -56,17 +45,12 @@
         .btn-buy { background: linear-gradient(135deg, #bf953f, #fcf6ba); color: #050505; border: none; }
 
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px; }
-        .modal-box { background: #0c0a09; border: 1px solid #bf953f; max-width: 500px; margin: 40px auto; padding: 24px; position: relative; color: #f5f5f4; }
+        .modal-box { background: #0c0a09; border: 1px solid #bf953f; max-width: 450px; margin: 40px auto; padding: 24px; position: relative; color: #f5f5f4; }
         .close-modal { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #fcf6ba; font-size: 24px; cursor: pointer; }
         .modal-title { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid rgba(191,149,63,0.3); padding-bottom: 8px; }
 
         .input-field { width: 100%; background: #050505; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 10px; font-size: 12px; margin-bottom: 12px; }
         .btn-action { background: #bf953f; color: #050505; border: none; padding: 11px; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 5px; }
-
-        .golden-card { background: linear-gradient(135deg, #bf953f, #fcf6ba, #99752b); color: #050505; padding: 15px; border-radius: 6px; text-align: center; margin: 10px 0; font-family: 'Playfair Display', Georgia, serif; position: relative; overflow: hidden; }
-        .scratch-cover { position: absolute; inset: 0; background: #222; color: #fcf6ba; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; font-weight: bold; }
-
-        footer { margin-top: 60px; border-top: 1px solid rgba(191, 149, 63, 0.3); background: #080605; padding: 30px 20px; text-align: center; color: #a8a29e; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -76,119 +60,48 @@
             <div class="top-nav">
                 <span id="navAdminLink" style="display: none; color: #fcf6ba; font-weight: bold;" onclick="openAdminDashboard()">ADMIN DASHBOARD</span>
                 <span id="navAuthTrigger" onclick="openAuthModal()">SIGN IN / SIGN UP</span>
-                <div id="navAvatarContainer" style="display: none;" onclick="openAccountModal()" title="My Account">
+                <div id="navAvatarContainer" style="display: none;" onclick="openAccountModal()">
                     <div class="user-avatar-circle" id="navUserAvatar">AC</div>
                 </div>
-                <span onclick="alert('Shopping Bag is empty.')">🛒 Bag (<span id="bagCount">0</span>)</span>
             </div>
             <h1>ALIVÈRA ATELIER</h1>
             <div class="sub-tagline">BESPOKE HAUTE COUTURE</div>
         </header>
-
-        <div class="banner-display-box" id="mainBannerContainer">
-            <div class="banner-content-overlay">
-                <div style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:22px;">WELCOME TO ALIVÈRA ATELIER</div>
-                <div style="font-size:12px; color:#d6d3d1; margin-top:6px;">"Beautiful. The Way You Are."</div>
-            </div>
-        </div>
 
         <div class="section-heading">Bespoke Collection</div>
         <div class="section-sub">"Handcrafted to celebrate your unique essence."</div>
         <div class="store-grid" id="storeGrid"></div>
     </div>
 
-    <footer>
-        &copy; 2026 Alivèra Atelier. All Rights Reserved. "Beautiful. The Way You Are."
-    </footer>
-
+    <!-- Auth Modal -->
     <div id="authModal" class="modal-overlay">
         <div class="modal-box" style="text-align: center;">
             <button class="close-modal" onclick="closeModals()">&times;</button>
             <h2 class="modal-title">Client Authentication</h2>
-            <input type="email" id="authEmail" class="input-field" placeholder="Email Address" autocomplete="off" data-lpignore="true">
-            <input type="password" id="authPassword" class="input-field" placeholder="Password" autocomplete="new-password" data-lpignore="true">
-            <button class="btn-action" onclick="handleEmailAuth()">Sign In / Sign Up with Email</button>
-            <button class="btn-action" style="background: #4285F4; color: #fff; margin-top: 8px;" onclick="handleGoogleAuth()">Sign In with Google</button>
-        </div>
-    </div>
-
-    <div id="accountModal" class="modal-overlay">
-        <div class="modal-box">
-            <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 class="modal-title">Client Account Dashboard</h2>
-            <div style="font-size: 12px; margin-bottom: 15px; background: #050505; padding: 12px; border: 1px solid rgba(191,149,63,0.3);">
-                <p><strong>Name:</strong> <input type="text" id="accNameInput" class="input-field" style="margin:4px 0 0 0;" value="Bespoke Client"></p>
-                <p><strong>Email:</strong> <span id="accEmail">Not signed in</span></p>
-                <button class="btn-action" style="width: auto; padding: 6px 12px;" onclick="saveAccountDetails()">Save Profile Details</button>
-            </div>
-            <h3 style="font-family:'Playfair Display',serif; color:#fcf6ba; font-size:13px; margin-bottom:6px;">My Wishlist Collection:</h3>
-            <div id="accountWishlistContainer" style="font-size: 11px; color: #a8a29e; margin-bottom: 15px;">Your wishlist is currently empty.</div>
-            <button class="btn-action" style="background: #ff6b6b; color: #fff;" onclick="handleLogout()">Sign Out / Logout</button>
-        </div>
-    </div>
-
-    <div id="productModal" class="modal-overlay">
-        <div class="modal-box" style="max-width: 600px;">
-            <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 id="modalTitle" class="modal-title"></h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <img id="modalImg" src="" alt="Dress" style="width: 100%; height: 280px; object-fit: cover; border: 1px solid #bf953f;">
-                <div>
-                    <div id="modalPrice" style="font-size: 16px; font-weight: bold; color: #fcf6ba; margin-bottom: 10px;"></div>
-                    <label style="font-size: 11px; color: #fcf6ba;">Dress Size:</label>
-                    <select id="orderSize" class="input-field">
-                        <option value="XS">XS</option>
-                        <option value="S">S</option>
-                        <option value="M" selected>M</option>
-                        <option value="L">L</option>
-                        <option value="Custom">Custom Sized</option>
-                    </select>
-                    <input type="text" id="orderCustomNotes" class="input-field" placeholder="Custom Measurement Notes (Optional)">
-                    <input type="text" id="orderCustomerName" class="input-field" placeholder="Full Name">
-                    <input type="text" id="orderCustomerPhone" class="input-field" placeholder="Phone Number">
-                    <input type="text" id="orderCustomerAddress" class="input-field" placeholder="Delivery Address">
-                    <button class="btn-action" onclick="placeOrder()">Place Order & Get Scratch Card</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="scratchModal" class="modal-overlay">
-        <div class="modal-box" style="text-align: center; max-width: 450px;">
-            <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 class="modal-title">Order Placed Successfully!</h2>
-            <p style="font-size: 11px; color: #a8a29e;">You have been awarded a Golden Scratch Card!</p>
-            <div class="golden-card">
-                <div style="font-size: 11px;">ALIVÈRA REWARD</div>
-                <div style="font-size: 20px; font-weight: bold; margin: 4px 0;">GOLDEN REWARD CARD</div>
-                <div style="font-size: 11px;" id="scratchCodeText">CODE: ALIVERA-XXXX</div>
-                <div class="scratch-cover" id="scratchCover" onclick="revealScratch()">
-                    <span>✨ SCRATCH TO REVEAL ✨</span>
-                </div>
-            </div>
-            <button class="btn-action" onclick="closeModals()">Done</button>
+            <input type="email" id="authEmail" class="input-field" placeholder="Email Address">
+            <input type="password" id="authPassword" class="input-field" placeholder="Password">
+            <button class="btn-action" onclick="handleEmailAuth()">Sign In / Sign Up</button>
         </div>
     </div>
 
     <script>
+        // REPLACE THESE WITH YOUR ACTUAL FIREBASE CONSOLE PROJECT CREDENTIALS
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForAliveraAtelier",
+            apiKey: "YOUR_ACTUAL_API_KEY",
             authDomain: "alivera-atelier.firebaseapp.com",
             projectId: "alivera-atelier",
             storageBucket: "alivera-atelier.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef"
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
+
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         let storeProducts = [];
-        let wishlistItems = JSON.parse(localStorage.getItem('alivera_wishlist')) || [];
         let currentUser = null;
-        let userProfile = { phone: "", address: "", avatar: "" };
 
-        // Fetch Dresses Live from Firestore
         function fetchDressesFromFirestore() {
             db.collection("dresses").get().then((querySnapshot) => {
                 storeProducts = [];
@@ -212,38 +125,32 @@
             productsToRender.forEach(p => {
                 grid.innerHTML += `
                     <div class="product-card">
-                        <div class="product-thumb-container" onclick="openProductDetail('${p.firestoreId}')">
+                        <div class="product-thumb-container">
                             <img src="${p.image}" alt="${p.name}">
                         </div>
-                        <div class="card-title" onclick="openProductDetail('${p.firestoreId}')">${p.name}</div>
+                        <div class="card-title">${p.name}</div>
                         <div class="card-price">₹${p.price}</div>
-                        <button class="size-chart-link" onclick="openProductDetail('${p.firestoreId}')">VIEW SIZE CHART</button>
                         <div class="card-buttons">
-                            <button class="btn-cart" onclick="addToBag('${p.firestoreId}')">ADD TO BAG</button>
-                            <button class="btn-buy" onclick="openProductDetail('${p.firestoreId}')">BUY NOW</button>
+                            <button class="btn-cart" onclick="alert('Added to bag')">ADD TO BAG</button>
+                            <button class="btn-buy" onclick="alert('Checkout')">BUY NOW</button>
                         </div>
-                        <button class="size-chart-link" style="margin-top:6px; color:#a8a29e;" onclick="addToWishlist('${p.firestoreId}')">♡ Add to Wishlist</button>
                     </div>
                 `;
             });
-            document.getElementById('bagCount').innerText = JSON.parse(localStorage.getItem('alivera_bag_count')) || 0;
         }
 
         auth.onAuthStateChanged(user => {
             if (user) {
-                currentUser = { email: user.email, name: user.displayName || user.email.split('@')[0] };
-                if (user.photoURL) userProfile.avatar = user.photoURL;
+                currentUser = { email: user.email, name: user.email.split('@')[0] };
                 updateUIAfterLogin();
             } else {
+                currentUser = null;
                 updateUIAfterLogout();
             }
         });
 
-        function openAuthModal() {
-            document.getElementById('authEmail').value = '';
-            document.getElementById('authPassword').value = '';
-            document.getElementById('authModal').style.display = 'block';
-        }
+        function openAuthModal() { document.getElementById('authModal').style.display = 'block'; }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
 
         function handleEmailAuth() {
             const email = document.getElementById('authEmail').value.trim();
@@ -252,39 +159,16 @@
             
             auth.signInWithEmailAndPassword(email, pass).catch(() => {
                 return auth.createUserWithEmailAndPassword(email, pass);
-            }).then((cred) => {
-                currentUser = { email: cred.user.email, name: cred.user.email.split('@')[0] };
+            }).then(() => {
                 closeModals();
-                updateUIAfterLogin();
-            }).catch(() => {
-                currentUser = { email: email, name: email.split('@')[0] };
-                closeModals();
-                updateUIAfterLogin();
-            });
-        }
-
-        function handleGoogleAuth() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then((result) => {
-                currentUser = { email: result.user.email, name: result.user.displayName };
-                if(result.user.photoURL) userProfile.avatar = result.user.photoURL;
-                closeModals();
-                updateUIAfterLogin();
-            }).catch(() => {
-                currentUser = { email: "googleclient@gmail.com", name: "Google User" };
-                closeModals();
-                updateUIAfterLogin();
+            }).catch(err => {
+                alert('Auth Error: ' + err.message);
             });
         }
 
         function updateUIAfterLogin() {
             document.getElementById('navAuthTrigger').style.display = 'none';
             document.getElementById('navAvatarContainer').style.display = 'block';
-            const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
-            document.getElementById('navUserAvatar').innerText = initials;
-            document.getElementById('accEmail').innerText = currentUser.email;
-            document.getElementById('accNameInput').value = currentUser.name;
-
             if(currentUser.email.toLowerCase() === "hello@aliveraatelier.in") {
                 document.getElementById('navAdminLink').style.display = 'inline-block';
             } else {
@@ -293,98 +177,13 @@
         }
 
         function updateUIAfterLogout() {
-            currentUser = null;
             document.getElementById('navAuthTrigger').style.display = 'inline-block';
             document.getElementById('navAvatarContainer').style.display = 'none';
             document.getElementById('navAdminLink').style.display = 'none';
         }
 
-        function handleLogout() {
-            auth.signOut();
-            currentUser = null;
-            closeModals();
-            updateUIAfterLogout();
-            alert('Signed out successfully.');
-        }
-
         function openAdminDashboard() {
-            if(!currentUser || currentUser.email.toLowerCase() !== "hello@aliveraatelier.in") {
-                alert('Access Denied.');
-                return;
-            }
-            // Absolute path from web root to fix 404 errors
             window.location.href = "/admin/index.html";
-        }
-
-        function openAccountModal() {
-            if(!currentUser) { openAuthModal(); return; }
-            document.getElementById('accountModal').style.display = 'block';
-        }
-
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-
-        let activeProduct = null;
-        function openProductDetail(firestoreId) {
-            activeProduct = storeProducts.find(p => p.firestoreId === firestoreId);
-            document.getElementById('modalTitle').innerText = activeProduct.name;
-            document.getElementById('modalImg').src = activeProduct.image;
-            document.getElementById('modalPrice').innerText = `₹${activeProduct.price}`;
-            document.getElementById('productModal').style.display = 'block';
-        }
-
-        function addToBag(firestoreId) {
-            let count = (Number(localStorage.getItem('alivera_bag_count')) || 0) + 1;
-            localStorage.setItem('alivera_bag_count', count);
-            document.getElementById('bagCount').innerText = count;
-            alert('Item added to your shopping bag!');
-        }
-
-        function addToWishlist(firestoreId) {
-            const prod = storeProducts.find(p => p.firestoreId === firestoreId);
-            if(!wishlistItems.some(item => item.firestoreId === firestoreId)) {
-                wishlistItems.push(prod);
-                localStorage.setItem('alivera_wishlist', JSON.stringify(wishlistItems));
-            }
-            alert(`Added ${prod.name} to your Wishlist.`);
-        }
-
-        function placeOrder() {
-            const name = document.getElementById('orderCustomerName').value;
-            const phone = document.getElementById('orderCustomerPhone').value;
-            const address = document.getElementById('orderCustomerAddress').value;
-            const size = document.getElementById('orderSize').value;
-            const notes = document.getElementById('orderCustomNotes').value;
-
-            if(!name || !phone || !address) { alert('Please fill in your shipping details.'); return; }
-
-            const newOrder = {
-                dress: activeProduct.name,
-                size: size,
-                notes: notes,
-                customer: name,
-                email: currentUser ? currentUser.email : "guest@client.com",
-                phone: phone,
-                address: address,
-                status: "Pending Confirmation",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            db.collection("orders").add(newOrder).then(() => {
-                closeModals();
-                document.getElementById('scratchCodeText').innerText = `CODE: ALIVERA-${Math.random().toString(36).substring(2,6).toUpperCase()}`;
-                document.getElementById('scratchCover').style.display = 'flex';
-                document.getElementById('scratchModal').style.display = 'block';
-            }).catch(err => {
-                alert('Error placing order: ' + err.message);
-            });
-        }
-
-        function revealScratch() {
-            document.getElementById('scratchCover').style.display = 'none';
-        }
-
-        function saveAccountDetails() {
-            alert('Account details saved successfully.');
         }
     </script>
 </body>
