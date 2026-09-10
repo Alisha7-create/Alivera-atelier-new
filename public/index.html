@@ -78,6 +78,13 @@
             font-size: 1.1rem;
         }
     </style>
+
+    <!-- Firebase App (Core) SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <!-- Firebase Auth SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -91,19 +98,12 @@
     <div class="container">
         <h2>Collection</h2>
         <div id="product-grid" class="grid">
-            <!-- Dynamic dresses from Firestore will load here -->
             <p>Loading collection...</p>
         </div>
     </div>
 
-    <!-- Firebase and Storefront Logic Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase.app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase.analytics.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase.firestore.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase.auth.js";
-
-        // Your exact Firebase configuration with custom authDomain
+    <script>
+        // Your Firebase configuration with custom authDomain
         const firebaseConfig = {
             apiKey: "AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc",
             authDomain: "aliveraatelier.in",
@@ -115,31 +115,29 @@
             measurementId: "G-YQETZYQ3PT"
         };
 
-        // Initialize Firebase services
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
 
-        // UI Elements
         const authBtn = document.getElementById("auth-btn");
         const productGrid = document.getElementById("product-grid");
 
-        // Handle Google Login / Logout toggle
+        // Google Sign In / Out Handling
         authBtn.addEventListener("click", async () => {
             if (auth.currentUser) {
-                await signOut(auth);
+                await auth.signOut();
             } else {
                 try {
-                    await signInWithPopup(auth, provider);
+                    await auth.signInWithPopup(provider);
                 } catch (error) {
                     console.error("Authentication Error:", error);
                 }
             }
         });
 
-        onAuthStateChanged(auth, (user) => {
+        auth.onAuthStateChanged((user) => {
             if (user) {
                 authBtn.textContent = `Sign Out (${user.displayName || user.email})`;
             } else {
@@ -147,17 +145,17 @@
             }
         });
 
-        // Fetch dresses from Firestore and render them on the grid
+        // Load dresses from Firestore collection
         async function loadStorefrontDresses() {
             try {
-                const querySnapshot = await getDocs(collection(db, "dresses"));
-                if (querySnapshot.empty) {
+                const snapshot = await db.collection("dresses").get();
+                if (snapshot.empty) {
                     productGrid.innerHTML = "<p>No dresses found in the catalog yet.</p>";
                     return;
                 }
 
-                productGrid.innerHTML = ""; // Clear loader
-                querySnapshot.forEach((doc) => {
+                productGrid.innerHTML = "";
+                snapshot.forEach((doc) => {
                     const dress = doc.data();
                     const card = document.createElement("div");
                     card.className = "card";
@@ -176,161 +174,7 @@
             }
         }
 
-        // Trigger load on page startup
         document.addEventListener("DOMContentLoaded", loadStorefrontDresses);
-    </script>
-</body>
-</html>        .product-thumb-container { width: 100%; height: 260px; background: #12100e; border: 1px solid rgba(191,149,63,0.2); cursor: pointer; overflow: hidden; }
-        .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; }
-        .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 14px; color: #fcf6ba; margin: 10px 0 4px 0; cursor: pointer; }
-        .card-price { font-size: 13px; color: #f5f5f4; font-weight: bold; margin-bottom: 6px; }
-        
-        .card-buttons { display: flex; gap: 6px; margin-top: 8px; }
-        .btn-cart, .btn-buy { flex: 1; padding: 7px 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid #bf953f; }
-        .btn-cart { background: transparent; color: #fcf6ba; }
-        .btn-buy { background: linear-gradient(135deg, #bf953f, #fcf6ba); color: #050505; border: none; }
-
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; padding: 20px; }
-        .modal-box { background: #0c0a09; border: 1px solid #bf953f; max-width: 450px; margin: 40px auto; padding: 24px; position: relative; color: #f5f5f4; }
-        .close-modal { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #fcf6ba; font-size: 24px; cursor: pointer; }
-        .modal-title { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid rgba(191,149,63,0.3); padding-bottom: 8px; }
-
-        .input-field { width: 100%; background: #050505; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 10px; font-size: 12px; margin-bottom: 12px; }
-        .btn-action { background: #bf953f; color: #050505; border: none; padding: 11px; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 5px; }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <header>
-            <div class="top-nav">
-                <span id="navAdminLink" style="display: none; color: #fcf6ba; font-weight: bold;" onclick="openAdminDashboard()">ADMIN DASHBOARD</span>
-                <span id="navAuthTrigger" onclick="openAuthModal()">SIGN IN / SIGN UP</span>
-                <div id="navAvatarContainer" style="display: none;" onclick="openAccountModal()">
-                    <div class="user-avatar-circle" id="navUserAvatar">AC</div>
-                </div>
-            </div>
-            <h1>ALIVÈRA ATELIER</h1>
-            <div class="sub-tagline">BESPOKE HAUTE COUTURE</div>
-        </header>
-
-        <div class="section-heading">Bespoke Collection</div>
-        <div class="section-sub">"Handcrafted to celebrate your unique essence."</div>
-        <div class="store-grid" id="storeGrid"></div>
-    </div>
-
-    <!-- Auth Modal -->
-    <div id="authModal" class="modal-overlay">
-        <div class="modal-box" style="text-align: center;">
-            <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 class="modal-title">Client Authentication</h2>
-            <input type="email" id="authEmail" class="input-field" placeholder="Email Address">
-            <input type="password" id="authPassword" class="input-field" placeholder="Password">
-            <button class="btn-action" onclick="handleEmailAuth()">Sign In / Sign Up</button>
-        </div>
-    </div>
-
-    <script>
-        // REPLACE THESE WITH YOUR ACTUAL FIREBASE CONSOLE PROJECT CREDENTIALS
-        const firebaseConfig = {
-            apiKey: "YOUR_ACTUAL_API_KEY",
-            authDomain: "alivera-atelier.firebaseapp.com",
-            projectId: "alivera-atelier",
-            storageBucket: "alivera-atelier.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        let storeProducts = [];
-        let currentUser = null;
-
-        function fetchDressesFromFirestore() {
-            db.collection("dresses").get().then((querySnapshot) => {
-                storeProducts = [];
-                querySnapshot.forEach((doc) => {
-                    storeProducts.push({ firestoreId: doc.id, ...doc.data() });
-                });
-                renderStore(storeProducts);
-            }).catch((error) => {
-                console.error("Error fetching dresses: ", error);
-            });
-        }
-        fetchDressesFromFirestore();
-
-        function renderStore(productsToRender) {
-            const grid = document.getElementById('storeGrid');
-            grid.innerHTML = '';
-            if(productsToRender.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#a8a29e; font-size:12px;">No dresses found in Firebase Firestore collection. Upload via Admin Dashboard.</div>';
-                return;
-            }
-            productsToRender.forEach(p => {
-                grid.innerHTML += `
-                    <div class="product-card">
-                        <div class="product-thumb-container">
-                            <img src="${p.image}" alt="${p.name}">
-                        </div>
-                        <div class="card-title">${p.name}</div>
-                        <div class="card-price">₹${p.price}</div>
-                        <div class="card-buttons">
-                            <button class="btn-cart" onclick="alert('Added to bag')">ADD TO BAG</button>
-                            <button class="btn-buy" onclick="alert('Checkout')">BUY NOW</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = { email: user.email, name: user.email.split('@')[0] };
-                updateUIAfterLogin();
-            } else {
-                currentUser = null;
-                updateUIAfterLogout();
-            }
-        });
-
-        function openAuthModal() { document.getElementById('authModal').style.display = 'block'; }
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-
-        function handleEmailAuth() {
-            const email = document.getElementById('authEmail').value.trim();
-            const pass = document.getElementById('authPassword').value;
-            if(!email || !pass) { alert('Please fill in email and password.'); return; }
-            
-            auth.signInWithEmailAndPassword(email, pass).catch(() => {
-                return auth.createUserWithEmailAndPassword(email, pass);
-            }).then(() => {
-                closeModals();
-            }).catch(err => {
-                alert('Auth Error: ' + err.message);
-            });
-        }
-
-        function updateUIAfterLogin() {
-            document.getElementById('navAuthTrigger').style.display = 'none';
-            document.getElementById('navAvatarContainer').style.display = 'block';
-            if(currentUser.email.toLowerCase() === "hello@aliveraatelier.in") {
-                document.getElementById('navAdminLink').style.display = 'inline-block';
-            } else {
-                document.getElementById('navAdminLink').style.display = 'none';
-            }
-        }
-
-        function updateUIAfterLogout() {
-            document.getElementById('navAuthTrigger').style.display = 'inline-block';
-            document.getElementById('navAvatarContainer').style.display = 'none';
-            document.getElementById('navAdminLink').style.display = 'none';
-        }
-
-        function openAdminDashboard() {
-            window.location.href = "/admin/index.html";
-        }
     </script>
 </body>
 </html>
