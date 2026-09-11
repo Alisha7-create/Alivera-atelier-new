@@ -78,7 +78,7 @@
         .hero p { font-family: 'Segoe UI', sans-serif; font-size: 1rem; color: var(--text-muted); }
 
         .container { max-width: 1300px; margin: 40px auto; padding: 0 30px; flex: 1; width: 100%; }
-        .search-bar { width: 100%; padding: 12px 20px; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-main); font-family: inherit; margin-bottom: 30px; border-radius: 4px; }
+        .search-bar { width: 100%; padding: 12px 20px; background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-main); font-family: inherit; margin-bottom: 15px; border-radius: 4px; }
         
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 40px; }
         .card { background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; }
@@ -111,7 +111,6 @@
         </div>
     </header>
 
-    <!-- Promotional / Sale Countdown Bar & Banners -->
     <div id="countdown-bar" class="countdown-bar">Sale begins in: <span id="timer-text">--:--:--</span></div>
     <div id="promo-banner-wrapper" class="banner-container">
         <img id="promo-banner-img" src="" alt="Promotional Banner">
@@ -131,16 +130,30 @@
         </div>
     </div>
 
-    <!-- Auth Modal -->
+    <!-- Auth Modal (Google, Email, Phone OTP) -->
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
             <h3 style="color: var(--accent-gold); margin-bottom: 20px;">Client Authentication</h3>
+            
             <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="googleSignIn()">Sign In with Google</button>
+            
             <hr style="border-color: var(--border-color); margin: 15px 0;">
-            <input type="email" id="email-input" placeholder="Email Address" class="search-bar" style="margin-bottom: 10px;">
-            <input type="password" id="pass-input" placeholder="Password" class="search-bar" style="margin-bottom: 15px;">
-            <button class="btn" style="width: 100%;" onclick="emailAuth()">Continue with Email</button>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Or continue with Email:</p>
+            <input type="email" id="email-input" placeholder="Email Address" class="search-bar">
+            <input type="password" id="pass-input" placeholder="Password" class="search-bar" style="margin-bottom: 10px;">
+            <button class="btn" style="width: 100%; margin-bottom: 15px;" onclick="emailAuth()">Continue with Email</button>
+
+            <hr style="border-color: var(--border-color); margin: 15px 0;">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Or continue with Phone (SMS OTP):</p>
+            <input type="tel" id="phone-input" placeholder="Phone Number (e.g. +919876543210)" class="search-bar">
+            <div id="recaptcha-container" style="margin-bottom: 10px;"></div>
+            <button class="btn" style="width: 100%; margin-bottom: 10px;" onclick="sendOTP()">Send OTP</button>
+            
+            <div id="otp-group" style="display:none;">
+                <input type="text" id="otp-input" placeholder="Enter 6-digit OTP" class="search-bar">
+                <button class="btn btn-primary" style="width: 100%;" onclick="verifyOTP()">Verify & Sign In</button>
+            </div>
         </div>
     </div>
 
@@ -149,9 +162,7 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
             <h3 style="color: var(--accent-gold); margin-bottom: 15px;">My Account Profile</h3>
-            <div id="account-details" style="font-size: 0.9rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 10px;">
-                <!-- Dynamically populated user details, avatar, wishlist, scratch cards -->
-            </div>
+            <div id="account-details" style="font-size: 0.9rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 10px;"></div>
             <button class="btn btn-primary" style="margin-top: 20px; width: 100%;" onclick="firebase.auth().signOut(); closeModals();">Sign Out</button>
         </div>
     </div>
@@ -178,6 +189,16 @@
         const provider = new firebase.auth.GoogleAuthProvider();
 
         let allDresses = [];
+        let confirmationResultGlobal;
+
+        // Initialize reCAPTCHA for Phone Auth
+        document.addEventListener("DOMContentLoaded", () => {
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'normal'
+            });
+            window.recaptchaVerifier.render();
+            loadStorefrontData();
+        });
 
         function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
         function openAccountModal() { document.getElementById('account-modal').style.display = 'flex'; loadAccountData(); }
@@ -198,6 +219,28 @@
             closeModals();
         }
 
+        async function sendOTP() {
+            const phone = document.getElementById('phone-input').value;
+            try {
+                confirmationResultGlobal = await auth.signInWithPhoneNumber(phone, window.recaptchaVerifier);
+                document.getElementById('otp-group').style.display = 'block';
+                alert("OTP sent successfully!");
+            } catch (e) {
+                alert("SMS error: " + e.message);
+            }
+        }
+
+        async function verifyOTP() {
+            const code = document.getElementById('otp-input').value;
+            try {
+                await confirmationResultGlobal.confirm(code);
+                alert("Phone login successful!");
+                closeModals();
+            } catch (e) {
+                alert("Invalid OTP code: " + e.message);
+            }
+        }
+
         auth.onAuthStateChanged((user) => {
             const authBtn = document.getElementById('auth-btn');
             const accountBtn = document.getElementById('account-btn');
@@ -206,7 +249,7 @@
             if (user) {
                 authBtn.style.display = 'none';
                 accountBtn.style.display = 'inline-block';
-                accountBtn.textContent = user.email.split('@')[0].toUpperCase();
+                accountBtn.textContent = user.email ? user.email.split('@')[0].toUpperCase() : (user.phoneNumber || 'USER');
                 
                 if (user.email === "hello@aliveraatelier.in") {
                     adminHeaderBtn.style.display = 'inline-block';
@@ -227,7 +270,6 @@
                 snapshot.forEach(doc => allDresses.push({ id: doc.id, ...doc.data() }));
                 renderGrid(allDresses);
 
-                // Check active promotions/banners configuration from Firestore settings if available
                 const promoSnap = await db.collection("settings").doc("promotion").get();
                 if (promoSnap.exists) {
                     const promo = promoSnap.data();
@@ -273,7 +315,7 @@
             const data = userDoc.exists ? userDoc.data() : {};
             
             document.getElementById('account-details').innerHTML = `
-                <p><b>Email:</b> ${user.email}</p>
+                <p><b>Email/Phone:</b> ${user.email || user.phoneNumber}</p>
                 <p><b>Name:</b> ${data.name || 'Not set'}</p>
                 <p><b>Phone:</b> ${data.phone || 'Not set'}</p>
                 <p><b>Address:</b> ${data.address || 'Not set'}</p>
@@ -288,13 +330,11 @@
             const address = prompt("Enter your delivery address:");
             const user = auth.currentUser;
             if (user) {
-                await db.collection("users").doc(user.uid).set({ name, phone, address, email: user.email }, { merge: true });
+                await db.collection("users").doc(user.uid).set({ name, phone, address, email: user.email || '' }, { merge: true });
                 alert("Profile updated successfully!");
                 loadAccountData();
             }
         }
-
-        document.addEventListener("DOMContentLoaded", loadStorefrontData);
     </script>
 </body>
 </html>
