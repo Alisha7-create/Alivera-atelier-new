@@ -34,6 +34,15 @@
             top: 0;
             z-index: 100;
         }
+        .brand-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .brand-logo-img {
+            max-height: 45px;
+            object-fit: contain;
+        }
         .brand-title {
             font-size: 1.5rem;
             font-weight: 400;
@@ -71,9 +80,20 @@
             background-color: var(--accent-hover);
         }
         
-        /* Hero Banner */
+        /* Hero Banner Image Support */
+        .hero-banner-container {
+            width: 100%;
+            max-height: 450px;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .hero-banner-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         .hero {
-            padding: 80px 20px;
+            padding: 60px 20px;
             text-align: center;
             background: linear-gradient(to bottom, var(--surface-color), var(--bg-color));
             border-bottom: 1px solid var(--border-color);
@@ -129,6 +149,7 @@
             height: 380px;
             background: #111;
             overflow: hidden;
+            position: relative;
         }
         .product-thumb-container img {
             width: 100%;
@@ -165,20 +186,22 @@
             font-size: 0.8rem;
         }
 
-        /* Admin Dashboard Panel (Conditional) */
+        /* Golden Admin Header Accent */
         #admin-panel {
             display: none;
-            background: rgba(197, 168, 128, 0.05);
-            border: 1px dashed var(--accent-gold);
-            padding: 20px;
+            background: rgba(197, 168, 128, 0.08);
+            border: 1px solid var(--accent-gold);
+            padding: 24px;
             margin-bottom: 40px;
             border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(197, 168, 128, 0.1);
         }
         #admin-panel h3 {
             color: var(--accent-gold);
             margin-bottom: 10px;
             font-weight: 400;
             letter-spacing: 1px;
+            font-size: 1.3rem;
         }
 
         /* Footer */
@@ -204,15 +227,22 @@
 
     <!-- Header -->
     <header>
-        <div class="brand-title">Alivèra Atelier</div>
+        <div class="brand-logo-area">
+            <!-- If you have a logo image URL, it will display here, otherwise falls back to title -->
+            <h1 class="brand-title">Alivèra Atelier</h1>
+        </div>
         <div class="nav-actions">
-            <button id="account-btn" class="btn" style="display: none;">My Account</button>
+            <button id="account-btn" class="btn" style="display: none; border-color: var(--accent-gold); color: var(--accent-gold);">My Account</button>
             <button id="auth-btn" class="btn btn-primary">Sign In / Sign Up</button>
         </div>
     </header>
 
-    <!-- Hero Banner -->
-    <section class="hero">
+    <!-- Promotional / Hero Banner Image Area -->
+    <div id="hero-banner-wrapper" class="hero-banner-container" style="display: none;">
+        <img id="hero-banner-img" src="" alt="Alivéra Atelier Promotional Banner">
+    </div>
+
+    <section class="hero" id="default-hero">
         <h2>Bespoke Haute Couture</h2>
         <p>"Handcrafted to celebrate your unique essence."</p>
     </section>
@@ -220,16 +250,19 @@
     <!-- Main Container -->
     <div class="container">
         
-        <!-- Admin Dashboard Section (Visible only to hello@aliveraatelier.in) -->
+        <!-- Golden Admin Dashboard (Visible only to hello@aliveraatelier.in) -->
         <div id="admin-panel">
-            <h3>Admin Control Panel</h3>
-            <p style="font-family: 'Segoe UI', sans-serif; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Welcome back, Creator. You have full management access to inventory and orders.</p>
-            <button class="btn btn-primary" onclick="alert('Open product upload modal or admin dashboard route.')">+ Add New Garment</button>
+            <h3>✦ Alivèra Master Admin Dashboard</h3>
+            <p style="font-family: 'Segoe UI', sans-serif; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Authenticated as Studio Director. Live inventory synced from Cloudflare & Firestore (`atelier_dresses`).</p>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-primary" onclick="alert('Open Garment Upload Modal')">+ Add New Garment</button>
+                <button class="btn" onclick="alert('Manage Size Charts & Packaging Assets')">Manage Size Charts</button>
+            </div>
         </div>
 
         <h3 class="section-title">Bespoke Collection</h3>
         <div id="product-grid" class="grid">
-            <p style="font-family: 'Segoe UI', sans-serif; color: var(--text-muted);">Loading collection...</p>
+            <p style="font-family: 'Segoe UI', sans-serif; color: var(--text-muted);">Loading collection from atelier_dresses...</p>
         </div>
     </div>
 
@@ -260,6 +293,9 @@
         const accountBtn = document.getElementById("account-btn");
         const adminPanel = document.getElementById("admin-panel");
         const productGrid = document.getElementById("product-grid");
+        const heroBannerWrapper = document.getElementById("hero-banner-wrapper");
+        const heroBannerImg = document.getElementById("hero-banner-img");
+        const defaultHero = document.getElementById("default-hero");
 
         // Auth state handling & UI toggles
         authBtn.addEventListener("click", async () => {
@@ -280,7 +316,7 @@
                 accountBtn.style.display = "inline-block";
                 accountBtn.textContent = user.email;
 
-                // Show Admin Panel exclusively for your master admin email
+                // Restrict golden admin panel solely to your master credentials
                 if (user.email === "hello@aliveraatelier.in") {
                     adminPanel.style.display = "block";
                 } else {
@@ -293,18 +329,27 @@
             }
         });
 
-        // Load dresses from Firestore
+        // Load dresses from the correct Firestore collection: atelier_dresses
         async function loadStorefrontDresses() {
             try {
-                const snapshot = await db.collection("dresses").get();
+                const snapshot = await db.collection("atelier_dresses").get();
                 if (snapshot.empty) {
-                    productGrid.innerHTML = `<p style="font-family: 'Segoe UI', sans-serif; color: var(--text-muted);">No dresses found in the catalog yet. Add items via your admin console.</p>`;
+                    productGrid.innerHTML = `<p style="font-family: 'Segoe UI', sans-serif; color: var(--text-muted);">No garments found in 'atelier_dresses' catalog yet.</p>`;
                     return;
                 }
 
                 productGrid.innerHTML = "";
                 snapshot.forEach((doc) => {
                     const dress = doc.data();
+                    
+                    // Check if this document is designated as a promotional banner image
+                    if (dress.type === "banner" || dress.isBanner) {
+                        heroBannerImg.src = dress.imageUrl || dress.image;
+                        heroBannerWrapper.style.display = "block";
+                        defaultHero.style.display = "none";
+                        return;
+                    }
+
                     const card = document.createElement("div");
                     card.className = "card";
                     card.innerHTML = `
@@ -315,15 +360,15 @@
                             <div class="card-title">${dress.name || 'Custom Garment'}</div>
                             <div class="card-price">₹${dress.price || 'On Request'}</div>
                             <div class="card-buttons">
-                                <button class="btn">View Details</button>
-                                <button class="btn btn-primary">Inquire</button>
+                                <button class="btn" onclick="alert('Viewing details for ${dress.name || 'Garment'}')">View Details</button>
+                                <button class="btn btn-primary" onclick="alert('Inquiring about size & customization')">Inquire</button>
                             </div>
                         </div>
                     `;
                     productGrid.appendChild(card);
                 });
             } catch (error) {
-                console.error("Error fetching Firestore dresses:", error);
+                console.error("Error fetching atelier_dresses:", error);
                 productGrid.innerHTML = `<p style="font-family: 'Segoe UI', sans-serif; color: #ff6b6b;">Error loading collection from database.</p>`;
             }
         }
