@@ -3,190 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivèra Atelier — Admin Dashboard</title>
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
+    <title>Alivéra Atelier | Master Admin Dashboard</title>
     <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: #050505; color: #f5f5f4; font-family: 'Plus Jakarta Sans', Arial, sans-serif; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        
-        header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(191, 149, 63, 0.2); margin-bottom: 30px; }
-        .top-nav { display: flex; justify-content: space-between; font-size: 11px; color: #fcf6ba; text-transform: uppercase; margin-bottom: 10px; }
-        .top-nav span { cursor: pointer; }
-        h1 { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 24px; margin: 0; letter-spacing: 2px; }
-        .sub-tagline { font-size: 10px; color: #a8a29e; text-transform: uppercase; letter-spacing: 3px; margin-top: 4px; }
-
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-        @media(max-width: 768px) { .admin-grid { grid-template-columns: 1fr; } }
-
-        .admin-card { background: #0c0a09; border: 1px solid rgba(191,149,63,0.3); padding: 20px; margin-bottom: 20px; }
-        .admin-title { font-family: 'Playfair Display', Georgia, serif; color: #fcf6ba; font-size: 16px; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid rgba(191,149,63,0.2); padding-bottom: 8px; }
-
-        .input-field { width: 100%; background: #050505; border: 1px solid rgba(191,149,63,0.4); color: #fff; padding: 10px; font-size: 12px; margin-bottom: 12px; }
-        .btn-action { background: #bf953f; color: #050505; border: none; padding: 11px; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 5px; }
-        
-        .orders-box { background: #0c0a09; border: 1px solid rgba(191,149,63,0.3); padding: 20px; margin-top: 20px; }
-        .order-item { background: #050505; border: 1px solid rgba(191,149,63,0.2); padding: 12px; margin-bottom: 10px; font-size: 12px; }
+        :root {
+            --bg-color: #0b0b0b;
+            --surface-color: #141414;
+            --border-color: rgba(197, 168, 128, 0.2);
+            --text-main: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --accent-gold: #c5a880;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Playfair Display', Georgia, serif; background-color: var(--bg-color); color: var(--text-main); padding: 40px; }
+        h1, h2 { color: var(--accent-gold); margin-bottom: 20px; }
+        .section { background: var(--surface-color); border: 1px solid var(--accent-gold); padding: 30px; margin-bottom: 30px; border-radius: 6px; font-family: 'Segoe UI', sans-serif; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 15px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 4px; }
+        .btn { background: var(--accent-gold); color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 4px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        th, td { border: 1px solid var(--border-color); padding: 12px; text-align: left; }
+        th { color: var(--accent-gold); }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+    <div id="unauthorized" style="display:none; text-align:center; padding: 100px;">
+        <h2>Access Denied. Master Admin Credentials Required.</h2>
+        <a href="/" class="btn" style="display:inline-block; margin-top:20px; text-decoration:none;">Return to Storefront</a>
+    </div>
 
-    <div class="container">
-        <header>
-            <div class="top-nav">
-                <span onclick="window.location.href='/index.html'">← Back to Storefront</span>
-                <span id="adminAuthStatus">Verifying Admin Access...</span>
-            </div>
-            <h1>ALIVÈRA ATELIER</h1>
-            <div class="sub-tagline">ADMINISTRATION & MANAGEMENT DASHBOARD</div>
-        </header>
+    <div id="admin-content" style="display:none;">
+        <h1>✦ Alivéra Master Admin Dashboard</h1>
+        <p style="font-family: 'Segoe UI', sans-serif; color: var(--text-muted); margin-bottom: 30px;">Logged in as Studio Director (hello@aliveraatelier.in)</p>
 
-        <!-- Main Admin Content Container (Protected) -->
-        <div id="adminProtectedContent" style="display: none;">
-            <div class="admin-grid">
-                <div class="admin-card">
-                    <h3 class="admin-title">Upload Dress Collection (Firestore)</h3>
-                    <input type="text" id="adminDressName" class="input-field" placeholder="Dress Name" autocomplete="off">
-                    <input type="number" id="adminDressPrice" class="input-field" placeholder="Price (₹)" autocomplete="off">
-                    <label style="font-size: 10px; color: #a8a29e;">Dress Photo File:</label>
-                    <input type="file" id="adminDressFile" class="input-field" accept="image/*">
-                    <label style="font-size: 10px; color: #a8a29e;">Size Chart Photo File:</label>
-                    <input type="file" id="adminSizeChartFile" class="input-field" accept="image/*">
-                    <button class="btn-action" onclick="adminUploadNewDress()">Publish to Firestore</button>
-                </div>
-
-                <div class="admin-card">
-                    <h3 class="admin-title">Sale Configuration</h3>
-                    <select id="adminSaleType" class="input-field">
-                        <option value="type1">Type 1: First 'X' Persons Promotion</option>
-                        <option value="type2">Type 2: Date-to-Date Window Promotion</option>
-                    </select>
-                    <input type="number" id="adminDiscountPct" class="input-field" placeholder="Discount Percentage (e.g., 15)">
-                    <button class="btn-action" onclick="alert('Sale configuration saved.')">Configure Sale</button>
-                </div>
-            </div>
-
-            <div class="orders-box">
-                <h3 class="admin-title">Live Customer Orders & Fulfillment (Firestore)</h3>
-                <div id="adminOrdersContainer">
-                    <div style="color: #888; font-size: 12px;">Loading incoming orders from Firestore...</div>
-                </div>
-            </div>
+        <!-- Upload Garment Section -->
+        <div class="section">
+            <h2>Upload New Garment to `atelier_dresses`</h2>
+            <input type="text" id="dress-name" placeholder="Garment Name (e.g. Midnight Orchid Dress)">
+            <input type="text" id="dress-price" placeholder="Price in INR (e.g. 14999)">
+            <input type="text" id="dress-image" placeholder="Image URL / Cloudflare Storage Link">
+            <input type="text" id="dress-sizechart" placeholder="Size Chart Image URL">
+            <button class="btn" onclick="uploadDress()">Publish Garment Live</button>
         </div>
 
-        <!-- Access Denied Screen -->
-        <div id="adminAccessDenied" style="display: none; text-align: center; padding: 50px;">
-            <h2 style="font-family:'Playfair Display',serif; color:#ff6b6b; font-size:22px;">Access Denied</h2>
-            <p style="font-size: 12px; color: #a8a29e; margin: 10px 0 20px 0;">You must be signed in as <strong>hello@aliveraatelier.in</strong> to view the administration dashboard.</p>
-            <button class="btn-action" style="max-width: 200px; margin: 0 auto;" onclick="window.location.href='/index.html'">Return to Storefront</button>
+        <!-- Promotional Banner & Timer Control -->
+        <div class="section">
+            <h2>Manage Promotional Banners (1897 x 412) & Timers</h2>
+            <input type="text" id="promo-banner-url" placeholder="Banner Image URL">
+            <select id="promo-type">
+                <option value="first_x">First X People Discount</option>
+                <option value="date_range">Date Range Sale</option>
+            </select>
+            <input type="number" id="promo-limit" placeholder="Limit 'X' people or Discount % amount">
+            <button class="btn" onclick="savePromotion()">Activate Promotion Banner</button>
+            <button class="btn" style="background:#555; color:#fff; margin-left:10px;" onclick="stopPromotion()">Stop Sale / Reset</button>
+        </div>
+
+        <!-- Live Orders Management -->
+        <div class="section">
+            <h2>Live Customer Orders & Custom Specifications</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Details</th>
+                        <th>Garment / Custom Info</th>
+                        <th>Status / Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <tr><td colspan="4">Loading orders...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Scratch Card Generator -->
+        <div class="section">
+            <h2>Generate Alivéra Golden Scratch Card</h2>
+            <input type="text" id="scratch-code" placeholder="Unique Scratch Code (e.g. ALIVERA10OFF)">
+            <input type="number" id="scratch-discount" placeholder="Discount Percentage">
+            <input type="text" id="target-user-email" placeholder="Customer Email to assign scratch card">
+            <button class="btn" onclick="generateScratchCard()">Issue Golden Scratch Card</button>
         </div>
     </div>
 
     <script>
-        // REPLACE THESE WITH YOUR ACTUAL FIREBASE CONSOLE PROJECT CREDENTIALS
         const firebaseConfig = {
-            apiKey: "YOUR_ACTUAL_API_KEY",
-            authDomain: "alivera-atelier.firebaseapp.com",
+            apiKey: "AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc",
+            authDomain: "aliveraatelier.in",
+            databaseURL: "https://alivera-atelier-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "alivera-atelier",
-            storageBucket: "alivera-atelier.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            storageBucket: "alivera-atelier.firebasestorage.app",
+            messagingSenderId: "952987801898",
+            appId: "1:952987801898:web:af49cb363c53584de1a653",
+            measurementId: "G-YQETZYQ3PT"
         };
-        
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Fixed Auth State Check (Prevents premature Access Denied flash)
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                if (user.email.toLowerCase() === "hello@aliveraatelier.in") {
-                    document.getElementById('adminAuthStatus').innerText = `Logged in: ${user.email}`;
-                    document.getElementById('adminProtectedContent').style.display = 'block';
-                    document.getElementById('adminAccessDenied').style.display = 'none';
-                    fetchAdminOrders();
-                } else {
-                    document.getElementById('adminAuthStatus').innerText = `Logged in as ${user.email} (Unauthorized)`;
-                    document.getElementById('adminProtectedContent').style.display = 'none';
-                    document.getElementById('adminAccessDenied').style.display = 'block';
-                }
+        auth.onAuthStateChanged((user) => {
+            if (user && user.email === "hello@aliveraatelier.in") {
+                document.getElementById('admin-content').style.display = 'block';
+                loadOrders();
             } else {
-                document.getElementById('adminAuthStatus').innerText = "Not Signed In";
-                document.getElementById('adminProtectedContent').style.display = 'none';
-                document.getElementById('adminAccessDenied').style.display = 'block';
+                document.getElementById('unauthorized').style.display = 'block';
             }
         });
 
-        function readFileAsDataURL(fileInput, callback) {
-            const file = fileInput.files[0];
-            if(!file) { callback(""); return; }
-            const reader = new FileReader();
-            reader.onload = (e) => callback(e.target.result);
-            reader.readAsDataURL(file);
+        async function uploadDress() {
+            const name = document.getElementById('dress-name').value;
+            const price = document.getElementById('dress-price').value;
+            const imageUrl = document.getElementById('dress-image').value;
+            const sizeChart = document.getElementById('dress-sizechart').value;
+
+            if (!name || !price) { alert("Please fill required fields"); return; }
+            await db.collection("atelier_dresses").add({ name, price, imageUrl, sizeChart, createdAt: new Date() });
+            alert("Garment successfully published live to storefront!");
+            location.reload();
         }
 
-        function adminUploadNewDress() {
-            const name = document.getElementById('adminDressName').value;
-            const price = Number(document.getElementById('adminDressPrice').value);
-            if(!name || !price) { alert('Please enter dress name and price.'); return; }
+        async function savePromotion() {
+            const bannerUrl = document.getElementById('promo-banner-url').value;
+            const type = document.getElementById('promo-type').value;
+            const limit = document.getElementById('promo-limit').value;
+            await db.collection("settings").doc("promotion").set({ bannerUrl, type, limit, active: true });
+            alert("Promotion banner activated successfully!");
+        }
 
-            readFileAsDataURL(document.getElementById('adminDressFile'), (imgData) => {
-                readFileAsDataURL(document.getElementById('adminSizeChartFile'), (chartData) => {
-                    const dressData = {
-                        name: name,
-                        price: price,
-                        image: imgData || "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500",
-                        sizeChart: chartData || imgData || "https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=500",
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    };
+        async function stopPromotion() {
+            await db.collection("settings").doc("promotion").set({ active: false }, { merge: true });
+            alert("Promotion stopped and reset to normal day hero.");
+        }
 
-                    db.collection("dresses").add(dressData).then(() => {
-                        alert('Dress successfully published to your live Firebase Firestore collection!');
-                        document.getElementById('adminDressName').value = '';
-                        document.getElementById('adminDressPrice').value = '';
-                    }).catch(error => {
-                        alert('Error writing to Firestore: ' + error.message);
-                    });
-                });
+        async function loadOrders() {
+            const snapshot = await db.collection("orders").get();
+            const tbody = document.getElementById('orders-table-body');
+            if (snapshot.empty) {
+                tbody.innerHTML = `<tr><td colspan="4">No customer orders found yet.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = "";
+            snapshot.forEach(doc => {
+                const o = doc.data();
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${o.name || 'Client'}<br><small>${o.email}</small></td>
+                        <td>${o.phone || ''}<br>${o.address || ''}</td>
+                        <td>Size: ${o.size || 'Custom'}<br>Notes: ${o.notes || 'None'}</td>
+                        <td>
+                            <button class="btn" style="padding:5px 10px; font-size:0.75rem;" onclick="updateOrderStatus('${doc.id}', 'Confirmed')">Confirm</button>
+                            <button class="btn" style="padding:5px 10px; font-size:0.75rem; background:#c94a4a; color:#fff;" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel</button>
+                        </td>
+                    </tr>
+                `;
             });
         }
 
-        function fetchAdminOrders() {
-            const container = document.getElementById('adminOrdersContainer');
-            db.collection("orders").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-                if(snapshot.empty) {
-                    container.innerHTML = '<div style="color: #888; font-size: 12px;">No incoming customer orders found in Firestore.</div>';
-                    return;
-                }
-                container.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const o = doc.data();
-                    const docId = doc.id;
-                    container.innerHTML += `
-                        <div class="order-item">
-                            <strong style="color: #fcf6ba; font-size: 13px;">${o.dress} (Size: ${o.size})</strong><br>
-                            <strong>Customer:</strong> ${o.customer} (${o.email}) | <strong>Phone:</strong> ${o.phone}<br>
-                            <strong>Address:</strong> ${o.address}<br>
-                            <strong>Status:</strong> <span style="color:#bf953f;">${o.status}</span><br>
-                            <div style="margin-top: 8px; display: flex; gap: 6px;">
-                                <button onclick="updateOrderStatus('${docId}', 'Confirmed')" style="background:green; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Confirm</button>
-                                <button onclick="updateOrderStatus('${docId}', 'Denied')" style="background:orange; color:#fff; border:none; padding:4px 8px; font-size:10px; cursor:pointer;">Deny</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            });
+        async function updateOrderStatus(id, status) {
+            await db.collection("orders").doc(id).update({ status });
+            alert(`Order marked as ${status}`);
+            loadOrders();
         }
 
-        function updateOrderStatus(docId, newStatus) {
-            db.collection("orders").doc(docId).update({ status: newStatus }).then(() => {
-                alert(`Order status updated to ${newStatus}`);
-            });
+        async function generateScratchCard() {
+            const code = document.getElementById('scratch-code').value;
+            const discount = document.getElementById('scratch-discount').value;
+            const email = document.getElementById('target-user-email').value;
+            
+            if(!code || !email) { alert("Provide code and email"); return; }
+            
+            // Find user by email or push scratch card token to global collection
+            await db.collection("scratch_cards").add({ code, discount, email, opened: false, createdAt: new Date() });
+            alert("Golden scratch card issued successfully to customer account!");
         }
     </script>
 </body>
