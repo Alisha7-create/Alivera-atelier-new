@@ -45,7 +45,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; border-bottom: 1px solid var(--border-gold); padding-bottom: 25px;">
             <div>
                 <h1>✦ Alivéra Master Admin & Cloudflare Sync Dashboard</h1>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Authenticated Director Portal: hello@aliveraatelier.in</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Authenticated Director Portal: hello@aliveraatelier.in &bull; Razorpay & Shiprocket Linked</p>
             </div>
             <a href="/" class="btn" style="text-decoration: none;">View Storefront</a>
         </div>
@@ -57,7 +57,7 @@
             <input type="number" id="dress-price" placeholder="Price in INR (e.g. 14999)">
             <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Garment Photo Image File:</label>
             <input type="file" id="dress-image-file" accept="image/*">
-            <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Size Chart Image File:</label>
+            <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Size Chart Image File (Mandatory for client sizing):</label>
             <input type="file" id="dress-sizechart-file" accept="image/*">
             <button class="btn" style="margin-top: 12px;" onclick="uploadDress()">Publish Garment Live to Storefront</button>
         </div>
@@ -84,25 +84,25 @@
 
         <!-- Banners, Tax & Scratch Card Automation Settings -->
         <div class="section">
-            <h2>Storefront Banners, Taxes & Automated Scratch Cards</h2>
+            <h2>Independent Banners, Taxes & Automated Scratch Cards</h2>
             <select id="active-banner-mode" onchange="toggleBannerInputs()">
-                <option value="none">Default Hero Banner (Image)</option>
-                <option value="regular">Regular Day Custom Banner</option>
-                <option value="sale">Active Sale Promotional Banner</option>
+                <option value="hero">Hero Banner Active</option>
+                <option value="regular">Regular Day Custom Banner Active</option>
+                <option value="sale">Active Sale Promotional Banner Active</option>
             </select>
 
-            <div id="default-banner-box" style="margin-top:15px;">
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Default Hero Banner Image File (No Text / Pure Image):</label>
-                <input type="file" id="default-banner-file" accept="image/*">
+            <div style="margin-top:15px;">
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Hero Banner Image File:</label>
+                <input type="file" id="hero-banner-file" accept="image/*">
             </div>
 
             <div id="regular-banner-box" style="display:none; margin-top:15px;">
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Regular Banner Image File:</label>
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Regular Day Banner Image File:</label>
                 <input type="file" id="regular-banner-file" accept="image/*">
             </div>
 
             <div id="sale-banner-box" style="display:none; margin-top:15px;">
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Sale Promotional Banner File:</label>
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Sale Discount Promotional Banner File:</label>
                 <input type="file" id="sale-banner-file" accept="image/*">
                 
                 <select id="timer-active-select" style="margin-top: 15px;">
@@ -113,26 +113,26 @@
             </div>
 
             <div style="margin-top: 30px; border-top: 1px solid var(--border-gold); padding-top: 25px;">
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Automatic Scratch Card Discount for New Orders (e.g. 10%, 15%):</label>
-                <input type="text" id="global-default-discount" placeholder="Scratch Card Discount Amount (e.g. 10%)">
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Continuous Scratch Card Discount for First Customers (Default 10%):</label>
+                <input type="text" id="global-default-discount" placeholder="Scratch Card Discount (e.g. 10%)" value="10%">
                 
                 <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">GST Percentage on Total (%):</label>
                 <input type="number" id="gst-percent-input" placeholder="GST % (e.g. 5)" value="5">
             </div>
 
-            <button class="btn" onclick="saveBannerSettings()" style="margin-top: 20px;">Save Settings & Automation Rules</button>
+            <button class="btn" onclick="saveBannerSettings()" style="margin-top: 20px;">Save Independent Banners & Automation Rules</button>
         </div>
 
         <!-- Live Orders Management -->
         <div class="section">
-            <h2>Live Client Orders & Custom Fittings</h2>
+            <h2>Live Client Orders & Shiprocket Fulfillment</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Client</th>
                         <th>Contact / Address</th>
                         <th>Garment & Bill Breakdown</th>
-                        <th>Status & Actions</th>
+                        <th>Status & Shiprocket Action</th>
                     </tr>
                 </thead>
                 <tbody id="orders-table-body">
@@ -243,12 +243,12 @@
             const globalDiscount = document.getElementById('global-default-discount').value || "10%";
             const gstPercent = document.getElementById('gst-percent-input').value || "5";
 
-            let defaultBannerUrl = "";
+            let heroBannerUrl = "";
             let regularBannerUrl = "";
             let saleBannerUrl = "";
 
-            const defFile = document.getElementById('default-banner-file').files[0];
-            if(defFile) defaultBannerUrl = await convertFileToBase64(defFile);
+            const heroFile = document.getElementById('hero-banner-file').files[0];
+            if(heroFile) heroBannerUrl = await convertFileToBase64(heroFile);
 
             const regFile = document.getElementById('regular-banner-file').files[0];
             if(regFile) regularBannerUrl = await convertFileToBase64(regFile);
@@ -261,7 +261,7 @@
 
             await db.collection("settings").doc("promotion").set({
                 activeMode: mode,
-                defaultBannerUrl,
+                heroBannerUrl,
                 regularBannerUrl,
                 saleBannerUrl,
                 timerActive,
@@ -271,33 +271,35 @@
                 updatedAt: new Date()
             }, { merge: true });
 
-            alert("Storefront banners, tax rules, and automated scratch card settings updated successfully!");
+            alert("Independent hero/promotional banners, tax rules, and continuous scratch card settings updated successfully!");
         }
 
         async function loadOrders() {
             const snapshot = await db.collection("orders").get();
             const tbody = document.getElementById('orders-table-body');
             if (snapshot.empty) {
-                tbody.innerHTML = "<tr><td colspan='4'>No client orders or inquiries recorded yet.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='4'>No client orders recorded yet.</td></tr>";
                 return;
             }
             tbody.innerHTML = "";
             snapshot.forEach(doc => {
                 const o = doc.data();
                 const b = o.bill || {};
+                let itemsListHtml = o.items ? o.items.map(i => `${i.name} [${i.size}]`).join('<br>') : `${o.dressName} (${o.size})`;
                 tbody.innerHTML += `
                     <tr>
                         <td><b>${o.name}</b><br><small style="color:var(--text-muted);">${o.email}</small></td>
                         <td>${o.phone || 'No phone'}<br><small style="color:var(--text-muted);">${o.address || 'No address'}</small></td>
                         <td>
-                            <b>${o.dressName}</b> (${o.size})<br>
-                            Base: ₹${b.basePrice || 0} | Disc: -₹${b.discountAmount || 0}<br>
+                            <b>${itemsListHtml}</b><br>
+                            Subtotal/Base: ₹${b.baseSubtotal || b.basePrice || 0} | Disc: -₹${b.discountAmount || 0}<br>
                             Delivery: ₹${b.deliveryCharge || 49} | GST: ₹${b.gstAmount || 0}<br>
-                            <b>Total: ₹${b.finalTotal || 0}</b>
+                            <b>Total: ₹${b.finalTotal || 0}</b><br>
+                            <small style="color:var(--accent-gold);">Payment: ${o.paymentId || 'Razorpay Connected'}</small>
                         </td>
                         <td>
                             <span style="display:block; margin-bottom:8px; color:var(--accent-gold); font-size:0.8rem;">Status: ${o.status}</span>
-                            <button class="btn" style="padding:5px 12px; font-size:0.7rem;" onclick="updateOrderStatus('${doc.id}', 'Confirmed')">Confirm</button>
+                            <button class="btn" style="padding:5px 12px; font-size:0.7rem;" onclick="updateOrderStatus('${doc.id}', 'Dispatched via Shiprocket')">Ship via Shiprocket</button>
                             <button class="btn" style="padding:5px 12px; font-size:0.7rem; background:#a94442; color:#fff;" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel</button>
                         </td>
                     </tr>
