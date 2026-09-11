@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivéra Atelier – Luxury Women’s Dresses & Custom Fitting</title>
+    <title>Alivéra Atelier – High Couture & Custom Tailoring</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-obsidian: #050505;
-            --surface-luxury: #0e0e0e;
-            --surface-card: #141414;
-            --border-gold: rgba(197, 168, 128, 0.18);
-            --border-gold-hover: rgba(197, 168, 128, 0.5);
-            --text-main: #f4f4f4;
+            --bg-obsidian: #030303;
+            --surface-luxury: #0a0a0a;
+            --surface-card: #111111;
+            --border-gold: rgba(197, 168, 128, 0.22);
+            --border-gold-hover: rgba(197, 168, 128, 0.6);
+            --text-main: #f8f8f8;
             --text-muted: #888888;
             --accent-gold: #c5a880;
-            --accent-gold-glow: rgba(197, 168, 128, 0.15);
+            --accent-gold-glow: rgba(197, 168, 128, 0.18);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -32,46 +32,44 @@
         }
         h1, h2, h3, .serif-font { font-family: 'Playfair Display', Georgia, serif; }
         
-        /* Modern Floating Luxury Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 24px 6%;
+            padding: 28px 6%;
             border-bottom: 1px solid var(--border-gold);
-            background-color: rgba(5, 5, 5, 0.9);
-            backdrop-filter: blur(12px);
+            background-color: rgba(3, 3, 3, 0.85);
+            backdrop-filter: blur(16px);
             position: sticky;
             top: 0;
             z-index: 100;
         }
         .brand-title {
             font-family: 'Playfair Display', Georgia, serif;
-            font-size: 1.5rem;
-            letter-spacing: 5px;
+            font-size: 1.65rem;
+            letter-spacing: 6px;
             color: var(--accent-gold);
             text-transform: uppercase;
             text-decoration: none;
             font-weight: 400;
         }
-        .nav-actions { display: flex; gap: 14px; align-items: center; }
+        .nav-actions { display: flex; gap: 16px; align-items: center; }
         
-        /* Refined Luxury Buttons */
         .btn {
             background-color: transparent;
             color: var(--accent-gold);
             border: 1px solid var(--border-gold);
-            padding: 10px 24px;
+            padding: 11px 26px;
             cursor: pointer;
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 0.75rem;
-            letter-spacing: 2px;
+            letter-spacing: 2.5px;
             text-transform: uppercase;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            border-radius: 30px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 40px;
             font-weight: 500;
         }
-        .btn:hover { background-color: var(--accent-gold-glow); border-color: var(--accent-gold); color: #fff; transform: translateY(-1px); }
+        .btn:hover { background-color: var(--accent-gold-glow); border-color: var(--accent-gold); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(197,168,128,0.2); }
         .btn-primary { background-color: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
         .btn-primary:hover { background-color: #d8bc94; color: #000; }
         .btn-gold-admin {
@@ -81,45 +79,39 @@
             display: none;
         }
 
-        /* Banner & Countdown */
-        .banner-container { width: 100%; max-height: 450px; overflow: hidden; background: #000; border-bottom: 1px solid var(--border-gold); display: none; }
-        .banner-container img { width: 100%; height: 100%; object-fit: cover; max-height: 450px; display: block; }
-        .countdown-bar { background: #0a0a0a; border-bottom: 1px solid var(--border-gold); text-align: center; padding: 12px; color: var(--accent-gold); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; display: none; }
+        .banner-container { width: 100%; max-height: 480px; overflow: hidden; background: #000; border-bottom: 1px solid var(--border-gold); display: none; }
+        .banner-container img { width: 100%; height: 100%; object-fit: cover; max-height: 480px; display: block; }
+        .countdown-bar { background: #060606; border-bottom: 1px solid var(--border-gold); text-align: center; padding: 14px; color: var(--accent-gold); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; display: none; }
 
-        /* Main Container & Search */
-        .container { max-width: 1400px; margin: 60px auto; padding: 0 40px; flex: 1; width: 100%; }
-        .search-container { position: relative; margin-bottom: 50px; }
-        .search-bar { width: 100%; padding: 16px 24px 16px 50px; background: var(--surface-luxury); border: 1px solid var(--border-gold); color: var(--text-main); font-family: inherit; font-size: 0.9rem; border-radius: 40px; transition: all 0.3s ease; outline: none; }
-        .search-bar:focus { border-color: var(--accent-gold); box-shadow: 0 0 15px rgba(197, 168, 128, 0.1); }
-        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1rem; }
+        .container { max-width: 1440px; margin: 60px auto; padding: 0 40px; flex: 1; width: 100%; }
+        .search-container { position: relative; margin-bottom: 55px; }
+        .search-bar { width: 100%; padding: 18px 24px 18px 54px; background: var(--surface-luxury); border: 1px solid var(--border-gold); color: var(--text-main); font-family: inherit; font-size: 0.95rem; border-radius: 40px; transition: all 0.3s ease; outline: none; }
+        .search-bar:focus { border-color: var(--accent-gold); box-shadow: 0 0 20px rgba(197, 168, 128, 0.15); }
+        .search-icon { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem; }
 
-        /* Product Grid & Cards */
-        .collection-heading { font-size: 2.2rem; font-weight: 300; letter-spacing: 3px; margin-bottom: 40px; color: var(--text-main); border-bottom: 1px solid var(--border-gold); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: baseline; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }
-        .card { background-color: var(--surface-card); border: 1px solid var(--border-gold); border-radius: 4px; overflow: hidden; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-6px); border-color: var(--border-gold-hover); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .product-thumb-container { width: 100%; height: 440px; background: #0c0c0c; overflow: hidden; position: relative; }
-        .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .card:hover .product-thumb-container img { transform: scale(1.03); }
-        .card-content { padding: 28px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
-        .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.35rem; color: var(--text-main); margin-bottom: 8px; font-weight: 400; letter-spacing: 0.5px; }
-        .card-price { font-size: 1.1rem; color: var(--accent-gold); font-weight: 500; margin-bottom: 24px; letter-spacing: 1px; }
+        .collection-heading { font-size: 2.4rem; font-weight: 300; letter-spacing: 4px; margin-bottom: 40px; color: var(--text-main); border-bottom: 1px solid var(--border-gold); padding-bottom: 22px; display: flex; justify-content: space-between; align-items: baseline; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 45px; }
+        .card { background-color: var(--surface-card); border: 1px solid var(--border-gold); border-radius: 6px; overflow: hidden; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-8px); border-color: var(--border-gold-hover); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
+        .product-thumb-container { width: 100%; height: 460px; background: #0c0c0c; overflow: hidden; position: relative; }
+        .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card:hover .product-thumb-container img { transform: scale(1.04); }
+        .card-content { padding: 30px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+        .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; font-weight: 400; letter-spacing: 0.5px; }
+        .card-price { font-size: 1.15rem; color: var(--accent-gold); font-weight: 500; margin-bottom: 26px; letter-spacing: 1.5px; }
 
-        /* Modals */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--surface-luxury); border: 1px solid var(--border-gold); padding: 45px; width: 90%; max-width: 520px; border-radius: 6px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
-        .close-modal { position: absolute; top: 24px; right: 28px; font-size: 1.4rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--surface-luxury); border: 1px solid var(--border-gold); padding: 50px; width: 90%; max-width: 540px; border-radius: 8px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9); }
+        .close-modal { position: absolute; top: 26px; right: 30px; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
         .close-modal:hover { color: var(--accent-gold); }
 
-        /* Account Modal Tabs */
-        .account-tabs { display: flex; gap: 25px; border-bottom: 1px solid var(--border-gold); margin-bottom: 25px; padding-bottom: 2px; }
-        .account-tab-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; padding-bottom: 12px; transition: color 0.3s; }
+        .account-tabs { display: flex; gap: 30px; border-bottom: 1px solid var(--border-gold); margin-bottom: 30px; padding-bottom: 2px; }
+        .account-tab-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600; padding-bottom: 12px; transition: color 0.3s; }
         .account-tab-btn.active { color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); margin-bottom: -1px; }
-        .scratch-card-box { background: linear-gradient(135deg, #181510, #0f0f0f); border: 1px solid var(--border-gold); padding: 20px; margin-top: 15px; border-radius: 6px; text-align: center; }
+        .scratch-card-box { background: linear-gradient(135deg, #16130e, #0a0a0a); border: 1px solid var(--border-gold); padding: 22px; margin-top: 18px; border-radius: 6px; text-align: center; }
 
-        /* Footer */
-        footer { text-align: center; padding: 60px 20px; border-top: 1px solid var(--border-gold); background-color: var(--surface-luxury); font-size: 0.85rem; color: var(--text-muted); margin-top: 120px; }
-        footer p { margin-bottom: 10px; }
+        footer { text-align: center; padding: 70px 20px; border-top: 1px solid var(--border-gold); background-color: var(--surface-luxury); font-size: 0.85rem; color: var(--text-muted); margin-top: 140px; }
+        footer p { margin-bottom: 12px; }
         footer a { color: var(--accent-gold); text-decoration: none; transition: opacity 0.2s; }
         footer a:hover { opacity: 0.8; }
     </style>
@@ -151,7 +143,7 @@
         
         <div class="collection-heading">
             <h3>The Master Collection</h3>
-            <span id="collection-count" style="font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1px;"></span>
+            <span id="collection-count" style="font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1.5px;"></span>
         </div>
         <div id="product-grid" class="grid">
             <p style="color: var(--text-muted); font-style: italic;">Curating exquisite pieces...</p>
@@ -162,28 +154,28 @@
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h3 style="color: var(--accent-gold); margin-bottom: 8px; font-size: 1.6rem; font-weight: 400;">Client Portal</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 30px;">Authenticate to access custom orders and rewards.</p>
-            <button class="btn btn-primary" style="width: 100%; margin-bottom: 20px; padding: 14px; border-radius: 30px;" onclick="googleSignIn()">Continue with Google</button>
-            <div style="display: flex; align-items: center; text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.75rem;">
+            <h3 style="color: var(--accent-gold); margin-bottom: 10px; font-size: 1.8rem; font-weight: 400; font-family: 'Playfair Display', serif;">Client Portal</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 35px; line-height: 1.5;">Authenticate to access custom orders and private rewards.</p>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 22px; padding: 15px; border-radius: 40px;" onclick="googleSignIn()">Continue with Google</button>
+            <div style="display: flex; align-items: center; text-align: center; color: var(--text-muted); margin-bottom: 22px; font-size: 0.75rem;">
                 <div style="flex: 1; border-bottom: 1px solid var(--border-gold);"></div>
-                <span style="padding: 0 15px; text-transform: uppercase; letter-spacing: 2px;">Or secure email</span>
+                <span style="padding: 0 16px; text-transform: uppercase; letter-spacing: 2px;">Or secure email</span>
                 <div style="flex: 1; border-bottom: 1px solid var(--border-gold);"></div>
             </div>
-            <input type="email" id="email-input" placeholder="Email Address" class="search-bar" style="margin-bottom: 15px; border-radius: 4px; padding: 14px 20px;">
-            <input type="password" id="pass-input" placeholder="Password" class="search-bar" style="margin-bottom: 25px; border-radius: 4px; padding: 14px 20px;">
-            <button class="btn" style="width: 100%; padding: 14px; border-radius: 30px;" onclick="emailAuth()">Sign In / Register</button>
+            <input type="email" id="auth-email" placeholder="Email Address" class="search-bar" style="margin-bottom: 15px; border-radius: 6px; padding: 15px 22px; text-indent: 0px;" autocomplete="email">
+            <input type="password" id="auth-pass" placeholder="Password" class="search-bar" style="margin-bottom: 30px; border-radius: 6px; padding: 15px 22px; text-indent: 0px;" autocomplete="current-password">
+            <button class="btn" style="width: 100%; padding: 15px; border-radius: 40px;" onclick="emailAuth()">Sign In / Register</button>
         </div>
     </div>
 
     <!-- My Account Modal -->
     <div id="account-modal" class="modal">
-        <div class="modal-content" style="max-width: 650px;">
+        <div class="modal-content" style="max-width: 680px;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
-            <div style="display: flex; align-items: center; gap: 22px; margin-bottom: 30px;">
-                <div id="user-avatar-container" style="width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--accent-gold); overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--accent-gold); font-family: 'Playfair Display', serif;"></div>
+            <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 35px;">
+                <div id="user-avatar-container" style="width: 68px; height: 68px; border-radius: 50%; border: 1px solid var(--accent-gold); overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--accent-gold); font-family: 'Playfair Display', serif;"></div>
                 <div>
-                    <h3 id="account-display-name" style="color: var(--accent-gold); font-size: 1.4rem; font-weight: 400; margin-bottom: 4px;">Client</h3>
+                    <h3 id="account-display-name" style="color: var(--accent-gold); font-size: 1.5rem; font-weight: 400; margin-bottom: 4px;">Client</h3>
                     <p id="account-display-email" style="font-size: 0.85rem; color: var(--text-muted);"></p>
                 </div>
             </div>
@@ -193,15 +185,15 @@
                 <button class="account-tab-btn" onclick="switchAccountTab('scratchcards')">Golden Scratch Cards</button>
                 <button class="account-tab-btn" onclick="switchAccountTab('viewed')">Recently Viewed</button>
             </div>
-            <div id="account-tab-content" style="min-height: 220px; font-size: 0.9rem; color: var(--text-muted);"></div>
-            <button class="btn" style="margin-top: 30px; width: 100%; border-color: #a94442; color: #e57373;" onclick="firebase.auth().signOut(); closeModals();">Sign Out</button>
+            <div id="account-tab-content" style="min-height: 240px; font-size: 0.9rem; color: var(--text-muted);"></div>
+            <button class="btn" style="margin-top: 35px; width: 100%; border-color: rgba(229,115,115,0.4); color: #e57373;" onclick="firebase.auth().signOut(); closeModals();">Sign Out</button>
         </div>
     </div>
 
     <footer>
-        <p style="font-family: 'Playfair Display', Georgia, serif; font-size: 1.2rem; color: var(--accent-gold); margin-bottom: 12px; font-weight: 300; letter-spacing: 1px;">Beautiful. The way you are...</p>
+        <p style="font-family: 'Playfair Display', Georgia, serif; font-size: 1.3rem; color: var(--accent-gold); margin-bottom: 14px; font-weight: 300; letter-spacing: 1.5px;">Beautiful. The way you are...</p>
         <p>&copy; 2026 Alivéra Atelier &bull; All Rights Reserved</p>
-        <p style="margin-top: 8px;">Contact: <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a> &bull; Instagram: <a href="https://instagram.com/aliveraatelier" target="_blank">@aliveraatelier</a></p>
+        <p style="margin-top: 10px;">Contact: <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a> &bull; Instagram: <a href="https://instagram.com/aliveraatelier" target="_blank">@aliveraatelier</a></p>
     </footer>
 
     <script>
@@ -231,8 +223,8 @@
         }
 
         async function emailAuth() {
-            const email = document.getElementById('email-input').value;
-            const pass = document.getElementById('pass-input').value;
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
             if(!email || !pass) { alert("Please provide email and password."); return; }
             try {
                 await auth.signInWithEmailAndPassword(email, pass);
@@ -329,9 +321,9 @@
                     <div class="card-content">
                         <div>
                             <div class="card-title">${d.name}</div>
-                            <div class="card-price">₹${d.price.toLocaleString('en-IN')}</div>
+                            <div class="card-price">₹${Number(d.price).toLocaleString('en-IN')}</div>
                         </div>
-                        <button class="btn btn-primary" style="width:100%; text-align:center; padding: 12px;" onclick="openInquireModal('${d.id}', '${d.name}', ${d.price})">Inquire / Custom Order</button>
+                        <button class="btn btn-primary" style="width:100%; text-align:center; padding: 13px;" onclick="openInquireModal('${d.id}', '${d.name}', ${d.price})">Inquire / Custom Order</button>
                     </div>
                 </div>
             `).join('');
@@ -438,7 +430,7 @@
 
             if (tab === 'profile') {
                 content.innerHTML = `
-                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
                         <p><b>Full Name:</b> ${data.name || 'Not provided'}</p>
                         <p><b>Phone Numbers:</b> ${data.phone || 'Not provided'}</p>
                         <p><b>Delivery Addresses:</b> ${data.address || 'Not provided'}</p>
@@ -452,10 +444,10 @@
                 const cards = data.scratchCards || [];
                 content.innerHTML = cards.length === 0 ? "<p>No Alivéra Golden Scratch Cards issued yet. Place an order to unlock one!</p>" : cards.map((sc, idx) => `
                     <div class="scratch-card-box">
-                        <p style="color: var(--accent-gold); font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 5px;">Alivéra Golden Scratch Card</p>
+                        <p style="color: var(--accent-gold); font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 6px;">Alivéra Golden Scratch Card</p>
                         <p style="font-size: 0.8rem; margin-bottom: 8px;">Exclusive Discount: <b>${sc.discount}</b></p>
                         <p style="font-size: 0.85rem; letter-spacing: 2px; color: #fff;">Code: <b>${sc.opened ? sc.code : '••••••••'}</b></p>
-                        ${!sc.opened ? `<button class="btn btn-primary" style="margin-top:12px; font-size:0.7rem; padding:8px 20px;" onclick="revealScratchCard(${idx})">Scratch & Reveal</button>` : '<span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:8px;">Unlocked</span>'}
+                        ${!sc.opened ? `<button class="btn btn-primary" style="margin-top:14px; font-size:0.7rem; padding:8px 22px;" onclick="revealScratchCard(${idx})">Scratch & Reveal</button>` : '<span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:8px;">Unlocked</span>'}
                     </div>
                 `).join('');
             } else if (tab === 'viewed') {
@@ -488,6 +480,7 @@
             }
         }
 
+        window.addEventListener("pageshow", loadStorefrontData);
         document.addEventListener("DOMContentLoaded", loadStorefrontData);
     </script>
 </body>
