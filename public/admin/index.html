@@ -60,14 +60,19 @@
             <button class="btn" style="margin-top: 10px;" onclick="uploadDress()">Publish Garment Live to Storefront</button>
         </div>
 
-        <!-- Banners & Sale Control Section -->
+        <!-- Banners, Tax & Scratch Card Automation Settings -->
         <div class="section">
-            <h2>Banners & Sale Controls (1897 x 412 Resolution)</h2>
+            <h2>Storefront Banners, Taxes & Automated Scratch Cards</h2>
             <select id="active-banner-mode" onchange="toggleBannerInputs()">
-                <option value="none">Default Hero Banner ("Beautiful. The way you are...")</option>
+                <option value="none">Default Hero Banner (Image)</option>
                 <option value="regular">Regular Day Custom Banner</option>
                 <option value="sale">Active Sale Promotional Banner</option>
             </select>
+
+            <div id="default-banner-box" style="margin-top:15px;">
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Default Hero Banner Image File (No Text / Pure Image):</label>
+                <input type="file" id="default-banner-file" accept="image/*">
+            </div>
 
             <div id="regular-banner-box" style="display:none; margin-top:15px;">
                 <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Regular Banner Image File (1897 x 412):</label>
@@ -78,12 +83,6 @@
                 <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Sale Promotional Banner File (1897 x 412):</label>
                 <input type="file" id="sale-banner-file" accept="image/*">
                 
-                <select id="sale-type" style="margin-top: 15px;">
-                    <option value="first_x">First X People Discount</option>
-                    <option value="date_range">Date & Time Range Sale</option>
-                </select>
-                <input type="text" id="sale-limit-value" placeholder="Limit specification (e.g. First 10 customers)">
-                
                 <select id="timer-active-select" style="margin-top: 15px;">
                     <option value="yes">Show Countdown Timer on Bar</option>
                     <option value="no">Hide Timer (Show Banner Only)</option>
@@ -91,8 +90,15 @@
                 <input type="text" id="timer-text-val" placeholder="Timer Text (e.g. 23:59:59)" value="24:00:00">
             </div>
 
-            <input type="text" id="global-default-discount" placeholder="Default Scratch Card Discount for New Customers (e.g. 10%)" style="margin-top: 20px;">
-            <button class="btn" onclick="saveBannerSettings()">Save & Update Storefront Banner Settings</button>
+            <div style="margin-top: 25px; border-top: 1px solid var(--border-gold); padding-top: 20px;">
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Automatic Scratch Card Discount for New Orders (e.g. 10%, 15%):</label>
+                <input type="text" id="global-default-discount" placeholder="Scratch Card Discount Amount (e.g. 10%)">
+                
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">GST Percentage on Total (%):</label>
+                <input type="number" id="gst-percent-input" placeholder="GST % (e.g. 5)" value="5">
+            </div>
+
+            <button class="btn" onclick="saveBannerSettings()" style="margin-top: 15px;">Save Settings & Automation Rules</button>
         </div>
 
         <!-- Live Orders Management -->
@@ -103,7 +109,7 @@
                     <tr>
                         <th>Client</th>
                         <th>Contact / Address</th>
-                        <th>Garment & Custom Specs</th>
+                        <th>Garment & Bill Breakdown</th>
                         <th>Status & Actions</th>
                     </tr>
                 </thead>
@@ -111,15 +117,6 @@
                     <tr><td colspan="4">Loading live customer orders...</td></tr>
                 </tbody>
             </table>
-        </div>
-
-        <!-- Scratch Card Issuer -->
-        <div class="section">
-            <h2>Issue Alivéra Golden Scratch Card</h2>
-            <input type="text" id="scratch-code" placeholder="Unique Scratch Code (e.g. ALIVERA-VIP-20)">
-            <input type="text" id="scratch-discount" placeholder="Discount Percentage (e.g. 15%)">
-            <input type="email" id="target-user-email" placeholder="Customer Account Email">
-            <button class="btn" onclick="issueScratchCard()">Grant Scratch Card to Client Account</button>
         </div>
     </div>
 
@@ -178,7 +175,7 @@
 
             await db.collection("atelier_dresses").add({
                 name,
-                price,
+                price: Number(price),
                 imageUrl,
                 sizeChart,
                 createdAt: new Date()
@@ -191,9 +188,14 @@
         async function saveBannerSettings() {
             const mode = document.getElementById('active-banner-mode').value;
             const globalDiscount = document.getElementById('global-default-discount').value || "10%";
-            
+            const gstPercent = document.getElementById('gst-percent-input').value || "5";
+
+            let defaultBannerUrl = "";
             let regularBannerUrl = "";
             let saleBannerUrl = "";
+
+            const defFile = document.getElementById('default-banner-file').files[0];
+            if(defFile) defaultBannerUrl = await convertFileToBase64(defFile);
 
             const regFile = document.getElementById('regular-banner-file').files[0];
             if(regFile) regularBannerUrl = await convertFileToBase64(regFile);
@@ -201,24 +203,22 @@
             const saleFile = document.getElementById('sale-banner-file').files[0];
             if(saleFile) saleBannerUrl = await convertFileToBase64(saleFile);
 
-            const saleType = document.getElementById('sale-type').value;
-            const saleLimit = document.getElementById('sale-limit-value').value;
             const timerActive = document.getElementById('timer-active-select').value === 'yes';
             const timerText = document.getElementById('timer-text-val').value;
 
             await db.collection("settings").doc("promotion").set({
                 activeMode: mode,
+                defaultBannerUrl,
                 regularBannerUrl,
                 saleBannerUrl,
-                saleType,
-                saleLimit,
                 timerActive,
                 timerText,
                 globalDiscount,
+                gstPercent,
                 updatedAt: new Date()
             }, { merge: true });
 
-            alert("Storefront banners and sale parameters successfully updated!");
+            alert("Storefront banners, tax rules, and automated scratch card settings updated successfully!");
         }
 
         async function loadOrders() {
@@ -231,11 +231,17 @@
             tbody.innerHTML = "";
             snapshot.forEach(doc => {
                 const o = doc.data();
+                const b = o.bill || {};
                 tbody.innerHTML += `
                     <tr>
                         <td><b>${o.name}</b><br><small style="color:var(--text-muted);">${o.email}</small></td>
                         <td>${o.phone || 'No phone'}<br><small style="color:var(--text-muted);">${o.address || 'No address'}</small></td>
-                        <td><b>${o.dressName}</b><br>Size/Specs: ${o.size}<br>Notes: ${o.notes}</td>
+                        <td>
+                            <b>${o.dressName}</b> (${o.size})<br>
+                            Base: ₹${b.basePrice || 0} | Disc: -₹${b.discountAmount || 0}<br>
+                            Delivery: ₹${b.deliveryCharge || 49} | GST: ₹${b.gstAmount || 0}<br>
+                            <b>Total: ₹${b.finalTotal || 0}</b>
+                        </td>
                         <td>
                             <span style="display:block; margin-bottom:8px; color:var(--accent-gold); font-size:0.8rem;">Status: ${o.status}</span>
                             <button class="btn" style="padding:4px 10px; font-size:0.7rem;" onclick="updateOrderStatus('${doc.id}', 'Confirmed')">Confirm</button>
@@ -250,31 +256,6 @@
             await db.collection("orders").doc(id).update({ status });
             alert(`Order status updated to ${status}`);
             loadOrders();
-        }
-
-        async function issueScratchCard() {
-            const code = document.getElementById('scratch-code').value;
-            const discount = document.getElementById('scratch-discount').value;
-            const email = document.getElementById('target-user-email').value;
-
-            if(!code || !discount || !email) {
-                alert("Please fill all fields to issue a scratch card.");
-                return;
-            }
-
-            const usersRef = db.collection("users");
-            const q = await usersRef.where("email", "==", email).get();
-            if(q.empty) {
-                alert("No user account found with that email address.");
-                return;
-            }
-
-            const userDoc = q.docs[0];
-            await userDoc.ref.update({
-                scratchCards: firebase.firestore.FieldValue.arrayUnion({ code, discount, opened: false })
-            });
-
-            alert("Alivéra Golden Scratch Card successfully issued to the customer account!");
         }
     </script>
 </body>
