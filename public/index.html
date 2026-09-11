@@ -106,16 +106,13 @@
             justify-content: center;
         }
 
-        /* Banner positioned at the absolute top right under header */
         .banner-container { width: 100%; aspect-ratio: 1897 / 412; max-height: 412px; overflow: hidden; background: #000; border-bottom: 1px solid var(--border-gold); display: none; }
         .banner-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .countdown-bar { background: #060606; border-bottom: 1px solid var(--border-gold); text-align: center; padding: 14px; color: var(--accent-gold); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; display: none; }
 
         .container { max-width: 1440px; margin: 60px auto; padding: 0 40px; flex: 1; width: 100%; }
-        .search-container { position: relative; margin-bottom: 55px; }
-        .search-bar { width: 100%; padding: 18px 24px 18px 54px; background: var(--surface-luxury); border: 1px solid var(--border-gold); color: var(--text-main); font-family: inherit; font-size: 0.95rem; border-radius: 40px; outline: none; }
-        .search-bar:focus { border-color: var(--accent-gold); box-shadow: 0 0 20px rgba(197, 168, 128, 0.15); }
-        .search-icon { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem; }
+        .input-field { width: 100%; padding: 15px 22px; background: var(--surface-luxury); border: 1px solid var(--border-gold); color: var(--text-main); font-family: inherit; font-size: 0.95rem; border-radius: 6px; outline: none; transition: border-color 0.3s; }
+        .input-field:focus { border-color: var(--accent-gold); box-shadow: 0 0 20px rgba(197, 168, 128, 0.15); }
 
         .collection-heading { font-size: 2.4rem; font-weight: 300; letter-spacing: 4px; margin-bottom: 40px; color: var(--text-main); border-bottom: 1px solid var(--border-gold); padding-bottom: 22px; display: flex; justify-content: space-between; align-items: baseline; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 45px; }
@@ -166,7 +163,7 @@
         </div>
     </header>
 
-    <!-- Promotional / Hero Banner at the very top -->
+    <!-- Promotional / Hero Banner directly at the top -->
     <div id="countdown-bar" class="countdown-bar">Limited Collection Sale Commences In: <span id="timer-text">--:--:--</span></div>
     <div id="banner-wrapper" class="banner-container">
         <img id="active-banner-img" src="" alt="Alivéra Atelier Banner">
@@ -191,13 +188,7 @@
     </div>
 
     <div class="container">
-        <!-- Search bar completely isolated with no email autofill risk -->
-        <div class="search-container">
-            <span class="search-icon">&#128269;</span>
-            <input type="search" id="store-search-query-input" name="atelier_search_field" class="search-bar" placeholder="Explore dresses by title or aesthetic..." oninput="filterDresses()" autocomplete="off" autocapitalize="off">
-        </div>
-        
-        <div class="collection-heading">
+        <div class="collection-heading" style="margin-top: 10px;">
             <h3>The Master Collection</h3>
             <span id="collection-count" style="font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1.5px;"></span>
         </div>
@@ -216,7 +207,7 @@
         </div>
     </div>
 
-    <!-- Auth Modal -->
+    <!-- Auth Modal with masked password -->
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
@@ -228,8 +219,8 @@
                 <span style="padding: 0 16px; text-transform: uppercase; letter-spacing: 2px;">Or secure email</span>
                 <div style="flex: 1; border-bottom: 1px solid var(--border-gold);"></div>
             </div>
-            <input type="email" id="auth-email-input" placeholder="Email Address" class="search-bar" style="margin-bottom: 15px; border-radius: 6px; padding: 15px 22px; text-indent: 0px;" autocomplete="email">
-            <input type="password" id="auth-pass" placeholder="Password" class="search-bar" style="margin-bottom: 30px; border-radius: 6px; padding: 15px 22px; text-indent: 0px;" autocomplete="current-password">
+            <input type="email" id="auth-email-input" placeholder="Email Address" class="input-field" style="margin-bottom: 15px;" autocomplete="email">
+            <input type="password" id="auth-pass" placeholder="Password" class="input-field" style="margin-bottom: 30px;" autocomplete="current-password">
             <button class="btn" style="width: 100%; padding: 15px; border-radius: 40px;" onclick="emailAuth()">Sign In / Register</button>
         </div>
     </div>
@@ -431,12 +422,6 @@
                     </div>
                 </div>
             `).join('');
-        }
-
-        function filterDresses() {
-            const query = document.getElementById('store-search-query-input').value.toLowerCase();
-            const filtered = allDresses.filter(d => d.name && d.name.toLowerCase().includes(query));
-            renderGrid(filtered);
         }
 
         function openSizeChart(chartUrl) {
