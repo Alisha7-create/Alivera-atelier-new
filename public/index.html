@@ -65,13 +65,13 @@
             font-size: 0.75rem;
             letter-spacing: 2.5px;
             text-transform: uppercase;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s ease;
             border-radius: 40px;
             font-weight: 500;
             position: relative;
             z-index: 10;
         }
-        .btn:hover { background-color: var(--accent-gold-glow); border-color: var(--accent-gold); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(197,168,128,0.2); }
+        .btn:hover { background-color: var(--accent-gold-glow); border-color: var(--accent-gold); color: #fff; transform: translateY(-2px); }
         .btn-primary { background-color: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
         .btn-primary:hover { background-color: #d8bc94; color: #000; }
         .btn-gold-admin { background: linear-gradient(135deg, #d8bc94, #c5a880); color: #000; border: none; display: none; }
@@ -114,41 +114,38 @@
 
         .container { max-width: 1440px; margin: 60px auto; padding: 0 40px; flex: 1; width: 100%; }
         .search-container { position: relative; margin-bottom: 55px; }
-        .search-bar { width: 100%; padding: 18px 24px 18px 54px; background: var(--surface-luxury); border: 1px solid var(--border-gold); color: var(--text-main); font-family: inherit; font-size: 0.95rem; border-radius: 40px; transition: all 0.3s ease; outline: none; }
+        .search-bar { width: 100%; padding: 18px 24px 18px 54px; background: var(--surface-luxury); border: 1px solid var(--border-gold); color: var(--text-main); font-family: inherit; font-size: 0.95rem; border-radius: 40px; outline: none; }
         .search-bar:focus { border-color: var(--accent-gold); box-shadow: 0 0 20px rgba(197, 168, 128, 0.15); }
         .search-icon { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem; }
 
         .collection-heading { font-size: 2.4rem; font-weight: 300; letter-spacing: 4px; margin-bottom: 40px; color: var(--text-main); border-bottom: 1px solid var(--border-gold); padding-bottom: 22px; display: flex; justify-content: space-between; align-items: baseline; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 45px; }
-        .card { background-color: var(--surface-card); border: 1px solid var(--border-gold); border-radius: 6px; overflow: hidden; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-8px); border-color: var(--border-gold-hover); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
+        .card { background-color: var(--surface-card); border: 1px solid var(--border-gold); border-radius: 6px; overflow: hidden; transition: transform 0.3s ease; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-6px); border-color: var(--border-gold-hover); }
         .product-thumb-container { width: 100%; height: 460px; background: #0c0c0c; overflow: hidden; position: relative; }
-        .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
-        .card:hover .product-thumb-container img { transform: scale(1.04); }
+        .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; }
         .card-content { padding: 30px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
-        .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; font-weight: 400; letter-spacing: 0.5px; }
-        .card-price { font-size: 1.15rem; color: var(--accent-gold); font-weight: 500; margin-bottom: 20px; letter-spacing: 1.5px; }
+        .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; font-weight: 400; }
+        .card-price { font-size: 1.15rem; color: var(--accent-gold); font-weight: 500; margin-bottom: 20px; }
 
         .select-size { width: 100%; padding: 12px 16px; background: #000; border: 1px solid var(--border-gold); color: #fff; border-radius: 4px; font-family: inherit; font-size: 0.85rem; margin-bottom: 15px; outline: none; position: relative; z-index: 5; }
         .select-size:focus { border-color: var(--accent-gold); }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--surface-luxury); border: 1px solid var(--border-gold); padding: 50px; width: 90%; max-width: 580px; border-radius: 8px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.9); }
-        .close-modal { position: absolute; top: 26px; right: 30px; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
+        .modal-content { background: var(--surface-luxury); border: 1px solid var(--border-gold); padding: 50px; width: 90%; max-width: 580px; border-radius: 8px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 26px; right: 30px; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
         .close-modal:hover { color: var(--accent-gold); }
 
-        /* Cart Drawer */
-        #cart-drawer { position: fixed; right: -480px; top: 0; width: 460px; height: 100%; background: var(--surface-luxury); border-left: 1px solid var(--border-gold); z-index: 1100; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; padding: 40px; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
+        #cart-drawer { position: fixed; right: -480px; top: 0; width: 460px; height: 100%; background: var(--surface-luxury); border-left: 1px solid var(--border-gold); z-index: 1100; transition: right 0.3s ease; display: flex; flex-direction: column; padding: 40px; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
         #cart-drawer.open { right: 0; }
 
         .account-tabs { display: flex; gap: 30px; border-bottom: 1px solid var(--border-gold); margin-bottom: 30px; padding-bottom: 2px; }
-        .account-tab-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600; padding-bottom: 12px; transition: color 0.3s; }
+        .account-tab-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600; padding-bottom: 12px; }
         .account-tab-btn.active { color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); margin-bottom: -1px; }
 
         footer { text-align: center; padding: 70px 20px; border-top: 1px solid var(--border-gold); background-color: var(--surface-luxury); font-size: 0.85rem; color: var(--text-muted); margin-top: 140px; }
         footer p { margin-bottom: 12px; }
-        footer a { color: var(--accent-gold); text-decoration: none; transition: opacity 0.2s; }
-        footer a:hover { opacity: 0.8; }
+        footer a { color: var(--accent-gold); text-decoration: none; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -196,7 +193,7 @@
     <div class="container">
         <div class="search-container">
             <span class="search-icon">&#128269;</span>
-            <input type="text" id="search-input" class="search-bar" placeholder="Explore dresses by title or aesthetic..." oninput="filterDresses()">
+            <input type="text" id="search-input" class="search-bar" placeholder="Explore dresses by title or aesthetic..." oninput="filterDresses()" autocomplete="off">
         </div>
         
         <div class="collection-heading">
