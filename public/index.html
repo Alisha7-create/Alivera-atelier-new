@@ -68,6 +68,8 @@
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             border-radius: 40px;
             font-weight: 500;
+            position: relative;
+            z-index: 10;
         }
         .btn:hover { background-color: var(--accent-gold-glow); border-color: var(--accent-gold); color: #fff; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(197,168,128,0.2); }
         .btn-primary { background-color: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
@@ -86,6 +88,7 @@
             justify-content: center;
             cursor: pointer;
             position: relative;
+            z-index: 10;
             transition: all 0.3s ease;
         }
         .cart-icon-btn:hover { border-color: var(--accent-gold); background: var(--accent-gold-glow); }
@@ -126,7 +129,7 @@
         .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; font-weight: 400; letter-spacing: 0.5px; }
         .card-price { font-size: 1.15rem; color: var(--accent-gold); font-weight: 500; margin-bottom: 20px; letter-spacing: 1.5px; }
 
-        .select-size { width: 100%; padding: 12px 16px; background: #000; border: 1px solid var(--border-gold); color: #fff; border-radius: 4px; font-family: inherit; font-size: 0.85rem; margin-bottom: 15px; outline: none; }
+        .select-size { width: 100%; padding: 12px 16px; background: #000; border: 1px solid var(--border-gold); color: #fff; border-radius: 4px; font-family: inherit; font-size: 0.85rem; margin-bottom: 15px; outline: none; position: relative; z-index: 5; }
         .select-size:focus { border-color: var(--accent-gold); }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
@@ -141,7 +144,6 @@
         .account-tabs { display: flex; gap: 30px; border-bottom: 1px solid var(--border-gold); margin-bottom: 30px; padding-bottom: 2px; }
         .account-tab-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600; padding-bottom: 12px; transition: color 0.3s; }
         .account-tab-btn.active { color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); margin-bottom: -1px; }
-        .scratch-card-box { background: linear-gradient(135deg, #16130e, #0a0a0a); border: 1px solid var(--border-gold); padding: 22px; margin-top: 18px; border-radius: 6px; text-align: center; }
 
         footer { text-align: center; padding: 70px 20px; border-top: 1px solid var(--border-gold); background-color: var(--surface-luxury); font-size: 0.85rem; color: var(--text-muted); margin-top: 140px; }
         footer p { margin-bottom: 12px; }
@@ -248,7 +250,6 @@
             <div class="account-tabs">
                 <button class="account-tab-btn active" onclick="switchAccountTab('profile')">Profile & Details</button>
                 <button class="account-tab-btn" onclick="switchAccountTab('wishlist')">Wishlist</button>
-                <button class="account-tab-btn" onclick="switchAccountTab('scratchcards')">Golden Scratch Cards</button>
                 <button class="account-tab-btn" onclick="switchAccountTab('viewed')">Recently Viewed</button>
             </div>
             <div id="account-tab-content" style="min-height: 240px; font-size: 0.9rem; color: var(--text-muted);"></div>
@@ -331,8 +332,7 @@
                         phone: '',
                         address: '',
                         wishlist: [],
-                        recentlyViewed: [],
-                        scratchCards: [{ code: 'ALIVERA-WELCOME-10', discount: '10%', opened: true }]
+                        recentlyViewed: []
                     }, { merge: true });
                 }
             } else {
@@ -357,15 +357,33 @@
                     const countdownBar = document.getElementById('countdown-bar');
 
                     let activeImg = p.heroBannerUrl || "";
-                    if (p.activeMode === 'sale' && p.saleBannerUrl) {
-                        activeImg = p.saleBannerUrl;
-                        if (p.timerActive) {
-                            countdownBar.style.display = 'block';
-                            document.getElementById('timer-text').textContent = p.timerText || "24:00:00";
+                    let isSaleActive = false;
+
+                    if (p.activeMode === 'sale-firstcome') {
+                        const totalOrdersSnap = await db.collection("orders").get();
+                        const orderCount = totalOrdersSnap.size;
+                        const maxPeople = parseInt(p.saleLimitPeople) || 10;
+                        if (orderCount < maxPeople) {
+                            activeImg = p.saleBannerUrl || p.heroBannerUrl;
+                            isSaleActive = true;
                         }
-                    } else if (p.activeMode === 'regular' && p.regularBannerUrl) {
-                        activeImg = p.regularBannerUrl;
+                    } else if (p.activeMode === 'sale-dates') {
+                        const now = new Date();
+                        const startDate = p.saleStartDate ? new Date(p.saleStartDate) : null;
+                        const endDate = p.saleEndDate ? new Date(p.saleEndDate) : null;
+                        if ((!startDate || now >= startDate) && (!endDate || now <= endDate)) {
+                            activeImg = p.saleBannerUrl || p.heroBannerUrl;
+                            isSaleActive = true;
+                            if (p.timerActive) {
+                                countdownBar.style.display = 'block';
+                                document.getElementById('timer-text').textContent = p.timerText || "24:00:00";
+                            }
+                        }
+                    }
+
+                    if (!isSaleActive) {
                         countdownBar.style.display = 'none';
+                        activeImg = p.heroBannerUrl || "";
                     }
 
                     if (activeImg) {
@@ -513,8 +531,6 @@
             const user = auth.currentUser;
             if(!user) { openAuthModal(); return; }
 
-            const promoCodeInput = prompt("Enter Promo Code / Scratch Card Code if you have one (or leave blank to use default 10% welcome discount for first orders):", "ALIVERA-WELCOME-10") || "ALIVERA-WELCOME-10";
-
             const userRef = db.collection("users").doc(user.uid);
             for(const item of itemsList) {
                 await userRef.update({
@@ -525,31 +541,43 @@
             const uData = userDoc.data();
 
             let baseSubtotal = itemsList.reduce((sum, item) => sum + item.price, 0);
+            
+            // Check active sale discount
             let discountAmount = 0;
             let appliedDiscountText = "None";
+            const settingsSnap = await db.collection("settings").doc("promotion").get();
+            if (settingsSnap.exists) {
+                const sData = settingsSnap.data();
+                let applySale = false;
+                if (sData.activeMode === 'sale-firstcome') {
+                    const totalOrdersSnap = await db.collection("orders").get();
+                    if (totalOrdersSnap.size < (parseInt(sData.saleLimitPeople) || 10)) applySale = true;
+                } else if (sData.activeMode === 'sale-dates') {
+                    const now = new Date();
+                    const startDate = sData.saleStartDate ? new Date(sData.saleStartDate) : null;
+                    const endDate = sData.saleEndDate ? new Date(sData.saleEndDate) : null;
+                    if ((!startDate || now >= startDate) && (!endDate || now <= endDate)) applySale = true;
+                }
 
-            const scratchCards = uData.scratchCards || [];
-            const foundCard = scratchCards.find(sc => sc.code.trim().toUpperCase() === promoCodeInput.trim().toUpperCase());
-            
-            if (foundCard) {
-                let discNum = parseFloat(foundCard.discount) || 10;
-                discountAmount = (baseSubtotal * discNum) / 100;
-                appliedDiscountText = `${foundCard.discount} (Code: ${foundCard.code})`;
-            } else {
-                discountAmount = (baseSubtotal * 10) / 100;
-                appliedDiscountText = "10% (Default Welcome Discount)";
+                if (applySale && sData.saleDiscountPercent) {
+                    let discNum = parseFloat(sData.saleDiscountPercent) || 0;
+                    discountAmount = (baseSubtotal * discNum) / 100;
+                    appliedDiscountText = `${sData.saleDiscountPercent}% Sale Discount`;
+                }
             }
 
             const discountedSubtotal = baseSubtotal - discountAmount;
             const deliveryCharge = 49;
             
-            const settingsSnap = await db.collection("settings").doc("promotion").get();
+            // Indian Legal GST Calculation (Standard 5% or 12% split into CGST & SGST or IGST)
             const gstRate = settingsSnap.exists ? (parseFloat(settingsSnap.data().gstPercent) || 5) : 5;
             const gstAmount = (discountedSubtotal * gstRate) / 100;
+            const cgst = gstAmount / 2;
+            const sgst = gstAmount / 2;
             const finalTotal = Math.round(discountedSubtotal + deliveryCharge + gstAmount);
 
             let itemsSummaryStr = itemsList.map(i => `${i.name} [Size: ${i.size}]`).join(', ');
-            const confirmOrder = confirm(`--- SECURE CHECKOUT BILL BREAKDOWN ---\nItems: ${itemsSummaryStr}\nBase Subtotal: ₹${baseSubtotal}\nDiscount: -₹${discountAmount.toFixed(2)} [${appliedDiscountText}]\nDelivery Charge: ₹${deliveryCharge}\nGST (${gstRate}%): ₹${gstAmount.toFixed(2)}\n---------------------------\nFinal Total: ₹${finalTotal}\n\nClick OK to proceed securely with Razorpay & Shiprocket fulfillment!`);
+            const confirmOrder = confirm(`--- SECURE CHECKOUT BILL BREAKDOWN ---\nItems: ${itemsSummaryStr}\nBase Subtotal: ₹${baseSubtotal}\nDiscount: -₹${discountAmount.toFixed(2)} [${appliedDiscountText}]\nDelivery Charge: ₹${deliveryCharge}\nCGST (${gstRate/2}%): ₹${cgst.toFixed(2)}\nSGST (${gstRate/2}%): ₹${sgst.toFixed(2)}\n---------------------------\nFinal Total: ₹${finalTotal}\n\nClick OK to proceed securely with Razorpay & Shiprocket fulfillment!`);
 
             if (!confirmOrder) return;
 
@@ -560,11 +588,6 @@
                 "name": "Alivéra Atelier",
                 "description": `Couture Order: ${itemsSummaryStr.substring(0, 50)}...`,
                 "handler": async function (response){
-                    const newCardObj = { code: 'ALIVERA-AI-' + Math.floor(1000 + Math.random() * 9000), discount: '10%', opened: false };
-                    await userRef.update({
-                        scratchCards: firebase.firestore.FieldValue.arrayUnion(newCardObj)
-                    });
-
                     await db.collection("orders").add({
                         userId: user.uid,
                         email: user.email || user.phoneNumber,
@@ -574,7 +597,7 @@
                         items: itemsList,
                         paymentId: response.razorpay_payment_id || "PAY_RAZORPAY_SUCCESS",
                         fulfillment: "Shiprocket Automated Dispatch Linked",
-                        bill: { baseSubtotal, discountAmount, appliedDiscountText, deliveryCharge, gstRate, gstAmount, finalTotal },
+                        bill: { baseSubtotal, discountAmount, appliedDiscountText, deliveryCharge, gstRate, cgst, sgst, finalTotal },
                         status: "Confirmed & Dispatched via Shiprocket",
                         createdAt: new Date()
                     });
@@ -597,10 +620,6 @@
                 rzp1.open();
             } catch(e) {
                 alert("Razorpay gateway connected successfully. Processing payment simulation...");
-                const newCardObj = { code: 'ALIVERA-AI-' + Math.floor(1000 + Math.random() * 9000), discount: '10%', opened: false };
-                await userRef.update({
-                    scratchCards: firebase.firestore.FieldValue.arrayUnion(newCardObj)
-                });
                 await db.collection("orders").add({
                     userId: user.uid,
                     email: user.email || user.phoneNumber,
@@ -610,7 +629,7 @@
                     items: itemsList,
                     paymentId: "SIMULATED_RAZORPAY_SUCCESS",
                     fulfillment: "Shiprocket Automated Dispatch Linked",
-                    bill: { baseSubtotal, discountAmount, appliedDiscountText, deliveryCharge, gstRate, gstAmount, finalTotal },
+                    bill: { baseSubtotal, discountAmount, appliedDiscountText, deliveryCharge, gstRate, cgst, sgst, finalTotal },
                     status: "Confirmed & Dispatched via Shiprocket",
                     createdAt: new Date()
                 });
@@ -648,16 +667,6 @@
             } else if (tab === 'wishlist') {
                 const list = data.wishlist || [];
                 content.innerHTML = list.length === 0 ? "<p>Your wishlist is currently empty.</p>" : list.map(w => `<p>${w.name} - ₹${w.price}</p>`).join('');
-            } else if (tab === 'scratchcards') {
-                const cards = data.scratchCards || [{ code: 'ALIVERA-WELCOME-10', discount: '10%', opened: true }];
-                content.innerHTML = cards.map((sc, idx) => `
-                    <div class="scratch-card-box">
-                        <p style="color: var(--accent-gold); font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 6px;">Alivéra Golden Scratch Card (First Order 10% Default)</p>
-                        <p style="font-size: 0.8rem; margin-bottom: 8px;">Exclusive Discount: <b>${sc.discount}</b></p>
-                        <p style="font-size: 0.85rem; letter-spacing: 2px; color: #fff;">Code: <b>${sc.opened ? sc.code : '••••••••'}</b></p>
-                        ${!sc.opened ? `<button class="btn btn-primary" style="margin-top:14px; font-size:0.7rem; padding:8px 22px;" onclick="revealScratchCard(${idx})">Scratch & Reveal</button>` : '<span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:8px;">Unlocked & Active</span>'}
-                    </div>
-                `).join('');
             } else if (tab === 'viewed') {
                 const viewed = data.recentlyViewed || [];
                 content.innerHTML = viewed.length === 0 ? "<p>No recently viewed garments.</p>" : viewed.slice(-5).reverse().map(v => `<p style="margin-bottom:8px;">${v.name} &bull; ₹${v.price}</p>`).join('');
@@ -665,16 +674,6 @@
         }
 
         function switchAccountTab(tabName) { loadAccountData(tabName); }
-
-        async function revealScratchCard(index) {
-            const user = auth.currentUser;
-            const userRef = db.collection("users").doc(user.uid);
-            const snap = await userRef.get();
-            let cards = snap.data().scratchCards;
-            cards[index].opened = true;
-            await userRef.update({ scratchCards: cards });
-            loadAccountData('scratchcards');
-        }
 
         async function editProfile() {
             const name = prompt("Enter your full name:", "");
