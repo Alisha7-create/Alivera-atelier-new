@@ -4,87 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivéra Atelier | Master Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0b0b;
-            --surface-color: #141414;
-            --border-color: rgba(197, 168, 128, 0.2);
-            --text-main: #f5f5f5;
-            --text-muted: #a0a0a0;
+            --bg-obsidian: #080808;
+            --surface-luxury: #111111;
+            --surface-card: #161616;
+            --border-gold: rgba(197, 168, 128, 0.25);
+            --text-main: #f3f3f3;
+            --text-muted: #999999;
             --accent-gold: #c5a880;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Playfair Display', Georgia, serif; background-color: var(--bg-color); color: var(--text-main); padding: 40px; }
-        h1, h2 { color: var(--accent-gold); margin-bottom: 20px; }
-        .section { background: var(--surface-color); border: 1px solid var(--accent-gold); padding: 30px; margin-bottom: 30px; border-radius: 6px; font-family: 'Segoe UI', sans-serif; }
-        input, select { width: 100%; padding: 10px; margin-bottom: 15px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 4px; }
-        .btn { background: var(--accent-gold); color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 4px; text-transform: uppercase; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-obsidian); color: var(--text-main); padding: 40px 5%; }
+        h1, h2 { font-family: 'Playfair Display', Georgia, serif; color: var(--accent-gold); margin-bottom: 20px; }
+        .section { background: var(--surface-luxury); border: 1px solid var(--border-gold); padding: 35px; margin-bottom: 35px; border-radius: 2px; }
+        input, select { width: 100%; padding: 12px 15px; margin-bottom: 15px; background: #000; border: 1px solid var(--border-gold); color: #fff; border-radius: 2px; font-family: inherit; font-size: 0.9rem; }
+        input[type="file"] { padding: 8px; cursor: pointer; }
+        .btn { background: var(--accent-gold); color: #000; border: none; padding: 11px 22px; font-weight: 600; cursor: pointer; border-radius: 2px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        .btn:hover { background: #d8bc94; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
-        th, td { border: 1px solid var(--border-color); padding: 12px; text-align: left; }
-        th { color: var(--accent-gold); }
+        th, td { border: 1px solid var(--border-gold); padding: 14px; text-align: left; }
+        th { color: var(--accent-gold); font-family: 'Playfair Display', Georgia, serif; font-weight: 500; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <div id="unauthorized" style="display:none; text-align:center; padding: 100px;">
-        <h2>Access Denied. Master Admin Credentials Required.</h2>
+    <div id="unauthorized" style="display:none; text-align:center; padding: 120px;">
+        <h2 style="font-size: 2rem;">Access Denied. Master Admin Credentials Required.</h2>
         <a href="/" class="btn" style="display:inline-block; margin-top:20px; text-decoration:none;">Return to Storefront</a>
     </div>
 
     <div id="admin-content" style="display:none;">
-        <h1>✦ Alivéra Master Admin Dashboard</h1>
-        <p style="font-family: 'Segoe UI', sans-serif; color: var(--text-muted); margin-bottom: 30px;">Logged in as Studio Director (hello@aliveraatelier.in)</p>
-
-        <!-- Upload Garment Section -->
-        <div class="section">
-            <h2>Upload New Garment to `atelier_dresses`</h2>
-            <input type="text" id="dress-name" placeholder="Garment Name (e.g. Midnight Orchid Dress)">
-            <input type="text" id="dress-price" placeholder="Price in INR (e.g. 14999)">
-            <input type="text" id="dress-image" placeholder="Image URL / Cloudflare Storage Link">
-            <input type="text" id="dress-sizechart" placeholder="Size Chart Image URL">
-            <button class="btn" onclick="uploadDress()">Publish Garment Live</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid var(--border-gold); padding-bottom: 20px;">
+            <div>
+                <h1>✦ Alivéra Master Admin Dashboard</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Authenticated Director Portal: hello@aliveraatelier.in</p>
+            </div>
+            <a href="/" class="btn" style="text-decoration: none;">View Storefront</a>
         </div>
 
-        <!-- Promotional Banner & Timer Control -->
+        <!-- Garment Upload Section -->
         <div class="section">
-            <h2>Manage Promotional Banners (1897 x 412) & Timers</h2>
-            <input type="text" id="promo-banner-url" placeholder="Banner Image URL">
-            <select id="promo-type">
-                <option value="first_x">First X People Discount</option>
-                <option value="date_range">Date Range Sale</option>
+            <h2>Upload Garment to Collection (`atelier_dresses`)</h2>
+            <input type="text" id="dress-name" placeholder="Garment Name (e.g. Midnight Orchid Dress)">
+            <input type="number" id="dress-price" placeholder="Price in INR (e.g. 14999)">
+            <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Garment Photo Image File:</label>
+            <input type="file" id="dress-image-file" accept="image/*">
+            <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Size Chart Image File:</label>
+            <input type="file" id="dress-sizechart-file" accept="image/*">
+            <button class="btn" style="margin-top: 10px;" onclick="uploadDress()">Publish Garment Live to Storefront</button>
+        </div>
+
+        <!-- Banners & Sale Control Section -->
+        <div class="section">
+            <h2>Banners & Sale Controls (1897 x 412 Resolution)</h2>
+            <select id="active-banner-mode" onchange="toggleBannerInputs()">
+                <option value="none">Default Hero Banner ("Beautiful. The way you are...")</option>
+                <option value="regular">Regular Day Custom Banner</option>
+                <option value="sale">Active Sale Promotional Banner</option>
             </select>
-            <input type="number" id="promo-limit" placeholder="Limit 'X' people or Discount % amount">
-            <button class="btn" onclick="savePromotion()">Activate Promotion Banner</button>
-            <button class="btn" style="background:#555; color:#fff; margin-left:10px;" onclick="stopPromotion()">Stop Sale / Reset</button>
+
+            <div id="regular-banner-box" style="display:none; margin-top:15px;">
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Regular Banner Image File (1897 x 412):</label>
+                <input type="file" id="regular-banner-file" accept="image/*">
+            </div>
+
+            <div id="sale-banner-box" style="display:none; margin-top:15px;">
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Sale Promotional Banner File (1897 x 412):</label>
+                <input type="file" id="sale-banner-file" accept="image/*">
+                
+                <select id="sale-type" style="margin-top: 15px;">
+                    <option value="first_x">First X People Discount (e.g. First 10 people)</option>
+                    <option value="date_range">Date & Time Range Sale</option>
+                </select>
+                <input type="text" id="sale-limit-value" placeholder="Limit specification (e.g. 10 customers or 24 Oct - 30 Oct)">
+                
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Countdown Timer Display Option:</label>
+                <select id="timer-active-select">
+                    <option value="yes">Show Countdown Timer on Bar</option>
+                    <option value="no">Hide Timer (Show Banner Only)</option>
+                </select>
+                <input type="text" id="timer-text-val" placeholder="Timer Text (e.g. 23:59:59)" value="24:00:00">
+            </div>
+
+            <input type="text" id="global-default-discount" placeholder="Default Scratch Card Discount for New Customers (e.g. 10% or 15%)" style="margin-top: 20px;">
+            <button class="btn" onclick="saveBannerSettings()">Save & Update Storefront Banner Settings</button>
         </div>
 
         <!-- Live Orders Management -->
         <div class="section">
-            <h2>Live Customer Orders & Custom Specifications</h2>
+            <h2>Live Client Orders & Custom Fittings</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>Customer</th>
-                        <th>Details</th>
-                        <th>Garment / Custom Info</th>
-                        <th>Status / Actions</th>
+                        <th>Client</th>
+                        <th>Contact / Address</th>
+                        <th>Garment & Custom Specs</th>
+                        <th>Status & Actions</th>
                     </tr>
                 </thead>
                 <tbody id="orders-table-body">
-                    <tr><td colspan="4">Loading orders...</td></tr>
+                    <tr><td colspan="4">Loading live customer orders...</td></tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Scratch Card Generator -->
+        <!-- Scratch Card Issuer -->
         <div class="section">
-            <h2>Generate Alivéra Golden Scratch Card</h2>
-            <input type="text" id="scratch-code" placeholder="Unique Scratch Code (e.g. ALIVERA10OFF)">
-            <input type="number" id="scratch-discount" placeholder="Discount Percentage">
-            <input type="text" id="target-user-email" placeholder="Customer Email to assign scratch card">
-            <button class="btn" onclick="generateScratchCard()">Issue Golden Scratch Card</button>
+            <h2>Issue Alivéra Golden Scratch Card</h2>
+            <input type="text" id="scratch-code" placeholder="Unique Scratch Code (e.g. ALIVERA-VIP-20)">
+            <input type="text" id="scratch-discount" placeholder="Discount Amount / Percentage (e.g. 15% or ₹2000 off)">
+            <input type="email" id="target-user-email" placeholder="Customer Account Email">
+            <button class="btn" onclick="issueScratchCard()">Grant Scratch Card to Client Account</button>
         </div>
     </div>
 
@@ -112,36 +148,85 @@
             }
         });
 
+        function toggleBannerInputs() {
+            const mode = document.getElementById('active-banner-mode').value;
+            document.getElementById('regular-banner-box').style.display = mode === 'regular' ? 'block' : 'none';
+            document.getElementById('sale-banner-box').style.display = mode === 'sale' ? 'block' : 'none';
+        }
+
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         async function uploadDress() {
             const name = document.getElementById('dress-name').value;
             const price = document.getElementById('dress-price').value;
-            const imageUrl = document.getElementById('dress-image').value;
-            const sizeChart = document.getElementById('dress-sizechart').value;
+            const imageFile = document.getElementById('dress-image-file').files[0];
+            const sizeChartFile = document.getElementById('dress-sizechart-file').files[0];
 
-            if (!name || !price) { alert("Please fill required fields"); return; }
-            await db.collection("atelier_dresses").add({ name, price, imageUrl, sizeChart, createdAt: new Date() });
-            alert("Garment successfully published live to storefront!");
+            if(!name || !price || !imageFile) {
+                alert("Please provide name, price, and garment image file.");
+                return;
+            }
+
+            const imageUrl = await convertFileToBase64(imageFile);
+            const sizeChart = sizeChartFile ? await convertFileToBase64(sizeChartFile) : "";
+
+            await db.collection("atelier_dresses").add({
+                name,
+                price,
+                imageUrl,
+                sizeChart,
+                createdAt: new Date()
+            });
+
+            alert("Garment successfully published live to storefront catalog!");
             location.reload();
         }
 
-        async function savePromotion() {
-            const bannerUrl = document.getElementById('promo-banner-url').value;
-            const type = document.getElementById('promo-type').value;
-            const limit = document.getElementById('promo-limit').value;
-            await db.collection("settings").doc("promotion").set({ bannerUrl, type, limit, active: true });
-            alert("Promotion banner activated successfully!");
-        }
+        async function saveBannerSettings() {
+            const mode = document.getElementById('active-banner-mode').value;
+            const globalDiscount = document.getElementById('global-default-discount').value || "10%";
+            
+            let regularBannerUrl = "";
+            let saleBannerUrl = "";
 
-        async function stopPromotion() {
-            await db.collection("settings").doc("promotion").set({ active: false }, { merge: true });
-            alert("Promotion stopped and reset to normal day hero.");
+            const regFile = document.getElementById('regular-banner-file').files[0];
+            if(regFile) regularBannerUrl = await convertFileToBase64(regFile);
+
+            const saleFile = document.getElementById('sale-banner-file').files[0];
+            if(saleFile) saleBannerUrl = await convertFileToBase64(saleFile);
+
+            const saleType = document.getElementById('sale-type').value;
+            const saleLimit = document.getElementById('sale-limit-value').value;
+            const timerActive = document.getElementById('timer-active-select').value === 'yes';
+            const timerText = document.getElementById('timer-text-val').value;
+
+            await db.collection("settings").doc("promotion").set({
+                activeMode: mode,
+                regularBannerUrl,
+                saleBannerUrl,
+                saleType,
+                saleLimit,
+                timerActive,
+                timerText,
+                globalDiscount,
+                updatedAt: new Date()
+            }, { merge: true });
+
+            alert("Storefront banners and sale parameters successfully updated!");
         }
 
         async function loadOrders() {
             const snapshot = await db.collection("orders").get();
             const tbody = document.getElementById('orders-table-body');
             if (snapshot.empty) {
-                tbody.innerHTML = `<tr><td colspan="4">No customer orders found yet.</td></tr>`;
+                tbody.innerHTML = "<tr><td colspan='4'>No client orders or inquiries recorded yet.</td></tr>";
                 return;
             }
             tbody.innerHTML = "";
@@ -149,12 +234,13 @@
                 const o = doc.data();
                 tbody.innerHTML += `
                     <tr>
-                        <td>${o.name || 'Client'}<br><small>${o.email}</small></td>
-                        <td>${o.phone || ''}<br>${o.address || ''}</td>
-                        <td>Size: ${o.size || 'Custom'}<br>Notes: ${o.notes || 'None'}</td>
+                        <td><b>${o.name}</b><br><small style="color:var(--text-muted);">${o.email}</small></td>
+                        <td>${o.phone || 'No phone'}<br><small style="color:var(--text-muted);">${o.address || 'No address'}</small></td>
+                        <td><b>${o.dressName}</b><br>Size/Specs: ${o.size}<br>Notes: ${o.notes}</td>
                         <td>
-                            <button class="btn" style="padding:5px 10px; font-size:0.75rem;" onclick="updateOrderStatus('${doc.id}', 'Confirmed')">Confirm</button>
-                            <button class="btn" style="padding:5px 10px; font-size:0.75rem; background:#c94a4a; color:#fff;" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel</button>
+                            <span style="display:block; margin-bottom:8px; color:var(--accent-gold); font-size:0.8rem;">Status: ${o.status}</span>
+                            <button class="btn" style="padding:4px 10px; font-size:0.7rem;" onclick="updateOrderStatus('${doc.id}', 'Confirmed')">Confirm</button>
+                            <button class="btn" style="padding:4px 10px; font-size:0.7rem; background:#a94442; color:#fff;" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel</button>
                         </td>
                     </tr>
                 `;
@@ -163,20 +249,34 @@
 
         async function updateOrderStatus(id, status) {
             await db.collection("orders").doc(id).update({ status });
-            alert(`Order marked as ${status}`);
+            alert(`Order status updated to ${status}`);
             loadOrders();
         }
 
-        async function generateScratchCard() {
+        async function issueScratchCard() {
             const code = document.getElementById('scratch-code').value;
             const discount = document.getElementById('scratch-discount').value;
             const email = document.getElementById('target-user-email').value;
-            
-            if(!code || !email) { alert("Provide code and email"); return; }
-            
-            // Find user by email or push scratch card token to global collection
-            await db.collection("scratch_cards").add({ code, discount, email, opened: false, createdAt: new Date() });
-            alert("Golden scratch card issued successfully to customer account!");
+
+            if(!code || !discount || !email) {
+                alert("Please fill all fields to issue a scratch card.");
+                return;
+            }
+
+            // Find user doc matching email
+            const usersRef = db.collection("users");
+            const q = await usersRef.where("email", "==", email).get();
+            if(q.empty) {
+                alert("No user account found with that email address.");
+                return;
+            }
+
+            const userDoc = q.docs[0];
+            await userDoc.ref.update({
+                scratchCards: firebase.firestore.FieldValue.arrayUnion({ code, discount, opened: false })
+            });
+
+            alert("Alivéra Golden Scratch Card successfully issued to the customer account!");
         }
     </script>
 </body>
