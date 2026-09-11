@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivéra Atelier – High Couture & Custom Tailoring</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -108,6 +106,7 @@
             justify-content: center;
         }
 
+        /* Banner positioned at the absolute top right under header */
         .banner-container { width: 100%; aspect-ratio: 1897 / 412; max-height: 412px; overflow: hidden; background: #000; border-bottom: 1px solid var(--border-gold); display: none; }
         .banner-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .countdown-bar { background: #060606; border-bottom: 1px solid var(--border-gold); text-align: center; padding: 14px; color: var(--accent-gold); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; display: none; }
@@ -167,6 +166,7 @@
         </div>
     </header>
 
+    <!-- Promotional / Hero Banner at the very top -->
     <div id="countdown-bar" class="countdown-bar">Limited Collection Sale Commences In: <span id="timer-text">--:--:--</span></div>
     <div id="banner-wrapper" class="banner-container">
         <img id="active-banner-img" src="" alt="Alivéra Atelier Banner">
@@ -191,9 +191,10 @@
     </div>
 
     <div class="container">
+        <!-- Search bar completely isolated with no email autofill risk -->
         <div class="search-container">
             <span class="search-icon">&#128269;</span>
-            <input type="text" id="search-input" class="search-bar" placeholder="Explore dresses by title or aesthetic..." oninput="filterDresses()" autocomplete="off">
+            <input type="search" id="store-search-query-input" name="atelier_search_field" class="search-bar" placeholder="Explore dresses by title or aesthetic..." oninput="filterDresses()" autocomplete="off" autocapitalize="off">
         </div>
         
         <div class="collection-heading">
@@ -433,7 +434,7 @@
         }
 
         function filterDresses() {
-            const query = document.getElementById('search-input').value.toLowerCase();
+            const query = document.getElementById('store-search-query-input').value.toLowerCase();
             const filtered = allDresses.filter(d => d.name && d.name.toLowerCase().includes(query));
             renderGrid(filtered);
         }
