@@ -3,107 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alivéra Atelier | Storefront</title>
+    <title>Alivéra Atelier | Bespoke Haute Couture</title>
     <style>
         :root {
-            --bg-color: #0f0f0f;
-            --text-color: #f5f5f5;
-            --accent-color: #c5a880;
-            --card-bg: #1a1a1a;
+            --bg-color: #0b0b0b;
+            --surface-color: #141414;
+            --border-color: rgba(197, 168, 128, 0.2);
+            --text-main: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --accent-gold: #c5a880;
+            --accent-hover: #d8bc94;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Playfair Display', Georgia, serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
-            border-bottom: 1px solid #333;
+            padding: 24px 48px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        h1 {
-            margin: 0;
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            letter-spacing: 3px;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+        }
+        .nav-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .btn {
+            background-color: transparent;
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 8px 18px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        .btn:hover {
+            background-color: var(--accent-gold);
+            color: #000;
+        }
+        .btn-primary {
+            background-color: var(--accent-gold);
+            color: #000;
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+        
+        /* Hero Banner */
+        .hero {
+            padding: 80px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, var(--surface-color), var(--bg-color));
+            border-bottom: 1px solid var(--border-color);
+        }
+        .hero h2 {
+            font-size: 2.5rem;
             font-weight: 300;
             letter-spacing: 2px;
-            color: var(--accent-color);
+            margin-bottom: 12px;
+            color: var(--accent-gold);
         }
-        .auth-section button {
-            background-color: var(--accent-color);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: 600;
-            border-radius: 4px;
+        .hero p {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 1rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
         }
+
+        /* Main Container & Grid */
         .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
+            max-width: 1300px;
+            margin: 60px auto;
+            padding: 0 30px;
+            flex: 1;
+            width: 100%;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
         }
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
+            gap: 40px;
         }
         .card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             overflow: hidden;
-            border: 1px solid #222;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease;
         }
         .card:hover {
             transform: translateY(-5px);
+            border-color: var(--accent-gold);
         }
-        .card img {
+        .product-thumb-container {
             width: 100%;
-            height: 350px;
+            height: 380px;
+            background: #111;
+            overflow: hidden;
+        }
+        .product-thumb-container img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .card:hover .product-thumb-container img {
+            transform: scale(1.03);
         }
         .card-content {
             padding: 20px;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
         }
-        .card-content h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
-        }
-        .price {
-            color: var(--accent-color);
-            font-weight: bold;
+        .card-title {
             font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .card-price {
+            font-size: 1rem;
+            color: var(--accent-gold);
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        .card-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .card-buttons button {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.8rem;
+        }
+
+        /* Admin Dashboard Panel (Conditional) */
+        #admin-panel {
+            display: none;
+            background: rgba(197, 168, 128, 0.05);
+            border: 1px dashed var(--accent-gold);
+            padding: 20px;
+            margin-bottom: 40px;
+            border-radius: 4px;
+        }
+        #admin-panel h3 {
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 80px;
         }
     </style>
 
-    <!-- Firebase App (Core) SDK -->
+    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <!-- Firebase Auth SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Firestore SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
+    <!-- Header -->
     <header>
-        <h1>ALIVÉRA ATELIER</h1>
-        <div class="auth-section">
-            <button id="auth-btn">Sign In with Google</button>
+        <div class="brand-title">Alivèra Atelier</div>
+        <div class="nav-actions">
+            <button id="account-btn" class="btn" style="display: none;">My Account</button>
+            <button id="auth-btn" class="btn btn-primary">Sign In / Sign Up</button>
         </div>
     </header>
 
+    <!-- Hero Banner -->
+    <section class="hero">
+        <h2>Bespoke Haute Couture</h2>
+        <p>"Handcrafted to celebrate your unique essence."</p>
+    </section>
+
+    <!-- Main Container -->
     <div class="container">
-        <h2>Collection</h2>
+        
+        <!-- Admin Dashboard Section (Visible only to hello@aliveraatelier.in) -->
+        <div id="admin-panel">
+            <h3>Admin Control Panel</h3>
+            <p style="font-family: 'Segoe UI', sans-serif; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Welcome back, Creator. You have full management access to inventory and orders.</p>
+            <button class="btn btn-primary" onclick="alert('Open product upload modal or admin dashboard route.')">+ Add New Garment</button>
+        </div>
+
+        <h3 class="section-title">Bespoke Collection</h3>
         <div id="product-grid" class="grid">
-            <p>Loading collection...</p>
+            <p style="font-family: 'Segoe UI', sans-serif; color: var(--text-muted);">Loading collection...</p>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 Alivéra Atelier. All Rights Reserved. Bespoke Haute Couture.
+    </footer>
+
+    <!-- Firebase Script Logic -->
     <script>
-        // Your Firebase configuration with custom authDomain
         const firebaseConfig = {
             apiKey: "AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc",
             authDomain: "aliveraatelier.in",
@@ -115,16 +251,17 @@
             measurementId: "G-YQETZYQ3PT"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
         const authBtn = document.getElementById("auth-btn");
+        const accountBtn = document.getElementById("account-btn");
+        const adminPanel = document.getElementById("admin-panel");
         const productGrid = document.getElementById("product-grid");
 
-        // Google Sign In / Out Handling
+        // Auth state handling & UI toggles
         authBtn.addEventListener("click", async () => {
             if (auth.currentUser) {
                 await auth.signOut();
@@ -132,25 +269,36 @@
                 try {
                     await auth.signInWithPopup(provider);
                 } catch (error) {
-                    console.error("Authentication Error:", error);
+                    console.error("Auth error:", error);
                 }
             }
         });
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                authBtn.textContent = `Sign Out (${user.displayName || user.email})`;
+                authBtn.textContent = "Sign Out";
+                accountBtn.style.display = "inline-block";
+                accountBtn.textContent = user.email;
+
+                // Show Admin Panel exclusively for your master admin email
+                if (user.email === "hello@aliveraatelier.in") {
+                    adminPanel.style.display = "block";
+                } else {
+                    adminPanel.style.display = "none";
+                }
             } else {
-                authBtn.textContent = "Sign In with Google";
+                authBtn.textContent = "Sign In / Sign Up";
+                accountBtn.style.display = "none";
+                adminPanel.style.display = "none";
             }
         });
 
-        // Load dresses from Firestore collection
+        // Load dresses from Firestore
         async function loadStorefrontDresses() {
             try {
                 const snapshot = await db.collection("dresses").get();
                 if (snapshot.empty) {
-                    productGrid.innerHTML = "<p>No dresses found in the catalog yet.</p>";
+                    productGrid.innerHTML = `<p style="font-family: 'Segoe UI', sans-serif; color: var(--text-muted);">No dresses found in the catalog yet. Add items via your admin console.</p>`;
                     return;
                 }
 
@@ -160,17 +308,23 @@
                     const card = document.createElement("div");
                     card.className = "card";
                     card.innerHTML = `
-                        <img src="${dress.imageUrl || dress.image || 'https://via.placeholder.com/300x350?text=Alivéra+Atelier'}" alt="${dress.name || 'Dress'}">
+                        <div class="product-thumb-container">
+                            <img src="${dress.imageUrl || dress.image || 'https://via.placeholder.com/300x380?text=Alivéra+Atelier'}" alt="${dress.name || 'Garment'}">
+                        </div>
                         <div class="card-content">
-                            <h3>${dress.name || 'Custom Garment'}</h3>
-                            <div class="price">₹${dress.price || 'On Request'}</div>
+                            <div class="card-title">${dress.name || 'Custom Garment'}</div>
+                            <div class="card-price">₹${dress.price || 'On Request'}</div>
+                            <div class="card-buttons">
+                                <button class="btn">View Details</button>
+                                <button class="btn btn-primary">Inquire</button>
+                            </div>
                         </div>
                     `;
                     productGrid.appendChild(card);
                 });
             } catch (error) {
-                console.error("Error loading dresses:", error);
-                productGrid.innerHTML = "<p>Error loading collection. Check console for details.</p>";
+                console.error("Error fetching Firestore dresses:", error);
+                productGrid.innerHTML = `<p style="font-family: 'Segoe UI', sans-serif; color: #ff6b6b;">Error loading collection from database.</p>`;
             }
         }
 
