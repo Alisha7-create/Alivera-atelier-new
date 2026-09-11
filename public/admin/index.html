@@ -79,20 +79,19 @@
                 <input type="file" id="sale-banner-file" accept="image/*">
                 
                 <select id="sale-type" style="margin-top: 15px;">
-                    <option value="first_x">First X People Discount (e.g. First 10 people)</option>
+                    <option value="first_x">First X People Discount</option>
                     <option value="date_range">Date & Time Range Sale</option>
                 </select>
-                <input type="text" id="sale-limit-value" placeholder="Limit specification (e.g. 10 customers or 24 Oct - 30 Oct)">
+                <input type="text" id="sale-limit-value" placeholder="Limit specification (e.g. First 10 customers)">
                 
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Countdown Timer Display Option:</label>
-                <select id="timer-active-select">
+                <select id="timer-active-select" style="margin-top: 15px;">
                     <option value="yes">Show Countdown Timer on Bar</option>
                     <option value="no">Hide Timer (Show Banner Only)</option>
                 </select>
                 <input type="text" id="timer-text-val" placeholder="Timer Text (e.g. 23:59:59)" value="24:00:00">
             </div>
 
-            <input type="text" id="global-default-discount" placeholder="Default Scratch Card Discount for New Customers (e.g. 10% or 15%)" style="margin-top: 20px;">
+            <input type="text" id="global-default-discount" placeholder="Default Scratch Card Discount for New Customers (e.g. 10%)" style="margin-top: 20px;">
             <button class="btn" onclick="saveBannerSettings()">Save & Update Storefront Banner Settings</button>
         </div>
 
@@ -118,7 +117,7 @@
         <div class="section">
             <h2>Issue Alivéra Golden Scratch Card</h2>
             <input type="text" id="scratch-code" placeholder="Unique Scratch Code (e.g. ALIVERA-VIP-20)">
-            <input type="text" id="scratch-discount" placeholder="Discount Amount / Percentage (e.g. 15% or ₹2000 off)">
+            <input type="text" id="scratch-discount" placeholder="Discount Percentage (e.g. 15%)">
             <input type="email" id="target-user-email" placeholder="Customer Account Email">
             <button class="btn" onclick="issueScratchCard()">Grant Scratch Card to Client Account</button>
         </div>
@@ -263,7 +262,6 @@
                 return;
             }
 
-            // Find user doc matching email
             const usersRef = db.collection("users");
             const q = await usersRef.where("email", "==", email).get();
             if(q.empty) {
