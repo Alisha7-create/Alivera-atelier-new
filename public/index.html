@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivéra Atelier – Luxury Women’s Dresses & Custom Fitting</title>
-    <meta name="description" content="Alivéra Atelier is a luxury women’s fashion brand creating elegant, sophisticated and comfortable dresses for the modern woman. Our designs blend timeless beauty, graceful silhouettes and refined details with a focus on modest, wearable luxury. We also offer custom fitting to help each dress achieve a comfortable, flattering and personalized fit. Discover thoughtfully designed fashion pieces made to help you feel confident, beautiful and uniquely yourself.">
+    <meta name="description" content="Alivéra Atelier is a luxury women’s fashion brand creating elegant, sophisticated and comfortable dresses for the modern woman.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -14,11 +14,9 @@
             --surface-luxury: #111111;
             --surface-card: #161616;
             --border-gold: rgba(197, 168, 128, 0.25);
-            --border-gold-focus: rgba(197, 168, 128, 0.6);
             --text-main: #f3f3f3;
             --text-muted: #999999;
             --accent-gold: #c5a880;
-            --accent-gold-hover: #d8bc94;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -31,7 +29,6 @@
             overflow-x: hidden;
         }
         h1, h2, h3, .serif-font { font-family: 'Playfair Display', Georgia, serif; }
-        
         header {
             display: flex;
             justify-content: space-between;
@@ -76,13 +73,9 @@
             display: none;
         }
         
-        .banner-container { width: 100%; max-height: 412px; overflow: hidden; background: #000; display: none; }
+        .banner-container { width: 100%; max-height: 412px; overflow: hidden; background: #000; }
         .banner-container img { width: 100%; height: 100%; object-fit: cover; max-height: 412px; display: block; }
         .countdown-bar { background: #121212; border-bottom: 1px solid var(--border-gold); text-align: center; padding: 14px; color: var(--accent-gold); font-size: 0.9rem; letter-spacing: 1px; display: none; }
-
-        .hero { padding: 80px 20px; text-align: center; background: var(--surface-luxury); border-bottom: 1px solid var(--border-gold); }
-        .hero h2 { font-size: 3rem; font-weight: 400; letter-spacing: 3px; margin-bottom: 14px; color: var(--accent-gold); }
-        .hero p { font-size: 1.05rem; color: var(--text-muted); font-style: italic; letter-spacing: 1px; font-family: 'Playfair Display', Georgia, serif; }
 
         .container { max-width: 1350px; margin: 50px auto; padding: 0 30px; flex: 1; width: 100%; }
         .search-bar { width: 100%; padding: 14px 22px; background: var(--surface-luxury); border: 1px solid var(--border-gold); color: var(--text-main); font-family: inherit; font-size: 0.95rem; margin-bottom: 40px; border-radius: 2px; }
@@ -128,11 +121,6 @@
     <div id="banner-wrapper" class="banner-container">
         <img id="active-banner-img" src="" alt="Alivéra Atelier Banner">
     </div>
-
-    <section class="hero" id="default-hero">
-        <h2>Bespoke Haute Couture</h2>
-        <p>Beautiful. The way you are...</p>
-    </section>
 
     <div class="container">
         <input type="text" id="search-input" class="search-bar" placeholder="Search dresses from our collection..." oninput="filterDresses()">
@@ -247,8 +235,6 @@
                 const userRef = db.collection("users").doc(user.uid);
                 const docSnap = await userRef.get();
                 if (!docSnap.exists) {
-                    const settingsSnap = await db.collection("settings").doc("promotion").get();
-                    const defaultDiscount = settingsSnap.exists ? (settingsSnap.data().globalDiscount || "10%") : "10%";
                     await userRef.set({
                         email: user.email || '',
                         name: user.displayName || '',
@@ -256,7 +242,7 @@
                         address: '',
                         wishlist: [],
                         recentlyViewed: [],
-                        scratchCards: [{ code: 'ALIVERA-AI-' + Math.floor(1000 + Math.random() * 9000), discount: defaultDiscount, opened: false }]
+                        scratchCards: []
                     }, { merge: true });
                 }
             } else {
@@ -268,7 +254,6 @@
 
         async function loadStorefrontData() {
             try {
-                // Fetch from atelier_dresses
                 const snapshot = await db.collection("atelier_dresses").get();
                 allDresses = [];
                 snapshot.forEach(doc => allDresses.push({ id: doc.id, ...doc.data() }));
@@ -279,27 +264,29 @@
                     const p = promoSnap.data();
                     const bannerImg = document.getElementById('active-banner-img');
                     const bannerWrapper = document.getElementById('banner-wrapper');
-                    const defaultHero = document.getElementById('default-hero');
                     const countdownBar = document.getElementById('countdown-bar');
 
+                    let activeImg = p.defaultBannerUrl || "";
                     if (p.activeMode === 'sale' && p.saleBannerUrl) {
-                        bannerImg.src = p.saleBannerUrl;
-                        bannerWrapper.style.display = 'block';
-                        defaultHero.style.display = 'none';
+                        activeImg = p.saleBannerUrl;
                         if (p.timerActive) {
                             countdownBar.style.display = 'block';
                             document.getElementById('timer-text').textContent = p.timerText || "24:00:00";
                         }
                     } else if (p.activeMode === 'regular' && p.regularBannerUrl) {
-                        bannerImg.src = p.regularBannerUrl;
-                        bannerWrapper.style.display = 'block';
-                        defaultHero.style.display = 'none';
+                        activeImg = p.regularBannerUrl;
                         countdownBar.style.display = 'none';
+                    }
+
+                    if (activeImg) {
+                        bannerImg.src = activeImg;
+                        bannerWrapper.style.display = 'block';
+                    } else {
+                        bannerWrapper.style.display = 'none';
                     }
                 }
             } catch (e) {
                 console.error("Error loading storefront:", e);
-                document.getElementById('product-grid').innerHTML = "<p style='color: var(--text-muted);'>Unable to load catalog. Check Firestore Rules.</p>";
             }
         }
 
@@ -315,7 +302,7 @@
                     <div class="card-content">
                         <div class="card-title">${d.name}</div>
                         <div class="card-price">₹${d.price}</div>
-                        <button class="btn btn-primary" style="width:100%;" onclick="openInquireModal('${d.id}', '${d.name}', '${d.price}')">Inquire / Custom Order</button>
+                        <button class="btn btn-primary" style="width:100%;" onclick="openInquireModal('${d.id}', '${d.name}', ${d.price})">Inquire / Custom Order</button>
                     </div>
                 </div>
             `).join('');
@@ -330,18 +317,57 @@
         async function openInquireModal(id, name, price) {
             const user = auth.currentUser;
             if(!user) { openAuthModal(); return; }
-            
-            const userRef = db.collection("users").doc(user.uid);
-            await userRef.update({
-                recentlyViewed: firebase.firestore.FieldValue.arrayUnion({ id, name, price, viewedAt: new Date().toISOString() })
-            });
 
             const size = prompt(`Select size or custom fitting specs for ${name} (e.g. XS, S, M, L, XL or Custom measurements):`);
             if(!size) return;
             const notes = prompt("Any additional custom tailoring requests or notes? (Optional):") || "None";
-            
+            const promoCodeInput = prompt("Enter Promo Code / Scratch Card Code if you have one (or leave blank):", "") || "";
+
+            const userRef = db.collection("users").doc(user.uid);
+            await userRef.update({
+                recentlyViewed: firebase.firestore.FieldValue.arrayUnion({ id, name, price, viewedAt: new Date().toISOString() })
+            });
             const userDoc = await userRef.get();
             const uData = userDoc.data();
+
+            // Calculate Bill Breakdown
+            let basePrice = Number(price);
+            let discountAmount = 0;
+            let appliedDiscountText = "None";
+
+            if (promoCodeInput.trim() !== "") {
+                const scratchCards = uData.scratchCards || [];
+                const foundCard = scratchCards.find(sc => sc.code.trim().toUpperCase() === promoCodeInput.trim().toUpperCase() && sc.opened);
+                if (foundCard) {
+                    let discNum = parseFloat(foundCard.discount) || 0;
+                    discountAmount = (basePrice * discNum) / 100;
+                    appliedDiscountText = `${foundCard.discount} (Code: ${foundCard.code})`;
+                } else {
+                    alert("Invalid or unopened promo code entered. Proceeding without discount.");
+                }
+            }
+
+            const discountedSubtotal = basePrice - discountAmount;
+            const deliveryCharge = 49;
+            
+            // Fetch current GST rate from settings or default to 5%
+            const settingsSnap = await db.collection("settings").doc("promotion").get();
+            const gstRate = settingsSnap.exists ? (parseFloat(settingsSnap.data().gstPercent) || 5) : 5;
+            const gstAmount = (discountedSubtotal * gstRate) / 100;
+            const finalTotal = discountedSubtotal + deliveryCharge + gstAmount;
+
+            const confirmOrder = confirm(`--- ORDER BILL BREAKDOWN ---\nGarment: ${name}\nBase Price: ₹${basePrice}\nDiscount: -₹${discountAmount.toFixed(2)} [${appliedDiscountText}]\nDelivery Charge: ₹${deliveryCharge}\nGST (${gstRate}%): ₹${gstAmount.toFixed(2)}\n---------------------------\nFinal Total: ₹${finalTotal.toFixed(2)}\n\nClick OK to confirm your custom order!`);
+
+            if (!confirmOrder) return;
+
+            // Generate automatic scratch card for this order
+            const newScratchDisc = settingsSnap.exists ? (settingsSnap.data().globalDiscount || "10%") : "10%";
+            const newScratchCode = 'ALIVERA-AI-' + Math.floor(1000 + Math.random() * 9000);
+            const newCardObj = { code: newScratchCode, discount: newScratchDisc, opened: false };
+
+            await userRef.update({
+                scratchCards: firebase.firestore.FieldValue.arrayUnion(newCardObj)
+            });
 
             await db.collection("orders").add({
                 userId: user.uid,
@@ -353,10 +379,20 @@
                 dressId: id,
                 size: size,
                 notes: notes,
+                bill: {
+                    basePrice,
+                    discountAmount,
+                    appliedDiscountText,
+                    deliveryCharge,
+                    gstRate,
+                    gstAmount,
+                    finalTotal
+                },
                 status: "Pending Confirmation",
                 createdAt: new Date()
             });
-            alert("Your custom dress order has been successfully placed!");
+
+            alert(`Order placed successfully!\n\nA confirmation email with your price breakdown has been sent to ${user.email}.\nA new Alivéra Golden Scratch Card (${newScratchDisc}) has been added to your account!`);
         }
 
         async function loadAccountData(tab) {
@@ -388,7 +424,7 @@
                 content.innerHTML = list.length === 0 ? "<p>Your wishlist is currently empty.</p>" : list.map(w => `<p>${w.name} - ₹${w.price}</p>`).join('');
             } else if (tab === 'scratchcards') {
                 const cards = data.scratchCards || [];
-                content.innerHTML = cards.length === 0 ? "<p>No Alivéra Golden Scratch Cards issued yet.</p>" : cards.map((sc, idx) => `
+                content.innerHTML = cards.length === 0 ? "<p>No Alivéra Golden Scratch Cards issued yet. Place an order to unlock one!</p>" : cards.map((sc, idx) => `
                     <div class="scratch-card-box">
                         <p style="color: var(--accent-gold); font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 5px;">Alivéra Golden Scratch Card</p>
                         <p style="font-size: 0.8rem; margin-bottom: 8px;">Exclusive Discount: <b>${sc.discount}</b></p>
