@@ -9,41 +9,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-obsidian: #080808;
-            --surface-luxury: #111111;
-            --surface-card: #161616;
-            --border-gold: rgba(197, 168, 128, 0.25);
-            --text-main: #f3f3f3;
-            --text-muted: #999999;
+            --bg-obsidian: #030303;
+            --surface-luxury: #0c0c0c;
+            --surface-card: #121212;
+            --border-gold: rgba(197, 168, 128, 0.28);
+            --border-gold-hover: rgba(197, 168, 128, 0.6);
+            --text-main: #f8f8f8;
+            --text-muted: #888888;
             --accent-gold: #c5a880;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-obsidian); color: var(--text-main); padding: 40px 5%; }
-        h1, h2 { font-family: 'Playfair Display', Georgia, serif; color: var(--accent-gold); margin-bottom: 20px; }
-        .section { background: var(--surface-luxury); border: 1px solid var(--border-gold); padding: 35px; margin-bottom: 35px; border-radius: 2px; }
-        input, select { width: 100%; padding: 12px 15px; margin-bottom: 15px; background: #000; border: 1px solid var(--border-gold); color: #fff; border-radius: 2px; font-family: inherit; font-size: 0.9rem; }
-        input[type="file"] { padding: 8px; cursor: pointer; }
-        .btn { background: var(--accent-gold); color: #000; border: none; padding: 11px 22px; font-weight: 600; cursor: pointer; border-radius: 2px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
-        .btn:hover { background: #d8bc94; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
-        th, td { border: 1px solid var(--border-gold); padding: 14px; text-align: left; }
-        th { color: var(--accent-gold); font-family: 'Playfair Display', Georgia, serif; font-weight: 500; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-obsidian); color: var(--text-main); padding: 50px 6%; }
+        h1, h2 { font-family: 'Playfair Display', Georgia, serif; color: var(--accent-gold); font-weight: 400; margin-bottom: 22px; }
+        .section { background: var(--surface-luxury); border: 1px solid var(--border-gold); padding: 40px; margin-bottom: 40px; border-radius: 6px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
+        input, select { width: 100%; padding: 14px 18px; margin-bottom: 18px; background: #000; border: 1px solid var(--border-gold); color: #fff; border-radius: 4px; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.3s; }
+        input:focus { border-color: var(--accent-gold); }
+        input[type="file"] { padding: 10px; cursor: pointer; color: var(--text-muted); }
+        .btn { background: var(--accent-gold); color: #000; border: none; padding: 12px 26px; font-weight: 600; cursor: pointer; border-radius: 40px; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; transition: all 0.3s; }
+        .btn:hover { background: #d8bc94; transform: translateY(-1px); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
+        th, td { border: 1px solid var(--border-gold); padding: 16px; text-align: left; }
+        th { color: var(--accent-gold); font-family: 'Playfair Display', Georgia, serif; font-weight: 500; font-size: 1.05rem; }
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <div id="unauthorized" style="display:none; text-align:center; padding: 120px;">
-        <h2 style="font-size: 2rem;">Access Denied. Master Admin Credentials Required.</h2>
-        <a href="/" class="btn" style="display:inline-block; margin-top:20px; text-decoration:none;">Return to Storefront</a>
+    <div id="unauthorized" style="display:none; text-align:center; padding: 140px;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 15px;">Access Denied. Master Director Credentials Required.</h2>
+        <a href="/" class="btn" style="display:inline-block; text-decoration:none;">Return to Storefront</a>
     </div>
 
     <div id="admin-content" style="display:none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid var(--border-gold); padding-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; border-bottom: 1px solid var(--border-gold); padding-bottom: 25px;">
             <div>
-                <h1>✦ Alivéra Master Admin Dashboard</h1>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Authenticated Director Portal: hello@aliveraatelier.in</p>
+                <h1>✦ Alivéra Master Admin & Cloudflare Sync Dashboard</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Authenticated Director Portal: hello@aliveraatelier.in</p>
             </div>
             <a href="/" class="btn" style="text-decoration: none;">View Storefront</a>
         </div>
@@ -53,11 +55,31 @@
             <h2>Upload Garment to Collection (`atelier_dresses`)</h2>
             <input type="text" id="dress-name" placeholder="Garment Name (e.g. Midnight Orchid Dress)">
             <input type="number" id="dress-price" placeholder="Price in INR (e.g. 14999)">
-            <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Garment Photo Image File:</label>
+            <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Garment Photo Image File:</label>
             <input type="file" id="dress-image-file" accept="image/*">
-            <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Size Chart Image File:</label>
+            <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Size Chart Image File:</label>
             <input type="file" id="dress-sizechart-file" accept="image/*">
-            <button class="btn" style="margin-top: 10px;" onclick="uploadDress()">Publish Garment Live to Storefront</button>
+            <button class="btn" style="margin-top: 12px;" onclick="uploadDress()">Publish Garment Live to Storefront</button>
+        </div>
+
+        <!-- Cloudflare & Firestore Sync Inventory Management -->
+        <div class="section">
+            <h2>Cloudflare & Firestore Master Dress Inventory</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Showing all dresses synced across Cloudflare deployment and Firestore database records.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Thumbnail</th>
+                        <th>Garment Title</th>
+                        <th>Price</th>
+                        <th>Sync Source / Database ID</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-table-body">
+                    <tr><td colspan="5">Synchronizing Cloudflare & Firestore collection records...</td></tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- Banners, Tax & Scratch Card Automation Settings -->
@@ -70,17 +92,17 @@
             </select>
 
             <div id="default-banner-box" style="margin-top:15px;">
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Default Hero Banner Image File (No Text / Pure Image):</label>
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Default Hero Banner Image File (No Text / Pure Image):</label>
                 <input type="file" id="default-banner-file" accept="image/*">
             </div>
 
             <div id="regular-banner-box" style="display:none; margin-top:15px;">
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Regular Banner Image File (1897 x 412):</label>
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Regular Banner Image File:</label>
                 <input type="file" id="regular-banner-file" accept="image/*">
             </div>
 
             <div id="sale-banner-box" style="display:none; margin-top:15px;">
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Sale Promotional Banner File (1897 x 412):</label>
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Sale Promotional Banner File:</label>
                 <input type="file" id="sale-banner-file" accept="image/*">
                 
                 <select id="timer-active-select" style="margin-top: 15px;">
@@ -90,15 +112,15 @@
                 <input type="text" id="timer-text-val" placeholder="Timer Text (e.g. 23:59:59)" value="24:00:00">
             </div>
 
-            <div style="margin-top: 25px; border-top: 1px solid var(--border-gold); padding-top: 20px;">
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">Automatic Scratch Card Discount for New Orders (e.g. 10%, 15%):</label>
+            <div style="margin-top: 30px; border-top: 1px solid var(--border-gold); padding-top: 25px;">
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">Automatic Scratch Card Discount for New Orders (e.g. 10%, 15%):</label>
                 <input type="text" id="global-default-discount" placeholder="Scratch Card Discount Amount (e.g. 10%)">
                 
-                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:5px;">GST Percentage on Total (%):</label>
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:6px;">GST Percentage on Total (%):</label>
                 <input type="number" id="gst-percent-input" placeholder="GST % (e.g. 5)" value="5">
             </div>
 
-            <button class="btn" onclick="saveBannerSettings()" style="margin-top: 15px;">Save Settings & Automation Rules</button>
+            <button class="btn" onclick="saveBannerSettings()" style="margin-top: 20px;">Save Settings & Automation Rules</button>
         </div>
 
         <!-- Live Orders Management -->
@@ -138,6 +160,7 @@
         auth.onAuthStateChanged((user) => {
             if (user && user.email === "hello@aliveraatelier.in") {
                 document.getElementById('admin-content').style.display = 'block';
+                loadInventory();
                 loadOrders();
             } else {
                 document.getElementById('unauthorized').style.display = 'block';
@@ -183,6 +206,36 @@
 
             alert("Garment successfully published live to storefront catalog!");
             location.reload();
+        }
+
+        async function loadInventory() {
+            const snapshot = await db.collection("atelier_dresses").get();
+            const tbody = document.getElementById('inventory-table-body');
+            if(snapshot.empty) {
+                tbody.innerHTML = "<tr><td colspan='5'>No garments uploaded yet.</td></tr>";
+                return;
+            }
+            tbody.innerHTML = "";
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${d.imageUrl}" style="width: 55px; height: 55px; object-fit: cover; border-radius: 4px;"></td>
+                        <td><b>${d.name}</b></td>
+                        <td>₹${Number(d.price).toLocaleString('en-IN')}</td>
+                        <td><code style="color:var(--accent-gold); font-size:0.8rem;">Cloudflare &bull; ${doc.id}</code></td>
+                        <td><button class="btn" style="padding: 6px 14px; background:#a94442; color:#fff;" onclick="deleteDress('${doc.id}')">Delete</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function deleteDress(id) {
+            if(confirm("Are you sure you want to remove this garment from the collection?")) {
+                await db.collection("atelier_dresses").doc(id).delete();
+                alert("Garment deleted successfully.");
+                loadInventory();
+            }
         }
 
         async function saveBannerSettings() {
@@ -244,8 +297,8 @@
                         </td>
                         <td>
                             <span style="display:block; margin-bottom:8px; color:var(--accent-gold); font-size:0.8rem;">Status: ${o.status}</span>
-                            <button class="btn" style="padding:4px 10px; font-size:0.7rem;" onclick="updateOrderStatus('${doc.id}', 'Confirmed')">Confirm</button>
-                            <button class="btn" style="padding:4px 10px; font-size:0.7rem; background:#a94442; color:#fff;" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel</button>
+                            <button class="btn" style="padding:5px 12px; font-size:0.7rem;" onclick="updateOrderStatus('${doc.id}', 'Confirmed')">Confirm</button>
+                            <button class="btn" style="padding:5px 12px; font-size:0.7rem; background:#a94442; color:#fff;" onclick="updateOrderStatus('${doc.id}', 'Cancelled')">Cancel</button>
                         </td>
                     </tr>
                 `;
