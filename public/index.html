@@ -204,8 +204,8 @@
         <div class="modal-content" style="text-align:center;">
             <span class="close-modal" onclick="closeModals()">&times;</span>
             <h3 style="color: var(--accent-gold); margin-bottom: 20px; font-size: 1.6rem; font-weight: 400;">Garment Size Guide</h3>
-            <img id="modal-sizechart-img" src="" alt="Size Chart" style="width:100%; max-height:400px; object-fit:contain; border-radius:4px; border:1px solid var(--border-gold); background:#000;">
-            <p id="no-sizechart-text" style="color:var(--text-muted); font-style:italic; display:none;">Standard Alivéra Atelier Couture Sizing Applies (XS to XXL & Custom Tailoring).</p>
+            <img id="modal-sizechart-img" src="" alt="Size Chart" style="width:100%; max-height:400px; object-fit:contain; border-radius:4px; border:1px solid var(--border-gold); background:#000; display:none;">
+            <p id="no-sizechart-text" style="color:var(--text-muted); font-style:italic;">Standard Alivéra Atelier Couture Sizing Applies (XS to XXL & Custom Tailoring).</p>
         </div>
     </div>
 
@@ -399,41 +399,46 @@
                 grid.innerHTML = "<p style='color: var(--text-muted); font-style: italic;'>No garments published in the collection yet. Use the Admin Dashboard to add pieces.</p>";
                 return;
             }
-            grid.innerHTML = dresses.map(d => `
-                <div class="card">
-                    <div class="product-thumb-container"><img src="${d.imageUrl || ''}" alt="${d.name}"></div>
-                    <div class="card-content">
-                        <div>
-                            <div class="card-title">${d.name}</div>
-                            <div class="card-price">₹${Number(d.price).toLocaleString('en-IN')}</div>
-                            
-                            <select id="size-select-${d.id}" class="select-size">
-                                <option value="XS">XS - Extra Small</option>
-                                <option value="S">S - Small</option>
-                                <option value="M" selected>M - Medium</option>
-                                <option value="L">L - Large</option>
-                                <option value="XL">XL - Extra Large</option>
-                                <option value="XXL">XXL - Double XL</option>
-                                <option value="Custom">Custom Design & Measurements</option>
-                            </select>
+            grid.innerHTML = dresses.map(d => {
+                // Safely encode or handle sizeChart string for inline HTML click handler
+                const chartParam = d.sizeChart ? d.sizeChart.replace(/"/g, '&quot;') : '';
+                return `
+                    <div class="card">
+                        <div class="product-thumb-container"><img src="${d.imageUrl || ''}" alt="${d.name}"></div>
+                        <div class="card-content">
+                            <div>
+                                <div class="card-title">${d.name}</div>
+                                <div class="card-price">₹${Number(d.price).toLocaleString('en-IN')}</div>
+                                
+                                <select id="size-select-${d.id}" class="select-size">
+                                    <option value="XS">XS - Extra Small</option>
+                                    <option value="S">S - Small</option>
+                                    <option value="M" selected>M - Medium</option>
+                                    <option value="L">L - Large</option>
+                                    <option value="XL">XL - Extra Large</option>
+                                    <option value="XXL">XXL - Double XL</option>
+                                    <option value="Custom">Custom Design & Measurements</option>
+                                </select>
 
-                            <button class="btn" style="width:100%; margin-bottom:14px; font-size:0.7rem; padding:8px;" onclick="openSizeChart('${d.sizeChart || ''}')">View Size Chart</button>
-                        </div>
+                                <button class="btn" style="width:100%; margin-bottom:14px; font-size:0.7rem; padding:8px;" onclick="openSizeChart('${chartParam}')">View Size Chart</button>
+                            </div>
 
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn" style="flex:1; padding: 12px 10px; font-size:0.7rem;" onclick="addToCart('${d.id}', '${d.name}', ${d.price})">Add to Cart</button>
-                            <button class="btn btn-primary" style="flex:1; padding: 12px 10px; font-size:0.7rem;" onclick="buyNow('${d.id}', '${d.name}', ${d.price})">Buy Now</button>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn" style="flex:1; padding: 12px 10px; font-size:0.7rem;" onclick="addToCart('${d.id}', '${d.name}', ${d.price})">Add to Cart</button>
+                                <button class="btn btn-primary" style="flex:1; padding: 12px 10px; font-size:0.7rem;" onclick="buyNow('${d.id}', '${d.name}', ${d.price})">Buy Now</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function openSizeChart(chartUrl) {
             const modal = document.getElementById('sizechart-modal');
             const img = document.getElementById('modal-sizechart-img');
             const txt = document.getElementById('no-sizechart-text');
-            if (chartUrl && chartUrl.trim() !== "") {
+            
+            if (chartUrl && chartUrl.trim() !== "" && chartUrl !== "undefined") {
                 img.src = chartUrl;
                 img.style.display = 'block';
                 txt.style.display = 'none';
