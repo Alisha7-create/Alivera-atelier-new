@@ -9,7 +9,8 @@ export async function onRequestPost(context) {
       razorpay_signature, 
       customerDetails, 
       cartItems, 
-      finalAmount 
+      finalAmount,
+      isFirstOrder // Received from frontend/checkout
     } = body;
 
     // 1. Verify Razorpay Signature securely using Web Crypto API
@@ -34,6 +35,18 @@ export async function onRequestPost(context) {
       });
     }
 
+    // 2. Lock out future first-order discounts for this customer if applicable
+    if (isFirstOrder && customerDetails?.userId) {
+      try {
+        // If using Cloudflare D1 database:
+        await env.DB.prepare(
+          "UPDATE users SET hasOrderedBefore = TRUE WHERE id = ?"
+        ).bind(customerDetails.userId).run();
+      } catch (dbErr) {
+        console.error("Failed to update first-order status in database:", dbErr);
+      }
+    }
+
     // Prepare unified order payload
     const dressSummary = cartItems.map(i => `${i.name} (Qty: ${i.quantity})`).join(', ');
     const orderPayload = {
@@ -56,7 +69,7 @@ export async function onRequestPost(context) {
       }))
     };
 
-    // 2. Automatically dispatch order to Shiprocket
+    // 3. Automatically dispatch order to Shiprocket
     const shiprocketPayload = {
       order_id: razorpay_payment_id,
       order_date: new Date().toISOString().slice(0, 10),
@@ -91,7 +104,7 @@ export async function onRequestPost(context) {
 
     const shiprocketResult = await shiprocketRes.json();
 
-    // 3. Trigger Email Dispatch (Customer + Admin Notification)
+    // 4. Trigger Email Dispatch (Customer + Admin Notification)
     await sendEmailsInternal(env, orderPayload);
 
     return new Response(JSON.stringify({ 
