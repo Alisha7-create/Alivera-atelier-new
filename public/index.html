@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivéra Atelier – High Couture & Custom Tailoring</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="data:image/jpeg;base64,..."> <!-- Base64 or direct image reference if uploaded -->
+    <link rel="icon" type="image/jpeg" href="data:image/jpeg;base64,...">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -126,7 +126,7 @@
         .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; font-weight: 400; }
         .card-price { font-size: 1.15rem; color: var(--accent-gold); font-weight: 500; margin-bottom: 20px; }
 
-        .select-size { width: 100%; padding: 12px 16px; background: #101010; border: 1px solid var(--border-gold); color: #fff; border-radius: 4px; font-family: inherit; font-size: 0.85rem; margin-bottom: 15px; outline: none; position: relative; z-index: 5; }
+        .select-size { width: 100%; padding: 12px 16px; background: #101010; border: 1px solid var(--border-gold); color: #fff; border-radius: 4px; font-family: inherit; font-size: 0.85rem; margin-bottom: 12px; outline: none; position: relative; z-index: 5; }
         .select-size:focus { border-color: var(--accent-gold); }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
@@ -334,16 +334,13 @@
             }
         });
 
-        // REAL-TIME FIRESTORE LISTENERS FOR INSTANT UPDATES ON SAVE
         function initRealtimeSync() {
-            // Listen for changes to Dresses
             db.collection("atelier_dresses").onSnapshot(snapshot => {
                 allDresses = [];
                 snapshot.forEach(doc => allDresses.push({ id: doc.id, ...doc.data() }));
                 renderGrid(allDresses);
             });
 
-            // Listen for changes to Promo/Banner/Timer/GST Settings
             db.collection("settings").doc("promotion").onSnapshot(async snapshot => {
                 if (snapshot.exists) {
                     currentSettings = snapshot.data();
@@ -420,7 +417,7 @@
                                 <option value="Custom">Custom Design & Measurements</option>
                             </select>
 
-                            ${d.sizeChart ? `<button class="btn" style="width:100%; margin-bottom:12px; font-size:0.7rem; padding:8px;" onclick="openSizeChart('${d.sizeChart}')">View Size Chart</button>` : ''}
+                            <button class="btn" style="width:100%; margin-bottom:14px; font-size:0.7rem; padding:8px;" onclick="openSizeChart('${d.sizeChart || ''}')">View Size Chart</button>
                         </div>
 
                         <div style="display: flex; gap: 10px;">
@@ -436,7 +433,7 @@
             const modal = document.getElementById('sizechart-modal');
             const img = document.getElementById('modal-sizechart-img');
             const txt = document.getElementById('no-sizechart-text');
-            if(chartUrl) {
+            if (chartUrl && chartUrl.trim() !== "") {
                 img.src = chartUrl;
                 img.style.display = 'block';
                 txt.style.display = 'none';
