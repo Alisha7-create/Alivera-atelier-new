@@ -4,18 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivéra Atelier – High Couture & Custom Tailoring</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="data:image/jpeg;base64,..."> <!-- Base64 or direct image reference if uploaded -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-obsidian: #030303;
-            --surface-luxury: #0a0a0a;
-            --surface-card: #111111;
-            --border-gold: rgba(197, 168, 128, 0.22);
-            --border-gold-hover: rgba(197, 168, 128, 0.6);
-            --text-main: #f8f8f8;
-            --text-muted: #888888;
+            --bg-obsidian: #080808;
+            --surface-luxury: #121212;
+            --surface-card: #181818;
+            --border-gold: rgba(197, 168, 128, 0.3);
+            --border-gold-hover: rgba(197, 168, 128, 0.8);
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
             --accent-gold: #c5a880;
-            --accent-gold-glow: rgba(197, 168, 128, 0.18);
+            --accent-gold-glow: rgba(197, 168, 128, 0.25);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -36,7 +38,7 @@
             align-items: center;
             padding: 28px 6%;
             border-bottom: 1px solid var(--border-gold);
-            background-color: rgba(3, 3, 3, 0.85);
+            background-color: rgba(8, 8, 8, 0.9);
             backdrop-filter: blur(16px);
             position: sticky;
             top: 0;
@@ -108,7 +110,7 @@
 
         .banner-container { width: 100%; aspect-ratio: 1897 / 412; max-height: 412px; overflow: hidden; background: #000; border-bottom: 1px solid var(--border-gold); display: none; }
         .banner-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .countdown-bar { background: #060606; border-bottom: 1px solid var(--border-gold); text-align: center; padding: 14px; color: var(--accent-gold); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; display: none; }
+        .countdown-bar { background: #0a0a0a; border-bottom: 1px solid var(--border-gold); text-align: center; padding: 14px; color: var(--accent-gold); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; display: none; }
 
         .container { max-width: 1440px; margin: 60px auto; padding: 0 40px; flex: 1; width: 100%; }
         .input-field { width: 100%; padding: 15px 22px; background: var(--surface-luxury); border: 1px solid var(--border-gold); color: var(--text-main); font-family: inherit; font-size: 0.95rem; border-radius: 6px; outline: none; transition: border-color 0.3s; }
@@ -118,13 +120,13 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 45px; }
         .card { background-color: var(--surface-card); border: 1px solid var(--border-gold); border-radius: 6px; overflow: hidden; transition: transform 0.3s ease; display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-6px); border-color: var(--border-gold-hover); }
-        .product-thumb-container { width: 100%; height: 460px; background: #0c0c0c; overflow: hidden; position: relative; }
+        .product-thumb-container { width: 100%; height: 460px; background: #141414; overflow: hidden; position: relative; }
         .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; }
         .card-content { padding: 30px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
         .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; font-weight: 400; }
         .card-price { font-size: 1.15rem; color: var(--accent-gold); font-weight: 500; margin-bottom: 20px; }
 
-        .select-size { width: 100%; padding: 12px 16px; background: #000; border: 1px solid var(--border-gold); color: #fff; border-radius: 4px; font-family: inherit; font-size: 0.85rem; margin-bottom: 15px; outline: none; position: relative; z-index: 5; }
+        .select-size { width: 100%; padding: 12px 16px; background: #101010; border: 1px solid var(--border-gold); color: #fff; border-radius: 4px; font-family: inherit; font-size: 0.85rem; margin-bottom: 15px; outline: none; position: relative; z-index: 5; }
         .select-size:focus { border-color: var(--accent-gold); }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
@@ -163,7 +165,7 @@
         </div>
     </header>
 
-    <!-- Promotional / Hero Banner directly at the top -->
+    <!-- Promotional / Hero Banner directly at top -->
     <div id="countdown-bar" class="countdown-bar">Limited Collection Sale Commences In: <span id="timer-text">--:--:--</span></div>
     <div id="banner-wrapper" class="banner-container">
         <img id="active-banner-img" src="" alt="Alivéra Atelier Banner">
@@ -207,7 +209,7 @@
         </div>
     </div>
 
-    <!-- Auth Modal with masked password -->
+    <!-- Auth Modal -->
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModals()">&times;</span>
@@ -270,6 +272,7 @@
 
         let allDresses = [];
         let localCart = [];
+        let currentSettings = {};
 
         function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
         function openAccountModal() { document.getElementById('account-modal').style.display = 'flex'; loadAccountData('profile'); }
@@ -331,59 +334,64 @@
             }
         });
 
-        async function loadStorefrontData() {
-            try {
-                const snapshot = await db.collection("atelier_dresses").get();
+        // REAL-TIME FIRESTORE LISTENERS FOR INSTANT UPDATES ON SAVE
+        function initRealtimeSync() {
+            // Listen for changes to Dresses
+            db.collection("atelier_dresses").onSnapshot(snapshot => {
                 allDresses = [];
                 snapshot.forEach(doc => allDresses.push({ id: doc.id, ...doc.data() }));
                 renderGrid(allDresses);
+            });
 
-                const promoSnap = await db.collection("settings").doc("promotion").get();
-                if (promoSnap.exists) {
-                    const p = promoSnap.data();
-                    const bannerImg = document.getElementById('active-banner-img');
-                    const bannerWrapper = document.getElementById('banner-wrapper');
-                    const countdownBar = document.getElementById('countdown-bar');
+            // Listen for changes to Promo/Banner/Timer/GST Settings
+            db.collection("settings").doc("promotion").onSnapshot(async snapshot => {
+                if (snapshot.exists) {
+                    currentSettings = snapshot.data();
+                    updateBannerAndPromoDisplay();
+                }
+            });
+        }
 
-                    let activeImg = p.heroBannerUrl || "";
-                    let isSaleActive = false;
+        async function updateBannerAndPromoDisplay() {
+            const bannerImg = document.getElementById('active-banner-img');
+            const bannerWrapper = document.getElementById('banner-wrapper');
+            const countdownBar = document.getElementById('countdown-bar');
 
-                    if (p.activeMode === 'sale-firstcome') {
-                        const totalOrdersSnap = await db.collection("orders").get();
-                        const orderCount = totalOrdersSnap.size;
-                        const maxPeople = parseInt(p.saleLimitPeople) || 10;
-                        if (orderCount < maxPeople) {
-                            activeImg = p.saleBannerUrl || p.heroBannerUrl;
-                            isSaleActive = true;
-                        }
-                    } else if (p.activeMode === 'sale-dates') {
-                        const now = new Date();
-                        const startDate = p.saleStartDate ? new Date(p.saleStartDate) : null;
-                        const endDate = p.saleEndDate ? new Date(p.saleEndDate) : null;
-                        if ((!startDate || now >= startDate) && (!endDate || now <= endDate)) {
-                            activeImg = p.saleBannerUrl || p.heroBannerUrl;
-                            isSaleActive = true;
-                            if (p.timerActive) {
-                                countdownBar.style.display = 'block';
-                                document.getElementById('timer-text').textContent = p.timerText || "24:00:00";
-                            }
-                        }
-                    }
+            let activeImg = currentSettings.heroBannerUrl || "";
+            let isSaleActive = false;
 
-                    if (!isSaleActive) {
-                        countdownBar.style.display = 'none';
-                        activeImg = p.heroBannerUrl || "";
-                    }
-
-                    if (activeImg) {
-                        bannerImg.src = activeImg;
-                        bannerWrapper.style.display = 'block';
-                    } else {
-                        bannerWrapper.style.display = 'none';
+            if (currentSettings.activeMode === 'sale-firstcome') {
+                const totalOrdersSnap = await db.collection("orders").get();
+                const orderCount = totalOrdersSnap.size;
+                const maxPeople = parseInt(currentSettings.saleLimitPeople) || 10;
+                if (orderCount < maxPeople) {
+                    activeImg = currentSettings.saleBannerUrl || currentSettings.heroBannerUrl;
+                    isSaleActive = true;
+                }
+            } else if (currentSettings.activeMode === 'sale-dates') {
+                const now = new Date();
+                const startDate = currentSettings.saleStartDate ? new Date(currentSettings.saleStartDate) : null;
+                const endDate = currentSettings.saleEndDate ? new Date(currentSettings.saleEndDate) : null;
+                if ((!startDate || now >= startDate) && (!endDate || now <= endDate)) {
+                    activeImg = currentSettings.saleBannerUrl || currentSettings.heroBannerUrl;
+                    isSaleActive = true;
+                    if (currentSettings.timerActive) {
+                        countdownBar.style.display = 'block';
+                        document.getElementById('timer-text').textContent = currentSettings.timerText || "24:00:00";
                     }
                 }
-            } catch (e) {
-                console.error("Error loading storefront:", e);
+            }
+
+            if (!isSaleActive) {
+                countdownBar.style.display = 'none';
+                activeImg = currentSettings.heroBannerUrl || "";
+            }
+
+            if (activeImg) {
+                bannerImg.src = activeImg;
+                bannerWrapper.style.display = 'block';
+            } else {
+                bannerWrapper.style.display = 'none';
             }
         }
 
@@ -477,7 +485,7 @@
             container.innerHTML = localCart.map((item, idx) => {
                 subtotal += item.price;
                 return `
-                    <div style="background: #000; border: 1px solid var(--border-gold); padding: 16px; border-radius: 6px; margin-bottom: 14px;">
+                    <div style="background: #141414; border: 1px solid var(--border-gold); padding: 16px; border-radius: 6px; margin-bottom: 14px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
                             <b style="color: #fff; font-family: 'Playfair Display', serif;">${item.name}</b>
                             <span style="color: var(--accent-gold);">₹${item.price.toLocaleString('en-IN')}</span>
@@ -527,31 +535,28 @@
             
             let discountAmount = 0;
             let appliedDiscountText = "None";
-            const settingsSnap = await db.collection("settings").doc("promotion").get();
-            if (settingsSnap.exists) {
-                const sData = settingsSnap.data();
-                let applySale = false;
-                if (sData.activeMode === 'sale-firstcome') {
-                    const totalOrdersSnap = await db.collection("orders").get();
-                    if (totalOrdersSnap.size < (parseInt(sData.saleLimitPeople) || 10)) applySale = true;
-                } else if (sData.activeMode === 'sale-dates') {
-                    const now = new Date();
-                    const startDate = sData.saleStartDate ? new Date(sData.saleStartDate) : null;
-                    const endDate = sData.saleEndDate ? new Date(sData.saleEndDate) : null;
-                    if ((!startDate || now >= startDate) && (!endDate || now <= endDate)) applySale = true;
-                }
+            
+            let applySale = false;
+            if (currentSettings.activeMode === 'sale-firstcome') {
+                const totalOrdersSnap = await db.collection("orders").get();
+                if (totalOrdersSnap.size < (parseInt(currentSettings.saleLimitPeople) || 10)) applySale = true;
+            } else if (currentSettings.activeMode === 'sale-dates') {
+                const now = new Date();
+                const startDate = currentSettings.saleStartDate ? new Date(currentSettings.saleStartDate) : null;
+                const endDate = currentSettings.saleEndDate ? new Date(currentSettings.saleEndDate) : null;
+                if ((!startDate || now >= startDate) && (!endDate || now <= endDate)) applySale = true;
+            }
 
-                if (applySale && sData.saleDiscountPercent) {
-                    let discNum = parseFloat(sData.saleDiscountPercent) || 0;
-                    discountAmount = (baseSubtotal * discNum) / 100;
-                    appliedDiscountText = `${sData.saleDiscountPercent}% Sale Discount`;
-                }
+            if (applySale && currentSettings.saleDiscountPercent) {
+                let discNum = parseFloat(currentSettings.saleDiscountPercent) || 0;
+                discountAmount = (baseSubtotal * discNum) / 100;
+                appliedDiscountText = `${currentSettings.saleDiscountPercent}% Sale Discount`;
             }
 
             const discountedSubtotal = baseSubtotal - discountAmount;
             const deliveryCharge = 49;
             
-            const gstRate = settingsSnap.exists ? (parseFloat(settingsSnap.data().gstPercent) || 5) : 5;
+            const gstRate = parseFloat(currentSettings.gstPercent) || 5;
             const gstAmount = (discountedSubtotal * gstRate) / 100;
             const cgst = gstAmount / 2;
             const sgst = gstAmount / 2;
@@ -668,8 +673,7 @@
             }
         }
 
-        window.addEventListener("pageshow", loadStorefrontData);
-        document.addEventListener("DOMContentLoaded", loadStorefrontData);
+        document.addEventListener("DOMContentLoaded", initRealtimeSync);
     </script>
 </body>
 </html>
