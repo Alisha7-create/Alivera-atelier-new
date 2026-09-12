@@ -400,8 +400,8 @@
                 return;
             }
             grid.innerHTML = dresses.map(d => {
-                // Safely encode or handle sizeChart string for inline HTML click handler
-                const chartParam = d.sizeChart ? d.sizeChart.replace(/"/g, '&quot;') : '';
+                // Using d.sizeChartUrl to match the Admin upload property
+                const chartParam = d.sizeChartUrl ? d.sizeChartUrl.replace(/"/g, '&quot;') : '';
                 return `
                     <div class="card">
                         <div class="product-thumb-container"><img src="${d.imageUrl || ''}" alt="${d.name}"></div>
