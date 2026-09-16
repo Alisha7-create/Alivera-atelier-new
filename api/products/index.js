@@ -20,7 +20,6 @@ export default async function(req, res) {
     const base = `https://${req.headers.host || 'aliveraatelier.in'}`;
     let rows = [];
     
-    // Check if D1 database binding exists and query using proper table quoting
     if (typeof env !== 'undefined' && env && env.DB) {
       try {
         const { results } = await env.DB.prepare(
@@ -28,11 +27,11 @@ export default async function(req, res) {
         ).all();
         rows = results || [];
       } catch (dbErr) {
-        console.log("Database query note:", dbErr.message);
+        // Table might not exist locally yet; log it quietly and move on
+        console.log("Local D1 table note:", dbErr.message);
       }
     }
 
-    // Map rows safely
     const products = rows.map(p => {
       const generated = generateProductUrls(p.name, base);
       return {
@@ -44,10 +43,8 @@ export default async function(req, res) {
       };
     });
 
-    // ALWAYS return an array so products.map() never fails on the frontend
     return res.json(products);
   } catch (e) {
-    // Return an empty array on catch so the frontend receives [] instead of a 500 error
     return res.json([]);
   }
 }
