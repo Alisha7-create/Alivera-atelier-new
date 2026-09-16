@@ -2,7 +2,6 @@ export const access = 'public';
 export const methods = ['GET'];
 
 export default async function(req, res) {
-  // Helper function to safely send a JSON array response
   const sendJSON = (data) => {
     if (res && typeof res.json === 'function') {
       return res.json(data);
@@ -33,8 +32,10 @@ export default async function(req, res) {
               id: id,
               name: fields.name?.stringValue || '',
               description: fields.description?.stringValue || '',
-              price: fields.price?.stringValue || '',
-              stock: fields.stock?.integerValue || fields.stock?.stringValue || 0,
+              price: fields.price?.integerValue || fields.price?.doubleValue || fields.price?.stringValue || 0,
+              // Check for imageUrl or image fields stored from the admin dashboard
+              imageUrl: fields.imageUrl?.stringValue || fields.image?.stringValue || '',
+              sizeChart: fields.sizeChart?.stringValue || fields.size_chart_url?.stringValue || '',
               active: fields.active?.booleanValue ?? true
             };
           });
@@ -44,7 +45,6 @@ export default async function(req, res) {
       console.log("Firebase fetch error:", firebaseErr.message);
     }
 
-    // Determine base URL dynamically
     let host = 'aliveraatelier.in';
     if (req && req.headers) {
       if (typeof req.headers.get === 'function') {
@@ -55,27 +55,28 @@ export default async function(req, res) {
     }
     const base = `https://${host}`;
 
-    // Map rows to clean dynamic asset URLs
+    // Map rows and ensure image links are fully populated for web and app
     const products = rows.map(p => {
       const slug = (p.name || 'dress')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
       
+      const defaultImg = `${base}/assets/${slug}.jpg`;
+      const defaultChart = `${base}/assets/${slug}-size-chart.jpg`;
+
       return {
         ...p,
         slug: p.slug || slug,
-        image: p.image || `${base}/assets/${slug}.jpg`,
-        image_url: p.image_url || `${base}/assets/${slug}.jpg`,
-        size_chart_url: p.size_chart_url || `${base}/assets/${slug}-size-chart.jpg`
+        image: p.imageUrl || defaultImg,
+        image_url: p.imageUrl || defaultImg,
+        size_chart_url: p.sizeChart || defaultChart
       };
     });
 
-    // Send the valid products array (even if empty, it's an array so .map() won't crash)
     return sendJSON(products);
 
   } catch (e) {
-    // Ultimate safety net: guarantees a valid array is sent back so frontend never crashes
     return sendJSON([]);
   }
 }
