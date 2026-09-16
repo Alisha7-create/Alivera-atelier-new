@@ -1,15 +1,15 @@
-export async function onRequestGet(context) {
+export const access = 'public';
+export const methods = ['GET'];
+
+export default async function(req, res) {
   try {
-    const { request, env } = context;
-    const url = new URL(request.url);
-    const base = `${url.protocol}//${url.host}`;
-    
     let rows = [];
 
-    try {
-      const firebaseProjectId = (env && env.FIREBASE_PROJECT_ID) || 'alivera-atelier'; 
-      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firebaseProjectId}/databases/(default)/documents/atelier_dresses`;
+    // Fetch directly from your Firebase Firestore REST endpoint for 'atelier_dresses'
+    const firebaseProjectId = 'alivera-atelier'; 
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firebaseProjectId}/databases/(default)/documents/atelier_dresses`;
 
+    try {
       const response = await fetch(firestoreUrl);
       if (response.ok) {
         const data = await response.json();
@@ -30,10 +30,14 @@ export async function onRequestGet(context) {
         }
       }
     } catch (firebaseErr) {
-      console.log("Firebase fetch error:", firebaseErr.message);
+      console.log("Firebase fetch note:", firebaseErr.message);
     }
 
-    // Map rows to dynamic URLs for Web & App
+    // Determine base URL dynamically from request headers or default domain
+    const host = (req && req.headers && (req.headers.host || (typeof req.headers.get === 'function' ? req.headers.get('host') : ''))) || 'aliveraatelier.in';
+    const base = `https://${host}`;
+
+    // Map rows to dynamic URLs for both website and app
     const products = rows.map(p => {
       const slug = (p.name || 'dress')
         .toLowerCase()
@@ -49,14 +53,22 @@ export async function onRequestGet(context) {
       };
     });
 
+    // Support Express/Node res.json() response format
+    if (res && typeof res.json === 'function') {
+      return res.json(products);
+    }
+    
+    // Fallback response if res is a Web Response object
     return new Response(JSON.stringify(products), {
       status: 200,
-      headers: { 
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*' // Allows your app and website to fetch data freely
-      }
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
+
   } catch (e) {
+    // Always return a valid empty array on error so .map() never crashes
+    if (res && typeof res.json === 'function') {
+      return res.json([]);
+    }
     return new Response(JSON.stringify([]), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
