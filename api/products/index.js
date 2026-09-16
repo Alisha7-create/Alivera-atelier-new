@@ -5,9 +5,12 @@ export default async function(req, res) {
   try {
     let rows = [];
 
-    // Fetch directly from your Firebase Firestore REST endpoint for 'atelier_dresses'
-    const firebaseProjectId = 'alivera-atelier'; 
-    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firebaseProjectId}/databases/(default)/documents/atelier_dresses`;
+    // Using your exact Firebase Project ID and API Key from your configuration
+    const firebaseProjectId = 'alivera-atelier';
+    const apiKey = 'AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc';
+    
+    // Firestore REST API endpoint with API key authorization
+    const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firebaseProjectId}/databases/(default)/documents/atelier_dresses?key=${apiKey}`;
 
     try {
       const response = await fetch(firestoreUrl);
@@ -28,9 +31,11 @@ export default async function(req, res) {
             };
           });
         }
+      } else {
+        console.log("Firestore response status:", response.status);
       }
     } catch (firebaseErr) {
-      console.log("Firebase fetch note:", firebaseErr.message);
+      console.log("Firebase connection note:", firebaseErr.message);
     }
 
     // Determine base URL dynamically from request headers or default domain
@@ -53,19 +58,16 @@ export default async function(req, res) {
       };
     });
 
-    // Support Express/Node res.json() response format
     if (res && typeof res.json === 'function') {
       return res.json(products);
     }
     
-    // Fallback response if res is a Web Response object
     return new Response(JSON.stringify(products), {
       status: 200,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
 
   } catch (e) {
-    // Always return a valid empty array on error so .map() never crashes
     if (res && typeof res.json === 'function') {
       return res.json([]);
     }
