@@ -1,27 +1,36 @@
-import { db } from '../../src/compat.js';
+import { initializeApp, getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+
+// Initialize Firebase Admin if not already initialized
+if (!getApps().length) {
+  initializeApp();
+}
+
+const db = getFirestore();
 
 export const access = 'public';
 export const methods = ['GET'];
 
 export default async function(req, res) {
   try {
-    const { rows } = await db.query(
-      "SELECT id, name, slug, description, price, sizes, stock, active FROM products WHERE active = 1 OR active = true ORDER BY id DESC"
-    );
+    // Fetch all products directly from your Firebase Firestore 'products' collection
+    const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
     
-    const base = `https://${req.headers.host || 'aliveraatelier.in'}`;
-    
-    // Ensure we always return a clean array
-    const productList = (rows || []).map(p => ({
-      ...p,
-      image: `${base}/api/media/product/${p.id}`,
-      image_url: `${base}/api/media/product/${p.id}`,
-      size_chart_url: `${base}/api/media/product/${p.id}/chart`
-    }));
+    if (snapshot.empty) {
+      return res.json([]);
+    }
 
-    return res.json(productList);
+    const products = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      products.push({
+        id: doc.id,
+        ...data
+      });
+    });
+
+    return res.json(products);
   } catch (e) {
-    // If anything fails, return an empty array instead of an error object so the frontend .map() doesn't crash
-    return res.json([]);
+    return res.status(500).json({ error: 'Failed to fetch products from Firebase', details: e.message });
   }
 }
