@@ -5,21 +5,18 @@ export default async function(req, res) {
   try {
     let rows = [];
 
-    // Using your exact Firebase Project ID and API Key from your configuration
     const firebaseProjectId = 'alivera-atelier';
     const apiKey = 'AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc';
-    
-    // Firestore REST API endpoint with API key authorization
     const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firebaseProjectId}/databases/(default)/documents/atelier_dresses?key=${apiKey}`;
 
     try {
       const response = await fetch(firestoreUrl);
       if (response.ok) {
         const data = await response.json();
-        if (data.documents) {
+        if (data && data.documents) {
           rows = data.documents.map(doc => {
             const fields = doc.fields || {};
-            const id = doc.name.split('/').pop();
+            const id = doc.name ? doc.name.split('/').pop() : Math.random().toString();
             
             return {
               id: id,
@@ -31,18 +28,14 @@ export default async function(req, res) {
             };
           });
         }
-      } else {
-        console.log("Firestore response status:", response.status);
       }
     } catch (firebaseErr) {
-      console.log("Firebase connection note:", firebaseErr.message);
+      console.log("Firebase fetch error:", firebaseErr.message);
     }
 
-    // Determine base URL dynamically from request headers or default domain
     const host = (req && req.headers && (req.headers.host || (typeof req.headers.get === 'function' ? req.headers.get('host') : ''))) || 'aliveraatelier.in';
     const base = `https://${host}`;
 
-    // Map rows to dynamic URLs for both website and app
     const products = rows.map(p => {
       const slug = (p.name || 'dress')
         .toLowerCase()
@@ -73,7 +66,7 @@ export default async function(req, res) {
     }
     return new Response(JSON.stringify([]), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
   }
 }
