@@ -6,33 +6,35 @@ export default {
       
       let rows = [];
 
-      // Fetch directly from your Firebase Firestore REST endpoint for 'atelier-dresses'
-      // Replace YOUR_FIREBASE_PROJECT_ID with your actual Firebase project ID if not using environment variables
-      const firebaseProjectId = (env && env.FIREBASE_PROJECT_ID) || 'alivera-atelier'; 
-      const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firebaseProjectId}/databases/(default)/documents/atelier-dresses`;
+      try {
+        const firebaseProjectId = (env && env.FIREBASE_PROJECT_ID) || 'alivera-atelier'; 
+        // Updated to use the correct collection name with underscore: 'atelier_dresses'
+        const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${firebaseProjectId}/databases/(default)/documents/atelier_dresses`;
 
-      const response = await fetch(firestoreUrl);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.documents) {
-          rows = data.documents.map(doc => {
-            // Firestore REST API returns fields wrapped in type objects (e.g. { stringValue: "..." })
-            const fields = doc.fields || {};
-            const id = doc.name.split('/').pop();
-            
-            return {
-              id: id,
-              name: fields.name?.stringValue || '',
-              description: fields.description?.stringValue || '',
-              price: fields.price?.stringValue || '',
-              stock: fields.stock?.integerValue || fields.stock?.stringValue || 0,
-              active: fields.active?.booleanValue ?? true
-            };
-          });
+        const response = await fetch(firestoreUrl);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.documents) {
+            rows = data.documents.map(doc => {
+              const fields = doc.fields || {};
+              const id = doc.name.split('/').pop();
+              
+              return {
+                id: id,
+                name: fields.name?.stringValue || '',
+                description: fields.description?.stringValue || '',
+                price: fields.price?.stringValue || '',
+                stock: fields.stock?.integerValue || fields.stock?.stringValue || 0,
+                active: fields.active?.booleanValue ?? true
+              };
+            });
+          }
         }
+      } catch (firebaseErr) {
+        console.log("Firebase fetch error:", firebaseErr.message);
       }
 
-      // Map rows to dynamic URLs
+      // Map rows to dynamic URLs safely
       const products = rows.map(p => {
         const slug = (p.name || 'dress')
           .toLowerCase()
@@ -48,12 +50,11 @@ export default {
         };
       });
 
-      return Response.json(products, {
+      return new Response(JSON.stringify(products), {
         headers: { 'Content-Type': 'application/json' }
       });
     } catch (e) {
-      // Guaranteed safe fallback so the frontend receives [] instead of a 500 error
-      return Response.json([], {
+      return new Response(JSON.stringify([]), {
         headers: { 'Content-Type': 'application/json' }
       });
     }
