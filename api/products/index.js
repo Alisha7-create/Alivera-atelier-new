@@ -2,6 +2,17 @@ export const access = 'public';
 export const methods = ['GET'];
 
 export default async function(req, res) {
+  // Helper function to safely send a JSON array response
+  const sendJSON = (data) => {
+    if (res && typeof res.json === 'function') {
+      return res.json(data);
+    }
+    return new Response(JSON.stringify(data), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
+  };
+
   try {
     let rows = [];
 
@@ -33,9 +44,18 @@ export default async function(req, res) {
       console.log("Firebase fetch error:", firebaseErr.message);
     }
 
-    const host = (req && req.headers && (req.headers.host || (typeof req.headers.get === 'function' ? req.headers.get('host') : ''))) || 'aliveraatelier.in';
+    // Determine base URL dynamically
+    let host = 'aliveraatelier.in';
+    if (req && req.headers) {
+      if (typeof req.headers.get === 'function') {
+        host = req.headers.get('host') || host;
+      } else if (req.headers.host) {
+        host = req.headers.host;
+      }
+    }
     const base = `https://${host}`;
 
+    // Map rows to clean dynamic asset URLs
     const products = rows.map(p => {
       const slug = (p.name || 'dress')
         .toLowerCase()
@@ -51,22 +71,11 @@ export default async function(req, res) {
       };
     });
 
-    if (res && typeof res.json === 'function') {
-      return res.json(products);
-    }
-    
-    return new Response(JSON.stringify(products), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-    });
+    // Send the valid products array (even if empty, it's an array so .map() won't crash)
+    return sendJSON(products);
 
   } catch (e) {
-    if (res && typeof res.json === 'function') {
-      return res.json([]);
-    }
-    return new Response(JSON.stringify([]), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-    });
+    // Ultimate safety net: guarantees a valid array is sent back so frontend never crashes
+    return sendJSON([]);
   }
 }
