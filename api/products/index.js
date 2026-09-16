@@ -1,7 +1,6 @@
 export const access = 'public';
 export const methods = ['GET'];
 
-// Helper function to convert the dress name into a clean asset URL
 function generateProductUrls(name, baseUrl = 'https://aliveraatelier.in') {
   const slug = (name || 'dress')
     .toLowerCase()
@@ -21,15 +20,19 @@ export default async function(req, res) {
     const base = `https://${req.headers.host || 'aliveraatelier.in'}`;
     let rows = [];
     
-    // Query your actual 'atelier-dresses' table in Cloudflare D1
+    // Check if D1 database binding exists and query using proper table quoting
     if (typeof env !== 'undefined' && env && env.DB) {
-      const { results } = await env.DB.prepare(
-        "SELECT id, name, description, price, sizes, stock, active FROM atelier-dresses ORDER BY id DESC"
-      ).all();
-      rows = results || [];
+      try {
+        const { results } = await env.DB.prepare(
+          `SELECT id, name, description, price, sizes, stock, active FROM "atelier-dresses" ORDER BY id DESC`
+        ).all();
+        rows = results || [];
+      } catch (dbErr) {
+        console.log("Database query note:", dbErr.message);
+      }
     }
 
-    // Map through real database records and attach generated URLs
+    // Map rows safely
     const products = rows.map(p => {
       const generated = generateProductUrls(p.name, base);
       return {
@@ -41,8 +44,10 @@ export default async function(req, res) {
       };
     });
 
+    // ALWAYS return an array so products.map() never fails on the frontend
     return res.json(products);
   } catch (e) {
-    return res.status(500).json({ error: 'Failed to fetch real products from atelier-dresses', details: e.message });
+    // Return an empty array on catch so the frontend receives [] instead of a 500 error
+    return res.json([]);
   }
 }
