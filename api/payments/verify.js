@@ -10,7 +10,7 @@ export async function onRequestPost(context) {
       customerDetails, 
       cartItems, 
       finalAmount,
-      isFirstOrder // Received from frontend/checkout
+      isFirstOrder 
     } = body;
 
     // 1. Verify Razorpay Signature securely using Web Crypto API
@@ -38,7 +38,6 @@ export async function onRequestPost(context) {
     // 2. Lock out future first-order discounts for this customer if applicable
     if (isFirstOrder && customerDetails?.userId) {
       try {
-        // If using Cloudflare D1 database:
         await env.DB.prepare(
           "UPDATE users SET hasOrderedBefore = TRUE WHERE id = ?"
         ).bind(customerDetails.userId).run();
@@ -64,8 +63,8 @@ export async function onRequestPost(context) {
       items: cartItems.map(item => ({
         name: item.name,
         sku: item.sku || "ALV-DRESS",
-        quantity: item.quantity || 1,
-        price: item.price
+        units: item.quantity || 1, // Fixed to match Shiprocket parameter expectation
+        selling_price: item.price
       }))
     };
 
