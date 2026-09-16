@@ -9,7 +9,8 @@
     "directory": "./public"
   },
   "vars": {
-    "ENVIRONMENT": "production"
+    "ENVIRONMENT": "production",
+    "RAZORPAY_KEY_ID": "rzp_live_TUhsK2amojFPDp"
   },
   "d1_databases": [
     {
