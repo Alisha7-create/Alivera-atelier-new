@@ -109,4 +109,615 @@
         }
 
         .banner-container { width: 100%; aspect-ratio: 1897 / 412; max-height: 412px; overflow: hidden; background: #000; border-bottom: 1px solid var(--border-gold); display: none; }
-        .banner-container img { width: 1
+        .banner-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .countdown-bar { background: #0a0a0a; border-bottom: 1px solid var(--border-gold); text-align: center; padding: 14px; color: var(--accent-gold); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; display: none; }
+
+        .container { max-width: 1440px; margin: 60px auto; padding: 0 40px; flex: 1; width: 100%; }
+        .input-field { width: 100%; padding: 15px 22px; background: var(--surface-luxury); border: 1px solid var(--border-gold); color: var(--text-main); font-family: inherit; font-size: 0.95rem; border-radius: 6px; outline: none; transition: border-color 0.3s; }
+        .input-field:focus { border-color: var(--accent-gold); box-shadow: 0 0 20px rgba(197, 168, 128, 0.15); }
+
+        .collection-heading { font-size: 2.4rem; font-weight: 300; letter-spacing: 4px; margin-bottom: 40px; color: var(--text-main); border-bottom: 1px solid var(--border-gold); padding-bottom: 22px; display: flex; justify-content: space-between; align-items: baseline; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 45px; }
+        .card { background-color: var(--surface-card); border: 1px solid var(--border-gold); border-radius: 6px; overflow: hidden; transition: transform 0.3s ease; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-6px); border-color: var(--border-gold-hover); }
+        .product-thumb-container { width: 100%; height: 460px; background: #141414; overflow: hidden; position: relative; }
+        .product-thumb-container img { width: 100%; height: 100%; object-fit: cover; }
+        .card-content { padding: 30px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+        .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; color: var(--text-main); margin-bottom: 10px; font-weight: 400; }
+        .card-price { font-size: 1.15rem; color: var(--accent-gold); font-weight: 500; margin-bottom: 20px; }
+
+        .select-size { width: 100%; padding: 12px 16px; background: #101010; border: 1px solid var(--border-gold); color: #fff; border-radius: 4px; font-family: inherit; font-size: 0.85rem; margin-bottom: 12px; outline: none; position: relative; z-index: 5; }
+        .select-size:focus { border-color: var(--accent-gold); }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--surface-luxury); border: 1px solid var(--border-gold); padding: 50px; width: 90%; max-width: 580px; border-radius: 8px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 26px; right: 30px; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+        .close-modal:hover { color: var(--accent-gold); }
+
+        #cart-drawer { position: fixed; right: -480px; top: 0; width: 460px; height: 100%; background: var(--surface-luxury); border-left: 1px solid var(--border-gold); z-index: 1100; transition: right 0.3s ease; display: flex; flex-direction: column; padding: 40px; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
+        #cart-drawer.open { right: 0; }
+
+        .account-tabs { display: flex; gap: 30px; border-bottom: 1px solid var(--border-gold); margin-bottom: 30px; padding-bottom: 2px; }
+        .account-tab-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 600; padding-bottom: 12px; }
+        .account-tab-btn.active { color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); margin-bottom: -1px; }
+
+        footer { text-align: center; padding: 70px 20px; border-top: 1px solid var(--border-gold); background-color: var(--surface-luxury); font-size: 0.85rem; color: var(--text-muted); margin-top: 140px; }
+        footer p { margin-bottom: 12px; }
+        footer a { color: var(--accent-gold); text-decoration: none; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="brand-title">Alivéra Atelier</a>
+        <div class="nav-actions">
+            <button class="cart-icon-btn" onclick="toggleCartDrawer()" title="View Shopping Cart">
+                🛒
+                <span id="cart-item-count" class="cart-badge">0</span>
+            </button>
+            <a href="/admin/index.html" id="admin-header-btn" class="btn btn-gold-admin">Admin Dashboard</a>
+            <button id="account-btn" class="btn" style="display: none;" onclick="openAccountModal()">Account</button>
+            <button id="auth-btn" class="btn btn-primary" onclick="openAuthModal()">Sign In</button>
+        </div>
+    </header>
+
+    <div id="countdown-bar" class="countdown-bar">Limited Collection Sale Commences In: <span id="timer-text">--:--:--</span></div>
+    <div id="banner-wrapper" class="banner-container">
+        <img id="active-banner-img" src="" alt="Alivéra Atelier Banner">
+    </div>
+
+    <div id="cart-drawer">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border-gold); padding-bottom: 20px;">
+            <h3 style="color: var(--accent-gold); font-size: 1.5rem; font-weight: 400;">Your Couture Cart</h3>
+            <span class="close-modal" style="position:static;" onclick="toggleCartDrawer()">&times;</span>
+        </div>
+        <div id="cart-items-container" style="flex: 1; overflow-y: auto; margin-bottom: 20px; font-size: 0.9rem; color: var(--text-muted);">
+            <p style="font-style: italic;">Your cart is currently empty.</p>
+        </div>
+        <div id="cart-summary-box" style="border-top: 1px solid var(--border-gold); padding-top: 20px; display: none;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem;">
+                <span>Subtotal:</span>
+                <span id="cart-subtotal-text" style="color: #fff;">₹0</span>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; padding: 15px; border-radius: 40px; margin-top: 15px;" onclick="checkoutCart()">Proceed to Secure Checkout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="collection-heading" style="margin-top: 10px;">
+            <h3>The Master Collection</h3>
+            <span id="collection-count" style="font-size: 0.85rem; color: var(--text-muted); letter-spacing: 1.5px;"></span>
+        </div>
+        <div id="product-grid" class="grid">
+            <p style="color: var(--text-muted); font-style: italic;">Curating exquisite pieces...</p>
+        </div>
+    </div>
+
+    <div id="sizechart-modal" class="modal">
+        <div class="modal-content" style="text-align:center;">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h3 style="color: var(--accent-gold); margin-bottom: 20px; font-size: 1.6rem; font-weight: 400;">Garment Size Guide</h3>
+            <img id="modal-sizechart-img" src="" alt="Size Chart" style="width:100%; max-height:450px; object-fit:contain; border-radius:4px; border:1px solid var(--border-gold); background:#000; display:none;">
+            <p id="no-sizechart-text" style="color:var(--text-muted); font-style:italic;">Standard Alivéra Atelier Couture Sizing Applies (XS to XXL & Custom Tailoring).</p>
+        </div>
+    </div>
+
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h3 style="color: var(--accent-gold); margin-bottom: 10px; font-size: 1.8rem; font-weight: 400; font-family: 'Playfair Display', serif;">Client Portal</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 35px; line-height: 1.5;">Authenticate to access custom orders and private rewards.</p>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 22px; padding: 15px; border-radius: 40px;" onclick="googleSignIn()">Continue with Google</button>
+            <div style="display: flex; align-items: center; text-align: center; color: var(--text-muted); margin-bottom: 22px; font-size: 0.75rem;">
+                <div style="flex: 1; border-bottom: 1px solid var(--border-gold);"></div>
+                <span style="padding: 0 16px; text-transform: uppercase; letter-spacing: 2px;">Or secure email</span>
+                <div style="flex: 1; border-bottom: 1px solid var(--border-gold);"></div>
+            </div>
+            <input type="email" id="auth-email-input" placeholder="Email Address" class="input-field" style="margin-bottom: 15px;" autocomplete="email">
+            <input type="password" id="auth-pass" placeholder="Password" class="input-field" style="margin-bottom: 30px;" autocomplete="current-password">
+            <button class="btn" style="width: 100%; padding: 15px; border-radius: 40px;" onclick="emailAuth()">Sign In / Register</button>
+        </div>
+    </div>
+
+    <div id="account-modal" class="modal">
+        <div class="modal-content" style="max-width: 680px;">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 35px;">
+                <div id="user-avatar-container" style="width: 68px; height: 68px; border-radius: 50%; border: 1px solid var(--accent-gold); overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--accent-gold); font-family: 'Playfair Display', serif;"></div>
+                <div>
+                    <h3 id="account-display-name" style="color: var(--accent-gold); font-size: 1.5rem; font-weight: 400; margin-bottom: 4px;">Client</h3>
+                    <p id="account-display-email" style="font-size: 0.85rem; color: var(--text-muted);"></p>
+                </div>
+            </div>
+            <div class="account-tabs">
+                <button class="account-tab-btn active" onclick="switchAccountTab('profile')">Profile & Details</button>
+                <button class="account-tab-btn" onclick="switchAccountTab('wishlist')">Wishlist</button>
+                <button class="account-tab-btn" onclick="switchAccountTab('viewed')">Recently Viewed</button>
+            </div>
+            <div id="account-tab-content" style="min-height: 240px; font-size: 0.9rem; color: var(--text-muted);"></div>
+            <button class="btn" style="margin-top: 35px; width: 100%; border-color: rgba(229,115,115,0.4); color: #e57373;" onclick="firebase.auth().signOut(); closeModals();">Sign Out</button>
+        </div>
+    </div>
+
+    <footer>
+        <p style="font-family: 'Playfair Display', Georgia, serif; font-size: 1.3rem; color: var(--accent-gold); margin-bottom: 14px; font-weight: 300; letter-spacing: 1.5px;">Beautiful. The way you are...</p>
+        <p>&copy; 2026 Alivéra Atelier &bull; All Rights Reserved</p>
+        <p style="margin-top: 10px;">Contact: <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a> &bull; Instagram: <a href="https://instagram.com/aliveraatelier" target="_blank">@aliveraatelier</a> &bull; <a href="/privacy.html" target="_blank">Privacy Policy</a></p>
+    </footer>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAcUmpfEF0MVo8OTe87VAlZGSU2VB_7yc",
+            authDomain: "alivera-atelier.firebaseapp.com",
+            databaseURL: "https://alivera-atelier-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "alivera-atelier",
+            storageBucket: "alivera-atelier.firebasestorage.app",
+            messagingSenderId: "952987801898",
+            appId: "1:952987801898:web:af49cb363c53584de1a653",
+            measurementId: "G-YQETZYQ3PT"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        try {
+            auth.getRedirectResult().then((result) => {
+                if (result && result.user) {
+                    console.log("Logged in via Google:", result.user.email);
+                }
+            }).catch((err) => {
+                console.error("Auth redirect error:", err);
+            });
+        } catch(e) { console.error(e); }
+
+        let allDresses = [];
+        let localCart = [];
+        let currentSettings = {};
+
+        function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
+        function openAccountModal() { document.getElementById('account-modal').style.display = 'flex'; loadAccountData('profile'); }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+        
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cart-drawer');
+            if (drawer) drawer.classList.toggle('open');
+            renderCartUI();
+        }
+
+        async function googleSignIn() {
+            try { 
+                await auth.signInWithRedirect(provider); 
+            } catch(e) { 
+                alert("Google Sign-In Error: " + e.message); 
+            }
+        }
+
+        async function emailAuth() {
+            const email = document.getElementById('auth-email-input').value;
+            const pass = document.getElementById('auth-pass').value;
+            if(!email || !pass) { alert("Please enter your email and password."); return; }
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+            } catch {
+                await auth.createUserWithEmailAndPassword(email, pass);
+            }
+            closeModals();
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            const authBtn = document.getElementById('auth-btn');
+            const accountBtn = document.getElementById('account-btn');
+            const adminHeaderBtn = document.getElementById('admin-header-btn');
+
+            if (user) {
+                if(authBtn) authBtn.style.display = 'none';
+                if(accountBtn) {
+                    accountBtn.style.display = 'inline-block';
+                    accountBtn.textContent = "Account";
+                }
+                if(adminHeaderBtn) {
+                    adminHeaderBtn.style.display = (user.email === "hello@aliveraatelier.in") ? 'inline-block' : 'none';
+                }
+
+                try {
+                    const userRef = db.collection("users").doc(user.uid);
+                    const docSnap = await userRef.get();
+                    if (!docSnap.exists) {
+                        await userRef.set({
+                            email: user.email || '',
+                            name: user.displayName || '',
+                            phone: '',
+                            address: '',
+                            wishlist: [],
+                            recentlyViewed: []
+                        }, { merge: true });
+                    }
+                } catch(e) { console.log(e); }
+            } else {
+                if(authBtn) authBtn.style.display = 'inline-block';
+                if(accountBtn) accountBtn.style.display = 'none';
+                if(adminHeaderBtn) adminHeaderBtn.style.display = 'none';
+            }
+        });
+
+        function initRealtimeSync() {
+            try {
+                db.collection("atelier_dresses").onSnapshot(snapshot => {
+                    allDresses = [];
+                    snapshot.forEach(doc => allDresses.push({ id: doc.id, ...doc.data() }));
+                    renderGrid(allDresses);
+                }, err => {
+                    console.warn("Firestore collection empty or pending setup:", err);
+                    renderGrid([]);
+                });
+
+                db.collection("settings").doc("promotion").onSnapshot(async snapshot => {
+                    if (snapshot.exists) {
+                        currentSettings = snapshot.data();
+                        updateBannerAndPromoDisplay();
+                    }
+                }, err => console.warn(err));
+            } catch(e) {
+                console.error("Init sync error:", e);
+                renderGrid([]);
+            }
+        }
+
+        async function updateBannerAndPromoDisplay() {
+            const bannerImg = document.getElementById('active-banner-img');
+            const bannerWrapper = document.getElementById('banner-wrapper');
+            const countdownBar = document.getElementById('countdown-bar');
+
+            let activeImg = currentSettings.heroBannerUrl || "";
+            let isSaleActive = false;
+
+            if (currentSettings.activeMode === 'sale-firstcome') {
+                try {
+                    const totalOrdersSnap = await db.collection("orders").get();
+                    const orderCount = totalOrdersSnap.size;
+                    const maxPeople = parseInt(currentSettings.saleLimitPeople) || 10;
+                    if (orderCount < maxPeople) {
+                        activeImg = currentSettings.saleBannerUrl || currentSettings.heroBannerUrl;
+                        isSaleActive = true;
+                    }
+                } catch(e) {}
+            } else if (currentSettings.activeMode === 'sale-dates') {
+                const now = new Date();
+                const startDate = currentSettings.saleStartDate ? new Date(currentSettings.saleStartDate) : null;
+                const endDate = currentSettings.saleEndDate ? new Date(currentSettings.saleEndDate) : null;
+                if ((!startDate || now >= startDate) && (!endDate || now <= endDate)) {
+                    activeImg = currentSettings.saleBannerUrl || currentSettings.heroBannerUrl;
+                    isSaleActive = true;
+                    if (currentSettings.timerActive && countdownBar) {
+                        countdownBar.style.display = 'block';
+                        document.getElementById('timer-text').textContent = currentSettings.timerText || "24:00:00";
+                    }
+                }
+            }
+
+            if (!isSaleActive && countdownBar) {
+                countdownBar.style.display = 'none';
+                activeImg = currentSettings.heroBannerUrl || "";
+            }
+
+            if (activeImg && bannerWrapper && bannerImg) {
+                bannerImg.src = activeImg;
+                bannerWrapper.style.display = 'block';
+            } else if(bannerWrapper) {
+                bannerWrapper.style.display = 'none';
+            }
+        }
+
+        function renderGrid(dresses) {
+            const grid = document.getElementById('product-grid');
+            const countElem = document.getElementById('collection-count');
+            if(countElem) countElem.textContent = `${dresses.length} Pieces Available`;
+            if(!grid) return;
+
+            if (dresses.length === 0) {
+                grid.innerHTML = "<p style='color: var(--text-muted); font-style: italic; padding: 40px 0;'>No garments published in the collection yet. Log into the Admin Dashboard to add pieces.</p>";
+                return;
+            }
+
+            grid.innerHTML = '';
+
+            dresses.forEach(d => {
+                const rawChartUrl = d.sizeChartUrl || d.sizeChart || d.chartUrl || '';
+                const imageUrl = d.imageUrl || '';
+                const priceNum = Number(d.price || 0);
+                const productIdStr = d.productId || d.id || `ALV-${d.name ? d.name.substring(0,3).toUpperCase() : 'PIECE'}`;
+
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                card.innerHTML = `
+                    <div class="product-thumb-container">
+                        <img src="${imageUrl}" alt="${d.name || 'Couture Piece'}" onerror="this.src='https://via.placeholder.com/600x800/181818/c5a880?text=Aliv%C3%A9ra+Atelier'">
+                    </div>
+                    <div class="card-content">
+                        <div>
+                            <div class="card-title">${d.name || 'Untitled Piece'}</div>
+                            <div class="card-price">₹${priceNum.toLocaleString('en-IN')}</div>
+                            
+                            <select id="size-select-${d.id}" class="select-size">
+                                <option value="XS">XS - Extra Small</option>
+                                <option value="S">S - Small</option>
+                                <option value="M" selected>M - Medium</option>
+                                <option value="L">L - Large</option>
+                                <option value="XL">XL - Extra Large</option>
+                                <option value="XXL">XXL - Double XL</option>
+                                <option value="Custom">Custom Design & Measurements</option>
+                            </select>
+
+                            <button type="button" class="btn size-chart-btn" style="width:100%; margin-bottom:14px; font-size:0.7rem; padding:8px;">View Size Chart</button>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn cart-btn" style="flex:1; padding: 12px 10px; font-size:0.7rem;">Add to Cart</button>
+                            <button type="button" class="btn btn-primary buy-btn" style="flex:1; padding: 12px 10px; font-size:0.7rem;">Buy Now</button>
+                        </div>
+                    </div>
+                `;
+
+                card.querySelector('.size-chart-btn').addEventListener('click', () => openSizeChart(rawChartUrl));
+                card.querySelector('.cart-btn').addEventListener('click', () => addToCart(productIdStr, d.name, priceNum));
+                card.querySelector('.buy-btn').addEventListener('click', () => buyNow(productIdStr, d.name, priceNum));
+
+                grid.appendChild(card);
+            });
+        }
+
+        function openSizeChart(chartUrl) {
+            const modal = document.getElementById('sizechart-modal');
+            const img = document.getElementById('modal-sizechart-img');
+            const txt = document.getElementById('no-sizechart-text');
+            
+            if (chartUrl && chartUrl.trim() !== "" && chartUrl !== "undefined") {
+                img.src = chartUrl;
+                img.style.display = 'block';
+                txt.style.display = 'none';
+            } else {
+                img.style.display = 'none';
+                txt.style.display = 'block';
+            }
+            if(modal) modal.style.display = 'flex';
+        }
+
+        function getSelectedSizeAndNotes(id) {
+            const sizeSelectElem = document.getElementById(`size-select-${id}`);
+            let size = sizeSelectElem ? sizeSelectElem.value : "M";
+            let notes = "None";
+
+            if (size === "Custom") {
+                const customMeas = prompt("Enter your exact measurements (Bust, Waist, Hip, Length) or specific length preference:", "");
+                if(!customMeas) return null;
+                size = "Custom: " + customMeas;
+                notes = prompt("Any additional tailoring instructions? (Optional):", "") || "None";
+            }
+            return { size, notes };
+        }
+
+        async function addToCart(id, name, price) {
+            const sizing = getSelectedSizeAndNotes(id);
+            if(!sizing) return;
+
+            localCart.push({ id, name, price: Number(price), size: sizing.size, notes: sizing.notes, product_id: id });
+            const badge = document.getElementById('cart-item-count');
+            if(badge) badge.textContent = localCart.length;
+            alert(`"${name}" (${sizing.size}) successfully added to your cart.`);
+        }
+
+        function renderCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const summaryBox = document.getElementById('cart-summary-box');
+            const badge = document.getElementById('cart-item-count');
+            if(badge) badge.textContent = localCart.length;
+            if(!container) return;
+
+            if (localCart.length === 0) {
+                container.innerHTML = "<p style='font-style: italic;'>Your cart is currently empty.</p>";
+                if(summaryBox) summaryBox.style.display = 'none';
+                return;
+            }
+
+            let subtotal = 0;
+            container.innerHTML = localCart.map((item, idx) => {
+                subtotal += item.price;
+                return `
+                    <div style="background: #141414; border: 1px solid var(--border-gold); padding: 16px; border-radius: 6px; margin-bottom: 14px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <b style="color: #fff; font-family: 'Playfair Display', serif;">${item.name}</b>
+                            <span style="color: var(--accent-gold);">₹${item.price.toLocaleString('en-IN')}</span>
+                        </div>
+                        <p style="font-size: 0.8rem; margin-bottom: 4px;">Size: <b>${item.size}</b></p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Notes: ${item.notes}</p>
+                        <button class="btn" style="padding: 4px 10px; font-size: 0.65rem; border-color: rgba(229,115,115,0.4); color: #e57373;" onclick="removeFromCart(${idx})">Remove</button>
+                    </div>
+                `;
+            }).join('');
+
+            const subtotalText = document.getElementById('cart-subtotal-text');
+            if(subtotalText) subtotalText.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+            if(summaryBox) summaryBox.style.display = 'block';
+        }
+
+        function removeFromCart(index) {
+            localCart.splice(index, 1);
+            renderCartUI();
+        }
+
+        async function buyNow(id, name, price) {
+            const sizing = getSelectedSizeAndNotes(id);
+            if(!sizing) return;
+            const singleItemCart = [{ id, name, price: Number(price), size: sizing.size, notes: sizing.notes, product_id: id }];
+            await executeCheckoutProcess(singleItemCart);
+        }
+
+        async function checkoutCart() {
+            if(localCart.length === 0) { alert("Your cart is empty."); return; }
+            await executeCheckoutProcess(localCart);
+        }
+
+        async function executeCheckoutProcess(itemsList) {
+            const user = auth.currentUser;
+            if(!user) { openAuthModal(); return; }
+
+            try {
+                const userRef = db.collection("users").doc(user.uid);
+                for(const item of itemsList) {
+                    await userRef.update({
+                        recentlyViewed: firebase.firestore.FieldValue.arrayUnion({ id: item.id, name: item.name, price: item.price, viewedAt: new Date().toISOString() })
+                    }).catch(()=>{});
+                }
+            } catch(e){}
+
+            let uData = {};
+            try {
+                const userDoc = await db.collection("users").doc(user.uid).get();
+                if(userDoc.exists) uData = userDoc.data();
+            } catch(e){}
+
+            const shippingName = prompt("Enter your full name for delivery:", uData.name || "") || "Client";
+            const shippingPhone = prompt("Enter your phone number:", uData.phone || "") || "";
+            const shippingAddress = prompt("Enter your delivery street address:", uData.address || "") || "";
+            const shippingCity = prompt("Enter your city:", "") || "";
+            const shippingState = prompt("Enter your state:", "") || "";
+            const shippingPincode = prompt("Enter your 6-digit Pincode:", "") || "";
+
+            if (!shippingAddress || !shippingCity || !shippingPincode || !shippingPhone) {
+                alert("Delivery details (Address, City, Pincode, and Phone) are required to complete dispatch.");
+                return;
+            }
+
+            let baseSubtotal = itemsList.reduce((sum, item) => sum + item.price, 0);
+            const deliveryCharge = 49;
+            const finalTotal = baseSubtotal + deliveryCharge;
+
+            let itemsSummaryStr = itemsList.map(i => `${i.name} [Size: ${i.size}]`).join(', ');
+            const confirmOrder = confirm(`--- SECURE CHECKOUT BILL BREAKDOWN ---\nItems: ${itemsSummaryStr}\nSubtotal: ₹${baseSubtotal}\nDelivery Charge: ₹${deliveryCharge}\n---------------------------\nFinal Total: ₹${finalTotal}\n\nClick OK to proceed securely with Razorpay!`);
+
+            if (!confirmOrder) return;
+
+            var options = {
+                "key": "rzp_live_dummy_alivera", 
+                "amount": finalTotal * 100, 
+                "currency": "INR",
+                "name": "Alivéra Atelier",
+                "description": `Couture Order: ${itemsSummaryStr.substring(0, 50)}...`,
+                "handler": async function (response){
+                    const orderPayload = {
+                        customer_name: shippingName,
+                        email: user.email || "hello@aliveraatelier.in",
+                        phone: shippingPhone,
+                        address: shippingAddress,
+                        city: shippingCity,
+                        state: shippingState,
+                        pincode: shippingPincode,
+                        payment_method: "online",
+                        items: itemsList.map(item => ({
+                            product_id: item.product_id || item.id,
+                            name: item.name,
+                            price: item.price,
+                            quantity: 1,
+                            size: item.size,
+                            custom_fit: item.notes !== "None"
+                        }))
+                    };
+
+                    try {
+                        const apiRes = await fetch('/api/orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(orderPayload)
+                        });
+                        const result = await apiRes.json();
+                        if(!apiRes.ok) throw new Error(result.error || 'Failed to sync order');
+
+                        alert(`Payment successful via Razorpay!\nOrder ID: ${result.order}\n\nYour order has been recorded in the Admin Dashboard.`);
+                    } catch (err) {
+                        alert("Payment successful, but automated admin sync encountered an issue: " + err.message);
+                    }
+
+                    localCart = [];
+                    renderCartUI();
+                    toggleCartDrawer();
+                },
+                "prefill": {
+                    "name": shippingName,
+                    "email": user.email || "",
+                    "contact": shippingPhone
+                },
+                "theme": { "color": "#c5a880" }
+            };
+            
+            try {
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            } catch(e) {
+                alert("Razorpay gateway error: " + e.message);
+            }
+        }
+
+        async function loadAccountData(tab) {
+            document.querySelectorAll('.account-tab-btn').forEach(b => b.classList.remove('active'));
+
+            const user = auth.currentUser;
+            if(!user) return;
+            let data = {};
+            try {
+                const userDoc = await db.collection("users").doc(user.uid).get();
+                if(userDoc.exists) data = userDoc.data();
+            } catch(e){}
+
+            const nameElem = document.getElementById('account-display-name');
+            const emailElem = document.getElementById('account-display-email');
+            const avatarElem = document.getElementById('user-avatar-container');
+
+            if(nameElem) nameElem.textContent = data.name || (user.email ? user.email.split('@')[0].toUpperCase() : 'CLIENT');
+            if(emailElem) emailElem.textContent = user.email || user.phoneNumber || '';
+            if(avatarElem) avatarElem.textContent = (data.name || user.email || 'A').substring(0, 2).toUpperCase();
+
+            const content = document.getElementById('account-tab-content');
+            if(!content) return;
+
+            if (tab === 'profile') {
+                content.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <p><b>Full Name:</b> ${data.name || 'Not provided'}</p>
+                        <p><b>Phone Numbers:</b> ${data.phone || 'Not provided'}</p>
+                        <p><b>Delivery Addresses:</b> ${data.address || 'Not provided'}</p>
+                        <button class="btn" style="margin-top: 10px; width: fit-content;" onclick="editProfile()">Update Profile Information</button>
+                    </div>
+                `;
+            } else if (tab === 'wishlist') {
+                const list = data.wishlist || [];
+                content.innerHTML = list.length === 0 ? "<p>Your wishlist is currently empty.</p>" : list.map(w => `<p>${w.name} - ₹${w.price}</p>`).join('');
+            } else if (tab === 'viewed') {
+                const viewed = data.recentlyViewed || [];
+                content.innerHTML = viewed.length === 0 ? "<p>No recently viewed garments.</p>" : viewed.slice(-5).reverse().map(v => `<p style="margin-bottom:8px;">${v.name} &bull; ₹${v.price}</p>`).join('');
+            }
+        }
+
+        function switchAccountTab(tabName) { loadAccountData(tabName); }
+
+        async function editProfile() {
+            const name = prompt("Enter your full name:", "");
+            const phone = prompt("Enter your phone number(s):", "");
+            const address = prompt("Enter your delivery address(es):", "");
+            const user = auth.currentUser;
+            if(user) {
+                await db.collection("users").doc(user.uid).set({ name, phone, address }, { merge: true });
+                alert("Profile successfully updated!");
+                loadAccountData('profile');
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", initRealtimeSync);
+    </script>
+</body>
+</html>
