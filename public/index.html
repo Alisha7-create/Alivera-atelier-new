@@ -285,7 +285,6 @@
 
         async function googleSignIn() {
             try { 
-                // Uses redirect instead of popup to prevent popup-closed-by-user issues
                 await auth.signInWithRedirect(provider); 
             } catch(e) { 
                 alert(e.message); 
@@ -495,7 +494,7 @@
             const sizing = getSelectedSizeAndNotes(id);
             if(!sizing) return;
 
-            localCart.push({ id, name, price: Number(price), size: sizing.size, notes: sizing.notes });
+            localCart.push({ id, name, price: Number(price), size: sizing.size, notes: sizing.notes, product_id: id });
             document.getElementById('cart-item-count').textContent = localCart.length;
             alert(`"${name}" (${sizing.size}) successfully added to your cart.`);
         }
@@ -539,7 +538,7 @@
         async function buyNow(id, name, price) {
             const sizing = getSelectedSizeAndNotes(id);
             if(!sizing) return;
-            const singleItemCart = [{ id, name, price: Number(price), size: sizing.size, notes: sizing.notes }];
+            const singleItemCart = [{ id, name, price: Number(price), size: sizing.size, notes: sizing.notes, product_id: id }];
             await executeCheckoutProcess(singleItemCart);
         }
 
@@ -561,72 +560,74 @@
             const userDoc = await userRef.get();
             const uData = userDoc.data();
 
+            // Prompt delivery details
+            const shippingName = prompt("Enter your full name for delivery:", uData.name || "") || "Client";
+            const shippingPhone = prompt("Enter your phone number:", uData.phone || "") || "";
+            const shippingAddress = prompt("Enter your delivery street address:", uData.address || "") || "";
+            const shippingCity = prompt("Enter your city:", "") || "";
+            const shippingState = prompt("Enter your state:", "") || "";
+            const shippingPincode = prompt("Enter your 6-digit Pincode:", "") || "";
+
+            if (!shippingAddress || !shippingCity || !shippingPincode || !shippingPhone) {
+                alert("Delivery details (Address, City, Pincode, and Phone) are mandatory to process dispatch.");
+                return;
+            }
+
             let baseSubtotal = itemsList.reduce((sum, item) => sum + item.price, 0);
-            
-            let discountAmount = 0;
-            let appliedDiscountText = "None";
-            
-            let applySale = false;
-            if (currentSettings.activeMode === 'sale-firstcome') {
-                const totalOrdersSnap = await db.collection("orders").get();
-                if (totalOrdersSnap.size < (parseInt(currentSettings.saleLimitPeople) || 10)) applySale = true;
-            } else if (currentSettings.activeMode === 'sale-dates') {
-                const now = new Date();
-                const startDate = currentSettings.saleStartDate ? new Date(currentSettings.saleStartDate) : null;
-                const endDate = currentSettings.saleEndDate ? new Date(currentSettings.saleEndDate) : null;
-                if ((!startDate || now >= startDate) && (!endDate || now <= endDate)) applySale = true;
-            }
-
-            if (applySale && currentSettings.saleDiscountPercent) {
-                let discNum = parseFloat(currentSettings.saleDiscountPercent) || 0;
-                discountAmount = (baseSubtotal * discNum) / 100;
-                appliedDiscountText = `${currentSettings.saleDiscountPercent}% Sale Discount`;
-            }
-
-            const discountedSubtotal = baseSubtotal - discountAmount;
             const deliveryCharge = 49;
-            
-            const gstRate = parseFloat(currentSettings.gstPercent) || 5;
-            const gstAmount = (discountedSubtotal * gstRate) / 100;
-            const cgst = gstAmount / 2;
-            const sgst = gstAmount / 2;
-            const finalTotal = Math.round(discountedSubtotal + deliveryCharge + gstAmount);
+            const finalTotal = baseSubtotal + deliveryCharge;
 
             let itemsSummaryStr = itemsList.map(i => `${i.name} [Size: ${i.size}]`).join(', ');
-            const confirmOrder = confirm(`--- SECURE CHECKOUT BILL BREAKDOWN ---\nItems: ${itemsSummaryStr}\nBase Subtotal: ₹${baseSubtotal}\nDiscount: -₹${discountAmount.toFixed(2)} [${appliedDiscountText}]\nDelivery Charge: ₹${deliveryCharge}\nCGST (${gstRate/2}%): ₹${cgst.toFixed(2)}\nSGST (${gstRate/2}%): ₹${sgst.toFixed(2)}\n---------------------------\nFinal Total: ₹${finalTotal}\n\nClick OK to proceed securely with Razorpay!`);
+            const confirmOrder = confirm(`--- SECURE CHECKOUT BILL BREAKDOWN ---\nItems: ${itemsSummaryStr}\nSubtotal: ₹${baseSubtotal}\nDelivery Charge: ₹${deliveryCharge}\n---------------------------\nFinal Total: ₹${finalTotal}\n\nClick OK to proceed securely with Razorpay!`);
 
             if (!confirmOrder) return;
 
             var options = {
-                "key": "rzp_live_TUhsK2amojFPDp", 
+                "key": "YOUR_RAZORPAY_KEY_HERE", // Replace with your actual key starting with rzp_live_ or rzp_test_
                 "amount": finalTotal * 100, 
                 "currency": "INR",
                 "name": "Alivéra Atelier",
                 "description": `Couture Order: ${itemsSummaryStr.substring(0, 50)}...`,
                 "handler": async function (response){
-                    await db.collection("orders").add({
-                        userId: user.uid,
-                        email: user.email || user.phoneNumber,
-                        name: uData.name || "Client",
-                        phone: uData.phone || "",
-                        address: uData.address || "",
-                        items: itemsList,
-                        paymentId: response.razorpay_payment_id || "PAY_RAZORPAY_SUCCESS",
-                        fulfillment: "Shiprocket Automated Dispatch Linked",
-                        bill: { baseSubtotal, discountAmount, appliedDiscountText, deliveryCharge, gstRate, cgst, sgst, finalTotal },
-                        status: "Confirmed & Dispatched",
-                        createdAt: new Date()
-                    });
+                    const orderPayload = {
+                        customer_name: shippingName,
+                        email: user.email || "hello@aliveraatelier.in",
+                        phone: shippingPhone,
+                        address: shippingAddress,
+                        city: shippingCity,
+                        state: shippingState,
+                        pincode: shippingPincode,
+                        payment_method: "online",
+                        items: itemsList.map(item => ({
+                            product_id: item.id || item.product_id,
+                            quantity: 1,
+                            size: item.size,
+                            custom_fit: item.notes !== "None"
+                        }))
+                    };
 
-                    alert(`Payment successful via Razorpay!\nPayment ID: ${response.razorpay_payment_id || 'SUCCESS'}\n\nYour order has been forwarded for rapid doorstep delivery.`);
+                    try {
+                        const apiRes = await fetch('/api/orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(orderPayload)
+                        });
+                        const result = await apiRes.json();
+                        if(!apiRes.ok) throw new Error(result.error || 'Failed to sync order');
+
+                        alert(`Payment successful via Razorpay!\nOrder ID: ${result.order}\n\nYour order has been recorded in the Admin Dashboard.`);
+                    } catch (err) {
+                        alert("Payment successful, but automated admin dashboard sync encountered an issue: " + err.message);
+                    }
+
                     localCart = [];
                     renderCartUI();
                     toggleCartDrawer();
                 },
                 "prefill": {
-                    "name": uData.name || "Client",
+                    "name": shippingName,
                     "email": user.email || "",
-                    "contact": uData.phone || ""
+                    "contact": shippingPhone
                 },
                 "theme": { "color": "#c5a880" }
             };
@@ -635,24 +636,7 @@
                 var rzp1 = new Razorpay(options);
                 rzp1.open();
             } catch(e) {
-                alert("Razorpay gateway connected successfully. Processing payment simulation...");
-                await db.collection("orders").add({
-                    userId: user.uid,
-                    email: user.email || user.phoneNumber,
-                    name: uData.name || "Client",
-                    phone: uData.phone || "",
-                    address: uData.address || "",
-                    items: itemsList,
-                    paymentId: "SIMULATED_RAZORPAY_SUCCESS",
-                    fulfillment: "Shiprocket Automated Dispatch Linked",
-                    bill: { baseSubtotal, discountAmount, appliedDiscountText, deliveryCharge, gstRate, cgst, sgst, finalTotal },
-                    status: "Confirmed & Dispatched",
-                    createdAt: new Date()
-                });
-                alert("Order confirmed and synchronized successfully!");
-                localCart = [];
-                renderCartUI();
-                toggleCartDrawer();
+                alert("Razorpay gateway error: " + e.message);
             }
         }
 
