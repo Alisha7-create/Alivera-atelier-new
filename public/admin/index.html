@@ -250,58 +250,31 @@
             return await snapshot.ref.getDownloadURL();
         }
 
-        // Helper to flatten nested order objects (e.g. /orders/userId/orderId)
-        function extractOrdersFromData(data) {
-            let extracted = [];
-            if (!data) return extracted;
-
-            function recurse(node, path) {
-                if (typeof node !== 'object' || node === null) return;
-                
-                // Check if this node is an order object
-                if (node.name || node.items || node.totalAmount !== undefined || node.total_amount !== undefined || node.paymentMethod || node.payment_method) {
-                    extracted.push({
-                        id: path[path.length - 1],
-                        fullDbPath: path.join('/'),
-                        ...node
-                    });
-                    return;
-                }
-
-                // Otherwise traverse children
-                Object.keys(node).forEach(key => {
-                    recurse(node[key], [...path, key]);
-                });
-            }
-
-            recurse(data, []);
-            return extracted;
-        }
-
         function initAdminListeners() {
             const container = document.getElementById('live-orders-container');
             
-            // Listen to Realtime Database entire root to catch any node location
-            rtdb.ref().on('value', snapshot => {
+            // Listen specifically to the 'atelier_orders' node in Realtime Database
+            rtdb.ref('atelier_orders').on('value', snapshot => {
                 if (!container) return;
 
-                const rootData = snapshot.val() || {};
-                const ordersData = rootData.orders || rootData.user_orders || rootData;
+                const data = snapshot.val();
 
-                const docs = extractOrdersFromData(ordersData);
-
-                if (docs.length === 0) {
+                if (!data) {
                     container.innerHTML = "<p style='color: var(--text-muted); font-style: italic;'>No live customer orders received yet.</p>";
                     return;
                 }
 
                 container.innerHTML = '';
                 
+                const docs = [];
+                Object.keys(data).forEach(key => {
+                    docs.push({ id: key, ...data[key] });
+                });
+                
                 docs.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
                 docs.forEach(order => {
                     const docId = order.id;
-                    const dbPath = order.fullDbPath || `orders/${docId}`;
 
                     const displayOrderId = order.orderId || order.order_id || docId;
                     const customerName = order.customer_name || order.customerName || order.name || 'Client';
@@ -312,7 +285,7 @@
                     const paymentMethod = order.paymentMethod || order.payment_method || 'Cash on Delivery';
                     const paymentId = order.paymentId || order.razorpay_payment_id || order.payment_id || 'VERIFIED';
                     
-                    // Direct total reading with discount fallback support
+                    // Direct total reading with 100% discount / ₹49 delivery charge support
                     const totalAmt = order.totalAmount !== undefined ? order.totalAmount : (order.total_amount !== undefined ? order.total_amount : 49);
 
                     const fullAddress = order.full_address || order.address || 
@@ -366,7 +339,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border-gold); padding-bottom: 12px; margin-bottom: 16px;">
                             <div>
                                 <h4 style="color: var(--accent-gold); font-size: 1.2rem;">Customer: ${customerName}</h4>
-                                <p style="font-size: 0.8rem; color: var(--text-muted);">Order ID: <b>${displayOrderId}</b> &bull; ${dateStr}</p>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">Order Key: <b>${docId}</b> &bull; Order ID: <b>${displayOrderId}</b> &bull; ${dateStr}</p>
                             </div>
                             <span style="background: var(--accent-gold); color: #000; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">
                                 ${orderStatus}
@@ -394,9 +367,9 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid var(--border-gold); padding-top: 16px;">
                             <span style="font-size: 1.05rem; color: #fff;">Total Amount Paid: <b style="color: var(--accent-gold);">₹${totalAmt}</b></span>
                             <div style="display:flex; gap:10px; flex-wrap: wrap;">
-                                <button onclick="editTrackingNumber('${dbPath}', '${trackingNum}')" class="btn" style="border-color: #c5a880; color: #c5a880;">Update Tracking</button>
-                                <button onclick="updateOrderStatus('${dbPath}', 'Dispatched')" class="btn" style="border-color: var(--accent-gold); color: var(--accent-gold);">Mark Dispatched</button>
-                                <button onclick="updateOrderStatus('${dbPath}', 'Delivered')" class="btn btn-primary">Mark Delivered</button>
+                                <button onclick="editTrackingNumber('${docId}', '${trackingNum}')" class="btn" style="border-color: #c5a880; color: #c5a880;">Update Tracking</button>
+                                <button onclick="updateOrderStatus('${docId}', 'Dispatched')" class="btn" style="border-color: var(--accent-gold); color: var(--accent-gold);">Mark Dispatched</button>
+                                <button onclick="updateOrderStatus('${docId}', 'Delivered')" class="btn btn-primary">Mark Delivered</button>
                             </div>
                         </div>
                     `;
@@ -506,9 +479,9 @@
             }
         }
 
-        async function updateOrderStatus(dbPath, newStatus) {
+        async function updateOrderStatus(docId, newStatus) {
             try {
-                await rtdb.ref(dbPath).update({ 
+                await rtdb.ref(`atelier_orders/${docId}`).update({ 
                     status: newStatus,
                     order_status: newStatus 
                 });
@@ -518,11 +491,11 @@
             }
         }
 
-        async function editTrackingNumber(dbPath, currentTracking) {
+        async function editTrackingNumber(docId, currentTracking) {
             const trackingNo = prompt("Enter Shipping / AWB Tracking Number:", currentTracking || "");
             if (trackingNo === null) return;
             try {
-                await rtdb.ref(dbPath).update({ trackingNumber: trackingNo });
+                await rtdb.ref(`atelier_orders/${docId}`).update({ trackingNumber: trackingNo });
                 alert("Tracking number updated!");
             } catch(e) {
                 alert("Error updating tracking number: " + e.message);
