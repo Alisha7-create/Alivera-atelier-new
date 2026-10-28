@@ -265,16 +265,6 @@
         const auth = firebase.auth();
         const provider = new firebase.auth.GoogleAuthProvider();
 
-        try {
-            auth.getRedirectResult().then((result) => {
-                if (result && result.user) {
-                    console.log("Logged in via Google:", result.user.email);
-                }
-            }).catch((err) => {
-                console.error("Auth redirect error:", err);
-            });
-        } catch(e) { console.error(e); }
-
         let allDresses = [];
         let localCart = [];
         let currentSettings = {};
@@ -289,10 +279,14 @@
             renderCartUI();
         }
 
+        // Fast & reliable popup authentication (fixes redirect loops and third-party cookie restrictions)
         async function googleSignIn() {
             try { 
-                await auth.signInWithRedirect(provider); 
+                const result = await auth.signInWithPopup(provider);
+                console.log("Logged in via Google Popup:", result.user.email);
+                closeModals();
             } catch(e) { 
+                console.error("Google Sign-In Error:", e);
                 alert("Google Sign-In Error: " + e.message); 
             }
         }
