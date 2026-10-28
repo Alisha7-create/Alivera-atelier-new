@@ -93,8 +93,10 @@
         #admin-lock-screen { position: fixed; inset: 0; background: #080808; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
     </style>
 
+    <!-- Firebase SDKs (Included Realtime Database & Storage) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 </head>
@@ -196,6 +198,9 @@
             measurementId: "G-YQETZYQ3PT"
         };
         firebase.initializeApp(firebaseConfig);
+        
+        // Connect to BOTH Realtime Database and Firestore
+        const rtdb = firebase.database();
         const db = firebase.firestore();
         const auth = firebase.auth();
         const storage = firebase.storage();
@@ -250,10 +255,13 @@
         function initAdminListeners() {
             const container = document.getElementById('live-orders-container');
             
-            db.collection("orders").onSnapshot(snapshot => {
+            // Listen to Realtime Database 'orders' node
+            rtdb.ref('orders').on('value', snapshot => {
                 if (!container) return;
 
-                if (snapshot.empty) {
+                const data = snapshot.val();
+
+                if (!data) {
                     container.innerHTML = "<p style='color: var(--text-muted); font-style: italic;'>No live customer orders received yet.</p>";
                     return;
                 }
@@ -261,7 +269,10 @@
                 container.innerHTML = '';
                 
                 const docs = [];
-                snapshot.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+                Object.keys(data).forEach(key => {
+                    docs.push({ id: key, ...data[key] });
+                });
+                
                 docs.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
                 docs.forEach(order => {
@@ -273,9 +284,9 @@
                     const customerEmail = order.email || order.customerEmail || 'N/A';
                     const orderStatus = order.status || order.order_status || 'Confirmed & Accepted';
                     const trackingNum = order.trackingNumber || order.tracking_number || '';
-                    const paymentMethod = order.paymentMethod || order.payment_method || 'Online';
+                    const paymentMethod = order.paymentMethod || order.payment_method || 'Cash on Delivery';
                     const paymentId = order.paymentId || order.razorpay_payment_id || order.payment_id || 'VERIFIED';
-                    const totalAmt = order.totalAmount !== undefined ? order.totalAmount : (order.total_amount !== undefined ? order.total_amount : 49);
+                    const totalAmt = order.totalAmount !== undefined ? order.totalAmount : (order.total_amount !== undefined ? order.total_amount : 1600);
 
                     const fullAddress = order.full_address || order.address || 
                         [order.street, order.city, order.state, order.pincode].filter(Boolean).join(', ') || 'Address not provided';
@@ -328,7 +339,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border-gold); padding-bottom: 12px; margin-bottom: 16px;">
                             <div>
                                 <h4 style="color: var(--accent-gold); font-size: 1.2rem;">Customer: ${customerName}</h4>
-                                <p style="font-size: 0.8rem; color: var(--text-muted);">Doc ID: <b>${docId}</b> &bull; Order ID: <b>${displayOrderId}</b> &bull; ${dateStr}</p>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);">Key: <b>${docId}</b> &bull; Order ID: <b>${displayOrderId}</b> &bull; ${dateStr}</p>
                             </div>
                             <span style="background: var(--accent-gold); color: #000; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 0.75rem;">
                                 ${orderStatus}
@@ -354,7 +365,7 @@
                         </div>
 
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid var(--border-gold); padding-top: 16px;">
-                            <span style="font-size: 1.05rem; color: #fff;">Total Amount Paid: <b style="color: var(--accent-gold);">₹${totalAmt}</b></span>
+                            <span style="font-size: 1.05rem; color: #fff;">Total Amount: <b style="color: var(--accent-gold);">₹${totalAmt}</b></span>
                             <div style="display:flex; gap:10px; flex-wrap: wrap;">
                                 <button onclick="editTrackingNumber('${docId}', '${trackingNum}')" class="btn" style="border-color: #c5a880; color: #c5a880;">Update Tracking</button>
                                 <button onclick="updateOrderStatus('${docId}', 'Dispatched')" class="btn" style="border-color: var(--accent-gold); color: var(--accent-gold);">Mark Dispatched</button>
@@ -365,13 +376,13 @@
                     container.appendChild(card);
                 });
             }, err => {
-                console.error("Firestore live orders listener error:", err);
+                console.error("Realtime database listener error:", err);
                 if (container) {
-                    container.innerHTML = `<p style="color: #e57373;">Error loading orders: ${err.message}. Please check Firestore rules or login status.</p>`;
+                    container.innerHTML = `<p style="color: #e57373;">Error loading orders: ${err.message}</p>`;
                 }
             });
 
-            // Inventory Listener
+            // Inventory Listener (Supports Firestore collection "atelier_dresses")
             db.collection("atelier_dresses").onSnapshot(snapshot => {
                 const grid = document.getElementById('admin-inventory-grid');
                 if(!grid) return;
@@ -470,7 +481,7 @@
 
         async function updateOrderStatus(docId, newStatus) {
             try {
-                await db.collection("orders").doc(docId).update({ 
+                await rtdb.ref(`orders/${docId}`).update({ 
                     status: newStatus,
                     order_status: newStatus 
                 });
@@ -484,7 +495,7 @@
             const trackingNo = prompt("Enter Shipping / AWB Tracking Number:", currentTracking || "");
             if (trackingNo === null) return;
             try {
-                await db.collection("orders").doc(docId).update({ trackingNumber: trackingNo });
+                await rtdb.ref(`orders/${docId}`).update({ trackingNumber: trackingNo });
                 alert("Tracking number updated!");
             } catch(e) {
                 alert("Error updating tracking number: " + e.message);
