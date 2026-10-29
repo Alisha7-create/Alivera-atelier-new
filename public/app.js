@@ -43,6 +43,19 @@ function renderBag() {
     
     const totalEl = document.getElementById('bagTotal');
     if (totalEl) totalEl.textContent = money(total);
+
+    // Ensure checkout button triggers Razorpay properly
+    let checkoutBtn = document.getElementById('checkoutBtn');
+    if (!checkoutBtn) {
+        const bagDrawer = document.getElementById('drawer');
+        if (bagDrawer) {
+            checkoutBtn = bagDrawer.querySelector('.checkout-btn') || bagDrawer.querySelector('button.btn.dark');
+            if (checkoutBtn) checkoutBtn.id = 'checkoutBtn';
+        }
+    }
+    if (checkoutBtn) {
+        checkoutBtn.onclick = () => openCheckoutModal(total);
+    }
 }
 
 function removeItem(i) { bag.splice(i, 1); save(); }
@@ -109,6 +122,113 @@ function showProduct(p) {
 
 function closeCheckout() { document.getElementById('checkout')?.classList.remove('show'); }
 
+// --- SECURE RAZORPAY CHECKOUT MODAL & SHIPROCKET SYNC ---
+function openCheckoutModal(totalAmount) {
+    if (!bag.length) {
+        alert("Your bag is empty.");
+        return;
+    }
+
+    const modal = document.getElementById('checkout');
+    if (!modal) return;
+    modal.classList.add('show');
+    
+    const bodyEl = document.getElementById('checkoutBody');
+    if (!bodyEl) return;
+
+    bodyEl.innerHTML = `
+        <button class="close" onclick="closeCheckout()">×</button>
+        <p class="eyebrow">SECURE CHECKOUT</p>
+        <h2 class="checkouttitle">Shipping & Payment</h2>
+        <form id="shippingForm" style="display:flex; flex-direction:column; gap:12px; margin-top:15px;">
+            <div class="field"><label>Full Name</label><input type="text" id="custName" value="Alisha" required style="width:100%; padding:10px; border:1px solid #ddd;"></div>
+            <div class="field"><label>Email Address</label><input type="email" id="custEmail" value="hello@aliveraatelier.in" required style="width:100%; padding:10px; border:1px solid #ddd;"></div>
+            <div class="field"><label>Phone Number (10 digits)</label><input type="tel" id="custPhone" value="8114433903" required maxlength="10" style="width:100%; padding:10px; border:1px solid #ddd;"></div>
+            <div class="field"><label>Delivery Address</label><textarea id="custAddress" required style="width:100%; padding:10px; border:1px solid #ddd; height:70px;">House no. 7, Shastri Nagar, Mahvir Colony</textarea></div>
+            <div style="display:flex; gap:10px;">
+                <div class="field" style="flex:1;"><label>City</label><input type="text" id="custCity" value="Bundi" required style="width:100%; padding:10px; border:1px solid #ddd;"></div>
+                <div class="field" style="flex:1;"><label>Pincode</label><input type="text" id="custPincode" value="323001" required maxlength="6" style="width:100%; padding:10px; border:1px solid #ddd;"></div>
+            </div>
+            <div style="margin-top:10px; font-size:16px; font-weight:bold;">Total Amount: ${money(totalAmount)}</div>
+            <button type="button" id="payRazorpayBtn" class="btn dark full" style="margin-top:15px; padding:12px; background:#111; color:#fff; cursor:pointer;">Pay with Razorpay</button>
+        </form>
+    `;
+
+    document.getElementById('payRazorpayBtn').onclick = () => {
+        const name = document.getElementById('custName').value.trim();
+        const email = document.getElementById('custEmail').value.trim();
+        const phone = document.getElementById('custPhone').value.trim().replace(/\D/g, '').slice(-10);
+        const address = document.getElementById('custAddress').value.trim();
+        const city = document.getElementById('custCity').value.trim();
+        const pincode = document.getElementById('custPincode').value.trim();
+
+        if (!name || !email || phone.length !== 10 || !address || !city || pincode.length !== 6) {
+            alert("Please fill in all shipping details correctly. Phone must be 10 digits and Pincode 6 digits.");
+            return;
+        }
+
+        // Initialize Razorpay SDK
+        const options = {
+            key: "rzp_live_YOUR_KEY_HERE", // Replace with your live Razorpay Key ID if needed
+            amount: Math.round(Number(totalAmount) * 100), // CONVERTS RUPEES TO PAISE (Fixes modal crash)
+            currency: "INR",
+            name: "Alivèra Atelier",
+            description: "Custom Designer Apparel",
+            image: "/logo.png",
+            handler: async function (response) {
+                // Payment successful! Post order to backend for Shiprocket sync
+                try {
+                    const orderPayload = {
+                        orderId: "ALV-" + Date.now().toString().slice(-6),
+                        clientName: name,
+                        phone: phone,
+                        email: email,
+                        full_address: address,
+                        city: city,
+                        pincode: pincode,
+                        totalAmount: Number(totalAmount),
+                        paymentMethod: "Prepaid",
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        items: bag
+                    };
+
+                    const res = await fetch(API + '/orders', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderPayload)
+                    });
+
+                    const result = await res.json();
+                    if (result.success) {
+                        localStorage.removeItem('alv_bag');
+                        bag = [];
+                        renderBag();
+                        closeCheckout();
+                        closeBag();
+                        alert("Payment successful! Order placed and synced to Shiprocket.");
+                    } else {
+                        alert("Payment successful, but sync notice: " + (result.error || "Check Shiprocket dashboard"));
+                    }
+                } catch (err) {
+                    console.error("Order submission error:", err);
+                    alert("Payment received, but failed to notify server. Please contact support.");
+                }
+            },
+            prefill: {
+                name: name,
+                email: email,
+                contact: phone
+            },
+            theme: {
+                color: "#111111"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+    };
+}
+
 async function load() {
     try {
         const r = await fetch(API + '/products');
@@ -128,7 +248,7 @@ async function load() {
             </article>`;
         }).join('');
 
-        // Attach click handlers cleanly via JavaScript to avoid apostrophe and escaping bugs
+        // Attach click handlers cleanly via JavaScript
         productsEl.querySelectorAll('.product').forEach(card => {
             const id = card.getAttribute('data-id');
             const productObj = products.find(x => String(x.id) === String(id));
