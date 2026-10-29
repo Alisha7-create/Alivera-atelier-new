@@ -34,14 +34,100 @@ export default {
       });
     }
 
-    // --- ORDER ROUTING & NOTIFICATIONS ---
+    // --- ORDER ROUTING & SHIPROCKET SYNC ---
     if (path === '/api/orders' && request.method === 'POST') {
-      const orderData = await request.json();
-      console.log('[New Order Notification Sent to contact@aliveraatelier.in]:', orderData);
-      console.log('[Order Confirmation Sent from hello@aliveraatelier.in to client]');
-      return new Response(JSON.stringify({ success: true, message: 'Order placed successfully.' }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      try {
+        const orderData = await request.json();
+        console.log('[New Order Received]:', orderData);
+
+        // Attempt automated Shiprocket Sync in background
+        ctx.waitUntil((async () => {
+          try {
+            // 1. Authenticate with Shiprocket API
+            const authRes = await fetch("https://apiv2.shiprocket.in/v1/external/auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: env.SHIPROCKET_EMAIL || "shiprocket@aliveraatelier.in",
+                password: env.SHIPROCKET_PASSWORD || "8JoRnfVG8vtakJzKY2Gai@ZGYcraJP^7"
+              })
+            });
+            
+            const authData = await authRes.json();
+            
+            if (authData.token) {
+              const token = authData.token;
+
+              // Safely extract items array or map/object
+              let itemsList = [];
+              if (Array.isArray(orderData.items)) {
+                itemsList = orderData.items;
+              } else if (typeof orderData.items === 'object' && orderData.items !== null) {
+                itemsList = Object.values(orderData.items);
+              }
+
+              const firstItem = itemsList[0] || {};
+
+              // 2. Format order structure for Shiprocket Adhoc Order API
+              const shiprocketPayload = {
+                order_id: orderData.orderId || orderData.id || `ALV-${Date.now().toString().slice(-6)}`,
+                order_date: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                pickup_location: "Primary",
+                channel_id: "11801724", // CUSTOM Channel ID
+                billing_customer_name: orderData.clientName || orderData['customer-name'] || orderData.name || "Alisha",
+                billing_last_name: "",
+                billing_address: firstItem.Address || orderData.full_address || orderData.address || "House no. 7, Shastri Nagar, Mahvir Colony",
+                billing_city: firstItem.City || orderData.city || "Bundi",
+                billing_pincode: firstItem.Pincode || orderData.pincode || "323001",
+                billing_state: "Rajasthan",
+                billing_country: "India",
+                billing_email: orderData.clientEmail || orderData.email || "animexlover288@gmail.com",
+                billing_phone: orderData.phone || orderData.phone_number || "8114433903",
+                shipping_is_billing: true,
+                order_items: itemsList.length > 0 ? itemsList.map(item => ({
+                  name: item.name || "Rose Petal Crop Top",
+                  sku: "ALIVERA-GARMENT",
+                  units: item.quantity || 1,
+                  selling_price: item.price || orderData.totalAmount || 1600
+                })) : [
+                  {
+                    name: orderData.name || "Rose Petal Crop Top",
+                    sku: "ALIVERA-GARMENT",
+                    units: 1,
+                    selling_price: orderData.totalAmount || 1600
+                  }
+                ],
+                payment_method: orderData.paymentMethod || "Prepaid",
+                sub_total: orderData.totalAmount || 1649,
+                length: 12, breadth: 10, height: 4, weight: 0.5
+              };
+
+              // 3. Post order to Shiprocket
+              const syncRes = await fetch("https://apiv2.shiprocket.in/v1/external/orders/create/adhoc", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(shiprocketPayload)
+              });
+
+              const syncData = await syncRes.json();
+              console.log('[Shiprocket Sync Status]:', syncData);
+            } else {
+              console.error('[Shiprocket Auth Failed]:', authData);
+            }
+          } catch (shiprocketErr) {
+            console.error('[Shiprocket Sync Error - Non-blocking]:', shiprocketErr);
+          }
+        })());
+
+        return new Response(JSON.stringify({ success: true, message: 'Order placed and queued for Shiprocket sync.' }), {
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ success: false, error: e.message }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      }
     }
 
     if (path === '/api/admin/update-order' && request.method === 'POST') {
@@ -58,7 +144,6 @@ export default {
     if (path.startsWith('/admin')) {
       const cookieHeader = request.headers.get('Cookie') || '';
       if (!cookieHeader.includes('auth_session=admin_active')) {
-        // Redirect unauthorized attempts directly to the dedicated login page
         return Response.redirect(`${url.origin}/login.html`, 302);
       }
     }
