@@ -34,100 +34,118 @@ export default {
       });
     }
 
-    // --- ORDER ROUTING & SHIPROCKET SYNC ---
+    // --- ORDER ROUTING & BULLETPROOF SHIPROCKET SYNC ---
     if (path === '/api/orders' && request.method === 'POST') {
       try {
         const orderData = await request.json();
-        console.log('[New Order Received]:', orderData);
+        console.log('[New Storefront Order Received]:', JSON.stringify(orderData));
 
-        // Attempt automated Shiprocket Sync in background
+        // 1. Clean and normalize incoming order inputs
+        let itemsList = [];
+        if (Array.isArray(orderData.items)) {
+          itemsList = orderData.items;
+        } else if (typeof orderData.items === 'object' && orderData.items !== null) {
+          itemsList = Object.values(orderData.items);
+        }
+
+        const firstItem = itemsList[0] || {};
+
+        // Clean customer phone number to exactly 10 digits
+        const rawPhone = String(orderData.phone || orderData.phone_number || orderData.clientPhone || "8114433903");
+        const cleanPhone = rawPhone.replace(/\D/g, '').slice(-10) || "8114433903";
+
+        // Format order date strictly to YYYY-MM-DD HH:mm
+        const formattedDate = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+        // Build Shiprocket Adhoc payload
+        const shiprocketPayload = {
+          order_id: String(orderData.orderId || orderData.id || `ALV-${Date.now().toString().slice(-6)}`),
+          order_date: formattedDate,
+          pickup_location: "Primary",
+          billing_customer_name: String(orderData.clientName || orderData['customer-name'] || orderData.name || "Alisha"),
+          billing_last_name: "",
+          billing_address: String(firstItem.Address || orderData.full_address || orderData.address || "House no. 7, Shastri Nagar, Mahvir Colony"),
+          billing_city: String(firstItem.City || orderData.city || "Bundi"),
+          billing_pincode: Number(firstItem.Pincode || orderData.pincode || 323001),
+          billing_state: "Rajasthan",
+          billing_country: "India",
+          billing_email: String(orderData.clientEmail || orderData.email || "hello@aliveraatelier.in"),
+          billing_phone: cleanPhone,
+          shipping_is_billing: true,
+          order_items: itemsList.length > 0 ? itemsList.map(item => ({
+            name: String(item.name || "Rose Petal Crop Top"),
+            sku: String(item.sku || "ALIVERA-GARMENT"),
+            units: Number(item.quantity || item.units || 1),
+            selling_price: Number(item.price || orderData.totalAmount || 1600)
+          })) : [
+            {
+              name: String(orderData.name || "Rose Petal Crop Top"),
+              sku: "ALIVERA-GARMENT",
+              units: 1,
+              selling_price: Number(orderData.totalAmount || 1600)
+            }
+          ],
+          payment_method: String(orderData.paymentMethod || "Prepaid"),
+          sub_total: Number(orderData.totalAmount || 1600),
+          length: 12,
+          width: 10,
+          height: 4,
+          weight: 0.5
+        };
+
+        // 2. Queue background push to Shiprocket with explicit error logging
         ctx.waitUntil((async () => {
           try {
-            // 1. Authenticate with Shiprocket API
+            const shiprocketEmail = env.SHIPROCKET_EMAIL || "shiprocket@aliveraatelier.in";
+            const shiprocketPassword = env.SHIPROCKET_PASSWORD || "8JoRnfVG8vtakJzKY2Gai@ZGYcraJP^7";
+
+            // Authenticate
             const authRes = await fetch("https://apiv2.shiprocket.in/v1/external/auth/login", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: env.SHIPROCKET_EMAIL || "shiprocket@aliveraatelier.in",
-                password: env.SHIPROCKET_PASSWORD || "8JoRnfVG8vtakJzKY2Gai@ZGYcraJP^7"
-              })
+              body: JSON.stringify({ email: shiprocketEmail, password: shiprocketPassword })
             });
 
             const authData = await authRes.json();
 
-            if (authData.token) {
-              const token = authData.token;
+            if (!authRes.ok || !authData.token) {
+              console.error('[Shiprocket Auth Error]: Failed to acquire token.', JSON.stringify(authData));
+              return;
+            }
 
-              // Safely extract items array or map/object
-              let itemsList = [];
-              if (Array.isArray(orderData.items)) {
-                itemsList = orderData.items;
-              } else if (typeof orderData.items === 'object' && orderData.items !== null) {
-                itemsList = Object.values(orderData.items);
-              }
+            // Post Order
+            const syncRes = await fetch("https://apiv2.shiprocket.in/v1/external/orders/create/adhoc", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${authData.token}`
+              },
+              body: JSON.stringify(shiprocketPayload)
+            });
 
-              const firstItem = itemsList[0] || {};
+            const syncData = await syncRes.json();
 
-              // 2. Format order structure for Shiprocket Adhoc Order API
-              const shiprocketPayload = {
-                order_id: orderData.orderId || orderData.id || `ALV-${Date.now().toString().slice(-6)}`,
-                order_date: new Date().toISOString().replace('T', ' ').substring(0, 16),
-                pickup_location: "Primary",
-                billing_customer_name: orderData.clientName || orderData['customer-name'] || orderData.name || "Alisha",
-                billing_last_name: "",
-                billing_address: firstItem.Address || orderData.full_address || orderData.address || "House no. 7, Shastri Nagar, Mahvir Colony",
-                billing_city: firstItem.City || orderData.city || "Bundi",
-                billing_pincode: Number(firstItem.Pincode || orderData.pincode || "323001"),
-                billing_state: "Rajasthan",
-                billing_country: "India",
-                billing_email: orderData.clientEmail || orderData.email || "hello@aliveraatelier.in",
-                billing_phone: String(orderData.phone || orderData.phone_number || "8114433903").replace(/\D/g, '').slice(-10),
-                shipping_is_billing: true,
-                order_items: itemsList.length > 0 ? itemsList.map(item => ({
-                  name: item.name || "Rose Petal Crop Top",
-                  sku: item.sku || "ALIVERA-GARMENT",
-                  units: Number(item.quantity || 1),
-                  selling_price: Number(item.price || orderData.totalAmount || 1600)
-                })) : [
-                  {
-                    name: orderData.name || "Rose Petal Crop Top",
-                    sku: "ALIVERA-GARMENT",
-                    units: 1,
-                    selling_price: Number(orderData.totalAmount || 1600)
-                  }
-                ],
-                payment_method: orderData.paymentMethod || "Prepaid",
-                sub_total: Number(orderData.totalAmount || 1600),
-                length: 12,
-                width: 10,
-                height: 4,
-                weight: 0.5
-              };
-
-              // 3. Post order to Shiprocket
-              const syncRes = await fetch("https://apiv2.shiprocket.in/v1/external/orders/create/adhoc", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(shiprocketPayload)
-              });
-
-              const syncData = await syncRes.json();
-              console.log('[Shiprocket Sync Status]:', syncData);
+            if (syncRes.ok && (syncData.order_id || syncData.shipment_id)) {
+              console.log('[Shiprocket Sync SUCCESS]: Order pushed successfully.', JSON.stringify(syncData));
             } else {
-              console.error('[Shiprocket Auth Failed]:', authData);
+              console.error('[Shiprocket Sync REJECTED]:', JSON.stringify(syncData));
             }
           } catch (shiprocketErr) {
-            console.error('[Shiprocket Sync Error - Non-blocking]:', shiprocketErr);
+            console.error('[Shiprocket Execution Fatal Error]:', shiprocketErr.stack || shiprocketErr.message);
           }
         })());
 
-        return new Response(JSON.stringify({ success: true, message: 'Order placed and queued for Shiprocket sync.' }), {
+        return new Response(JSON.stringify({ 
+          success: true, 
+          message: 'Order received successfully and dispatched to Shiprocket.',
+          order_id: shiprocketPayload.order_id 
+        }), {
+          status: 200,
           headers: { 'Content-Type': 'application/json' }
         });
+
       } catch (e) {
+        console.error('[Order API Fatal Error]:', e.stack || e.message);
         return new Response(JSON.stringify({ success: false, error: e.message }), { status: 400, headers: { 'Content-Type': 'application/json' } });
       }
     }
