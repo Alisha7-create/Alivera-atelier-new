@@ -52,9 +52,9 @@ export default {
                 password: env.SHIPROCKET_PASSWORD || "8JoRnfVG8vtakJzKY2Gai@ZGYcraJP^7"
               })
             });
-            
+
             const authData = await authRes.json();
-            
+
             if (authData.token) {
               const token = authData.token;
 
@@ -71,35 +71,37 @@ export default {
               // 2. Format order structure for Shiprocket Adhoc Order API
               const shiprocketPayload = {
                 order_id: orderData.orderId || orderData.id || `ALV-${Date.now().toString().slice(-6)}`,
-                order_date: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                order_date: new Date().toISOString().replace('T', ' ').substring(0, 16),
                 pickup_location: "Primary",
-                channel_id: "11801724", // CUSTOM Channel ID
                 billing_customer_name: orderData.clientName || orderData['customer-name'] || orderData.name || "Alisha",
                 billing_last_name: "",
                 billing_address: firstItem.Address || orderData.full_address || orderData.address || "House no. 7, Shastri Nagar, Mahvir Colony",
                 billing_city: firstItem.City || orderData.city || "Bundi",
-                billing_pincode: firstItem.Pincode || orderData.pincode || "323001",
+                billing_pincode: Number(firstItem.Pincode || orderData.pincode || "323001"),
                 billing_state: "Rajasthan",
                 billing_country: "India",
-                billing_email: orderData.clientEmail || orderData.email || "animexlover288@gmail.com",
-                billing_phone: orderData.phone || orderData.phone_number || "8114433903",
+                billing_email: orderData.clientEmail || orderData.email || "hello@aliveraatelier.in",
+                billing_phone: String(orderData.phone || orderData.phone_number || "8114433903").replace(/\D/g, '').slice(-10),
                 shipping_is_billing: true,
                 order_items: itemsList.length > 0 ? itemsList.map(item => ({
                   name: item.name || "Rose Petal Crop Top",
-                  sku: "ALIVERA-GARMENT",
-                  units: item.quantity || 1,
-                  selling_price: item.price || orderData.totalAmount || 1600
+                  sku: item.sku || "ALIVERA-GARMENT",
+                  units: Number(item.quantity || 1),
+                  selling_price: Number(item.price || orderData.totalAmount || 1600)
                 })) : [
                   {
                     name: orderData.name || "Rose Petal Crop Top",
                     sku: "ALIVERA-GARMENT",
                     units: 1,
-                    selling_price: orderData.totalAmount || 1600
+                    selling_price: Number(orderData.totalAmount || 1600)
                   }
                 ],
                 payment_method: orderData.paymentMethod || "Prepaid",
-                sub_total: orderData.totalAmount || 1649,
-                length: 12, breadth: 10, height: 4, weight: 0.5
+                sub_total: Number(orderData.totalAmount || 1600),
+                length: 12,
+                width: 10,
+                height: 4,
+                weight: 0.5
               };
 
               // 3. Post order to Shiprocket
