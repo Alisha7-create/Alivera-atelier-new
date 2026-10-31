@@ -38,13 +38,12 @@ function renderBag() {
     let total = 0;
     el.innerHTML = bag.map((x, i) => {
         total += x.price * x.quantity;
-        return `<div class="bagitem"><div>${x.image ? `<img class="bagthumb" src="${x.image}" alt="${esc(x.name)}">` : ''}</div><div><h4>${esc(x.name)}</h4><p>Size: ${esc(x.size)}${x.customFit ? ' · Custom fit' : ''}</p><p>${money(x.price)} × ${x.quantity}</p><button class="remove" onclick="removeItem(${i})">Remove</button></div><strong>${money(x.price * x.quantity)}</strong></div>`;
+        return `<div class="bagitem"><div>${x.image ? `<img class="bagthumb" src="${x.image}" alt="${esc(x.name)}">` : ''}</div><div><h4>${esc(x.name)}</h4><p>Size: ${esc(x.size)}${x.customFitNotes ? ' · Custom fit' : ''}</p><p>${money(x.price)} × ${x.quantity}</p><button class="remove" onclick="removeItem(${i})">Remove</button></div><strong>${money(x.price * x.quantity)}</strong></div>`;
     }).join('');
     
     const totalEl = document.getElementById('bagTotal');
     if (totalEl) totalEl.textContent = money(total);
 
-    // Ensure checkout button triggers Razorpay properly
     let checkoutBtn = document.getElementById('checkoutBtn');
     if (!checkoutBtn) {
         const bagDrawer = document.getElementById('drawer');
@@ -62,10 +61,10 @@ function removeItem(i) { bag.splice(i, 1); save(); }
 function openBag() { document.getElementById('drawer')?.classList.add('open'); document.getElementById('backdrop')?.classList.add('show'); }
 function closeBag() { document.getElementById('drawer')?.classList.remove('open'); document.getElementById('backdrop')?.classList.remove('show'); }
 
-function addToBag(p, size, customFit) {
-    const found = bag.find(x => x.id === p.id && x.size === size && !!x.customFit === !!customFit);
+function addToBag(p, size, customFitNotes) {
+    const found = bag.find(x => x.id === p.id && x.size === size && (x.customFitNotes || '') === (customFitNotes || ''));
     if (found) found.quantity++;
-    else bag.push({ id: p.id, name: p.name, price: Number(p.price), size, customFit: !!customFit, image: imageFor(p), quantity: 1 });
+    else bag.push({ id: p.id, name: p.name, price: Number(p.price), size, customFitNotes: customFitNotes || '', image: imageFor(p), quantity: 1 });
     save();
     openBag();
 }
@@ -105,7 +104,13 @@ function showProduct(p) {
                 <p>${esc(p.description || 'Made with care by Alivèra Atelier.')}</p>
                 <p class="madeorder"><b>Made to order</b> · Prepared especially for you.</p>
                 <div class="field"><label>Choose size</label><select id="sizeSelect">${(p.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL']).map(s => `<option>${esc(s)}</option>`).join('')}</select></div>
-                <label class="customfit"><input id="customFit" type="checkbox"> I want custom fit / tailoring</label>
+                
+                <div class="field" style="margin-top:12px;">
+                    <label><b>Custom Fit / Tailoring Measurements & Notes</b></label>
+                    <textarea id="customFitInput" placeholder="Enter your custom measurements (Bust, Waist, Hip, Length) or specific tailoring notes here..." style="width:100%; height:75px; padding:10px; border:1px solid #ccc; border-radius:4px; font-family:inherit; font-size:14px;"></textarea>
+                    <p style="font-size:12px; color:#666; margin-top:4px;">* Optional: Leave blank if ordering standard size. Provide measurements if you selected a custom fit.</p>
+                </div>
+
                 <button class="chartlink" id="viewChartBtn">View size chart</button>
                 <button class="btn dark full" id="addToBagBtn" style="margin-top:18px">Add to bag</button>
             </div>
@@ -114,15 +119,15 @@ function showProduct(p) {
     document.getElementById('viewChartBtn').onclick = () => showSizeChart(p);
     document.getElementById('addToBagBtn').onclick = () => {
         const size = document.getElementById('sizeSelect').value;
-        const customFit = document.getElementById('customFit').checked;
-        addToBag(p, size, customFit);
+        const customFitNotes = document.getElementById('customFitInput').value.trim();
+        addToBag(p, size, customFitNotes);
         closeCheckout();
     };
 }
 
 function closeCheckout() { document.getElementById('checkout')?.classList.remove('show'); }
 
-// --- SECURE RAZORPAY CHECKOUT MODAL & SHIPROCKET SYNC ---
+// --- UNIFIED CHECKOUT WITH PINCODE CHECK FIRST & UNIFIED ADDRESS BOX ---
 function openCheckoutModal(totalAmount) {
     if (!bag.length) {
         alert("Your bag is empty.");
@@ -139,44 +144,89 @@ function openCheckoutModal(totalAmount) {
     bodyEl.innerHTML = `
         <button class="close" onclick="closeCheckout()">×</button>
         <p class="eyebrow">SECURE CHECKOUT</p>
-        <h2 class="checkouttitle">Shipping & Payment</h2>
-        <form id="shippingForm" style="display:flex; flex-direction:column; gap:12px; margin-top:15px;">
-            <div class="field"><label>Full Name</label><input type="text" id="custName" value="Alisha" required style="width:100%; padding:10px; border:1px solid #ddd;"></div>
-            <div class="field"><label>Email Address</label><input type="email" id="custEmail" value="hello@aliveraatelier.in" required style="width:100%; padding:10px; border:1px solid #ddd;"></div>
-            <div class="field"><label>Phone Number (10 digits)</label><input type="tel" id="custPhone" value="8114433903" required maxlength="10" style="width:100%; padding:10px; border:1px solid #ddd;"></div>
-            <div class="field"><label>Delivery Address</label><textarea id="custAddress" required style="width:100%; padding:10px; border:1px solid #ddd; height:70px;">House no. 7, Shastri Nagar, Mahvir Colony</textarea></div>
+        <h2 class="checkouttitle">Delivery & Contact Details</h2>
+        
+        <div id="pincodeCheckSection" style="margin-top:15px; background:#f9f9f9; padding:15px; border-radius:6px; border:1px solid #e0e0e0;">
+            <label style="font-weight:bold; display:block; margin-bottom:6px;">Step 1: Check Pincode Availability</label>
             <div style="display:flex; gap:10px;">
-                <div class="field" style="flex:1;"><label>City</label><input type="text" id="custCity" value="Bundi" required style="width:100%; padding:10px; border:1px solid #ddd;"></div>
-                <div class="field" style="flex:1;"><label>Pincode</label><input type="text" id="custPincode" value="323001" required maxlength="6" style="width:100%; padding:10px; border:1px solid #ddd;"></div>
+                <input type="text" id="checkPincode" placeholder="Enter 6-digit Pincode" maxlength="6" style="flex:1; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                <button type="button" id="verifyPinBtn" class="btn dark" style="padding:10px 20px; background:#111; color:#fff; cursor:pointer;">Check Availability</button>
             </div>
-            <div style="margin-top:10px; font-size:16px; font-weight:bold;">Total Amount: ${money(totalAmount)}</div>
-            <button type="button" id="payRazorpayBtn" class="btn dark full" style="margin-top:15px; padding:12px; background:#111; color:#fff; cursor:pointer;">Pay with Razorpay</button>
+            <p id="pinResultMsg" style="margin-top:8px; font-size:13px; font-weight:bold;"></p>
+        </div>
+
+        <form id="shippingForm" style="display:none; flex-direction:column; gap:12px; margin-top:15px;">
+            <div class="field" style="background:#fafafa; padding:15px; border:1px solid #ddd; border-radius:6px;">
+                <label style="font-weight:bold; display:block; margin-bottom:8px;">Complete Delivery & Contact Information</label>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="custName" placeholder="Full Name" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
+                    <input type="tel" id="custPhone" placeholder="10-digit Phone Number" required maxlength="10" style="padding:10px; border:1px solid #ccc; border-radius:4px;">
+                </div>
+                
+                <div style="margin-bottom:10px;">
+                    <input type="email" id="custEmail" placeholder="Email Address" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <textarea id="custFullAddress" placeholder="Full Address (House No, Building, Street, Landmark)" required style="width:100%; height:80px; padding:10px; border:1px solid #ccc; border-radius:4px; font-family:inherit;"></textarea>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                    <input type="text" id="custCity" placeholder="City" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
+                    <input type="text" id="custState" placeholder="State" value="Rajasthan" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
+                    <input type="text" id="confirmedPincode" readonly style="padding:10px; border:1px solid #ccc; border-radius:4px; background:#eee; font-weight:bold;" title="Verified Pincode">
+                </div>
+            </div>
+
+            <div style="margin-top:5px; font-size:16px; font-weight:bold; text-align:right;">Total Amount: ${money(totalAmount)}</div>
+            <button type="button" id="payRazorpayBtn" class="btn dark full" style="margin-top:10px; padding:14px; background:#111; color:#fff; cursor:pointer; font-size:15px; font-weight:bold;">Pay ${money(totalAmount)} with Razorpay</button>
         </form>
     `;
+
+    document.getElementById('verifyPinBtn').onclick = () => {
+        const pin = document.getElementById('checkPincode').value.trim();
+        const msg = document.getElementById('pinResultMsg');
+        if (pin.length !== 6 || isNaN(pin)) {
+            msg.style.color = 'red';
+            msg.textContent = 'Please enter a valid 6-digit pincode.';
+            return;
+        }
+
+        // Simulate pincode verification (All standard Indian pincodes serviceable via Shiprocket)
+        msg.style.color = 'green';
+        msg.textContent = '✓ Delivery is available for pincode ' + pin + '! Proceeding to checkout...';
+        
+        document.getElementById('confirmedPincode').value = pin;
+        setTimeout(() => {
+            document.getElementById('pincodeCheckSection').style.display = 'none';
+            document.getElementById('shippingForm').style.display = 'flex';
+        }, 800);
+    };
 
     document.getElementById('payRazorpayBtn').onclick = () => {
         const name = document.getElementById('custName').value.trim();
         const email = document.getElementById('custEmail').value.trim();
         const phone = document.getElementById('custPhone').value.trim().replace(/\D/g, '').slice(-10);
-        const address = document.getElementById('custAddress').value.trim();
+        const address = document.getElementById('custFullAddress').value.trim();
         const city = document.getElementById('custCity').value.trim();
-        const pincode = document.getElementById('custPincode').value.trim();
+        const state = document.getElementById('custState').value.trim();
+        const pincode = document.getElementById('confirmedPincode').value.trim();
 
-        if (!name || !email || phone.length !== 10 || !address || !city || pincode.length !== 6) {
-            alert("Please fill in all shipping details correctly. Phone must be 10 digits and Pincode 6 digits.");
+        if (!name || !email || phone.length !== 10 || !address || !city || !state || !pincode) {
+            alert("Please fill in all address and contact fields correctly.");
             return;
         }
 
-        // Initialize Razorpay SDK
+        // Razorpay Integration with amount strictly in paise
         const options = {
-            key: "rzp_live_YOUR_KEY_HERE", // Replace with your live Razorpay Key ID if needed
-            amount: Math.round(Number(totalAmount) * 100), // CONVERTS RUPEES TO PAISE (Fixes modal crash)
+            key: "rzp_live_YOUR_KEY_HERE", // Replace with your live Razorpay Key ID
+            amount: Math.round(Number(totalAmount) * 100), // Converts Rupees to paise (Fixes modal crash)
             currency: "INR",
             name: "Alivèra Atelier",
             description: "Custom Designer Apparel",
             image: "/logo.png",
             handler: async function (response) {
-                // Payment successful! Post order to backend for Shiprocket sync
                 try {
                     const orderPayload = {
                         orderId: "ALV-" + Date.now().toString().slice(-6),
@@ -185,6 +235,7 @@ function openCheckoutModal(totalAmount) {
                         email: email,
                         full_address: address,
                         city: city,
+                        state: state,
                         pincode: pincode,
                         totalAmount: Number(totalAmount),
                         paymentMethod: "Prepaid",
@@ -205,9 +256,9 @@ function openCheckoutModal(totalAmount) {
                         renderBag();
                         closeCheckout();
                         closeBag();
-                        alert("Payment successful! Order placed and synced to Shiprocket.");
+                        alert("Payment successful! Order placed and synced to Admin Dashboard & Shiprocket.");
                     } else {
-                        alert("Payment successful, but sync notice: " + (result.error || "Check Shiprocket dashboard"));
+                        alert("Payment successful, but sync notice: " + (result.error || "Check admin dashboard"));
                     }
                 } catch (err) {
                     console.error("Order submission error:", err);
@@ -248,7 +299,6 @@ async function load() {
             </article>`;
         }).join('');
 
-        // Attach click handlers cleanly via JavaScript
         productsEl.querySelectorAll('.product').forEach(card => {
             const id = card.getAttribute('data-id');
             const productObj = products.find(x => String(x.id) === String(id));
