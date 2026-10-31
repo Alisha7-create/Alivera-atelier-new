@@ -107,8 +107,8 @@ function showProduct(p) {
                 
                 <div class="field" style="margin-top:12px;">
                     <label><b>Custom Fit / Tailoring Measurements & Notes</b></label>
-                    <textarea id="customFitInput" placeholder="Enter your custom measurements (Bust, Waist, Hip, Length) or specific tailoring notes here..." style="width:100%; height:75px; padding:10px; border:1px solid #ccc; border-radius:4px; font-family:inherit; font-size:14px;"></textarea>
-                    <p style="font-size:12px; color:#666; margin-top:4px;">* Optional: Leave blank if ordering standard size. Provide measurements if you selected a custom fit.</p>
+                    <textarea id="customFitInput" placeholder="Enter your custom measurements (Bust, Waist, Hip, Length) or specific tailoring notes here..." style="width:100%; height:80px; padding:10px; border:1px solid #ccc; border-radius:4px; font-family:inherit; font-size:14px; background:#fff;"></textarea>
+                    <p style="font-size:12px; color:#555; margin-top:5px; line-height:1.4;">* Optional: Leave blank if ordering standard size. Provide measurements if you selected a custom fit.</p>
                 </div>
 
                 <button class="chartlink" id="viewChartBtn">View size chart</button>
@@ -193,7 +193,6 @@ function openCheckoutModal(totalAmount) {
             return;
         }
 
-        // Simulate pincode verification (All standard Indian pincodes serviceable via Shiprocket)
         msg.style.color = 'green';
         msg.textContent = '✓ Delivery is available for pincode ' + pin + '! Proceeding to checkout...';
         
@@ -218,10 +217,9 @@ function openCheckoutModal(totalAmount) {
             return;
         }
 
-        // Razorpay Integration with amount strictly in paise
         const options = {
             key: "rzp_live_YOUR_KEY_HERE", // Replace with your live Razorpay Key ID
-            amount: Math.round(Number(totalAmount) * 100), // Converts Rupees to paise (Fixes modal crash)
+            amount: Math.round(Number(totalAmount) * 100), // Converted to paise to prevent modal crash
             currency: "INR",
             name: "Alivèra Atelier",
             description: "Custom Designer Apparel",
