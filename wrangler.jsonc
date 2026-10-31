@@ -10,7 +10,6 @@
     "binding": "ASSETS"
   },
 
- {
   // ...
   "vars": {
     "ENVIRONMENT": "production",
@@ -19,7 +18,6 @@
     "SHIPROCKET_PASSWORD": "8JoRnfVG8vtakJzKY2Gai@ZGYcraJP^7"
   },
   // ...
-}
 
   "d1_databases": [
     {
