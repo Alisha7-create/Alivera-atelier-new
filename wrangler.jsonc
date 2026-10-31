@@ -12,7 +12,7 @@
   "vars": {
     "ENVIRONMENT": "production",
     "RAZORPAY_KEY_ID": "rzp_live_TUhsK2amojFPDp",
-    "SHIPROCKET_EMAIL": "shiprocket@aliveraatelier.in"
+    "SHIPROCKET_EMAIL": "shiprocket@aliveraatelier.in",
     "SHIPROCKET_PASSWORD": "8JoRnfVG8vtakJzKY2Gai@ZGYcraJP^7"
   },
   "d1_databases": [
