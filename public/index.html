@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Luxury Custom Apparel</title>
     
-    <!-- Favicon & Branding -->
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/styles.css">
-    <link rel="stylesheet" href="/app-splash.css">
-
+    
     <!-- Razorpay Live Checkout SDK -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
-    <!-- Top Navigation / Brand Bar -->
+    <!-- Top Navigation Header -->
     <header class="nav">
         <a href="/" onclick="event.preventDefault(); loadStoreHome();" class="brand">
             ALIVÈRA ATELIER
@@ -24,17 +23,17 @@
         </a>
         <nav>
             <a href="/" onclick="event.preventDefault(); loadStoreHome();">Collection</a>
-            <a href="/admin/">Admin Portal</a>
+            <a href="/admin/">Admin Panel</a>
         </nav>
-        <div class="nav-right">
-            <span id="productCount" style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin-right: 15px; color: var(--muted);"></span>
+        <div style="display:flex; align-items:center;">
+            <span id="productCount" style="font-size: 11px; letter-spacing: .1em; text-transform: uppercase; margin-right: 15px; color: var(--muted);"></span>
             <button onclick="openBag()" class="bagbtn">
                 Bag <b id="bagCount">0</b>
             </button>
         </div>
     </header>
 
-    <!-- Main Dynamic Application Container -->
+    <!-- Main Store Catalog Container -->
     <main id="mainAppContainer">
         <!-- Hero Section -->
         <section class="hero">
@@ -50,13 +49,13 @@
             </div>
         </section>
 
-        <!-- Product Catalog Section (ID MUST BE 'products') -->
+        <!-- Product Catalog Section -->
         <section class="section">
             <div class="sectionhead">
                 <h2>Current Collection</h2>
             </div>
             <div id="products" class="grid">
-                <!-- Products dynamically rendered by public/app.js -->
+                <!-- 4 Original Dresses Rendered via public/app.js -->
             </div>
         </section>
     </main>
@@ -69,7 +68,7 @@
             <button onclick="closeBag()" class="close">×</button>
         </div>
         <div id="bagItems" class="draweritems">
-            <!-- Bag items injected here -->
+            <!-- Items injected here -->
         </div>
         <div class="bagfoot">
             <div style="font-size: 14px; font-weight: 600;">
@@ -80,10 +79,10 @@
         </div>
     </div>
 
-    <!-- Dynamic Modal Overlay (Used for Size Charts, Product Overlays & Invoice Checkout) -->
+    <!-- Modal Overlay (Invoice Bill & Custom Fit View) -->
     <div id="checkout" class="modal" onclick="closeCheckout()">
         <div id="checkoutBody" class="modalbox" onclick="event.stopPropagation()">
-            <!-- Dynamic invoice or modal content injected here -->
+            <!-- Dynamic Invoice / Product view injected here -->
         </div>
     </div>
 
@@ -108,7 +107,7 @@
         </div>
     </footer>
 
-    <!-- Application JavaScript Engine -->
+    <!-- Scripts -->
     <script src="/assets.js"></script>
     <script src="/app.js"></script>
 </body>
