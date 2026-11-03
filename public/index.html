@@ -5,65 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alivèra Atelier — Luxury Custom Apparel</title>
     
-    <!-- Favicon -->
+    <!-- Favicon & Branding -->
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/app-splash.css">
+
+    <!-- Razorpay Live Checkout SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
     <!-- Top Navigation / Brand Bar -->
-    <header class="site-header">
-        <a href="/" class="logo">Alivèra Atelier</a>
+    <header class="nav">
+        <a href="/" onclick="event.preventDefault(); loadStoreHome();" class="brand">
+            ALIVÈRA ATELIER
+            <span>HAUTE COUTURE</span>
+        </a>
+        <nav>
+            <a href="/" onclick="event.preventDefault(); loadStoreHome();">Collection</a>
+            <a href="/admin/">Admin Portal</a>
+        </nav>
         <div class="nav-right">
-            <span id="productCount"></span>
-            <button onclick="openBag()" class="bag-toggle-btn">Bag (<span id="bagCount">0</span>)</button>
+            <span id="productCount" style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin-right: 15px; color: var(--muted);"></span>
+            <button onclick="openBag()" class="bagbtn">
+                Bag <b id="bagCount">0</b>
+            </button>
         </div>
     </header>
 
-    <!-- Main Store Catalog or Dynamic Product View Container -->
-    <main id="mainAppContainer" class="main-content">
-        <section class="hero-intro">
-            <h1>Artisanal Ready-to-Wear & Custom Tailoring</h1>
-            <p>Crafted individually in our studio for a precise, luxurious drape.</p>
+    <!-- Main Dynamic Application Container -->
+    <main id="mainAppContainer">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div>
+                <p class="eyebrow">ARTISANAL ATELIER</p>
+                <h1>Ready-to-Wear & <em>Custom Tailoring</em></h1>
+                <p class="lead">Crafted individually in our studio for a precise, luxurious drape tailored specifically to your measurements.</p>
+                <a href="#products" class="btn dark">Explore Collection</a>
+            </div>
+            <div class="hero-card">
+                <span>ALIVÈRA</span>
+                <small>EST. 2026 · RAJASTHAN</small>
+            </div>
         </section>
 
-        <!-- Product Catalog Container -->
-        <div id="products" class="products-grid"></div>
+        <!-- Product Catalog Section (ID MUST BE 'products') -->
+        <section class="section">
+            <div class="sectionhead">
+                <h2>Current Collection</h2>
+            </div>
+            <div id="products" class="grid">
+                <!-- Products dynamically rendered by public/app.js -->
+            </div>
+        </section>
     </main>
 
     <!-- Slide-out Shopping Bag Drawer -->
     <div id="backdrop" class="backdrop" onclick="closeBag()"></div>
     <div id="drawer" class="drawer">
-        <div class="drawer-header">
-            <h2>Your Shopping Bag</h2>
-            <button onclick="closeBag()" class="close-btn">×</button>
+        <div class="drawerhead">
+            <h3 style="font: 500 20px 'Playfair Display'; margin: 0;">Your Shopping Bag</h3>
+            <button onclick="closeBag()" class="close">×</button>
         </div>
-        <div id="bagItems" class="drawer-items"></div>
-        <div class="drawer-footer">
-            <div class="bag-total-row">
-                <span>Total:</span>
+        <div id="bagItems" class="draweritems">
+            <!-- Bag items injected here -->
+        </div>
+        <div class="bagfoot">
+            <div style="font-size: 14px; font-weight: 600;">
+                <span>Subtotal:</span>
                 <strong id="bagTotal">₹0</strong>
             </div>
-            <button id="checkoutBtn" class="btn dark full" onclick="openCheckoutModal()">Proceed to Checkout</button>
+            <button id="checkoutBtn" class="btn dark full" style="margin-top: 15px; padding: 15px;">Proceed to Checkout</button>
         </div>
     </div>
 
-    <!-- Professional Invoice / Checkout Modal Overlay -->
-    <div id="checkout" class="modal-overlay" onclick="closeCheckout()">
-        <div id="checkoutBody" class="modal-content invoice-modal" onclick="event.stopPropagation()"></div>
+    <!-- Dynamic Modal Overlay (Used for Size Charts, Product Overlays & Invoice Checkout) -->
+    <div id="checkout" class="modal" onclick="closeCheckout()">
+        <div id="checkoutBody" class="modalbox" onclick="event.stopPropagation()">
+            <!-- Dynamic invoice or modal content injected here -->
+        </div>
     </div>
 
     <!-- Size Chart Modal Overlay -->
-    <div id="sizeChartModal" class="modal-overlay" onclick="closeSizeChart()">
-        <div class="modal-content chart-modal" onclick="event.stopPropagation()">
+    <div id="sizeChartModal" class="modal" onclick="closeSizeChart()">
+        <div class="modalbox chartbox" onclick="event.stopPropagation()">
             <button class="close" onclick="closeSizeChart()">×</button>
             <div id="chartBody"></div>
         </div>
     </div>
 
-    <!-- Application Scripts -->
+    <!-- Footer -->
+    <footer>
+        <div>
+            <div class="brand" style="text-align: left; color: #fff;">ALIVÈRA ATELIER</div>
+            <p style="font-size: 12px; color: #aaa; margin-top: 10px; max-width: 300px;">Bespoke apparel & luxury custom garment design.</p>
+        </div>
+        <div>
+            <a href="/">Home</a>
+            <a href="/admin/">Admin Login</a>
+            <a href="mailto:contact@aliveraatelier.in">contact@aliveraatelier.in</a>
+        </div>
+    </footer>
+
+    <!-- Application JavaScript Engine -->
     <script src="/assets.js"></script>
     <script src="/app.js"></script>
 </body>
