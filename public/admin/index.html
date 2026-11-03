@@ -39,6 +39,7 @@
         
         .btn { background: var(--primary); color: #fff; padding: 12px 24px; border: 0; font-weight: 600; font-size: 13px; cursor: pointer; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn:hover { opacity: 0.9; }
+        .btn-secondary { background: #555; }
 
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -74,7 +75,104 @@
             </div>
         </div>
 
-        <!-- SECTION 1: UPLOAD DRESSES & AUTO-SLUG GENERATOR -->
+        <!-- SECTION 1: AI PROMO CODE & DISCOUNT MANAGER -->
+        <div class="card">
+            <div class="card-header">AI Promo Code & Discount Manager</div>
+            <div class="card-body">
+                <form id="promoForm" onsubmit="handleSavePromo(event)">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Promo Code Name</label>
+                            <input type="text" id="promoCodeName" placeholder="e.g. FESTIVE20" required style="text-transform: uppercase;">
+                        </div>
+                        <div class="field">
+                            <label>Discount Type & Value</label>
+                            <div style="display:flex; gap:10px;">
+                                <select id="promoType" style="width: 120px;">
+                                    <option value="PERCENTAGE">Percentage (%)</option>
+                                    <option value="FLAT">Flat Amount (₹)</option>
+                                </select>
+                                <input type="number" id="promoValue" placeholder="10 or 500" required style="flex:1;">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Restriction Type</label>
+                            <select id="restrictionType" onchange="toggleRestrictionFields(this.value)">
+                                <option value="NONE">No Restriction</option>
+                                <option value="TIME_BOUND">Time-Period Bound (Dates)</option>
+                                <option value="USAGE_BOUND">Person/Claim Limit (Number of Persons)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Conditional Limit Fields -->
+                    <div class="form-grid" id="timeFields" style="display:none;">
+                        <div class="field">
+                            <label>Promo Start Date & Time</label>
+                            <input type="datetime-local" id="promoStart">
+                        </div>
+                        <div class="field">
+                            <label>Promo End Date & Time</label>
+                            <input type="datetime-local" id="promoEnd">
+                        </div>
+                    </div>
+
+                    <div class="form-grid" id="usageFields" style="display:none;">
+                        <div class="field">
+                            <label>Maximum Number of Persons (Claims Limit)</label>
+                            <input type="number" id="maxClaims" placeholder="e.g. 50" value="100">
+                        </div>
+                    </div>
+
+                    <!-- AI Prompt Assistant Generator -->
+                    <div class="field" style="margin-bottom: 20px; background: #fafafa; padding: 15px; border: 1px dashed var(--border);">
+                        <label style="font-weight: 600; color: #555;">✨ AI Prompt Code Generator</label>
+                        <div style="display:flex; gap:10px; margin-top:6px;">
+                            <input type="text" id="aiPromptInput" placeholder="e.g. Create a 15% weekend flash discount code valid for 48 hours for 30 people" style="flex:1;">
+                            <button type="button" class="btn btn-secondary" onclick="generateCodeWithAI()">Generate via AI</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Save & Activate Promo Code</button>
+                </form>
+
+                <!-- Active Promo Codes Table -->
+                <div style="margin-top: 30px;">
+                    <h4 style="font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Active Promos & Discounts</h4>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Discount</th>
+                                    <th>Restriction Type</th>
+                                    <th>Limit / Period Details</th>
+                                    <th>Action</th>
+                                </tr>
+                            jsko>
+                            <tbody id="promoTableBody">
+                                <tr>
+                                    <td><b>ALIVE10</b></td>
+                                    <td>10% OFF</td>
+                                    <td>None</td>
+                                    <td>Standard Active Code</td>
+                                    <td><span class="badge">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td><b>ATELIER500</b></td>
+                                    <td>₹500 FLAT</td>
+                                    <td>None</td>
+                                    <td>Standard Active Code</td>
+                                    <td><span class="badge">Active</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: UPLOAD DRESSES & AUTO-SLUG GENERATOR -->
         <div class="card">
             <div class="card-header">Add New Dress & Generate URL Slug</div>
             <div class="card-body">
@@ -112,46 +210,6 @@
             </div>
         </div>
 
-        <!-- SECTION 2: HERO BANNER & SALE TIMER MANAGER -->
-        <div class="card">
-            <div class="card-header">Hero Banner & Sale Configuration</div>
-            <div class="card-body">
-                <form id="bannerForm" onsubmit="handleBannerUpdate(event)">
-                    <div class="form-grid">
-                        <div class="field">
-                            <label>Banner Type</label>
-                            <select id="bannerType" onchange="toggleBannerOptions(this.value)">
-                                <option value="normal">Normal Banner</option>
-                                <option value="scheduled_sale">Scheduled Sale (Timed)</option>
-                                <option value="slideshow">Slideshow with Sale %</option>
-                            </select>
-                        </div>
-                        <div class="field" id="discountField" style="display:none;">
-                            <label>Sale Discount Percentage (%)</label>
-                            <input type="number" id="bannerDiscount" placeholder="20">
-                        </div>
-                    </div>
-                    <div class="form-grid" id="timerFields" style="display:none;">
-                        <div class="field">
-                            <label>Sale Start Date & Time</label>
-                            <input type="datetime-local" id="saleStart">
-                        </div>
-                        <div class="field">
-                            <label>Sale End Date & Time (Timer Target)</label>
-                            <input type="datetime-local" id="saleEnd">
-                        </div>
-                    </div>
-                    <div class="form-grid">
-                        <div class="field">
-                            <label>Upload Banner Image / Background</label>
-                            <input type="file" id="bannerImageFile" accept="image/*">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn">Save & Apply Banner Configuration</button>
-                </form>
-            </div>
-        </div>
-
         <!-- SECTION 3: ORDERS & CUSTOM TAILORING TABLE -->
         <div class="card">
             <div class="card-header">
@@ -177,19 +235,92 @@
     </div>
 
     <script>
+        // Toggle Restriction fields
+        function toggleRestrictionFields(val) {
+            document.getElementById('timeFields').style.display = (val === 'TIME_BOUND') ? 'grid' : 'none';
+            document.getElementById('usageFields').style.display = (val === 'USAGE_BOUND') ? 'grid' : 'none';
+        }
+
+        // AI Promo Code Generator simulation based on prompt keywords
+        function generateCodeWithAI() {
+            const promptText = document.getElementById('aiPromptInput').value.toLowerCase();
+            if (!promptText) {
+                alert("Please enter a prompt instruction for the AI (e.g. 'Create a 20% discount for 50 people').");
+                return;
+            }
+
+            // Extract numbers or keywords from prompt
+            let discountNum = 15;
+            const matchNum = promptText.match(/\d+/);
+            if (matchNum) discountNum = parseInt(matchNum[0]);
+
+            let generatedCode = "FLASH" + discountNum;
+            if (promptText.includes('weekend')) generatedCode = "WEEKEND" + discountNum;
+            if (promptText.includes('festive')) generatedCode = "FESTIVE" + discountNum;
+            if (promptText.includes('flat')) {
+                document.getElementById('promoType').value = 'FLAT';
+                document.getElementById('promoValue').value = discountNum > 50 ? discountNum : 500;
+            } else {
+                document.getElementById('promoType').value = 'PERCENTAGE';
+                document.getElementById('promoValue').value = discountNum > 50 ? 20 : discountNum;
+            }
+
+            document.getElementById('promoCodeName').value = generatedCode.toUpperCase();
+            
+            if (promptText.includes('hour') || promptText.includes('day') || promptText.includes('period')) {
+                document.getElementById('restrictionType').value = 'TIME_BOUND';
+                toggleRestrictionFields('TIME_BOUND');
+            } else if (promptText.includes('people') || promptText.includes('person') || promptText.includes('limit')) {
+                document.getElementById('restrictionType').value = 'USAGE_BOUND';
+                toggleRestrictionFields('USAGE_BOUND');
+                document.getElementById('maxClaims').value = discountNum > 50 ? 50 : discountNum;
+            } else {
+                document.getElementById('restrictionType').value = 'NONE';
+                toggleRestrictionFields('NONE');
+            }
+
+            alert(`AI successfully generated promo configuration for code: ${document.getElementById('promoCodeName').value}!`);
+        }
+
+        function handleSavePromo(e) {
+            e.preventDefault();
+            const code = document.getElementById('promoCodeName').value.toUpperCase();
+            const type = document.getElementById('promoType').value;
+            const val = document.getElementById('promoValue').value;
+            const restriction = document.getElementById('restrictionType').value;
+
+            let details = "Standard Code";
+            if (restriction === 'TIME_BOUND') {
+                const start = document.getElementById('promoStart').value;
+                const end = document.getElementById('promoEnd').value;
+                details = `Valid from ${start} to ${end}`;
+            } else if (restriction === 'USAGE_BOUND') {
+                const max = document.getElementById('maxClaims').value;
+                details = `Limited to ${max} persons`;
+            }
+
+            const tbody = document.getElementById('promoTableBody');
+            tbody.innerHTML += `
+                <tr>
+                    <td><b>${code}</b></td>
+                    <td>${val}${type === 'PERCENTAGE' ? '% OFF' : ' ₹ FLAT'}</td>
+                    <td>${restriction.replace('_', ' ')}</td>
+                    <td>${details}</td>
+                    <td><span class="badge">Active</span></td>
+                </tr>
+            `;
+
+            alert(`Promo code "${code}" successfully activated on storefront!`);
+            document.getElementById('promoForm').reset();
+            toggleRestrictionFields('NONE');
+        }
+
         // Auto-generate slug preview
         function generateSlugPreview(name) {
             const cleanSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
             document.getElementById('newDressSlug').value = `aliveraatelier.in-${cleanSlug}`;
         }
 
-        // Toggle banner configuration fields based on type
-        function toggleBannerOptions(val) {
-            document.getElementById('discountField').style.display = (val === 'slideshow') ? 'flex' : 'none';
-            document.getElementById('timerFields').style.display = (val === 'scheduled_sale') ? 'grid' : 'none';
-        }
-
-        // Handle Product Upload
         function handleProductUpload(e) {
             e.preventDefault();
             const name = document.getElementById('newDressName').value;
@@ -197,12 +328,6 @@
             alert(`Dress "${name}" successfully registered! SEO URL generated: /${slug}`);
             document.getElementById('productUploadForm').reset();
             document.getElementById('newDressSlug').value = '';
-        }
-
-        // Handle Banner Update
-        function handleBannerUpdate(e) {
-            e.preventDefault();
-            alert('Hero banner and timer configuration successfully updated across the storefront!');
         }
 
         // Load Admin Orders & Stats
