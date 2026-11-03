@@ -89,11 +89,11 @@ function showSizeChart(p) {
 
 function closeSizeChart() { document.getElementById('sizeChartModal')?.classList.remove('show'); }
 
-// Dedicated Product Page View (E-commerce Style Page)
+// Dedicated E-Commerce Style Dress Page
 function showProduct(p) {
     window.history.pushState({ productId: p.id }, p.name, `/products/aliveraatelier.in-${p.slug}`);
     const image = imageFor(p);
-    const mainContainer = document.getElementById('mainAppContainer') || document.querySelector('.main-content');
+    const mainContainer = document.getElementById('mainAppContainer');
     if (!mainContainer) return;
 
     mainContainer.innerHTML = `
@@ -192,7 +192,7 @@ function checkPincodeDelivery() {
 
 function closeCheckout() { document.getElementById('checkout')?.classList.remove('show'); }
 
-// --- PROFESSIONAL INVOICE BILL & SINGLE BLOCK ADDRESS CHECKOUT ---
+// Professional Invoice Bill & Single-Block Checkout
 function openCheckoutModal(totalAmount) {
     if (!bag.length) {
         alert("Your bag is empty.");
@@ -212,7 +212,7 @@ function openCheckoutModal(totalAmount) {
 
     bodyEl.innerHTML = `
         <button class="close" onclick="closeCheckout()">×</button>
-        <div style="background:#fff; border:1px solid #e0e0e0; padding:30px; font-family:inherit; color:#111; max-width:680px; margin:auto;">
+        <div class="invoice-box" style="background:#fff; border:1px solid #e0e0e0; padding:30px; font-family:inherit; color:#111; max-width:680px; margin:auto;">
             <div style="border-bottom:2px solid #111; padding-bottom:15px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <h2 style="font:600 22px 'Playfair Display'; margin:0;">ALIVÈRA ATELIER</h2>
@@ -224,7 +224,7 @@ function openCheckoutModal(totalAmount) {
                 </div>
             </div>
 
-            <!-- Professional Itemized Bill Table -->
+            <!-- Itemized Invoice Table -->
             <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
                 <thead>
                     <tr style="background:#fafafa;">
@@ -262,7 +262,7 @@ function openCheckoutModal(totalAmount) {
                 </div>
             </div>
 
-            <!-- Single Block Address Form -->
+            <!-- Single-Block Address Form -->
             <form id="shippingForm" onsubmit="submitUnifiedOrder(event, ${finalTotal})" style="display:flex; flex-direction:column; gap:12px;">
                 <h4 style="font:500 16px 'Playfair Display'; margin-bottom:4px; border-bottom:1px solid #eee; padding-bottom:6px;">Delivery & Contact Details</h4>
                 
