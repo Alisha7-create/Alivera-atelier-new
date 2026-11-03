@@ -26,7 +26,7 @@
             <a href="/admin/">Admin Panel</a>
         </nav>
         <div style="display:flex; align-items:center;">
-            <span id="productCount" style="font-size: 11px; letter-spacing: .1em; text-transform: uppercase; margin-right: 15px; color: var(--muted);"></span>
+            <span id="productCount" style="font-size: 11px; letter-spacing: .1em; text-transform: uppercase; margin-right: 15px; color: var(--gold-muted);"></span>
             <button onclick="openBag()" class="bagbtn">
                 Bag <b id="bagCount">0</b>
             </button>
@@ -41,7 +41,7 @@
                 <p class="eyebrow">ARTISANAL ATELIER</p>
                 <h1>Ready-to-Wear & <em>Custom Tailoring</em></h1>
                 <p class="lead">Crafted individually in our studio for a precise, luxurious drape tailored specifically to your measurements.</p>
-                <a href="#products" class="btn dark">Explore Collection</a>
+                <a href="#products-section" class="btn gold-btn">Explore Collection</a>
             </div>
             <div class="hero-card">
                 <span>ALIVÈRA</span>
@@ -49,13 +49,13 @@
             </div>
         </section>
 
-        <!-- Product Catalog Section (ID must remain 'products' with class 'grid') -->
+        <!-- Product Catalog Section -->
         <section id="products-section" class="section">
             <div class="sectionhead">
                 <h2>Current Collection</h2>
             </div>
             <div id="products" class="grid">
-                <!-- 4 Original Dresses Rendered via public/app.js -->
+                <!-- Products rendered via app.js -->
             </div>
         </section>
     </main>
@@ -64,7 +64,7 @@
     <div id="backdrop" class="backdrop" onclick="closeBag()"></div>
     <div id="drawer" class="drawer">
         <div class="drawerhead">
-            <h3 style="font: 500 20px 'Playfair Display'; margin: 0;">Your Shopping Bag</h3>
+            <h3 style="font: 500 20px 'Playfair Display'; margin: 0; color: #d4af37;">Your Shopping Bag</h3>
             <button onclick="closeBag()" class="close">×</button>
         </div>
         <div id="bagItems" class="draweritems"></div>
@@ -73,7 +73,7 @@
                 <span>Subtotal:</span>
                 <strong id="bagTotal">₹0</strong>
             </div>
-            <button id="checkoutBtn" class="btn dark full" style="margin-top: 15px; padding: 15px;">Proceed to Checkout</button>
+            <button id="checkoutBtn" class="btn gold-btn full" style="margin-top: 15px; padding: 15px;">Proceed to Checkout</button>
         </div>
     </div>
 
@@ -93,7 +93,7 @@
     <!-- Footer -->
     <footer>
         <div>
-            <div class="brand" style="text-align: left; color: #fff;">ALIVÈRA ATELIER</div>
+            <div class="brand" style="text-align: left; color: #d4af37;">ALIVÈRA ATELIER</div>
             <p style="font-size: 12px; color: #aaa; margin-top: 10px; max-width: 300px;">Bespoke apparel & luxury custom garment design.</p>
         </div>
         <div>
