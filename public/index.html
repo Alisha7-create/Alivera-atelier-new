@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="/app-splash.css">
 </head>
 <body>
-    <!-- Top Navigation / Bag Count Bar -->
+    <!-- Top Navigation / Brand Bar -->
     <header class="site-header">
         <a href="/" class="logo">Alivèra Atelier</a>
         <div class="nav-right">
-            <span id="productCount">Loading...</span>
+            <span id="productCount"></span>
             <button onclick="openBag()" class="bag-toggle-btn">Bag (<span id="bagCount">0</span>)</button>
         </div>
     </header>
@@ -45,13 +45,13 @@
                 <span>Total:</span>
                 <strong id="bagTotal">₹0</strong>
             </div>
-            <button id="checkoutBtn" class="btn dark full">Proceed to Checkout</button>
+            <button id="checkoutBtn" class="btn dark full" onclick="openCheckoutModal()">Proceed to Checkout</button>
         </div>
     </div>
 
     <!-- Product Detail / Checkout Modal Overlay -->
-    <div id="checkout" class="modal-overlay">
-        <div id="checkoutBody" class="modal-content">
+    <div id="checkout" class="modal-overlay" onclick="closeCheckoutModal()">
+        <div id="checkoutBody" class="modal-content" onclick="event.stopPropagation()">
             <!-- Dynamic product view or checkout form injected here -->
         </div>
     </div>
@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <!-- Load Assets mapping & Application script -->
+    <!-- Application Scripts -->
     <script src="/assets.js"></script>
     <script src="/app.js"></script>
 </body>
