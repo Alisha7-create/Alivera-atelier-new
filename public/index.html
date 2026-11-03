@@ -29,9 +29,9 @@
             <p>Crafted individually in our studio for a precise, luxurious drape.</p>
         </section>
 
-        <!-- Product Catalog Container -->
+        <!-- Product Catalog Container (Must match getElementById('products')) -->
         <div id="products" class="products-grid">
-            <!-- Products are injected dynamically via public/app.js -->
+            <!-- Products injected dynamically via app.js -->
         </div>
     </main>
 
@@ -54,14 +54,12 @@
         </div>
     </div>
 
-    <!-- Product Detail / Checkout Modal Overlay (Starts closed) -->
+    <!-- Product Detail / Checkout Modal Overlay -->
     <div id="checkout" class="modal-overlay" onclick="closeCheckout()">
-        <div id="checkoutBody" class="modal-content" onclick="event.stopPropagation()">
-            <!-- Dynamic product view or checkout form injected here -->
-        </div>
+        <div id="checkoutBody" class="modal-content" onclick="event.stopPropagation()"></div>
     </div>
 
-    <!-- Size Chart Modal Overlay (Starts closed) -->
+    <!-- Size Chart Modal Overlay -->
     <div id="sizeChartModal" class="modal-overlay" onclick="closeSizeChart()">
         <div class="modal-content chart-modal" onclick="event.stopPropagation()">
             <button class="close" onclick="closeSizeChart()">×</button>
@@ -69,7 +67,7 @@
         </div>
     </div>
 
-    <!-- Application Assets & Scripts -->
+    <!-- Application Scripts -->
     <script src="/assets.js"></script>
     <script src="/app.js"></script>
 </body>
