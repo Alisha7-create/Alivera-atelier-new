@@ -218,7 +218,7 @@ function openCheckoutModal(totalAmount) {
         }
 
         const options = {
-            key: "rzp_live_YOUR_KEY_HERE", // Replace with your live Razorpay Key ID
+            key: "rzp_live_TUhsK2amojFPDp", // Replace with your live Razorpay Key ID
             amount: Math.round(Number(totalAmount) * 100), // Converted to paise to prevent modal crash
             currency: "INR",
             name: "Alivèra Atelier",
