@@ -31,7 +31,7 @@ function renderBag() {
     if (!el) return;
     
     if (!bag.length) {
-        el.innerHTML = '<div style="padding:40px 0;text-align:center;color:#777">Your bag is waiting for something beautiful.</div>';
+        el.innerHTML = '<div style="padding:40px 0;text-align:center;color:#888">Your bag is waiting for something beautiful.</div>';
         const totalEl = document.getElementById('bagTotal');
         if (totalEl) totalEl.textContent = '₹0';
         return;
@@ -99,46 +99,46 @@ function showProduct(p) {
             <div>
                 <button onclick="loadStoreHome()" class="chartlink" style="margin-bottom:15px; cursor:pointer;">← Back to Collection</button>
                 <p class="eyebrow">${esc((p.slug || '').replaceAll('-', ' ').toUpperCase())}</p>
-                <h1 style="font:500 36px 'Playfair Display'; margin:0 0 10px;">${esc(p.name)}</h1>
+                <h1 style="font:500 36px 'Playfair Display'; margin:0 0 10px; color:#fff;">${esc(p.name)}</h1>
                 <h3 class="detailprice" style="font-size:24px;">${money(p.price)}</h3>
                 <p class="muted" style="margin-bottom:20px;">${esc(p.description || 'Crafted individually in our studio for a precise drape.')}</p>
                 <p class="madeorder"><b>Made to order</b> · Prepared especially for you.</p>
                 
                 <div class="field" style="margin-top:15px;">
-                    <label><b>Choose size</b></label>
-                    <select id="sizeSelect" style="padding:12px; border:1px solid var(--line); width:100%; background:#fff; font:inherit;">
+                    <label style="color:#f5f2eb;"><b>Choose size</b></label>
+                    <select id="sizeSelect" style="padding:12px; border:1px solid var(--line); width:100%; background:#1a1714; color:#fff; font:inherit;">
                         ${(p.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL']).map(s => `<option>${esc(s)}</option>`).join('')}
                     </select>
                 </div>
                 
                 <div class="field" style="margin-top:15px;">
-                    <label><b>Custom Fit / Tailoring Measurements & Notes</b></label>
-                    <textarea id="customFitInput" placeholder="Enter custom measurements (Bust, Waist, Hip, Length) or tailoring notes..." style="width:100%; height:80px; padding:10px; border:1px solid var(--line); border-radius:4px; font-family:inherit; font-size:14px; background:#fff;"></textarea>
+                    <label style="color:#f5f2eb;"><b>Custom Fit / Tailoring Measurements & Notes</b></label>
+                    <textarea id="customFitInput" placeholder="Enter custom measurements (Bust, Waist, Hip, Length) or tailoring notes..." style="width:100%; height:80px; padding:10px; border:1px solid var(--line); border-radius:4px; font-family:inherit; font-size:14px; background:#1a1714; color:#fff;"></textarea>
                 </div>
 
                 <div style="display:flex; gap:15px; margin-top:20px;">
-                    <button class="btn dark" id="addToBagBtn" style="flex:2; padding:15px;">Add to bag</button>
-                    <button class="btn" onclick="toggleWishlist('${esc(p.name)}')" style="flex:1; background:#eee; color:#111; cursor:pointer;">♡ Wishlist</button>
-                    <button class="btn" onclick="shareProduct('${esc(p.name)}')" style="flex:1; background:#eee; color:#111; cursor:pointer;">Share</button>
+                    <button class="btn gold-btn" id="addToBagBtn" style="flex:2; padding:15px;">Add to bag</button>
+                    <button class="btn" onclick="toggleWishlist('${esc(p.name)}')" style="flex:1; background:#221c13; color:#d4af37; border:1px solid var(--gold-muted); cursor:pointer;">♡ Wishlist</button>
+                    <button class="btn" onclick="shareProduct('${esc(p.name)}')" style="flex:1; background:#221c13; color:#d4af37; border:1px solid var(--gold-muted); cursor:pointer;">Share</button>
                 </div>
 
                 <button class="chartlink" id="viewChartBtn" style="margin-top:15px; display:block;">View detailed size chart</button>
 
                 <!-- Pincode Delivery Checker -->
-                <div style="margin-top:25px; background:#f9f9f9; padding:15px; border:1px solid #e0e0e0; border-radius:6px;">
-                    <label style="font-weight:bold; display:block; margin-bottom:8px;">Check Delivery Availability</label>
+                <div style="margin-top:25px; background:#141210; padding:15px; border:1px solid var(--line); border-radius:6px;">
+                    <label style="font-weight:bold; display:block; margin-bottom:8px; color:#f5f2eb;">Check Delivery Availability</label>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="pincodeCheckInput" placeholder="Enter 6-digit Pincode" maxlength="6" style="flex:1; padding:10px; border:1px solid #ccc; border-radius:4px;">
-                        <button type="button" onclick="checkPincodeDelivery()" class="btn dark" style="padding:10px 15px; cursor:pointer;">Check</button>
+                        <input type="text" id="pincodeCheckInput" placeholder="Enter 6-digit Pincode" maxlength="6" style="flex:1; padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
+                        <button type="button" onclick="checkPincodeDelivery()" class="btn gold-btn" style="padding:10px 15px; cursor:pointer;">Check</button>
                     </div>
                     <p id="pincodeStatusMsg" style="font-size:12px; margin-top:6px; font-weight:bold;"></p>
                 </div>
 
                 <!-- Customer Reviews Section -->
                 <div style="margin-top:25px; border-top:1px solid var(--line); padding-top:15px;">
-                    <h4 style="font:500 16px 'Playfair Display'; margin-bottom:10px;">Customer Reviews</h4>
-                    <div style="font-size:12px; color:#555; margin-bottom:8px; border-left:2px solid var(--accent); padding-left:8px;">"The fabric drape and custom stitching exceeded expectations completely!" — Ananya S.</div>
-                    <div style="font-size:12px; color:#555; border-left:2px solid var(--accent); padding-left:8px;">"Absolute luxury finish. Customer service helped with custom measurements effortlessly." — Priya R.</div>
+                    <h4 style="font:500 16px 'Playfair Display'; margin-bottom:10px; color:#fff;">Customer Reviews</h4>
+                    <div style="font-size:12px; color:#a39b90; margin-bottom:8px; border-left:2px solid var(--gold); padding-left:8px;">"The fabric drape and custom stitching exceeded expectations completely!" — Ananya S.</div>
+                    <div style="font-size:12px; color:#a39b90; border-left:2px solid var(--gold); padding-left:8px;">"Absolute luxury finish. Customer service helped with custom measurements effortlessly." — Priya R.</div>
                 </div>
             </div>
         </div>
@@ -175,11 +175,11 @@ function checkPincodeDelivery() {
     const pin = document.getElementById('pincodeCheckInput').value.trim();
     const msg = document.getElementById('pincodeStatusMsg');
     if (pin.length !== 6 || isNaN(pin)) {
-        msg.style.color = 'red';
+        msg.style.color = '#ff6b6b';
         msg.textContent = 'Please enter a valid 6-digit pincode.';
         return;
     }
-    msg.style.color = 'green';
+    msg.style.color = '#51cf66';
     msg.textContent = `✓ Express delivery & custom tailoring dispatch available for ${pin}!`;
 }
 
@@ -193,8 +193,7 @@ function openCheckoutModal(totalAmount) {
     }
 
     const modal = document.getElementById('checkout');
-    if (!modal) return;
-    modal.classList.add('show');
+    if (!modal) modal.classList.add('show');
     
     const bodyEl = document.getElementById('checkoutBody');
     if (!bodyEl) return;
@@ -205,11 +204,11 @@ function openCheckoutModal(totalAmount) {
 
     bodyEl.innerHTML = `
         <button class="close" onclick="closeCheckout()">×</button>
-        <div style="background:#fff; border:1px solid #e0e0e0; padding:30px; font-family:inherit; color:#111; max-width:680px; margin:auto;">
-            <div style="border-bottom:2px solid #111; padding-bottom:15px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="background:#141210; border:1px solid var(--gold-muted); padding:30px; font-family:inherit; color:#f5f2eb; max-width:680px; margin:auto;">
+            <div style="border-bottom:2px solid var(--gold); padding-bottom:15px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <h2 style="font:600 22px 'Playfair Display'; margin:0;">ALIVÈRA ATELIER</h2>
-                    <small style="color:#666;">Tax Invoice & Custom Order Summary</small>
+                    <h2 style="font:600 22px 'Playfair Display'; margin:0; color:var(--gold);">ALIVÈRA ATELIER</h2>
+                    <small style="color:#a39b90;">Tax Invoice & Custom Order Summary</small>
                 </div>
                 <div style="text-align:right;">
                     <b style="font-size:12px;">Date:</b> ${new Date().toLocaleDateString()}<br>
@@ -220,20 +219,20 @@ function openCheckoutModal(totalAmount) {
             <!-- Itemized Invoice Table -->
             <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
                 <thead>
-                    <tr style="background:#fafafa;">
-                        <th style="padding:10px; border-bottom:1px solid #eee; text-align:left;">Garment / Description</th>
-                        <th style="padding:10px; border-bottom:1px solid #eee; text-align:left;">Size / Fit</th>
-                        <th style="padding:10px; border-bottom:1px solid #eee; text-align:left;">Qty</th>
-                        <th style="padding:10px; border-bottom:1px solid #eee; text-align:left;">Amount</th>
+                    <tr style="background:#1a1714; color:var(--gold);">
+                        <th style="padding:10px; border-bottom:1px solid var(--line); text-align:left;">Garment / Description</th>
+                        <th style="padding:10px; border-bottom:1px solid var(--line); text-align:left;">Size / Fit</th>
+                        <th style="padding:10px; border-bottom:1px solid var(--line); text-align:left;">Qty</th>
+                        <th style="padding:10px; border-bottom:1px solid var(--line); text-align:left;">Amount</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${bag.map(i => `
                         <tr>
-                            <td style="padding:10px; border-bottom:1px solid #eee;"><b>${esc(i.name)}</b>${i.customFitNotes ? `<br><small style="color:#d9534f">Fit: ${esc(i.customFitNotes)}</small>` : ''}</td>
-                            <td style="padding:10px; border-bottom:1px solid #eee;">${esc(i.size)}</td>
-                            <td style="padding:10px; border-bottom:1px solid #eee;">${i.quantity}</td>
-                            <td style="padding:10px; border-bottom:1px solid #eee;">${money(i.price * i.quantity)}</td>
+                            <td style="padding:10px; border-bottom:1px solid var(--line);"><b>${esc(i.name)}</b>${i.customFitNotes ? `<br><small style="color:#ff6b6b">Fit: ${esc(i.customFitNotes)}</small>` : ''}</td>
+                            <td style="padding:10px; border-bottom:1px solid var(--line);">${esc(i.size)}</td>
+                            <td style="padding:10px; border-bottom:1px solid var(--line);">${i.quantity}</td>
+                            <td style="padding:10px; border-bottom:1px solid var(--line); color:var(--gold);">${money(i.price * i.quantity)}</td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -241,52 +240,53 @@ function openCheckoutModal(totalAmount) {
 
             <!-- Promo Code Section -->
             <div style="display:flex; gap:10px; margin:15px 0;">
-                <input type="text" id="promoCodeInput" placeholder="Enter Promo Code (e.g. ALIVE10)" value="${appliedPromoCode}" style="flex:1; padding:10px; border:1px solid #ccc; border-radius:4px;">
-                <button type="button" class="btn dark" onclick="applyPromoCode(${subtotal})" style="padding:10px 15px; cursor:pointer;">Apply</button>
+                <input type="text" id="promoCodeInput" placeholder="Enter Promo Code (e.g. ALIVE10)" value="${appliedPromoCode}" style="flex:1; padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
+                <button type="button" class="btn gold-btn" onclick="applyPromoCode(${subtotal})" style="padding:10px 15px; cursor:pointer;">Apply</button>
             </div>
-            <p id="promoMsg" style="font-size:12px; margin-bottom:15px; font-weight:bold; color:green;"></p>
+            <p id="promoMsg" style="font-size:12px; margin-bottom:15px; font-weight:bold; color:#51cf66;"></p>
 
             <!-- Bill Totals -->
-            <div style="border-top:1px solid #ddd; padding-top:12px; margin-bottom:20px; font-size:14px;">
+            <div style="border-top:1px solid var(--line); padding-top:12px; margin-bottom:20px; font-size:14px;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Subtotal:</span> <span>${money(subtotal)}</span></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px; color:green;"><span>Discount / Promo:</span> <span>- ${money(appliedDiscount)}</span></div>
-                <div style="display:flex; justify-content:space-between; font-size:18px; font-weight:bold; border-top:1px solid #111; padding-top:8px; margin-top:8px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; color:#51cf66;"><span>Discount / Promo:</span> <span>- ${money(appliedDiscount)}</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:18px; font-weight:bold; border-top:1px solid var(--gold); padding-top:8px; margin-top:8px; color:var(--gold);">
                     <span>Total Payable:</span> <span>${money(finalTotal)}</span>
                 </div>
             </div>
 
             <!-- Single-Block Address Form -->
             <form id="shippingForm" onsubmit="submitUnifiedOrder(event, ${finalTotal})" style="display:flex; flex-direction:column; gap:12px;">
-                <h4 style="font:500 16px 'Playfair Display'; margin-bottom:4px; border-bottom:1px solid #eee; padding-bottom:6px;">Delivery & Contact Details</h4>
+                <h4 style="font:500 16px 'Playfair Display'; margin-bottom:4px; border-bottom:1px solid var(--line); padding-bottom:6px; color:var(--white);">Delivery & Contact Details</h4>
                 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="custName" placeholder="Full Name" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
-                    <input type="tel" id="custPhone" placeholder="10-digit Phone Number" required maxlength="10" style="padding:10px; border:1px solid #ccc; border-radius:4px;">
+                    <input type="text" id="custName" placeholder="Full Name" required style="padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
+                    <input type="tel" id="custPhone" placeholder="10-digit Phone Number" required maxlength="10" style="padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
                 </div>
                 
                 <div>
-                    <input type="email" id="custEmail" placeholder="Email Address (contact@aliveraatelier.in)" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                    <input type="email" id="custEmail" placeholder="Email Address (contact@aliveraatelier.in)" required style="width:100%; padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="custHouse" placeholder="House / Building Number" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
-                    <input type="text" id="custLandmark" placeholder="Landmark (Optional)" style="padding:10px; border:1px solid #ccc; border-radius:4px;">
+                    <input type="text" id="custHouse" placeholder="House / Building Number" required style="padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
+                    <input type="text" id="custLandmark" placeholder="Landmark (Optional)" style="padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
                 </div>
 
                 <div>
-                    <textarea id="custFullAddress" placeholder="Full Street Address" required rows="2" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px; font-family:inherit;"></textarea>
+                    <textarea id="custFullAddress" placeholder="Full Street Address" required rows="2" style="width:100%; padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px; font-family:inherit;"></textarea>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                    <input type="text" id="custCity" placeholder="City" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
-                    <input type="text" id="custState" placeholder="State" value="Rajasthan" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
-                    <input type="text" id="confirmedPincode" placeholder="Pincode" required maxlength="6" style="padding:10px; border:1px solid #ccc; border-radius:4px;">
+                    <input type="text" id="custCity" placeholder="City" required style="padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
+                    <input type="text" id="custState" placeholder="State" value="Rajasthan" required style="padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
+                    <input type="text" id="confirmedPincode" placeholder="Pincode" required maxlength="6" style="padding:10px; border:1px solid var(--line); background:#1a1714; color:#fff; border-radius:4px;">
                 </div>
 
-                <button type="submit" id="payRazorpayBtn" class="btn dark full" style="margin-top:10px; padding:14px; background:#111; color:#fff; cursor:pointer; font-size:15px; font-weight:bold;">Pay ${money(finalTotal)} with Razorpay</button>
+                <button type="submit" id="payRazorpayBtn" class="btn gold-btn full" style="margin-top:10px; padding:14px; font-size:15px; font-weight:bold;">Pay ${money(finalTotal)} with Razorpay</button>
             </form>
         </div>
     `;
+    modal.classList.add('show');
 }
 
 function applyPromoCode(subtotal) {
@@ -295,17 +295,17 @@ function applyPromoCode(subtotal) {
     if (code === 'ALIVE10') {
         appliedDiscount = subtotal * 0.10;
         appliedPromoCode = code;
-        msg.style.color = 'green';
+        msg.style.color = '#51cf66';
         msg.textContent = '✓ Promo code ALIVE10 applied (10% OFF)!';
         openCheckoutModal(subtotal);
     } else if (code === 'ATELIER500') {
         appliedDiscount = 500;
         appliedPromoCode = code;
-        msg.style.color = 'green';
+        msg.style.color = '#51cf66';
         msg.textContent = '✓ Promo code ATELIER500 applied (₹500 OFF)!';
         openCheckoutModal(subtotal);
     } else {
-        msg.style.color = 'red';
+        msg.style.color = '#ff6b6b';
         msg.textContent = 'Invalid promo code.';
     }
 }
@@ -378,7 +378,7 @@ async function submitUnifiedOrder(e, totalAmount) {
             }
         },
         prefill: { name: name, email: email, contact: phone },
-        theme: { color: "#111111" }
+        theme: { color: "#d4af37" }
     };
 
     const rzp = new Razorpay(options);
