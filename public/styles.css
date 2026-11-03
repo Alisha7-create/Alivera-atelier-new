@@ -20,7 +20,7 @@ html, body {
     -webkit-text-size-adjust: 100%;
 }
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--cream); color: var(--ink); font-family: 'DM Sans', sans-serif; }
 a { color: inherit; text-decoration: none; }
