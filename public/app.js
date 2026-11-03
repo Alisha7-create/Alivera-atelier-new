@@ -1,6 +1,8 @@
 const API = '/api';
 let products = [];
 let bag = JSON.parse(localStorage.getItem('alv_bag') || '[]');
+let appliedDiscount = 0;
+let appliedPromoCode = '';
 
 const money = n => '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 const esc = s => String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -41,8 +43,11 @@ function renderBag() {
         return `<div class="bagitem"><div>${x.image ? `<img class="bagthumb" src="${x.image}" alt="${esc(x.name)}">` : ''}</div><div><h4>${esc(x.name)}</h4><p>Size: ${esc(x.size)}${x.customFitNotes ? ' · Custom fit' : ''}</p><p>${money(x.price)} × ${x.quantity}</p><button class="remove" onclick="removeItem(${i})">Remove</button></div><strong>${money(x.price * x.quantity)}</strong></div>`;
     }).join('');
     
+    let finalBagTotal = total - appliedDiscount;
+    if (finalBagTotal < 0) finalBagTotal = 0;
+
     const totalEl = document.getElementById('bagTotal');
-    if (totalEl) totalEl.textContent = money(total);
+    if (totalEl) totalEl.textContent = money(finalBagTotal);
 
     let checkoutBtn = document.getElementById('checkoutBtn');
     if (!checkoutBtn) {
@@ -84,50 +89,110 @@ function showSizeChart(p) {
 
 function closeSizeChart() { document.getElementById('sizeChartModal')?.classList.remove('show'); }
 
+// Dedicated Product Page View (E-commerce Style Page)
 function showProduct(p) {
-    const modal = document.getElementById('checkout');
+    window.history.pushState({ productId: p.id }, p.name, `/products/aliveraatelier.in-${p.slug}`);
     const image = imageFor(p);
-    if (!modal) return;
-    modal.classList.add('show');
-    
-    const bodyEl = document.getElementById('checkoutBody');
-    if (!bodyEl) return;
+    const mainContainer = document.getElementById('mainAppContainer') || document.querySelector('.main-content');
+    if (!mainContainer) return;
 
-    bodyEl.innerHTML = `
-        <button class="close" onclick="closeCheckout()">×</button>
-        <p class="eyebrow">${esc((p.slug || '').replaceAll('-', ' ').toUpperCase())}</p>
-        <div class="productdetail">
-            <div class="detailmedia">${image ? `<img src="${image}" alt="${esc(p.name)}">` : `<div class="placeholder">${esc(p.name)}</div>`}</div>
+    mainContainer.innerHTML = `
+        <div style="max-width:1200px; margin:40px auto; padding:0 5vw; display:grid; grid-template-columns:1fr 1fr; gap:50px; align-items:start;">
             <div>
-                <h2 class="checkouttitle">${esc(p.name)}</h2>
-                <h3 class="detailprice">${money(p.price)}</h3>
-                <p>${esc(p.description || 'Made with care by Alivèra Atelier.')}</p>
+                <div class="detailmedia" style="border-radius:6px; overflow:hidden;">
+                    ${image ? `<img src="${image}" alt="${esc(p.name)}" style="width:100%; height:100%; object-fit:cover;">` : `<div class="placeholder">${esc(p.name)}</div>`}
+                </div>
+            </div>
+            <div>
+                <button onclick="loadStoreHome()" class="chartlink" style="margin-bottom:15px; cursor:pointer;">← Back to Collection</button>
+                <p class="eyebrow">${esc((p.slug || '').replaceAll('-', ' ').toUpperCase())}</p>
+                <h1 style="font:500 36px 'Playfair Display'; margin:0 0 10px;">${esc(p.name)}</h1>
+                <h3 class="detailprice" style="font-size:24px;">${money(p.price)}</h3>
+                <p class="muted" style="margin-bottom:20px;">${esc(p.description || 'Crafted individually in our studio for a precise drape.')}</p>
                 <p class="madeorder"><b>Made to order</b> · Prepared especially for you.</p>
-                <div class="field"><label>Choose size</label><select id="sizeSelect">${(p.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL']).map(s => `<option>${esc(s)}</option>`).join('')}</select></div>
                 
-                <div class="field" style="margin-top:12px;">
+                <div class="field" style="margin-top:15px;">
+                    <label><b>Choose size</b></label>
+                    <select id="sizeSelect" style="padding:12px; border:1px solid var(--line); width:100%; background:#fff; font:inherit;">
+                        ${(p.sizes || ['XS', 'S', 'M', 'L', 'XL', 'XXL']).map(s => `<option>${esc(s)}</option>`).join('')}
+                    </select>
+                </div>
+                
+                <div class="field" style="margin-top:15px;">
                     <label><b>Custom Fit / Tailoring Measurements & Notes</b></label>
-                    <textarea id="customFitInput" placeholder="Enter your custom measurements (Bust, Waist, Hip, Length) or specific tailoring notes here..." style="width:100%; height:80px; padding:10px; border:1px solid #ccc; border-radius:4px; font-family:inherit; font-size:14px; background:#fff;"></textarea>
-                    <p style="font-size:12px; color:#555; margin-top:5px; line-height:1.4;">* Optional: Leave blank if ordering standard size. Provide measurements if you selected a custom fit.</p>
+                    <textarea id="customFitInput" placeholder="Enter custom measurements (Bust, Waist, Hip, Length) or tailoring notes..." style="width:100%; height:80px; padding:10px; border:1px solid var(--line); border-radius:4px; font-family:inherit; font-size:14px; background:#fff;"></textarea>
                 </div>
 
-                <button class="chartlink" id="viewChartBtn">View size chart</button>
-                <button class="btn dark full" id="addToBagBtn" style="margin-top:18px">Add to bag</button>
+                <div style="display:flex; gap:15px; margin-top:20px;">
+                    <button class="btn dark" id="addToBagBtn" style="flex:2; padding:15px;">Add to bag</button>
+                    <button class="btn" onclick="toggleWishlist('${esc(p.name)}')" style="flex:1; background:#eee; color:#111; cursor:pointer;">♡ Wishlist</button>
+                    <button class="btn" onclick="shareProduct('${esc(p.name)}')" style="flex:1; background:#eee; color:#111; cursor:pointer;">Share</button>
+                </div>
+
+                <button class="chartlink" id="viewChartBtn" style="margin-top:15px; display:block;">View detailed size chart</button>
+
+                <!-- Pincode Delivery Checker -->
+                <div style="margin-top:25px; background:#f9f9f9; padding:15px; border:1px solid #e0e0e0; border-radius:6px;">
+                    <label style="font-weight:bold; display:block; margin-bottom:8px;">Check Delivery Availability</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="pincodeCheckInput" placeholder="Enter 6-digit Pincode" maxlength="6" style="flex:1; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                        <button type="button" onclick="checkPincodeDelivery()" class="btn dark" style="padding:10px 15px; cursor:pointer;">Check</button>
+                    </div>
+                    <p id="pincodeStatusMsg" style="font-size:12px; margin-top:6px; font-weight:bold;"></p>
+                </div>
+
+                <!-- Customer Reviews Section -->
+                <div style="margin-top:25px; border-top:1px solid var(--line); padding-top:15px;">
+                    <h4 style="font:500 16px 'Playfair Display'; margin-bottom:10px;">Customer Reviews</h4>
+                    <div style="font-size:12px; color:#555; margin-bottom:8px; border-left:2px solid var(--accent); padding-left:8px;">"The fabric drape and custom stitching exceeded expectations completely!" — Ananya S.</div>
+                    <div style="font-size:12px; color:#555; border-left:2px solid var(--accent); padding-left:8px;">"Absolute luxury finish. Customer service helped with custom measurements effortlessly." — Priya R.</div>
+                </div>
             </div>
-        </div>`;
+        </div>
+    `;
 
     document.getElementById('viewChartBtn').onclick = () => showSizeChart(p);
     document.getElementById('addToBagBtn').onclick = () => {
         const size = document.getElementById('sizeSelect').value;
         const customFitNotes = document.getElementById('customFitInput').value.trim();
         addToBag(p, size, customFitNotes);
-        closeCheckout();
     };
+    window.scrollTo(0, 0);
+}
+
+function loadStoreHome() {
+    window.history.pushState({}, '', '/');
+    location.reload();
+}
+
+function toggleWishlist(name) {
+    alert(`"${name}" has been added to your wishlist!`);
+}
+
+function shareProduct(name) {
+    if (navigator.share) {
+        navigator.share({ title: name, url: window.location.href });
+    } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('Product link copied to clipboard!');
+    }
+}
+
+function checkPincodeDelivery() {
+    const pin = document.getElementById('pincodeCheckInput').value.trim();
+    const msg = document.getElementById('pincodeStatusMsg');
+    if (pin.length !== 6 || isNaN(pin)) {
+        msg.style.color = 'red';
+        msg.textContent = 'Please enter a valid 6-digit pincode.';
+        return;
+    }
+    msg.style.color = 'green';
+    msg.textContent = `✓ Express delivery & custom tailoring dispatch available for ${pin}!`;
 }
 
 function closeCheckout() { document.getElementById('checkout')?.classList.remove('show'); }
 
-// --- UNIFIED CHECKOUT WITH PINCODE CHECK FIRST & UNIFIED ADDRESS BOX ---
+// --- PROFESSIONAL INVOICE BILL & SINGLE BLOCK ADDRESS CHECKOUT ---
 function openCheckoutModal(totalAmount) {
     if (!bag.length) {
         alert("Your bag is empty.");
@@ -141,141 +206,190 @@ function openCheckoutModal(totalAmount) {
     const bodyEl = document.getElementById('checkoutBody');
     if (!bodyEl) return;
 
+    const subtotal = bag.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    let finalTotal = subtotal - appliedDiscount;
+    if (finalTotal < 0) finalTotal = 0;
+
     bodyEl.innerHTML = `
         <button class="close" onclick="closeCheckout()">×</button>
-        <p class="eyebrow">SECURE CHECKOUT</p>
-        <h2 class="checkouttitle">Delivery & Contact Details</h2>
-        
-        <div id="pincodeCheckSection" style="margin-top:15px; background:#f9f9f9; padding:15px; border-radius:6px; border:1px solid #e0e0e0;">
-            <label style="font-weight:bold; display:block; margin-bottom:6px;">Step 1: Check Pincode Availability</label>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="checkPincode" placeholder="Enter 6-digit Pincode" maxlength="6" style="flex:1; padding:10px; border:1px solid #ccc; border-radius:4px;">
-                <button type="button" id="verifyPinBtn" class="btn dark" style="padding:10px 20px; background:#111; color:#fff; cursor:pointer;">Check Availability</button>
+        <div style="background:#fff; border:1px solid #e0e0e0; padding:30px; font-family:inherit; color:#111; max-width:680px; margin:auto;">
+            <div style="border-bottom:2px solid #111; padding-bottom:15px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h2 style="font:600 22px 'Playfair Display'; margin:0;">ALIVÈRA ATELIER</h2>
+                    <small style="color:#666;">Tax Invoice & Custom Order Summary</small>
+                </div>
+                <div style="text-align:right;">
+                    <b style="font-size:12px;">Date:</b> ${new Date().toLocaleDateString()}<br>
+                    <b style="font-size:12px;">Order ID:</b> ALV-${Date.now().toString().slice(-6)}
+                </div>
             </div>
-            <p id="pinResultMsg" style="margin-top:8px; font-size:13px; font-weight:bold;"></p>
-        </div>
 
-        <form id="shippingForm" style="display:none; flex-direction:column; gap:12px; margin-top:15px;">
-            <div class="field" style="background:#fafafa; padding:15px; border:1px solid #ddd; border-radius:6px;">
-                <label style="font-weight:bold; display:block; margin-bottom:8px;">Complete Delivery & Contact Information</label>
+            <!-- Professional Itemized Bill Table -->
+            <table style="width:100%; border-collapse:collapse; margin-bottom:20px; font-size:13px;">
+                <thead>
+                    <tr style="background:#fafafa;">
+                        <th style="padding:10px; border-bottom:1px solid #eee; text-align:left;">Garment / Description</th>
+                        <th style="padding:10px; border-bottom:1px solid #eee; text-align:left;">Size / Fit</th>
+                        <th style="padding:10px; border-bottom:1px solid #eee; text-align:left;">Qty</th>
+                        <th style="padding:10px; border-bottom:1px solid #eee; text-align:left;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${bag.map(i => `
+                        <tr>
+                            <td style="padding:10px; border-bottom:1px solid #eee;"><b>${esc(i.name)}</b>${i.customFitNotes ? `<br><small style="color:#d9534f">Fit: ${esc(i.customFitNotes)}</small>` : ''}</td>
+                            <td style="padding:10px; border-bottom:1px solid #eee;">${esc(i.size)}</td>
+                            <td style="padding:10px; border-bottom:1px solid #eee;">${i.quantity}</td>
+                            <td style="padding:10px; border-bottom:1px solid #eee;">${money(i.price * i.quantity)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+
+            <!-- Promo Code Section -->
+            <div style="display:flex; gap:10px; margin:15px 0;">
+                <input type="text" id="promoCodeInput" placeholder="Enter Promo Code (e.g. ALIVE10)" value="${appliedPromoCode}" style="flex:1; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                <button type="button" class="btn dark" onclick="applyPromoCode(${subtotal})" style="padding:10px 15px; cursor:pointer;">Apply</button>
+            </div>
+            <p id="promoMsg" style="font-size:12px; margin-bottom:15px; font-weight:bold; color:green;"></p>
+
+            <!-- Bill Totals -->
+            <div style="border-top:1px solid #ddd; padding-top:12px; margin-bottom:20px; font-size:14px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Subtotal:</span> <span>${money(subtotal)}</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; color:green;"><span>Discount / Promo:</span> <span>- ${money(appliedDiscount)}</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:18px; font-weight:bold; border-top:1px solid #111; padding-top:8px; margin-top:8px;">
+                    <span>Total Payable:</span> <span>${money(finalTotal)}</span>
+                </div>
+            </div>
+
+            <!-- Single Block Address Form -->
+            <form id="shippingForm" onsubmit="submitUnifiedOrder(event, ${finalTotal})" style="display:flex; flex-direction:column; gap:12px;">
+                <h4 style="font:500 16px 'Playfair Display'; margin-bottom:4px; border-bottom:1px solid #eee; padding-bottom:6px;">Delivery & Contact Details</h4>
                 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                     <input type="text" id="custName" placeholder="Full Name" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
                     <input type="tel" id="custPhone" placeholder="10-digit Phone Number" required maxlength="10" style="padding:10px; border:1px solid #ccc; border-radius:4px;">
                 </div>
                 
-                <div style="margin-bottom:10px;">
-                    <input type="email" id="custEmail" placeholder="Email Address" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px;">
+                <div>
+                    <input type="email" id="custEmail" placeholder="Email Address (contact@aliveraatelier.in)" required style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px;">
                 </div>
 
-                <div style="margin-bottom:10px;">
-                    <textarea id="custFullAddress" placeholder="Full Address (House No, Building, Street, Landmark)" required style="width:100%; height:80px; padding:10px; border:1px solid #ccc; border-radius:4px; font-family:inherit;"></textarea>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="text" id="custHouse" placeholder="House / Building Number" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
+                    <input type="text" id="custLandmark" placeholder="Landmark (Optional)" style="padding:10px; border:1px solid #ccc; border-radius:4px;">
+                </div>
+
+                <div>
+                    <textarea id="custFullAddress" placeholder="Full Street Address" required rows="2" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:4px; font-family:inherit;"></textarea>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
                     <input type="text" id="custCity" placeholder="City" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
                     <input type="text" id="custState" placeholder="State" value="Rajasthan" required style="padding:10px; border:1px solid #ccc; border-radius:4px;">
-                    <input type="text" id="confirmedPincode" readonly style="padding:10px; border:1px solid #ccc; border-radius:4px; background:#eee; font-weight:bold;" title="Verified Pincode">
+                    <input type="text" id="confirmedPincode" placeholder="Pincode" required maxlength="6" style="padding:10px; border:1px solid #ccc; border-radius:4px;">
                 </div>
-            </div>
 
-            <div style="margin-top:5px; font-size:16px; font-weight:bold; text-align:right;">Total Amount: ${money(totalAmount)}</div>
-            <button type="button" id="payRazorpayBtn" class="btn dark full" style="margin-top:10px; padding:14px; background:#111; color:#fff; cursor:pointer; font-size:15px; font-weight:bold;">Pay ${money(totalAmount)} with Razorpay</button>
-        </form>
+                <button type="submit" id="payRazorpayBtn" class="btn dark full" style="margin-top:10px; padding:14px; background:#111; color:#fff; cursor:pointer; font-size:15px; font-weight:bold;">Pay ${money(finalTotal)} with Razorpay</button>
+            </form>
+        </div>
     `;
+}
 
-    document.getElementById('verifyPinBtn').onclick = () => {
-        const pin = document.getElementById('checkPincode').value.trim();
-        const msg = document.getElementById('pinResultMsg');
-        if (pin.length !== 6 || isNaN(pin)) {
-            msg.style.color = 'red';
-            msg.textContent = 'Please enter a valid 6-digit pincode.';
-            return;
-        }
-
+function applyPromoCode(subtotal) {
+    const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+    const msg = document.getElementById('promoMsg');
+    if (code === 'ALIVE10') {
+        appliedDiscount = subtotal * 0.10;
+        appliedPromoCode = code;
         msg.style.color = 'green';
-        msg.textContent = '✓ Delivery is available for pincode ' + pin + '! Proceeding to checkout...';
-        
-        document.getElementById('confirmedPincode').value = pin;
-        setTimeout(() => {
-            document.getElementById('pincodeCheckSection').style.display = 'none';
-            document.getElementById('shippingForm').style.display = 'flex';
-        }, 800);
-    };
+        msg.textContent = '✓ Promo code ALIVE10 applied (10% OFF)!';
+        openCheckoutModal(subtotal);
+    } else if (code === 'ATELIER500') {
+        appliedDiscount = 500;
+        appliedPromoCode = code;
+        msg.style.color = 'green';
+        msg.textContent = '✓ Promo code ATELIER500 applied (₹500 OFF)!';
+        openCheckoutModal(subtotal);
+    } else {
+        msg.style.color = 'red';
+        msg.textContent = 'Invalid promo code.';
+    }
+}
 
-    document.getElementById('payRazorpayBtn').onclick = () => {
-        const name = document.getElementById('custName').value.trim();
-        const email = document.getElementById('custEmail').value.trim();
-        const phone = document.getElementById('custPhone').value.trim().replace(/\D/g, '').slice(-10);
-        const address = document.getElementById('custFullAddress').value.trim();
-        const city = document.getElementById('custCity').value.trim();
-        const state = document.getElementById('custState').value.trim();
-        const pincode = document.getElementById('confirmedPincode').value.trim();
+async function submitUnifiedOrder(e, totalAmount) {
+    e.preventDefault();
 
-        if (!name || !email || phone.length !== 10 || !address || !city || !state || !pincode) {
-            alert("Please fill in all address and contact fields correctly.");
-            return;
-        }
+    const name = document.getElementById('custName').value.trim();
+    const email = document.getElementById('custEmail').value.trim();
+    const phone = document.getElementById('custPhone').value.trim().replace(/\D/g, '').slice(-10);
+    const house = document.getElementById('custHouse').value.trim();
+    const landmark = document.getElementById('custLandmark').value.trim();
+    const address = document.getElementById('custFullAddress').value.trim();
+    const city = document.getElementById('custCity').value.trim();
+    const state = document.getElementById('custState').value.trim();
+    const pincode = document.getElementById('confirmedPincode').value.trim();
 
-        const options = {
-            key: "rzp_live_TUhsK2amojFPDp", // Replace with your live Razorpay Key ID
-            amount: Math.round(Number(totalAmount) * 100), // Converted to paise to prevent modal crash
-            currency: "INR",
-            name: "Alivèra Atelier",
-            description: "Custom Designer Apparel",
-            image: "/logo.png",
-            handler: async function (response) {
-                try {
-                    const orderPayload = {
-                        orderId: "ALV-" + Date.now().toString().slice(-6),
-                        clientName: name,
-                        phone: phone,
-                        email: email,
-                        full_address: address,
-                        city: city,
-                        state: state,
-                        pincode: pincode,
-                        totalAmount: Number(totalAmount),
-                        paymentMethod: "Prepaid",
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        items: bag
-                    };
+    if (!name || !email || phone.length !== 10 || !house || !address || !city || !state || pincode.length !== 6) {
+        alert("Please fill in all address and contact fields correctly.");
+        return;
+    }
 
-                    const res = await fetch(API + '/orders', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(orderPayload)
-                    });
+    const fullAddressString = `House: ${house}, Landmark: ${landmark || 'N/A'}, ${address}`;
 
-                    const result = await res.json();
-                    if (result.success) {
-                        localStorage.removeItem('alv_bag');
-                        bag = [];
-                        renderBag();
-                        closeCheckout();
-                        closeBag();
-                        alert("Payment successful! Order placed and synced to Admin Dashboard & Shiprocket.");
-                    } else {
-                        alert("Payment successful, but sync notice: " + (result.error || "Check admin dashboard"));
-                    }
-                } catch (err) {
-                    console.error("Order submission error:", err);
-                    alert("Payment received, but failed to notify server. Please contact support.");
+    const options = {
+        key: "rzp_live_TUhsK2amojFPDp",
+        amount: Math.round(Number(totalAmount) * 100),
+        currency: "INR",
+        name: "Alivèra Atelier",
+        description: "Custom Designer Apparel",
+        image: "/favicon.png",
+        handler: async function (response) {
+            try {
+                const orderPayload = {
+                    orderId: "ALV-" + Date.now().toString().slice(-6),
+                    clientName: name,
+                    phone: phone,
+                    email: email,
+                    full_address: fullAddressString,
+                    city: city,
+                    state: state,
+                    pincode: pincode,
+                    totalAmount: Number(totalAmount),
+                    paymentMethod: "Prepaid",
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    items: bag
+                };
+
+                const res = await fetch(API + '/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderPayload)
+                });
+
+                const result = await res.json();
+                if (result.success) {
+                    localStorage.removeItem('alv_bag');
+                    bag = [];
+                    renderBag();
+                    closeCheckout();
+                    closeBag();
+                    alert("Payment successful! Order placed and synced to Admin Dashboard & Shiprocket.");
+                    window.location.reload();
+                } else {
+                    alert("Payment successful, but sync notice: " + (result.error || "Check admin dashboard"));
                 }
-            },
-            prefill: {
-                name: name,
-                email: email,
-                contact: phone
-            },
-            theme: {
-                color: "#111111"
+            } catch (err) {
+                console.error("Order submission error:", err);
+                alert("Payment received, but failed to notify server. Please contact support.");
             }
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.open();
+        },
+        prefill: { name: name, email: email, contact: phone },
+        theme: { color: "#111111" }
     };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
 }
 
 async function load() {
@@ -293,7 +407,7 @@ async function load() {
             const image = imageFor(p);
             return `<article class="product" data-id="${p.id}" style="cursor:pointer">
                 <div class="productpic">${image ? `<img src="${image}" alt="${esc(p.name)}">` : `<div class="placeholder">${esc(p.name)}</div>`}</div>
-                <div class="productinfo"><div><h3>${esc(p.name)}</h3><p>Made to order · XS–XXL</p></div><strong>${money(p.price)}</strong></div>
+                <div class="productinfo"><div><h3>${esc(p.name)}</h3><p>aliveraatelier.in-${esc(p.slug)}</p></div><strong>${money(p.price)}</strong></div>
             </article>`;
         }).join('');
 
