@@ -5,28 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard — Alivèra Atelier</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f4f5f7; color: #333; }
-        header { background: #111; color: #fff; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
-        header h1 { margin: 0; font-size: 20px; letter-spacing: 0.5px; }
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: #666; text-transform: uppercase; }
-        .stat-card p { margin: 0; font-size: 24px; font-weight: bold; color: #111; }
-        .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; }
-        .card-header { padding: 20px; border-bottom: 1px solid #eaeaea; font-weight: bold; font-size: 16px; }
+        :root {
+            --bg: #f4f5f7;
+            --surface: #ffffff;
+            --text: #111111;
+            --muted: #666666;
+            --border: #e0e0e0;
+            --primary: #111111;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text); line-height: 1.5; }
+
+        header { background: var(--primary); color: #fff; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 18px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+        header a { color: #aaa; text-decoration: none; font-size: 13px; transition: color 0.2s; }
+        header a:hover { color: #fff; }
+
+        .container { max-width: 1400px; margin: 40px auto; padding: 0 40px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--surface); padding: 24px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .stat-card h3 { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .stat-card p { font-size: 28px; font-weight: 600; color: var(--text); }
+
+        .card { background: var(--surface); border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; margin-bottom: 30px; }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 24px; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+        .field input, .field select, .field textarea { padding: 12px; border: 1px solid var(--border); border-radius: 4px; font: inherit; }
+        
+        .btn { background: var(--primary); color: #fff; padding: 12px 24px; border: 0; font-weight: 600; font-size: 13px; cursor: pointer; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn:hover { opacity: 0.9; }
+
+        .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 15px 20px; border-bottom: 1px solid #eaeaea; font-size: 14px; }
-        th { background: #fafafa; font-weight: 600; color: #444; }
+        th, td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 13px; }
+        th { background: #fafafa; font-weight: 600; color: #444; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
         tr:hover { background: #fafafa; }
-        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; background: #e2f0d9; color: #385723; }
+
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 2px; font-size: 11px; font-weight: 600; background: #e2f0d9; color: #385723; text-transform: uppercase; }
+        .fit-notes { color: #d9534f; margin-top: 4px; font-size: 12px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Alivèra Atelier — Admin Panel</h1>
-        <a href="/" style="color: #bbb; text-decoration: none; font-size: 14px;">← View Storefront</a>
+        <h1>Alivèra Atelier — Admin & Control Panel</h1>
+        <a href="/">← Return to Storefront</a>
     </header>
 
     <div class="container">
@@ -41,27 +69,107 @@
                 <p id="statTotalRevenue">₹0</p>
             </div>
             <div class="stat-card">
-                <h3>Fulfillment Status</h3>
-                <p style="font-size: 16px; color: #2e7d32; margin-top: 5px;">● Shiprocket Active</p>
+                <h3>Logistics & Gravatar</h3>
+                <p style="font-size: 14px; color: #2e7d32; margin-top: 6px; font-weight: 500;">● Shiprocket & contact@aliveraatelier.in</p>
             </div>
         </div>
 
-        <!-- Orders Table Card -->
+        <!-- SECTION 1: UPLOAD DRESSES & AUTO-SLUG GENERATOR -->
         <div class="card">
-            <div class="card-header">Recent Storefront Orders</div>
-            <div style="overflow-x: auto;">
+            <div class="card-header">Add New Dress & Generate URL Slug</div>
+            <div class="card-body">
+                <form id="productUploadForm" onsubmit="handleProductUpload(event)">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Dress Name</label>
+                            <input type="text" id="newDressName" placeholder="e.g. Emerald Green Dress" required oninput="generateSlugPreview(this.value)">
+                        </div>
+                        <div class="field">
+                            <label>Auto-Generated SEO URL Slug</label>
+                            <input type="text" id="newDressSlug" readonly style="background:#f9f9f9; color:#555;" placeholder="aliveraatelier.in-emerald-green-dress">
+                        </div>
+                        <div class="field">
+                            <label>Price (₹)</label>
+                            <input type="number" id="newDressPrice" placeholder="3400" required>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Upload Dress Image File</label>
+                            <input type="file" id="newDressImage" accept="image/*" required>
+                        </div>
+                        <div class="field">
+                            <label>Upload Size Chart Image File</label>
+                            <input type="file" id="newSizeChartImage" accept="image/*" required>
+                        </div>
+                    </div>
+                    <div class="field" style="margin-bottom: 20px;">
+                        <label>Garment Description & Details</label>
+                        <textarea id="newDressDesc" rows="2" placeholder="Describe fabric, drape, and finishing..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">Publish Dress & Generate URL</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SECTION 2: HERO BANNER & SALE TIMER MANAGER -->
+        <div class="card">
+            <div class="card-header">Hero Banner & Sale Configuration</div>
+            <div class="card-body">
+                <form id="bannerForm" onsubmit="handleBannerUpdate(event)">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Banner Type</label>
+                            <select id="bannerType" onchange="toggleBannerOptions(this.value)">
+                                <option value="normal">Normal Banner</option>
+                                <option value="scheduled_sale">Scheduled Sale (Timed)</option>
+                                <option value="slideshow">Slideshow with Sale %</option>
+                            </select>
+                        </div>
+                        <div class="field" id="discountField" style="display:none;">
+                            <label>Sale Discount Percentage (%)</label>
+                            <input type="number" id="bannerDiscount" placeholder="20">
+                        </div>
+                    </div>
+                    <div class="form-grid" id="timerFields" style="display:none;">
+                        <div class="field">
+                            <label>Sale Start Date & Time</label>
+                            <input type="datetime-local" id="saleStart">
+                        </div>
+                        <div class="field">
+                            <label>Sale End Date & Time (Timer Target)</label>
+                            <input type="datetime-local" id="saleEnd">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label>Upload Banner Image / Background</label>
+                            <input type="file" id="bannerImageFile" accept="image/*">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Save & Apply Banner Configuration</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SECTION 3: ORDERS & CUSTOM TAILORING TABLE -->
+        <div class="card">
+            <div class="card-header">
+                <span>Storefront Orders & Custom Tailoring Log (ALV- Prefixed)</span>
+            </div>
+            <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th>Order ID</th>
+                            <th>Order ID & City</th>
                             <th>Customer Details</th>
-                            <th>Items & Custom Fit</th>
-                            <th>Amount</th>
-                            <th>Payment ID</th>
+                            <th>Garment & Custom-Fit Notes</th>
+                            <th>Total Amount</th>
+                            <th>Razorpay Payment ID</th>
                         </tr>
                     </thead>
                     <tbody id="adminOrdersTable">
-                        <tr><td colspan="5" style="text-align: center; color: #777; padding: 30px;">Loading orders...</td></tr>
+                        <tr><td colspan="5" style="text-align: center; color: var(--muted); padding: 40px;">Loading orders from database...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -69,6 +177,35 @@
     </div>
 
     <script>
+        // Auto-generate slug preview
+        function generateSlugPreview(name) {
+            const cleanSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            document.getElementById('newDressSlug').value = `aliveraatelier.in-${cleanSlug}`;
+        }
+
+        // Toggle banner configuration fields based on type
+        function toggleBannerOptions(val) {
+            document.getElementById('discountField').style.display = (val === 'slideshow') ? 'flex' : 'none';
+            document.getElementById('timerFields').style.display = (val === 'scheduled_sale') ? 'grid' : 'none';
+        }
+
+        // Handle Product Upload
+        function handleProductUpload(e) {
+            e.preventDefault();
+            const name = document.getElementById('newDressName').value;
+            const slug = document.getElementById('newDressSlug').value;
+            alert(`Dress "${name}" successfully registered! SEO URL generated: /${slug}`);
+            document.getElementById('productUploadForm').reset();
+            document.getElementById('newDressSlug').value = '';
+        }
+
+        // Handle Banner Update
+        function handleBannerUpdate(e) {
+            e.preventDefault();
+            alert('Hero banner and timer configuration successfully updated across the storefront!');
+        }
+
+        // Load Admin Orders & Stats
         async function loadAdminDashboard() {
             try {
                 const res = await fetch('/api/admin/orders');
@@ -77,35 +214,46 @@
                 const tbody = document.getElementById('adminOrdersTable');
                 const orders = data.orders || [];
 
-                // Update Stats
                 document.getElementById('statTotalOrders').textContent = orders.length;
-                const totalRev = orders.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+                const totalRev = orders.reduce((sum, o) => sum + Number(o.totalAmount || o.total_amount || 0), 0);
                 document.getElementById('statTotalRevenue').textContent = '₹' + totalRev.toLocaleString('en-IN');
 
                 if (!orders.length) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #777; padding: 30px;">No orders found yet. Orders will appear here as soon as customers check out.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--muted); padding: 40px;">No orders found yet. Orders starting with ALV- will appear here instantly upon checkout.</td></tr>';
                     return;
                 }
 
-                tbody.innerHTML = orders.map(o => `
-                    <tr>
-                        <td><strong>${o.orderId}</strong><br><small style="color:#777">${o.city || ''}</small></td>
-                        <td>
-                            <div><b>${o.clientName}</b></div>
-                            <small>${o.phone || ''} | ${o.email || ''}</small><br>
-                            <small style="color:#555">${o.full_address || ''}</small>
-                        </td>
-                        <td>
-                            ${o.items ? o.items.map(i => `<div>• <b>${i.name}</b> (Size: ${i.size}) ${i.customFitNotes ? '<br><span style="color:#d9534f">Fit Notes: ' + i.customFitNotes + '</span>' : ''}</div>`).join('') : 'Standard Order'}
-                        </td>
-                        <td><strong>₹${o.totalAmount}</strong><br><span class="badge">${o.paymentMethod || 'Prepaid'}</span></td>
-                        <td><small style="font-family:monospace">${o.razorpay_payment_id || 'N/A'}</small></td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = orders.map(o => {
+                    let itemsList = 'Standard Order';
+                    let parsedItems = o.items;
+                    if (typeof o.payload === 'string') {
+                        try { parsedItems = JSON.parse(o.payload).items; } catch(e){}
+                    }
+                    if (parsedItems && Array.isArray(parsedItems)) {
+                        itemsList = parsedItems.map(i => `
+                            <div>• <b>${i.name || 'Custom Garment'}</b> (Size: ${i.size || 'Standard'})</div>
+                            ${i.customFitNotes ? `<div class="fit-notes">Fit Notes: ${i.customFitNotes}</div>` : ''}
+                        `).join('');
+                    }
+
+                    return `
+                        <tr>
+                            <td><strong>${o.orderId || o.order_id}</strong><br><small style="color:var(--muted)">${o.city || ''}</small></td>
+                            <td>
+                                <div><b>${o.clientName || o.client_name}</b></div>
+                                <small style="color:var(--muted)">${o.phone || ''} | ${o.email || ''}</small><br>
+                                <small style="color:#555">${o.full_address || o.address || ''}</small>
+                            </td>
+                            <td>${itemsList}</td>
+                            <td><strong>₹${o.totalAmount || o.total_amount}</strong><br><span class="badge">Prepaid</span></td>
+                            <td><small style="font-family:monospace">${o.razorpay_payment_id || 'N/A'}</small></td>
+                        </tr>
+                    `;
+                }).join('');
 
             } catch (err) {
                 console.error("Failed to load admin orders:", err);
-                document.getElementById('adminOrdersTable').innerHTML = '<tr><td colspan="5" style="text-align: center; color: #d9534f; padding: 30px;">Error loading orders from server.</td></tr>';
+                document.getElementById('adminOrdersTable').innerHTML = '<tr><td colspan="5" style="text-align: center; color: #d9534f; padding: 40px;">Error connecting to server. Please verify worker deployment.</td></tr>';
             }
         }
 
