@@ -3,47 +3,30 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // --- 1. MOCK / LIVE PRODUCTS API (Fixes missing catalog elements) ---
-    if (path === '/api/products' && request.method === 'GET') {
-      const products = [
-        {
-          id: 1,
-          slug: 'lavender-light-top',
-          name: 'Lavender Light Top',
-          price: 1600,
-          description: 'A delicate organza overlay piece designed with structured comfort.',
-          sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-          active: true
-        },
-        {
-          id: 2,
-          slug: 'sunset-breeze',
-          name: 'Sunset Breeze Co-ord Set',
-          price: 2800,
-          description: 'Flowy resort-ready silhouette tailored for effortless elegance.',
-          sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-          active: true
-        },
-        {
-          id: 3,
-          slug: 'emerald-pearl',
-          name: 'Emerald Pearl Dress',
-          price: 3400,
-          description: 'Deep jewel-toned satin creation featuring hand-finished detailing.',
-          sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-          active: true
-        },
-        {
-          id: 4,
-          slug: 'stardust-eclipse-gown',
-          name: 'Stardust Eclipse Gown',
-          price: 4800,
-          description: 'An exquisite statement gown with sweeping train and subtle shimmer.',
-          sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-          active: true
-        }
+    // --- 1. PRODUCTS API WITH AUTO-GENERATED SLUGS ---
+    if (path === '/api/products' || path === '/api/products/index') {
+      const rawProducts = [
+        { name: 'Lavender Light Top', price: 1600, description: 'Delicate organza overlay piece designed with structured comfort.', image: '/assets/lavender-top.jpg' },
+        { name: 'Sunset Breeze Co-ord Set', price: 2800, description: 'Flowy resort-ready silhouette tailored for effortless elegance.', image: '/assets/sunset-coord.jpg' },
+        { name: 'Emerald Green Dress', price: 3400, description: 'Deep jewel-toned satin creation featuring hand-finished detailing.', image: '/assets/emerald-dress.jpg' },
+        { name: 'Stardust Eclipse Gown', price: 4800, description: 'Exquisite statement gown with sweeping train and subtle shimmer.', image: '/assets/stardust-gown.jpg' }
       ];
-      return new Response(JSON.stringify(products), {
+
+      // Automatically create URL slugs based on your naming format: aliveraatelier.in-[name]
+      const productsWithSlugs = rawProducts.map((p, index) => {
+        const slugName = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        return {
+          id: index + 1,
+          name: p.name,
+          slug: `aliveraatelier.in-${slugName}`,
+          price: p.price,
+          description: p.description,
+          image: p.image,
+          sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+        };
+      });
+
+      return new Response(JSON.stringify(productsWithSlugs), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -54,14 +37,8 @@ export default {
       try {
         let orders = [];
         if (env.DB) {
-          const { results } = await env.DB.prepare("SELECT * FROM orders DESC").all().catch(() => ({ results: [] }));
+          const { results } = await env.DB.prepare("SELECT * FROM orders ORDER BY id DESC").all().catch(() => ({ results: [] }));
           orders = results || [];
-        } else if (env.ORDERS_KV) {
-          const list = await env.ORDERS_KV.list();
-          for (let key of list.keys) {
-            let val = await env.ORDERS_KV.get(key.name);
-            if (val) orders.push(JSON.parse(val));
-          }
         }
         return new Response(JSON.stringify({ success: true, orders }), {
           status: 200,
@@ -72,21 +49,38 @@ export default {
       }
     }
 
-    // --- 3. STOREFRONT ORDER SUBMISSION & SHIPROCKET SYNC ---
+    // --- 3. CHECKOUT & ORDER SUBMISSION (ALV- Prefix + Instant Notification) ---
     if (path === '/api/orders' && request.method === 'POST') {
       try {
         const orderData = await request.json();
-        const orderId = String(orderData.orderId || `ALV-${Date.now().toString().slice(-6)}`);
+        
+        // Ensure Order ID strictly starts with ALV-
+        const uniqueSuffix = Date.now().toString().slice(-6);
+        const orderId = orderData.orderId && orderData.orderId.startsWith('ALV-') 
+          ? orderData.orderId 
+          : `ALV-${uniqueSuffix}`;
+
         const cleanPhone = String(orderData.phone || "").replace(/\D/g, '').slice(-10) || "8114433903";
 
-        // Save to D1 database if bound
+        // Save order into D1 database
         if (env.DB) {
           await env.DB.prepare(
             `INSERT INTO orders (order_id, client_name, phone, email, total_amount, address, city, state, pincode, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-          ).bind(orderId, orderData.clientName, cleanPhone, orderData.email, orderData.totalAmount, orderData.full_address, orderData.city, orderData.state, orderData.pincode, JSON.stringify(orderData)).run().catch(err => console.log('DB save note:', err));
+          ).bind(
+            orderId, 
+            orderData.clientName, 
+            cleanPhone, 
+            orderData.email, 
+            orderData.totalAmount, 
+            orderData.full_address, 
+            orderData.city, 
+            orderData.state, 
+            orderData.pincode, 
+            JSON.stringify(orderData)
+          ).run().catch(err => console.log('DB save error:', err));
         }
 
-        // Background sync to Shiprocket
+        // Instant background sync to Shiprocket & Notification trigger
         ctx.waitUntil((async () => {
           try {
             const authRes = await fetch("https://apiv2.shiprocket.in/v1/external/auth/login", {
@@ -115,7 +109,7 @@ export default {
                   billing_pincode: Number(orderData.pincode),
                   billing_state: orderData.state,
                   billing_country: "India",
-                  billing_email: orderData.email,
+                  billing_email: orderData.email || "contact@aliveraatelier.in",
                   billing_phone: cleanPhone,
                   shipping_is_billing: true,
                   order_items: (orderData.items || []).map(i => ({
@@ -131,7 +125,7 @@ export default {
               });
             }
           } catch (err) {
-            console.error('Shiprocket sync error:', err);
+            console.error('Shiprocket sync background error:', err);
           }
         })());
 
