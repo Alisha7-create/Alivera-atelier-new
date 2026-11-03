@@ -22,17 +22,15 @@
         </div>
     </header>
 
-    <!-- Main Store Catalog Section -->
-    <main class="main-content">
+    <!-- Main Store Catalog or Dynamic Product View Container -->
+    <main id="mainAppContainer" class="main-content">
         <section class="hero-intro">
             <h1>Artisanal Ready-to-Wear & Custom Tailoring</h1>
             <p>Crafted individually in our studio for a precise, luxurious drape.</p>
         </section>
 
-        <!-- Product Catalog Container (Must match getElementById('products')) -->
-        <div id="products" class="products-grid">
-            <!-- Products injected dynamically via app.js -->
-        </div>
+        <!-- Product Catalog Container -->
+        <div id="products" class="products-grid"></div>
     </main>
 
     <!-- Slide-out Shopping Bag Drawer -->
@@ -42,21 +40,19 @@
             <h2>Your Shopping Bag</h2>
             <button onclick="closeBag()" class="close-btn">×</button>
         </div>
-        <div id="bagItems" class="drawer-items">
-            <!-- Bag items injected here -->
-        </div>
+        <div id="bagItems" class="drawer-items"></div>
         <div class="drawer-footer">
             <div class="bag-total-row">
                 <span>Total:</span>
                 <strong id="bagTotal">₹0</strong>
             </div>
-            <button id="checkoutBtn" class="btn dark full">Proceed to Checkout</button>
+            <button id="checkoutBtn" class="btn dark full" onclick="openCheckoutModal()">Proceed to Checkout</button>
         </div>
     </div>
 
-    <!-- Product Detail / Checkout Modal Overlay -->
+    <!-- Professional Invoice / Checkout Modal Overlay -->
     <div id="checkout" class="modal-overlay" onclick="closeCheckout()">
-        <div id="checkoutBody" class="modal-content" onclick="event.stopPropagation()"></div>
+        <div id="checkoutBody" class="modal-content invoice-modal" onclick="event.stopPropagation()"></div>
     </div>
 
     <!-- Size Chart Modal Overlay -->
