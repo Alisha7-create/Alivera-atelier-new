@@ -50,13 +50,6 @@ function renderBag() {
     if (totalEl) totalEl.textContent = money(finalBagTotal);
 
     let checkoutBtn = document.getElementById('checkoutBtn');
-    if (!checkoutBtn) {
-        const bagDrawer = document.getElementById('drawer');
-        if (bagDrawer) {
-            checkoutBtn = bagDrawer.querySelector('.checkout-btn') || bagDrawer.querySelector('button.btn.dark');
-            if (checkoutBtn) checkoutBtn.id = 'checkoutBtn';
-        }
-    }
     if (checkoutBtn) {
         checkoutBtn.onclick = () => openCheckoutModal(total);
     }
@@ -89,7 +82,7 @@ function showSizeChart(p) {
 
 function closeSizeChart() { document.getElementById('sizeChartModal')?.classList.remove('show'); }
 
-// Dedicated E-Commerce Style Dress Page
+// Dedicated E-Commerce Style Dress Page View
 function showProduct(p) {
     window.history.pushState({ productId: p.id }, p.name, `/products/aliveraatelier.in-${p.slug}`);
     const image = imageFor(p);
@@ -192,7 +185,7 @@ function checkPincodeDelivery() {
 
 function closeCheckout() { document.getElementById('checkout')?.classList.remove('show'); }
 
-// Professional Invoice Bill & Single-Block Checkout
+// Formal Tax Invoice Bill & Single-Block Checkout
 function openCheckoutModal(totalAmount) {
     if (!bag.length) {
         alert("Your bag is empty.");
@@ -212,7 +205,7 @@ function openCheckoutModal(totalAmount) {
 
     bodyEl.innerHTML = `
         <button class="close" onclick="closeCheckout()">×</button>
-        <div class="invoice-box" style="background:#fff; border:1px solid #e0e0e0; padding:30px; font-family:inherit; color:#111; max-width:680px; margin:auto;">
+        <div style="background:#fff; border:1px solid #e0e0e0; padding:30px; font-family:inherit; color:#111; max-width:680px; margin:auto;">
             <div style="border-bottom:2px solid #111; padding-bottom:15px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <h2 style="font:600 22px 'Playfair Display'; margin:0;">ALIVÈRA ATELIER</h2>
@@ -400,7 +393,7 @@ async function load() {
         const countEl = document.getElementById('productCount');
         if (countEl) countEl.textContent = products.length + ' pieces';
         
-        const productsEl = document.getElementById('products') || document.getElementById('store-catalog');
+        const productsEl = document.getElementById('products');
         if (!productsEl) return;
 
         productsEl.innerHTML = products.filter(p => p.active !== false).map(p => {
@@ -420,7 +413,7 @@ async function load() {
         });
 
     } catch (e) {
-        const productsEl = document.getElementById('products') || document.getElementById('store-catalog');
+        const productsEl = document.getElementById('products');
         if (productsEl) productsEl.innerHTML = '<p>Collection temporarily unavailable.</p>';
     }
     renderBag();
