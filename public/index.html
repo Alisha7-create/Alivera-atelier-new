@@ -11,7 +11,7 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/styles.css">
     
-    <!-- Razorpay Live Checkout SDK -->
+    <!-- Razorpay Checkout SDK -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
@@ -33,7 +33,7 @@
         </div>
     </header>
 
-    <!-- Main Store Catalog Container -->
+    <!-- Main Store Catalog & Dynamic Container -->
     <main id="mainAppContainer">
         <!-- Hero Section -->
         <section class="hero">
@@ -49,8 +49,8 @@
             </div>
         </section>
 
-        <!-- Product Catalog Section -->
-        <section class="section">
+        <!-- Product Catalog Section (ID must remain 'products' with class 'grid') -->
+        <section id="products-section" class="section">
             <div class="sectionhead">
                 <h2>Current Collection</h2>
             </div>
@@ -67,11 +67,9 @@
             <h3 style="font: 500 20px 'Playfair Display'; margin: 0;">Your Shopping Bag</h3>
             <button onclick="closeBag()" class="close">×</button>
         </div>
-        <div id="bagItems" class="draweritems">
-            <!-- Items injected here -->
-        </div>
+        <div id="bagItems" class="draweritems"></div>
         <div class="bagfoot">
-            <div style="font-size: 14px; font-weight: 600;">
+            <div style="font-size: 14px; font-weight: 600; display:flex; justify-content:space-between;">
                 <span>Subtotal:</span>
                 <strong id="bagTotal">₹0</strong>
             </div>
@@ -79,11 +77,9 @@
         </div>
     </div>
 
-    <!-- Modal Overlay (Invoice Bill & Custom Fit View) -->
+    <!-- Modal Overlay (Formal Invoice Bill & Checkout) -->
     <div id="checkout" class="modal" onclick="closeCheckout()">
-        <div id="checkoutBody" class="modalbox" onclick="event.stopPropagation()">
-            <!-- Dynamic Invoice / Product view injected here -->
-        </div>
+        <div id="checkoutBody" class="modalbox" onclick="event.stopPropagation()"></div>
     </div>
 
     <!-- Size Chart Modal Overlay -->
